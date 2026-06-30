@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>minigavin · 投资雷达</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            bg: { DEFAULT: '#080c10', card: '#0e1419', border: '#1a2030' },
+            green: { fin: '#00d87f', dim: '#00a86050' },
+            red: { fin: '#ff4466', dim: '#ff224450' },
+            gold: { fin: '#f5c842', dim: '#f5c84220' },
+            blue: { fin: '#3b82f6' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { background: #080c10; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+
+    /* Glass card */
+    .glass {
+      background: rgba(14, 20, 25, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .glass-hover:hover {
+      border-color: rgba(255,255,255,0.14);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transition: all 0.25s ease;
+    }
+    .glass-hover { transition: all 0.25s ease; }
+
+    /* Glow effects */
+    .glow-green { box-shadow: 0 0 30px rgba(0,216,127,0.12); }
+    .glow-red   { box-shadow: 0 0 30px rgba(255,68,102,0.12); }
+    .glow-gold  { box-shadow: 0 0 30px rgba(245,200,66,0.12); }
+
+    /* Number animation */
+    @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .num-anim { animation: countUp 0.6s ease-out forwards; }
+
+    /* Breathing dot */
+    @keyframes breathe { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+    .dot-live { animation: breathe 2s ease-in-out infinite; }
+
+    /* Ticker scroll */
+    @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .ticker-inner { display: flex; animation: ticker 30s linear infinite; white-space: nowrap; }
+    .ticker-inner:hover { animation-play-state: paused; }
+
+    /* Heat map cells */
+    .heat-positive { background: linear-gradient(135deg, rgba(0,216,127,0.2), rgba(0,216,127,0.08)); border-color: rgba(0,216,127,0.3); }
+    .heat-negative { background: linear-gradient(135deg, rgba(255,68,102,0.2), rgba(255,68,102,0.08)); border-color: rgba(255,68,102,0.3); }
+    .heat-neutral  { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+
+    /* Progress bar */
+    .bar-fill { transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+
+    /* Nav underline */
+    .nav-link { position: relative; }
+    .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #00d87f; transform: scaleX(0); transition: transform 0.2s; }
+    .nav-link:hover::after { transform: scaleX(1); }
+
+    /* Section grid lines */
+    .grid-bg {
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Sentiment arc */
+    .sentiment-arc { position: relative; }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(20px); transition: all 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body class="min-h-screen grid-bg">
+
+  <!-- Ticker Bar -->
+  <div class="w-full bg-[#0a0f14] border-b border-[#1a2030] py-1.5 overflow-hidden">
+    <div class="ticker-inner text-xs font-mono text-slate-400 gap-8" style="width:200%">
+      <span class="px-4 text-[#00d87f]">▲ HSI 22,757 <span class="text-slate-500">+1.23%</span></span>
+      <span class="px-4 text-[#ff4466]">▼ 国企指数 8,103 <span class="text-slate-500">-0.87%</span></span>
+      <span class="px-4 text-[#00d87f]">▲ SPX 5,460 <span class="text-slate-500">+0.45%</span></span>
+      <span class="px-4 text-[#00d87f]">▲ QQQ 724.08 <span class="text-slate-500">+2.53%</span></span>
+      <span class="px-4 text-[#ff4466]">▼ 上证 3,310 <span class="text-slate-500">-0.32%</span></span>
+      <span class="px-4 text-[#f5c842]">◆ BTC 63,240 <span class="text-slate-500">+1.18%</span></span>
+      <span class="px-4 text-[#00d87f]">▲ TQQQ 77.19 <span class="text-slate-500">+4.12%</span></span>
+      <span class="px-4 text-[#ff4466]">▼ 深证 10,830 <span class="text-slate-500">-0.61%</span></span>
+      <!-- repeat for seamless -->
+      <span class="px-4 text-[#00d87f]">▲ HSI 22,757 <span class="text-slate-500">+1.23%</span></span>
+      <span class="px-4 text-[#ff4466]">▼ 国企指数 8,103 <span class="text-slate-500">-0.87%</span></span>
+      <span class="px-4 text-[#00d87f]">▲ SPX 5,460 <span class="text-slate-500">+0.45%</span></span>
+      <span class="px-4 text-[#00d87f]">▲ QQQ 724.08 <span class="text-slate-500">+2.53%</span></span>
+      <span class="px-4 text-[#ff4466]">▼ 上证 3,310 <span class="text-slate-500">-0.32%</span></span>
+      <span class="px-4 text-[#f5c842]">◆ BTC 63,240 <span class="text-slate-500">+1.18%</span></span>
+      <span class="px-4 text-[#00d87f]">▲ TQQQ 77.19 <span class="text-slate-500">+4.12%</span></span>
+      <span class="px-4 text-[#ff4466]">▼ 深证 10,830 <span class="text-slate-500">-0.61%</span></span>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sticky top-0 z-50 glass border-b border-[#1a2030] px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-md bg-gradient-to-br from-[#00d87f] to-[#00a060] flex items-center justify-center">
+        <span class="text-black font-black text-xs">M</span>
+      </div>
+      <span class="font-bold text-white tracking-tight">minigavin</span>
+      <span class="text-[10px] font-mono text-[#f5c842] bg-[#f5c84215] px-1.5 py-0.5 rounded">BETA</span>
+    </div>
+    <div class="flex items-center gap-6 text-sm">
+      <a href="hk.html" class="nav-link text-slate-300 hover:text-[#00d87f] transition-colors font-medium flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#00d87f] dot-live inline-block"></span>港股
+      </a>
+      <a href="us.html" class="nav-link text-slate-300 hover:text-[#00d87f] transition-colors font-medium">美股</a>
+      <a href="cn.html" class="nav-link text-slate-300 hover:text-[#00d87f] transition-colors font-medium">A股</a>
+      <div class="flex items-center gap-1.5 text-xs text-slate-500 font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#00d87f] dot-live inline-block"></span>
+        <span id="clock">--:--:--</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="px-6 pt-14 pb-10 max-w-7xl mx-auto">
+    <div class="mb-10 text-center">
+      <p class="text-xs font-mono text-[#00d87f] tracking-widest uppercase mb-3">Real-time · Multi-market · Daily Intelligence</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">
+        全球市场<span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00d87f] to-[#3b82f6]">一眼掌握</span>
+      </h1>
+      <p class="mt-3 text-slate-400 text-base">每日技术面 · 信息面 · 资金流向 · 自动更新</p>
+    </div>
+
+    <!-- 三大入口 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+      <!-- 港股 -->
+      <a href="hk.html" class="glass glass-hover glow-green rounded-2xl p-6 group cursor-pointer block">
+        <div class="flex items-start justify-between mb-5">
+          <div>
+            <p class="text-xs font-mono text-slate-500 uppercase tracking-wider mb-1">Hong Kong</p>
+            <h2 class="text-xl font-bold text-white">港股市场</h2>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-[#00d87f15] border border-[#00d87f30] flex items-center justify-center group-hover:bg-[#00d87f25] transition-colors">
+            <i data-lucide="trending-up" class="w-5 h-5 text-[#00d87f]"></i>
+          </div>
+        </div>
+        <div class="mb-5">
+          <div class="flex items-end gap-2">
+            <span class="text-3xl font-black font-mono text-white num-anim">22,757</span>
+            <span class="text-[#ff4466] text-sm font-mono mb-1">▼ 270 (-1.17%)</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">恒生指数 · 今日</p>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between text-slate-400"><span>南向资金</span><span class="text-[#00d87f]">+82亿</span></div>
+          <div class="flex justify-between text-slate-400"><span>技术面</span><span class="text-[#f5c842]">多空拉锯</span></div>
+          <div class="flex justify-between text-slate-400"><span>信号</span><span class="text-slate-300">上影压制</span></div>
+        </div>
+        <div class="mt-5 flex items-center gap-1 text-xs text-[#00d87f] font-medium">
+          <span>查看详情</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 美股 -->
+      <a href="us.html" class="glass glass-hover glow-green rounded-2xl p-6 group cursor-pointer block">
+        <div class="flex items-start justify-between mb-5">
+          <div>
+            <p class="text-xs font-mono text-slate-500 uppercase tracking-wider mb-1">United States</p>
+            <h2 class="text-xl font-bold text-white">美股市场</h2>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-[#3b82f615] border border-[#3b82f630] flex items-center justify-center group-hover:bg-[#3b82f625] transition-colors">
+            <i data-lucide="bar-chart-2" class="w-5 h-5 text-[#3b82f6]"></i>
+          </div>
+        </div>
+        <div class="mb-5">
+          <div class="flex items-end gap-2">
+            <span class="text-3xl font-black font-mono text-white num-anim">724.08</span>
+            <span class="text-[#00d87f] text-sm font-mono mb-1">▲ 17.56 (+2.49%)</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">QQQ · 昨收</p>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between text-slate-400"><span>TQQQ</span><span class="text-[#00d87f]">77.19 (+4.12%)</span></div>
+          <div class="flex justify-between text-slate-400"><span>技术面</span><span class="text-[#00d87f]">强势反弹</span></div>
+          <div class="flex justify-between text-slate-400"><span>夜盘</span><span class="text-slate-300">22:30 开盘</span></div>
+        </div>
+        <div class="mt-5 flex items-center gap-1 text-xs text-[#3b82f6] font-medium">
+          <span>查看详情</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- A股 -->
+      <a href="cn.html" class="glass glass-hover rounded-2xl p-6 group cursor-pointer block" style="box-shadow:0 0 30px rgba(245,200,66,0.08)">
+        <div class="flex items-start justify-between mb-5">
+          <div>
+            <p class="text-xs font-mono text-slate-500 uppercase tracking-wider mb-1">Mainland China</p>
+            <h2 class="text-xl font-bold text-white">A股市场</h2>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-[#f5c84215] border border-[#f5c84230] flex items-center justify-center group-hover:bg-[#f5c84225] transition-colors">
+            <i data-lucide="activity" class="w-5 h-5 text-[#f5c842]"></i>
+          </div>
+        </div>
+        <div class="mb-5">
+          <div class="flex items-end gap-2">
+            <span class="text-3xl font-black font-mono text-white num-anim">3,310</span>
+            <span class="text-[#ff4466] text-sm font-mono mb-1">▼ 10.6 (-0.32%)</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">上证指数 · 今日</p>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between text-slate-400"><span>北向资金</span><span class="text-[#ff4466]">-21亿</span></div>
+          <div class="flex justify-between text-slate-400"><span>技术面</span><span class="text-slate-400">横盘震荡</span></div>
+          <div class="flex justify-between text-slate-400"><span>板块</span><span class="text-slate-300">AI科技强</span></div>
+        </div>
+        <div class="mt-5 flex items-center gap-1 text-xs text-[#f5c842] font-medium">
+          <span>查看详情</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 全球市场总览 -->
+  <section class="px-6 pb-10 max-w-7xl mx-auto space-y-6">
+    <div class="flex items-center gap-3 mb-2">
+      <h2 class="text-lg font-bold text-white">全球市场总览</h2>
+      <span class="text-[10px] font-mono text-slate-500 bg-[#1a2030] px-2 py-0.5 rounded">LIVE MOCK</span>
+    </div>
+
+    <!-- Row 1: 指数 + 情绪 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+      <!-- 全球指数 -->
+      <div class="lg:col-span-2 glass rounded-2xl p-5 reveal">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-slate-300">主要指数</h3>
+          <span class="text-[10px] font-mono text-slate-600">2026-06-30 16:00</span>
+        </div>
+        <div class="space-y-3">
+          <!-- 指数行 -->
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 w-20 font-mono">HSI</span>
+            <div class="flex-1 h-1.5 bg-[#1a2030] rounded-full overflow-hidden">
+              <div class="h-full bg-[#ff4466] bar-fill rounded-full" style="width:42%"></div>
+            </div>
+            <span class="text-xs font-mono text-white w-20 text-right">22,757</span>
+            <span class="text-xs font-mono text-[#ff4466] w-16 text-right">-1.17%</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 w-20 font-mono">HSCEI</span>
+            <div class="flex-1 h-1.5 bg-[#1a2030] rounded-full overflow-hidden">
+              <div class="h-full bg-[#ff4466] bar-fill rounded-full" style="width:38%"></div>
+            </div>
+            <span class="text-xs font-mono text-white w-20 text-right">8,103</span>
+            <span class="text-xs font-mono text-[#ff4466] w-16 text-right">-0.87%</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 w-20 font-mono">SPX</span>
+            <div class="flex-1 h-1.5 bg-[#1a2030] rounded-full overflow-hidden">
+              <div class="h-full bg-[#00d87f] bar-fill rounded-full" style="width:65%"></div>
+            </div>
+            <span class="text-xs font-mono text-white w-20 text-right">5,460</span>
+            <span class="text-xs font-mono text-[#00d87f] w-16 text-right">+0.45%</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 w-20 font-mono">NDX</span>
+            <div class="flex-1 h-1.5 bg-[#1a2030] rounded-full overflow-hidden">
+              <div class="h-full bg-[#00d87f] bar-fill rounded-full" style="width:72%"></div>
+            </div>
+            <span class="text-xs font-mono text-white w-20 text-right">19,864</span>
+            <span class="text-xs font-mono text-[#00d87f] w-16 text-right">+2.53%</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 w-20 font-mono">上证</span>
+            <div class="flex-1 h-1.5 bg-[#1a2030] rounded-full overflow-hidden">
+              <div class="h-full bg-[#ff4466] bar-fill rounded-full" style="width:44%"></div>
+            </div>
+            <span class="text-xs font-mono text-white w-20 text-right">3,310</span>
+            <span class="text-xs font-mono text-[#ff4466] w-16 text-right">-0.32%</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 w-20 font-mono">深证</span>
+            <div class="flex-1 h-1.5 bg-[#1a2030] rounded-full overflow-hidden">
+              <div class="h-full bg-[#ff4466] bar-fill rounded-full" style="width:40%"></div>
+            </div>
+            <span class="text-xs font-mono text-white w-20 text-right">10,830</span>
+            <span class="text-xs font-mono text-[#ff4466] w-16 text-right">-0.61%</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 w-20 font-mono">N225</span>
+            <div class="flex-1 h-1.5 bg-[#1a2030] rounded-full overflow-hidden">
+              <div class="h-full bg-[#00d87f] bar-fill rounded-full" style="width:58%"></div>
+            </div>
+            <span class="text-xs font-mono text-white w-20 text-right">38,920</span>
+            <span class="text-xs font-mono text-[#00d87f] w-16 text-right">+0.91%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 市场情绪 -->
+      <div class="glass rounded-2xl p-5 reveal">
+        <h3 class="text-sm font-semibold text-slate-300 mb-4">市场情绪</h3>
+        <!-- 半圆仪表盘 -->
+        <div class="flex flex-col items-center mb-4">
+          <svg viewBox="0 0 200 110" class="w-44">
+            <!-- 背景弧 -->
+            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1a2030" stroke-width="14" stroke-linecap="round"/>
+            <!-- Fear zone -->
+            <path d="M 20 100 A 80 80 0 0 1 80 24" fill="none" stroke="#ff4466" stroke-width="14" stroke-linecap="round" opacity="0.5"/>
+            <!-- Neutral zone -->
+            <path d="M 80 24 A 80 80 0 0 1 120 24" fill="none" stroke="#f5c842" stroke-width="14" stroke-linecap="round" opacity="0.5"/>
+            <!-- Greed zone -->
+            <path d="M 120 24 A 80 80 0 0 1 180 100" fill="none" stroke="#00d87f" stroke-width="14" stroke-linecap="round" opacity="0.5"/>
+            <!-- Needle -->
+            <line x1="100" y1="100" x2="58" y2="38" stroke="#f5c842" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="100" cy="100" r="6" fill="#f5c842"/>
+            <!-- Labels -->
+            <text x="12" y="118" fill="#ff4466" font-size="9" font-family="Inter">恐慌</text>
+            <text x="88" y="14" fill="#f5c842" font-size="9" font-family="Inter">中性</text>
+            <text x="158" y="118" fill="#00d87f" font-size="9" font-family="Inter">贪婪</text>
+          </svg>
+          <div class="text-center -mt-2">
+            <div class="text-3xl font-black text-[#f5c842] font-mono">38</div>
+            <div class="text-xs text-[#f5c842] mt-0.5">恐慌偏中性</div>
+          </div>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between text-slate-400"><span>VIX</span><span class="text-white font-mono">18.4</span></div>
+          <div class="flex justify-between text-slate-400"><span>港股波动率</span><span class="text-white font-mono">21.7</span></div>
+          <div class="flex justify-between text-slate-400"><span>昨日情绪</span><span class="text-[#ff4466]">32 极度恐慌</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Row 2: 资金流向 + 热力图 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+      <!-- 资金流向 -->
+      <div class="glass rounded-2xl p-5 reveal">
+        <h3 class="text-sm font-semibold text-slate-300 mb-4">资金流向</h3>
+
+        <div class="space-y-4">
+          <!-- 南向 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">南向资金（港股通）</span>
+                <span class="text-[10px] font-mono text-[#00d87f] bg-[#00d87f15] px-1.5 py-0.5 rounded">净流入</span>
+              </div>
+              <span class="text-sm font-bold font-mono text-[#00d87f]">+82亿</span>
+            </div>
+            <div class="flex gap-1 mb-1">
+              <div class="flex-1">
+                <div class="text-[10px] text-slate-600 mb-1">沪股通</div>
+                <div class="h-2 bg-[#1a2030] rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00d87f] rounded-full bar-fill" style="width:60%"></div>
+                </div>
+                <div class="text-[10px] font-mono text-[#00d87f] mt-0.5">+48亿</div>
+              </div>
+              <div class="flex-1">
+                <div class="text-[10px] text-slate-600 mb-1">深股通</div>
+                <div class="h-2 bg-[#1a2030] rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00d87f] rounded-full bar-fill" style="width:40%"></div>
+                </div>
+                <div class="text-[10px] font-mono text-[#00d87f] mt-0.5">+34亿</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-[#1a2030]"></div>
+
+          <!-- 北向 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">北向资金（陆股通）</span>
+                <span class="text-[10px] font-mono text-[#ff4466] bg-[#ff446615] px-1.5 py-0.5 rounded">净流出</span>
+              </div>
+              <span class="text-sm font-bold font-mono text-[#ff4466]">-21亿</span>
+            </div>
+            <div class="flex gap-1">
+              <div class="flex-1">
+                <div class="text-[10px] text-slate-600 mb-1">港股通(沪)</div>
+                <div class="h-2 bg-[#1a2030] rounded-full overflow-hidden">
+                  <div class="h-full bg-[#ff4466] rounded-full bar-fill" style="width:30%"></div>
+                </div>
+                <div class="text-[10px] font-mono text-[#ff4466] mt-0.5">-12亿</div>
+              </div>
+              <div class="flex-1">
+                <div class="text-[10px] text-slate-600 mb-1">港股通(深)</div>
+                <div class="h-2 bg-[#1a2030] rounded-full overflow-hidden">
+                  <div class="h-full bg-[#ff4466] rounded-full bar-fill" style="width:20%"></div>
+                </div>
+                <div class="text-[10px] font-mono text-[#ff4466] mt-0.5">-9亿</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-[#1a2030]"></div>
+
+          <!-- 7日趋势 mini chart -->
+          <div>
+            <div class="text-[10px] text-slate-500 mb-2">南向 7日趋势（亿）</div>
+            <div class="flex items-end gap-1 h-10">
+              <div class="flex-1 bg-[#ff4466] rounded-sm opacity-70" style="height:30%"></div>
+              <div class="flex-1 bg-[#00d87f] rounded-sm opacity-70" style="height:55%"></div>
+              <div class="flex-1 bg-[#00d87f] rounded-sm opacity-70" style="height:80%"></div>
+              <div class="flex-1 bg-[#ff4466] rounded-sm opacity-70" style="height:20%"></div>
+              <div class="flex-1 bg-[#00d87f] rounded-sm opacity-70" style="height:65%"></div>
+              <div class="flex-1 bg-[#ff4466] rounded-sm opacity-70" style="height:35%"></div>
+              <div class="flex-1 bg-[#00d87f] rounded-sm opacity-70" style="height:90%" style="opacity:1"></div>
+            </div>
+            <div class="flex justify-between text-[9px] text-slate-600 mt-1 font-mono">
+              <span>-41</span><span>+67</span><span>+122</span><span>-28</span><span>+89</span><span>-31</span><span>+82</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 板块热力图 -->
+      <div class="glass rounded-2xl p-5 reveal">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-slate-300">板块热力图</h3>
+          <div class="flex gap-2 text-[10px]">
+            <button class="text-[#00d87f] bg-[#00d87f15] px-2 py-0.5 rounded font-mono">港股</button>
+            <button class="text-slate-500 px-2 py-0.5 rounded font-mono">A股</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="heat-positive border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-[#00d87f]">科技</div>
+            <div class="text-lg font-black text-[#00d87f] font-mono mt-1">+2.1%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">腾讯/美团</div>
+          </div>
+          <div class="heat-positive border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-[#00d87f]">新能源</div>
+            <div class="text-lg font-black text-[#00d87f] font-mono mt-1">+1.4%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">比亚迪</div>
+          </div>
+          <div class="heat-negative border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-[#ff4466]">地产</div>
+            <div class="text-lg font-black text-[#ff4466] font-mono mt-1">-3.2%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">碧桂园</div>
+          </div>
+          <div class="heat-negative border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-[#ff4466]">金融</div>
+            <div class="text-lg font-black text-[#ff4466] font-mono mt-1">-1.8%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">建行/工行</div>
+          </div>
+          <div class="heat-positive border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-[#00d87f]">消费</div>
+            <div class="text-lg font-black text-[#00d87f] font-mono mt-1">+0.7%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">泡泡玛特</div>
+          </div>
+          <div class="heat-neutral border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-slate-400">医疗</div>
+            <div class="text-lg font-black text-slate-300 font-mono mt-1">+0.1%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">药明</div>
+          </div>
+          <div class="heat-negative border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-[#ff4466]">能源</div>
+            <div class="text-lg font-black text-[#ff4466] font-mono mt-1">-2.3%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">中海油</div>
+          </div>
+          <div class="heat-positive border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-[#00d87f]">汽车</div>
+            <div class="text-lg font-black text-[#00d87f] font-mono mt-1">+1.9%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">理想/蔚来</div>
+          </div>
+          <div class="heat-negative border rounded-xl p-3 text-center">
+            <div class="text-xs font-semibold text-[#ff4466]">博彩</div>
+            <div class="text-lg font-black text-[#ff4466] font-mono mt-1">-0.9%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">澳博/银娱</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 mt-3 text-[10px] text-slate-500">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-[#00d87f] opacity-60 inline-block"></span>涨</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-[#ff4466] opacity-60 inline-block"></span>跌</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-[#ffffff20] inline-block"></span>平</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Row 3: 技术面信号 -->
+    <div class="glass rounded-2xl p-5 reveal">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold text-slate-300">今日技术信号</h3>
+        <span class="text-[10px] text-slate-500 font-mono">由 miniGG 每日生成</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- HSI -->
+        <div class="bg-[#0a0f14] rounded-xl p-4 border border-[#1a2030]">
+          <div class="text-[10px] text-slate-500 mb-2 font-mono">HSI · 恒生指数</div>
+          <div class="flex items-center gap-1.5 mb-3">
+            <span class="w-2 h-2 rounded-full bg-[#ff4466]"></span>
+            <span class="text-xs font-semibold text-[#ff4466]">偏空</span>
+          </div>
+          <div class="space-y-1.5 text-[11px]">
+            <div class="flex justify-between text-slate-400"><span>RSI(14)</span><span class="font-mono">38.2</span></div>
+            <div class="flex justify-between text-slate-400"><span>MACD</span><span class="font-mono text-[#ff4466]">死叉</span></div>
+            <div class="flex justify-between text-slate-400"><span>MA20</span><span class="font-mono">23,120</span></div>
+            <div class="flex justify-between text-slate-400"><span>支撑</span><span class="font-mono">22,500</span></div>
+          </div>
+        </div>
+        <!-- QQQ -->
+        <div class="bg-[#0a0f14] rounded-xl p-4 border border-[#1a2030]">
+          <div class="text-[10px] text-slate-500 mb-2 font-mono">QQQ · 纳指ETF</div>
+          <div class="flex items-center gap-1.5 mb-3">
+            <span class="w-2 h-2 rounded-full bg-[#00d87f]"></span>
+            <span class="text-xs font-semibold text-[#00d87f]">偏多</span>
+          </div>
+          <div class="space-y-1.5 text-[11px]">
+            <div class="flex justify-between text-slate-400"><span>RSI(14)</span><span class="font-mono">56.4</span></div>
+            <div class="flex justify-between text-slate-400"><span>MACD</span><span class="font-mono text-[#00d87f]">金叉</span></div>
+            <div class="flex justify-between text-slate-400"><span>MA20</span><span class="font-mono">708.2</span></div>
+            <div class="flex justify-between text-slate-400"><span>压力</span><span class="font-mono">730</span></div>
+          </div>
+        </div>
+        <!-- 上证 -->
+        <div class="bg-[#0a0f14] rounded-xl p-4 border border-[#1a2030]">
+          <div class="text-[10px] text-slate-500 mb-2 font-mono">上证 · 3310</div>
+          <div class="flex items-center gap-1.5 mb-3">
+            <span class="w-2 h-2 rounded-full bg-[#f5c842]"></span>
+            <span class="text-xs font-semibold text-[#f5c842]">中性</span>
+          </div>
+          <div class="space-y-1.5 text-[11px]">
+            <div class="flex justify-between text-slate-400"><span>RSI(14)</span><span class="font-mono">49.1</span></div>
+            <div class="flex justify-between text-slate-400"><span>MACD</span><span class="font-mono text-slate-400">零轴附近</span></div>
+            <div class="flex justify-between text-slate-400"><span>MA20</span><span class="font-mono">3,298</span></div>
+            <div class="flex justify-between text-slate-400"><span>支撑</span><span class="font-mono">3,270</span></div>
+          </div>
+        </div>
+        <!-- BTC -->
+        <div class="bg-[#0a0f14] rounded-xl p-4 border border-[#1a2030]">
+          <div class="text-[10px] text-slate-500 mb-2 font-mono">BTC · 比特币</div>
+          <div class="flex items-center gap-1.5 mb-3">
+            <span class="w-2 h-2 rounded-full bg-[#00d87f]"></span>
+            <span class="text-xs font-semibold text-[#00d87f]">偏多</span>
+          </div>
+          <div class="space-y-1.5 text-[11px]">
+            <div class="flex justify-between text-slate-400"><span>RSI(14)</span><span class="font-mono">61.3</span></div>
+            <div class="flex justify-between text-slate-400"><span>MACD</span><span class="font-mono text-[#00d87f]">扩散</span></div>
+            <div class="flex justify-between text-slate-400"><span>MA20</span><span class="font-mono">61,200</span></div>
+            <div class="flex justify-between text-slate-400"><span>压力</span><span class="font-mono">65,000</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-[#1a2030] px-6 py-6 max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-600">
+    <span>© 2026 minigavin · 数据仅供参考，不构成投资建议</span>
+    <span class="font-mono">Powered by miniGG 🤖</span>
+  </footer>
+
+  <script>
+    // Clock
+    function tick() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleTimeString('zh-CN', {hour12:false, timeZone:'Asia/Shanghai'});
+    }
+    tick(); setInterval(tick, 1000);
+
+    // Icons
+    lucide.createIcons();
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

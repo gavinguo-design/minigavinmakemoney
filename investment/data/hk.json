@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2026-06-30",
+    "hsi_close": 22757,
+    "hsi_change": -270,
+    "hsi_change_pct": -1.17,
+    "hsi_open": 23008,
+    "hsi_high": 23087,
+    "hsi_low": 22685,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "上影线压制，多空拉锯，空头占优。早盘高开后遭遇抛压，全日维持弱势整理格局，收盘跌回22757。",
+    "rsi": 38.2,
+    "macd_signal": "死叉",
+    "ma20": 23120,
+    "support": 22500,
+    "resistance": 23087,
+    "southbound_flow": 82,
+    "signals": ["上影线79点压制", "MACD死叉", "RSI超卖区间", "量能萎缩"],
+    "chart_url": null
+  }
+]

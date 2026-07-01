@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-07-01",
+    "hsi_close": 22881,
+    "hsi_change": -146,
+    "hsi_change_pct": -0.63,
+    "hsi_open": 23008,
+    "hsi_high": 23087,
+    "hsi_low": 22685,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "平量阴跌，22685支撑守住，缺口22962-22979压制反弹空间，RSI超卖",
+    "rsi": 27.4,
+    "macd_signal": "死叉偏空",
+    "ma20": 0,
+    "support": 22685,
+    "resistance": 22979,
+    "southbound_flow": 58.95,
+    "signals": [
+      "平量下跌",
+      "RSI超卖",
+      "缺口压制"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-06-30",
     "hsi_close": 22757,
     "hsi_change": -270,
@@ -16,7 +40,12 @@
     "support": 22500,
     "resistance": 23087,
     "southbound_flow": 82,
-    "signals": ["上影线79点压制", "MACD死叉", "RSI超卖区间", "量能萎缩"],
+    "signals": [
+      "上影线79点压制",
+      "MACD死叉",
+      "RSI超卖区间",
+      "量能萎缩"
+    ],
     "chart_url": null
   }
 ]

@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-07-02",
+    "hsi_close": 23013,
+    "hsi_change": 132,
+    "hsi_change_pct": 0.58,
+    "hsi_open": 23071,
+    "hsi_high": 23336,
+    "hsi_low": 22954,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "高开冲23336后上影265点回落，南向净卖出-14亿，反弹可疑",
+    "rsi": 31.2,
+    "macd_signal": "死叉",
+    "ma20": 0,
+    "support": 22881,
+    "resistance": 23336,
+    "southbound_flow": -14.42,
+    "signals": [
+      "上影265点阴十字星",
+      "平量反弹",
+      "南向净卖出"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-01",
     "hsi_close": 22881,
     "hsi_change": -146,

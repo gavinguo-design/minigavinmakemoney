@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-03",
+    "hsi_close": 23330,
+    "hsi_change": 275,
+    "hsi_change_pct": 1.19,
+    "hsi_open": 23241,
+    "hsi_high": 23517,
+    "hsi_low": 23226,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "非农降温高开+186点，斐波78.6%压顶23444平量收场",
+    "rsi": 38.1,
+    "macd_signal": "死叉偏空",
+    "ma20": 0,
+    "support": 23226,
+    "resistance": 23444,
+    "southbound_flow": 43.69,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-02",
     "hsi_close": 23013,
     "hsi_change": 132,

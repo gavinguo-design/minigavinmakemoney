@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-06",
+    "hsi_close": 23579,
+    "hsi_change": 229,
+    "hsi_change_pct": 0.98,
+    "hsi_open": 23405,
+    "hsi_high": 23687,
+    "hsi_low": 23229,
+    "bias": "中性偏多",
+    "bias_color": "yellow",
+    "summary": "恒指收23579反弹+0.98%，平量+南向204亿爆买，KDJ超买短线遇阻风险",
+    "rsi": 34.4,
+    "macd_signal": "金叉偏多",
+    "ma20": 23865,
+    "support": 23444,
+    "resistance": 23865,
+    "southbound_flow": 204.51,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-03",
     "hsi_close": 23330,
     "hsi_change": 275,

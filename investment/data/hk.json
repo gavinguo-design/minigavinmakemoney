@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-07-07",
+    "hsi_close": 23484,
+    "hsi_change": -132,
+    "hsi_change_pct": -0.56,
+    "hsi_open": 23568,
+    "hsi_high": 23821,
+    "hsi_low": 23398,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "低开冲高23821后急速回落，韩股熔断外压，平量收跌0.56%",
+    "rsi": 31.6,
+    "macd_signal": "金叉",
+    "ma20": 23793,
+    "support": 23398,
+    "resistance": 23821,
+    "southbound_flow": 6.63,
+    "signals": [
+      "看跌孕线",
+      "KDJ超买",
+      "极性转换阻力24418"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-06",
     "hsi_close": 23579,
     "hsi_change": 229,

@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-08",
+    "hsi_close": 24194,
+    "hsi_change": 697,
+    "hsi_change_pct": 2.96,
+    "hsi_open": 23541,
+    "hsi_high": 24311,
+    "hsi_low": 23541,
+    "bias": "偏多",
+    "bias_color": "green",
+    "summary": "强势大涨+2.96%突破24000，AI叙事+美伊冲突驱动科网爆发",
+    "rsi": 46.3,
+    "macd_signal": "金叉偏多",
+    "ma20": 23770,
+    "support": 23821,
+    "resistance": 24418,
+    "southbound_flow": 13999,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-07",
     "hsi_close": 23484,
     "hsi_change": -132,

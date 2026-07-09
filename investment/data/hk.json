@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-07-09",
+    "hsi_close": 24009,
+    "hsi_change": -190,
+    "hsi_change_pct": -0.79,
+    "hsi_open": 24181,
+    "hsi_high": 24354,
+    "hsi_low": 23917,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "地缘压制+超买兑现，恒指收跌0.79%震荡守24000",
+    "rsi": 46.2,
+    "macd_signal": "金叉",
+    "ma20": 23742,
+    "support": 23917,
+    "resistance": 24354,
+    "southbound_flow": 97.79,
+    "signals": [
+      "看跌孕线",
+      "看跌旗形",
+      "KDJ超买"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-08",
     "hsi_close": 24194,
     "hsi_change": 697,

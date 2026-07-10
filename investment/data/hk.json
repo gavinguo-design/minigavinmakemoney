@@ -1,5 +1,30 @@
 [
   {
+    "date": "2026-07-10",
+    "hsi_close": 24165,
+    "hsi_change": 135,
+    "hsi_change_pct": 0.56,
+    "hsi_open": 24213,
+    "hsi_high": 24500,
+    "hsi_low": 24065,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "高开冲顶24500后回落，射星形态+南向净卖出59亿，短线偏空",
+    "rsi": 53.2,
+    "macd_signal": "金叉偏多",
+    "ma20": 23731,
+    "support": 24065,
+    "resistance": 24418,
+    "southbound_flow": -59.23,
+    "signals": [
+      "射星形态",
+      "KDJ超买",
+      "南向净卖出",
+      "24418极性转换阻力"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-09",
     "hsi_close": 24009,
     "hsi_change": -190,

@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-07-13",
+    "hsi_close": 24198,
+    "hsi_change": 23,
+    "hsi_change_pct": 0.1,
+    "hsi_open": 24158,
+    "hsi_high": 24450,
+    "hsi_low": 24096,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "平开冲高24450后回落收24198，上影压制明显，MACD金叉但量弱消息空，多空拉锯中性收盘",
+    "rsi": 55.9,
+    "macd_signal": "金叉",
+    "ma20": 23729,
+    "support": 24096,
+    "resistance": 24418,
+    "southbound_flow": 90.02,
+    "signals": [
+      "MACD金叉",
+      "KDJ超买",
+      "平量上涨"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-10",
     "hsi_close": 24165,
     "hsi_change": 135,

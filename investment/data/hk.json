@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-07-14",
+    "hsi_close": 24360,
+    "hsi_change": 146,
+    "hsi_change_pct": 0.6,
+    "hsi_open": 24182,
+    "hsi_high": 24437,
+    "hsi_low": 23902,
+    "bias": "偏多",
+    "bias_color": "green",
+    "summary": "低开探底23902强V反转，MACD金叉启明星共振，偏多格局延续",
+    "rsi": 65.2,
+    "macd_signal": "金叉",
+    "ma20": 23712,
+    "support": 24171,
+    "resistance": 24518,
+    "southbound_flow": 113.64,
+    "signals": [
+      "启明星",
+      "MACD金叉",
+      "KDJ超买"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-13",
     "hsi_close": 24198,
     "hsi_change": 23,

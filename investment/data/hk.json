@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-07-15",
+    "hsi_close": 24679,
+    "hsi_change": 338,
+    "hsi_change_pct": 1.39,
+    "hsi_open": 24551,
+    "hsi_high": 24775,
+    "hsi_low": 24450,
+    "bias": "偏多",
+    "bias_color": "green",
+    "summary": "CPI通缩+ASML超预期三重利好 恒指高开冲至24775后震荡收涨338点",
+    "rsi": 67.5,
+    "macd_signal": "金叉",
+    "ma20": 23703,
+    "support": 24681,
+    "resistance": 24886,
+    "southbound_flow": 128.96,
+    "signals": [
+      "平量上涨",
+      "KDJ超买",
+      "斐波50%压力"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-14",
     "hsi_close": 24360,
     "hsi_change": 146,

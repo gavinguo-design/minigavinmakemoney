@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-16",
+    "hsi_close": 25011,
+    "hsi_change": 330,
+    "hsi_change_pct": 1.34,
+    "hsi_open": 24825,
+    "hsi_high": 25221,
+    "hsi_low": 24825,
+    "bias": "偏多",
+    "bias_color": "green",
+    "summary": "高开高走收复25000大关，收报25011(+330/+1.34%)，全天平量(量比0.95)未同步放大，警惕高位震荡",
+    "rsi": 76.8,
+    "macd_signal": "金叉偏多",
+    "ma20": 0,
+    "support": 24825,
+    "resistance": 25221,
+    "southbound_flow": 46.69,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-15",
     "hsi_close": 24679,
     "hsi_change": 338,

@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-17",
+    "hsi_close": 24505,
+    "hsi_change": -504,
+    "hsi_change_pct": -2.02,
+    "hsi_open": 25023,
+    "hsi_high": 25167,
+    "hsi_low": 24333,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "美军连袭伊朗叠加科技链全球抛售，恒指插针跌504点失守24681",
+    "rsi": 74.7,
+    "macd_signal": "金叉但HIST收窄",
+    "ma20": 23739,
+    "support": 24333,
+    "resistance": 24681,
+    "southbound_flow": -15.51,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-16",
     "hsi_close": 25011,
     "hsi_change": 330,

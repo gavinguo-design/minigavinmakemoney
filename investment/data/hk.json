@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-20",
+    "hsi_close": 25114,
+    "hsi_change": 552,
+    "hsi_change_pct": 2.25,
+    "hsi_open": 24835,
+    "hsi_high": 25156,
+    "hsi_low": 24756,
+    "bias": "偏多",
+    "bias_color": "green",
+    "summary": "恒指收涨2.25%站稳25114，重返MA20上方，但RSI77.1/KDJ超买，南向净卖出56亿创全天新高",
+    "rsi": 77.1,
+    "macd_signal": "金叉偏多",
+    "ma20": 23801,
+    "support": 24681,
+    "resistance": 25192,
+    "southbound_flow": -55.97,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-17",
     "hsi_close": 24505,
     "hsi_change": -504,

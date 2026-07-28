@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-28",
+    "hsi_close": 25298,
+    "hsi_change": 91,
+    "hsi_change_pct": 0.36,
+    "hsi_open": 25272,
+    "hsi_high": 25441,
+    "hsi_low": 25070,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "全天冲高回落，南向由净买转净卖26.53亿，缩量+超买回落警惕明日承压",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 25070,
+    "resistance": 25441,
+    "southbound_flow": -26.53,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-20",
     "hsi_close": 25114,
     "hsi_change": 552,

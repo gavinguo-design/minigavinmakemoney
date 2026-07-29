@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-29",
+    "hsi_close": 25797,
+    "hsi_change": 486,
+    "hsi_change_pct": 1.92,
+    "hsi_open": 25487,
+    "hsi_high": 25809,
+    "hsi_low": 25487,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "港股逆势创新高但南向连续5日撤离扩大，量比仅1.25未获强力放量确认，反弹质量存疑",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 0,
+    "resistance": 0,
+    "southbound_flow": -55.89,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-28",
     "hsi_close": 25298,
     "hsi_change": 91,

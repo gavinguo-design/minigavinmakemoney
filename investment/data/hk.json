@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-07-30",
+    "hsi_close": 25858,
+    "hsi_change": 50,
+    "hsi_change_pct": 0.19,
+    "hsi_open": 25876,
+    "hsi_high": 25972,
+    "hsi_low": 25657,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "全天冲高25972后回落收报25858，涨幅收窄至+0.19%，南向单日净卖出81.56亿创近5日新高，量能平量未确认上涨有效性",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 0,
+    "resistance": 0,
+    "southbound_flow": 0,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-29",
     "hsi_close": 25797,
     "hsi_change": 486,

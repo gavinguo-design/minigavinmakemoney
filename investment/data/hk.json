@@ -1,5 +1,28 @@
 [
   {
+    "date": "2026-07-31",
+    "hsi_close": 25890,
+    "hsi_change": 31,
+    "hsi_change_pct": 0.12,
+    "hsi_open": 25838,
+    "hsi_high": 25917,
+    "hsi_low": 25623,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "月末小幅收涨+31点，动能减弱苹果拖累科技情绪，收官平淡",
+    "rsi": 0,
+    "macd_signal": "红柱收窄hist=155",
+    "ma20": 0,
+    "support": 25623,
+    "resistance": 25917,
+    "southbound_flow": -4.42,
+    "signals": [
+      "MACD红柱收窄",
+      "平量小涨"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-30",
     "hsi_close": 25858,
     "hsi_change": 50,

@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-08-03",
+    "hsi_close": 25989,
+    "hsi_change": 105,
+    "hsi_change_pct": 0.41,
+    "hsi_open": 25987,
+    "hsi_high": 26134,
+    "hsi_low": 25812,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "平量小涨105点，南向百亿托底但MACD动能减弱",
+    "rsi": 0,
+    "macd_signal": "MACD红柱收窄",
+    "ma20": 0,
+    "support": 25812,
+    "resistance": 26134,
+    "southbound_flow": 109.73,
+    "signals": [
+      "MACD红柱收窄"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-07-31",
     "hsi_close": 25890,
     "hsi_change": 31,

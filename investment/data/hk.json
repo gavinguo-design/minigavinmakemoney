@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-08-04",
+    "hsi_close": 25818,
+    "hsi_change": -191,
+    "hsi_change_pct": -0.73,
+    "hsi_open": 26091,
+    "hsi_high": 26188,
+    "hsi_low": 25768,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "恒指全日冲高回落，收报25818点(-0.73%)，黄昏星顶部形态叠加，南向托底效力边际减弱",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 0,
+    "resistance": 0,
+    "southbound_flow": 24.51,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-03",
     "hsi_close": 25989,
     "hsi_change": 105,

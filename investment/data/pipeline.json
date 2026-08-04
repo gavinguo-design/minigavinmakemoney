@@ -1,0 +1,535 @@
+{
+  "generated_at": "2026-08-04 11:29:32",
+  "southbound_flow": 23.21,
+  "disclaimer": "本数据为AI Agent决策流水线架构演示，基于历史行情数据模拟展示，不构成投资建议，不代表真实交易记录。",
+  "symbols": [
+    {
+      "code": "HK.800000",
+      "name": "恒生指数",
+      "short": "HSI",
+      "is_index": true,
+      "indicators": {
+        "price": 25924.54,
+        "prev_close": 26009.4,
+        "change_pct": -0.33,
+        "rsi14": 68.8,
+        "macd_hist": 128.92,
+        "macd_turn_positive": false,
+        "macd_turn_negative": false,
+        "ma5": 25896.518,
+        "ma20": 25027.691,
+        "ma60": 24847.068,
+        "support": 23541.22,
+        "resistance": 26187.57,
+        "vol_ratio": null,
+        "rsi_bull_divergence": false,
+        "volume_shrink_stabilize": false
+      },
+      "direction": {
+        "verdict": "偏多",
+        "reasons": [
+          "MA5 上穿 MA20，短期均线偏多",
+          "MA20 位于 MA60 上方，中期趋势偏多",
+          "MACD柱为正(128.92)，动能偏多",
+          "RSI=68.8，强势区"
+        ],
+        "score": 4,
+        "confidence": 0.88
+      },
+      "fast": {
+        "verdict": "横盘噪音，暂无有效过滤信号",
+        "signals": [],
+        "is_noise": true
+      },
+      "decision": {
+        "action": "方向有倾向但缺乏有效信号确认，维持观望",
+        "confidence": 0.68,
+        "rationale": "方向判断：偏多（score=4）；快速过滤：横盘噪音，暂无有效过滤信号；南向资金 +23.21亿，小幅净流入（噪音区间）",
+        "southbound_bias": "小幅净流入"
+      },
+      "risk": {
+        "chase_limit_price": 26056.632,
+        "chase_limit_note": "建议不追高于 26056.632（近20日压力位下方0.5%）",
+        "stop_loss_price": 23070.396,
+        "stop_loss_note": "建议止损参考位 23070.396（近20日支撑位下方2%）",
+        "position_range": "0%（空仓观望）",
+        "current_price": 25924.54
+      },
+      "execution": {
+        "simulated_action": "模拟：空仓观望，等待信号确认",
+        "note": "纯模拟展示，未执行任何真实下单"
+      },
+      "backtest": {
+        "note": "历史数据回溯模拟，非真实交易记录，仅展示价格净值曲线走势",
+        "period_days": 5,
+        "curve": [
+          {
+            "date": "2026-07-28",
+            "nav": 100.0
+          },
+          {
+            "date": "2026-07-29",
+            "nav": 101.96
+          },
+          {
+            "date": "2026-07-30",
+            "nav": 102.17
+          },
+          {
+            "date": "2026-07-31",
+            "nav": 102.27
+          },
+          {
+            "date": "2026-08-03",
+            "nav": 102.76
+          },
+          {
+            "date": "2026-08-04",
+            "nav": 102.41
+          }
+        ],
+        "total_return_pct": 2.41
+      }
+    },
+    {
+      "code": "HK.00700",
+      "name": "腾讯控股",
+      "short": "00700",
+      "is_index": false,
+      "indicators": {
+        "price": 488.2,
+        "prev_close": 490.4,
+        "change_pct": -0.45,
+        "rsi14": 54.5,
+        "macd_hist": 3.33,
+        "macd_turn_positive": false,
+        "macd_turn_negative": false,
+        "ma5": 478.4,
+        "ma20": 464.82,
+        "ma60": 452.028,
+        "support": 432.0,
+        "resistance": 494.8,
+        "vol_ratio": 0.37,
+        "rsi_bull_divergence": false,
+        "volume_shrink_stabilize": false
+      },
+      "direction": {
+        "verdict": "偏多",
+        "reasons": [
+          "MA5 上穿 MA20，短期均线偏多",
+          "MA20 位于 MA60 上方，中期趋势偏多",
+          "MACD柱为正(3.33)，动能偏多",
+          "RSI=54.5，中性区间"
+        ],
+        "score": 3,
+        "confidence": 0.76
+      },
+      "fast": {
+        "verdict": "横盘噪音，暂无有效过滤信号",
+        "signals": [],
+        "is_noise": true
+      },
+      "decision": {
+        "action": "方向有倾向但缺乏有效信号确认，维持观望",
+        "confidence": 0.56,
+        "rationale": "方向判断：偏多（score=3）；快速过滤：横盘噪音，暂无有效过滤信号",
+        "southbound_bias": null
+      },
+      "risk": {
+        "chase_limit_price": 492.326,
+        "chase_limit_note": "建议不追高于 492.326（近20日压力位下方0.5%）",
+        "stop_loss_price": 423.36,
+        "stop_loss_note": "建议止损参考位 423.36（近20日支撑位下方2%）",
+        "position_range": "0%（空仓观望）",
+        "current_price": 488.2
+      },
+      "execution": {
+        "simulated_action": "模拟：空仓观望，等待信号确认",
+        "note": "纯模拟展示，未执行任何真实下单"
+      },
+      "backtest": {
+        "note": "历史数据回溯模拟，非真实交易记录，仅展示价格净值曲线走势",
+        "period_days": 5,
+        "curve": [
+          {
+            "date": "2026-07-28",
+            "nav": 100.0
+          },
+          {
+            "date": "2026-07-29",
+            "nav": 104.29
+          },
+          {
+            "date": "2026-07-30",
+            "nav": 105.5
+          },
+          {
+            "date": "2026-07-31",
+            "nav": 106.26
+          },
+          {
+            "date": "2026-08-03",
+            "nav": 109.66
+          },
+          {
+            "date": "2026-08-04",
+            "nav": 109.17
+          }
+        ],
+        "total_return_pct": 9.17
+      }
+    },
+    {
+      "code": "HK.09988",
+      "name": "阿里巴巴-W",
+      "short": "09988",
+      "is_index": false,
+      "indicators": {
+        "price": 127.5,
+        "prev_close": 125.2,
+        "change_pct": 1.84,
+        "rsi14": 66.4,
+        "macd_hist": 1.63,
+        "macd_turn_positive": false,
+        "macd_turn_negative": false,
+        "ma5": 119.02,
+        "ma20": 114.025,
+        "ma60": 114.747,
+        "support": 96.55,
+        "resistance": 129.2,
+        "vol_ratio": 0.58,
+        "rsi_bull_divergence": false,
+        "volume_shrink_stabilize": false
+      },
+      "direction": {
+        "verdict": "偏多",
+        "reasons": [
+          "MA5 上穿 MA20，短期均线偏多",
+          "MA20 位于 MA60 下方，中期趋势偏空",
+          "MACD柱为正(1.63)，动能偏多",
+          "RSI=66.4，强势区"
+        ],
+        "score": 2,
+        "confidence": 0.64
+      },
+      "fast": {
+        "verdict": "横盘噪音，暂无有效过滤信号",
+        "signals": [],
+        "is_noise": true
+      },
+      "decision": {
+        "action": "方向有倾向但缺乏有效信号确认，维持观望",
+        "confidence": 0.44,
+        "rationale": "方向判断：偏多（score=2）；快速过滤：横盘噪音，暂无有效过滤信号",
+        "southbound_bias": null
+      },
+      "risk": {
+        "chase_limit_price": 128.554,
+        "chase_limit_note": "建议不追高于 128.554（近20日压力位下方0.5%）",
+        "stop_loss_price": 94.619,
+        "stop_loss_note": "建议止损参考位 94.619（近20日支撑位下方2%）",
+        "position_range": "0%（空仓观望）",
+        "current_price": 127.5
+      },
+      "execution": {
+        "simulated_action": "模拟：空仓观望，等待信号确认",
+        "note": "纯模拟展示，未执行任何真实下单"
+      },
+      "backtest": {
+        "note": "历史数据回溯模拟，非真实交易记录，仅展示价格净值曲线走势",
+        "period_days": 5,
+        "curve": [
+          {
+            "date": "2026-07-28",
+            "nav": 100.0
+          },
+          {
+            "date": "2026-07-29",
+            "nav": 101.43
+          },
+          {
+            "date": "2026-07-30",
+            "nav": 99.82
+          },
+          {
+            "date": "2026-07-31",
+            "nav": 104.46
+          },
+          {
+            "date": "2026-08-03",
+            "nav": 111.79
+          },
+          {
+            "date": "2026-08-04",
+            "nav": 113.84
+          }
+        ],
+        "total_return_pct": 13.84
+      }
+    },
+    {
+      "code": "HK.03690",
+      "name": "美团-W",
+      "short": "03690",
+      "is_index": false,
+      "indicators": {
+        "price": 92.65,
+        "prev_close": 93.45,
+        "change_pct": -0.86,
+        "rsi14": 68.7,
+        "macd_hist": 0.68,
+        "macd_turn_positive": false,
+        "macd_turn_negative": false,
+        "ma5": 92.71,
+        "ma20": 86.09,
+        "ma60": 80.127,
+        "support": 76.5,
+        "resistance": 94.7,
+        "vol_ratio": 0.27,
+        "rsi_bull_divergence": false,
+        "volume_shrink_stabilize": false
+      },
+      "direction": {
+        "verdict": "偏多",
+        "reasons": [
+          "MA5 上穿 MA20，短期均线偏多",
+          "MA20 位于 MA60 上方，中期趋势偏多",
+          "MACD柱为正(0.68)，动能偏多",
+          "RSI=68.7，强势区"
+        ],
+        "score": 4,
+        "confidence": 0.88
+      },
+      "fast": {
+        "verdict": "横盘噪音，暂无有效过滤信号",
+        "signals": [],
+        "is_noise": true
+      },
+      "decision": {
+        "action": "方向有倾向但缺乏有效信号确认，维持观望",
+        "confidence": 0.68,
+        "rationale": "方向判断：偏多（score=4）；快速过滤：横盘噪音，暂无有效过滤信号",
+        "southbound_bias": null
+      },
+      "risk": {
+        "chase_limit_price": 94.227,
+        "chase_limit_note": "建议不追高于 94.227（近20日压力位下方0.5%）",
+        "stop_loss_price": 74.97,
+        "stop_loss_note": "建议止损参考位 74.97（近20日支撑位下方2%）",
+        "position_range": "0%（空仓观望）",
+        "current_price": 92.65
+      },
+      "execution": {
+        "simulated_action": "模拟：空仓观望，等待信号确认",
+        "note": "纯模拟展示，未执行任何真实下单"
+      },
+      "backtest": {
+        "note": "历史数据回溯模拟，非真实交易记录，仅展示价格净值曲线走势",
+        "period_days": 5,
+        "curve": [
+          {
+            "date": "2026-07-28",
+            "nav": 100.0
+          },
+          {
+            "date": "2026-07-29",
+            "nav": 102.21
+          },
+          {
+            "date": "2026-07-30",
+            "nav": 102.6
+          },
+          {
+            "date": "2026-07-31",
+            "nav": 102.44
+          },
+          {
+            "date": "2026-08-03",
+            "nav": 103.49
+          },
+          {
+            "date": "2026-08-04",
+            "nav": 102.6
+          }
+        ],
+        "total_return_pct": 2.6
+      }
+    },
+    {
+      "code": "HK.01810",
+      "name": "小米集团-W",
+      "short": "01810",
+      "is_index": false,
+      "indicators": {
+        "price": 27.7,
+        "prev_close": 27.96,
+        "change_pct": -0.93,
+        "rsi14": 56.5,
+        "macd_hist": 0.12,
+        "macd_turn_positive": false,
+        "macd_turn_negative": false,
+        "ma5": 29.476,
+        "ma20": 27.464,
+        "ma60": 27.177,
+        "support": 23.36,
+        "resistance": 32.4,
+        "vol_ratio": 0.23,
+        "rsi_bull_divergence": false,
+        "volume_shrink_stabilize": false
+      },
+      "direction": {
+        "verdict": "偏多",
+        "reasons": [
+          "MA5 上穿 MA20，短期均线偏多",
+          "MA20 位于 MA60 上方，中期趋势偏多",
+          "MACD柱为正(0.12)，动能偏多",
+          "RSI=56.5，强势区"
+        ],
+        "score": 4,
+        "confidence": 0.88
+      },
+      "fast": {
+        "verdict": "横盘噪音，暂无有效过滤信号",
+        "signals": [],
+        "is_noise": true
+      },
+      "decision": {
+        "action": "方向有倾向但缺乏有效信号确认，维持观望",
+        "confidence": 0.68,
+        "rationale": "方向判断：偏多（score=4）；快速过滤：横盘噪音，暂无有效过滤信号",
+        "southbound_bias": null
+      },
+      "risk": {
+        "chase_limit_price": 32.238,
+        "chase_limit_note": "建议不追高于 32.238（近20日压力位下方0.5%）",
+        "stop_loss_price": 22.893,
+        "stop_loss_note": "建议止损参考位 22.893（近20日支撑位下方2%）",
+        "position_range": "0%（空仓观望）",
+        "current_price": 27.7
+      },
+      "execution": {
+        "simulated_action": "模拟：空仓观望，等待信号确认",
+        "note": "纯模拟展示，未执行任何真实下单"
+      },
+      "backtest": {
+        "note": "历史数据回溯模拟，非真实交易记录，仅展示价格净值曲线走势",
+        "period_days": 5,
+        "curve": [
+          {
+            "date": "2026-07-28",
+            "nav": 100.0
+          },
+          {
+            "date": "2026-07-29",
+            "nav": 108.95
+          },
+          {
+            "date": "2026-07-30",
+            "nav": 106.08
+          },
+          {
+            "date": "2026-07-31",
+            "nav": 98.36
+          },
+          {
+            "date": "2026-08-03",
+            "nav": 95.56
+          },
+          {
+            "date": "2026-08-04",
+            "nav": 94.74
+          }
+        ],
+        "total_return_pct": -5.26
+      }
+    },
+    {
+      "code": "HK.01211",
+      "name": "比亚迪股份",
+      "short": "01211",
+      "is_index": false,
+      "indicators": {
+        "price": 93.6,
+        "prev_close": 94.9,
+        "change_pct": -1.37,
+        "rsi14": 66.8,
+        "macd_hist": 0.72,
+        "macd_turn_positive": false,
+        "macd_turn_negative": false,
+        "ma5": 94.21,
+        "ma20": 89.23,
+        "ma60": 87.971,
+        "support": 81.45,
+        "resistance": 96.65,
+        "vol_ratio": 0.3,
+        "rsi_bull_divergence": false,
+        "volume_shrink_stabilize": false
+      },
+      "direction": {
+        "verdict": "偏多",
+        "reasons": [
+          "MA5 上穿 MA20，短期均线偏多",
+          "MA20 位于 MA60 上方，中期趋势偏多",
+          "MACD柱为正(0.72)，动能偏多",
+          "RSI=66.8，强势区"
+        ],
+        "score": 4,
+        "confidence": 0.88
+      },
+      "fast": {
+        "verdict": "横盘噪音，暂无有效过滤信号",
+        "signals": [],
+        "is_noise": true
+      },
+      "decision": {
+        "action": "方向有倾向但缺乏有效信号确认，维持观望",
+        "confidence": 0.68,
+        "rationale": "方向判断：偏多（score=4）；快速过滤：横盘噪音，暂无有效过滤信号",
+        "southbound_bias": null
+      },
+      "risk": {
+        "chase_limit_price": 96.167,
+        "chase_limit_note": "建议不追高于 96.167（近20日压力位下方0.5%）",
+        "stop_loss_price": 79.821,
+        "stop_loss_note": "建议止损参考位 79.821（近20日支撑位下方2%）",
+        "position_range": "0%（空仓观望）",
+        "current_price": 93.6
+      },
+      "execution": {
+        "simulated_action": "模拟：空仓观望，等待信号确认",
+        "note": "纯模拟展示，未执行任何真实下单"
+      },
+      "backtest": {
+        "note": "历史数据回溯模拟，非真实交易记录，仅展示价格净值曲线走势",
+        "period_days": 5,
+        "curve": [
+          {
+            "date": "2026-07-28",
+            "nav": 100.0
+          },
+          {
+            "date": "2026-07-29",
+            "nav": 104.23
+          },
+          {
+            "date": "2026-07-30",
+            "nav": 105.57
+          },
+          {
+            "date": "2026-07-31",
+            "nav": 104.84
+          },
+          {
+            "date": "2026-08-03",
+            "nav": 105.68
+          },
+          {
+            "date": "2026-08-04",
+            "nav": 104.23
+          }
+        ],
+        "total_return_pct": 4.23
+      }
+    }
+  ]
+}

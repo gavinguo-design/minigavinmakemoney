@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>多Agent策略流水线 · minigavin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            bg: { DEFAULT: '#080c10', card: '#0e1419', border: '#1a2030' },
+            green: { fin: '#00d87f', dim: '#00a86050' },
+            red: { fin: '#ff4466', dim: '#ff224450' },
+            gold: { fin: '#f5c842', dim: '#f5c84220' },
+            blue: { fin: '#3b82f6' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { background: #080c10; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+
+    .glass {
+      background: rgba(14, 20, 25, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .glass-hover:hover {
+      border-color: rgba(255,255,255,0.14);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+      transition: all 0.25s ease;
+    }
+    .glass-hover { transition: all 0.25s ease; }
+
+    @keyframes breathe { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+    .dot-live { animation: breathe 2s ease-in-out infinite; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .card-anim { animation: fadeUp 0.4s ease-out forwards; opacity: 0; }
+
+    .nav-link { position: relative; }
+    .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #a855f7; transform: scaleX(0); transition: transform 0.2s; }
+    .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
+
+    .grid-bg {
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 500;
+      border: 1px solid;
+    }
+    .pill-red   { color: #ff4466; background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.25); }
+    .pill-green { color: #00d87f; background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.25); }
+    .pill-gold  { color: #f5c842; background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.25); }
+    .pill-blue  { color: #60a5fa; background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.25); }
+    .pill-dim   { color: #94a3b8; background: rgba(148,163,184,0.08); border-color: rgba(148,163,184,0.15); }
+    .pill-purple{ color: #c084fc; background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.25); }
+
+    .bias-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+    }
+    .badge-red   { background: rgba(255,68,102,0.15); color: #ff4466; border: 1px solid rgba(255,68,102,0.3); }
+    .badge-green { background: rgba(0,216,127,0.15); color: #00d87f; border: 1px solid rgba(0,216,127,0.3); }
+    .badge-gold  { background: rgba(245,200,66,0.15); color: #f5c842; border: 1px solid rgba(245,200,66,0.3); }
+
+    /* Pipeline stage chips */
+    .stage-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.03em; text-transform: uppercase;
+    }
+    .stage-direction { background: rgba(96,165,250,0.15); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+    .stage-fast      { background: rgba(245,200,66,0.15); color: #f5c842; border: 1px solid rgba(245,200,66,0.3); }
+    .stage-decision  { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+    .stage-risk      { background: rgba(255,68,102,0.15); color: #ff4466; border: 1px solid rgba(255,68,102,0.3); }
+    .stage-exec      { background: rgba(0,216,127,0.15); color: #00d87f; border: 1px solid rgba(0,216,127,0.3); }
+    .stage-backtest  { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.25); }
+
+    .stage-block {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 80px 20px; gap: 16px; color: #475569;
+    }
+
+    .disclaimer-banner {
+      background: linear-gradient(135deg, rgba(245,200,66,0.1), rgba(245,200,66,0.03));
+      border: 1px solid rgba(245,200,66,0.25);
+    }
+
+    .nav-flow {
+      display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+    }
+    .nav-flow-item { display: flex; align-items: center; gap: 4px; }
+    .nav-arrow { color: #334155; font-size: 12px; }
+  </style>
+</head>
+<body class="min-h-screen grid-bg">
+
+  <!-- Nav -->
+  <nav class="sticky top-0 z-50 glass border-b border-[#1a2030] px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-md bg-gradient-to-br from-[#a855f7] to-[#3b82f6] flex items-center justify-center">
+          <span class="text-black font-black text-xs">M</span>
+        </div>
+        <span class="font-bold text-white tracking-tight">minigavin</span>
+      </a>
+      <span class="text-[10px] font-mono text-[#f5c842] bg-[#f5c84215] px-1.5 py-0.5 rounded">BETA</span>
+    </div>
+    <div class="flex items-center gap-6 text-sm">
+      <a href="hk.html" class="nav-link text-slate-300 hover:text-[#a855f7] transition-colors font-medium">港股日报</a>
+      <a href="pipeline.html" class="nav-link active text-[#a855f7] font-medium flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#a855f7] dot-live inline-block"></span>Agent流水线
+      </a>
+      <div class="flex items-center gap-1.5 text-xs text-slate-500 font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#a855f7] dot-live inline-block"></span>
+        <span id="clock">--:--:--</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="px-6 pt-10 pb-4 max-w-6xl mx-auto">
+    <p class="text-xs font-mono text-[#a855f7] tracking-widest uppercase mb-2">Multi-Agent Decision Pipeline · Demo</p>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-white leading-tight">
+      多Agent策略<span class="text-transparent bg-clip-text bg-gradient-to-r from-[#a855f7] to-[#3b82f6]">流水线</span>演示
+    </h1>
+    <p class="mt-1.5 text-slate-400 text-sm">Direction → Fast → Decision → Risk → 执行(模拟) → 回报追踪 · 应用于恒生指数 + 5只头部港股</p>
+
+    <!-- Pipeline flow diagram -->
+    <div class="nav-flow mt-4 text-xs font-mono">
+      <div class="nav-flow-item"><span class="stage-chip stage-direction"><i data-lucide="compass" class="w-3 h-3"></i>Direction</span></div>
+      <span class="nav-arrow">→</span>
+      <div class="nav-flow-item"><span class="stage-chip stage-fast"><i data-lucide="zap" class="w-3 h-3"></i>Fast</span></div>
+      <span class="nav-arrow">→</span>
+      <div class="nav-flow-item"><span class="stage-chip stage-decision"><i data-lucide="split" class="w-3 h-3"></i>Decision</span></div>
+      <span class="nav-arrow">→</span>
+      <div class="nav-flow-item"><span class="stage-chip stage-risk"><i data-lucide="shield-alert" class="w-3 h-3"></i>Risk</span></div>
+      <span class="nav-arrow">→</span>
+      <div class="nav-flow-item"><span class="stage-chip stage-exec"><i data-lucide="play" class="w-3 h-3"></i>执行(模拟)</span></div>
+      <span class="nav-arrow">→</span>
+      <div class="nav-flow-item"><span class="stage-chip stage-backtest"><i data-lucide="line-chart" class="w-3 h-3"></i>回报追踪</span></div>
+    </div>
+  </section>
+
+  <!-- Disclaimer -->
+  <section class="px-6 pb-6 max-w-6xl mx-auto">
+    <div class="disclaimer-banner rounded-xl px-5 py-3.5 flex items-start gap-3">
+      <i data-lucide="alert-triangle" class="w-4 h-4 text-[#f5c842] mt-0.5 flex-shrink-0"></i>
+      <p class="text-xs text-[#f5c842] leading-relaxed">
+        本页面为 AI Agent 决策流水线<b>架构演示</b>，各阶段结论基于历史行情数据与技术指标<b>模拟推导</b>，
+        「回报追踪」部分为历史数据回溯模拟，<b>非真实交易记录</b>。不构成投资建议，不代表任何真实持仓或交易行为。市场有风险，决策需谨慎。
+      </p>
+    </div>
+  </section>
+
+  <!-- Meta strip -->
+  <section class="px-6 pb-6 max-w-6xl mx-auto" id="meta-strip"></section>
+
+  <!-- Card List -->
+  <section class="px-6 pb-16 max-w-6xl mx-auto space-y-5" id="card-list">
+    <!-- injected by JS -->
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-[#1a2030] px-6 py-6 max-w-6xl mx-auto flex items-center justify-between text-xs text-slate-600">
+    <span>© 2026 minigavin · 架构演示，不构成投资建议</span>
+    <span class="font-mono">Powered by miniGG 🤖</span>
+  </footer>
+
+  <script>
+    function tick() {
+      const el = document.getElementById('clock');
+      if (el) el.textContent = new Date().toLocaleTimeString('zh-CN', {hour12:false, timeZone:'Asia/Shanghai'});
+    }
+    tick(); setInterval(tick, 1000);
+
+    function fmt(n, dec=2) {
+      if (n === null || n === undefined || Number.isNaN(n)) return '—';
+      return Number(n).toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec});
+    }
+    function sign(n) { return n >= 0 ? '+' : ''; }
+    function changeColor(n) { if (n === null || n === undefined) return '#94a3b8'; return n >= 0 ? '#00d87f' : '#ff4466'; }
+    function changeArrow(n) { if (n === null || n === undefined) return ''; return n >= 0 ? '▲' : '▼'; }
+
+    function verdictColor(v) {
+      if (!v) return '#94a3b8';
+      if (v.includes('偏多')) return '#00d87f';
+      if (v.includes('偏空')) return '#ff4466';
+      if (v.includes('失败')) return '#64748b';
+      return '#f5c842';
+    }
+
+    function safeText(v, fallback='数据获取失败') {
+      return (v === null || v === undefined || v === '') ? fallback : v;
+    }
+
+    function renderMetaStrip(data) {
+      const strip = document.getElementById('meta-strip');
+      const sb = data.southbound_flow;
+      const sbColor = (sb === null || sb === undefined) ? '#94a3b8' : (sb >= 0 ? '#00d87f' : '#ff4466');
+      strip.innerHTML = `
+        <div class="glass rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-2 text-xs text-slate-500 font-mono">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+            <span>数据生成时间：${data.generated_at || '未知'}</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-slate-500">南向资金合计：</span>
+            <span class="font-mono font-bold" style="color:${sbColor}">${sb === null || sb === undefined ? '数据获取失败' : (sign(sb) + fmt(sb) + '亿')}</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <i data-lucide="database" class="w-3.5 h-3.5 text-[#a855f7]"></i>
+            <span>数据源：富途 OpenD 本地行情 + 东方财富南向资金</span>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function renderStageDirection(sym) {
+      const d = sym.direction || {};
+      const color = verdictColor(d.verdict);
+      const reasons = (d.reasons || []).map(r => `<li class="text-[11px] text-slate-400 leading-relaxed">· ${r}</li>`).join('');
+      return `
+        <div class="stage-block">
+          <div class="flex items-center justify-between mb-2">
+            <span class="stage-chip stage-direction"><i data-lucide="compass" class="w-3 h-3"></i>Direction</span>
+            ${d.confidence != null ? `<span class="text-[10px] font-mono text-slate-500">置信度 ${(d.confidence*100).toFixed(0)}%</span>` : ''}
+          </div>
+          <p class="text-sm font-bold mb-2" style="color:${color}">${safeText(d.verdict)}</p>
+          <ul class="space-y-1">${reasons || '<li class="text-[11px] text-slate-600">无</li>'}</ul>
+        </div>
+      `;
+    }
+
+    function renderStageFast(sym) {
+      const f = sym.fast || {};
+      const signals = (f.signals || []).map(s => `<span class="pill pill-gold" style="font-size:10px">${s}</span>`).join(' ');
+      return `
+        <div class="stage-block">
+          <div class="flex items-center justify-between mb-2">
+            <span class="stage-chip stage-fast"><i data-lucide="zap" class="w-3 h-3"></i>Fast</span>
+          </div>
+          <p class="text-xs text-slate-300 mb-2">${safeText(f.verdict)}</p>
+          <div class="flex flex-wrap gap-1.5">${signals || '<span class="text-[11px] text-slate-600">暂无有效信号</span>'}</div>
+        </div>
+      `;
+    }
+
+    function renderStageDecision(sym) {
+      const dec = sym.decision || {};
+      const color = dec.action && dec.action.includes('试多') ? '#00d87f' : (dec.action && dec.action.includes('试空') ? '#ff4466' : '#c084fc');
+      return `
+        <div class="stage-block">
+          <div class="flex items-center justify-between mb-2">
+            <span class="stage-chip stage-decision"><i data-lucide="split" class="w-3 h-3"></i>Decision</span>
+            ${dec.confidence != null ? `<span class="text-[10px] font-mono text-slate-500">置信度 ${(dec.confidence*100).toFixed(0)}%</span>` : ''}
+          </div>
+          <p class="text-sm font-bold mb-2" style="color:${color}">${safeText(dec.action)}</p>
+          <p class="text-[11px] text-slate-500 leading-relaxed">${safeText(dec.rationale, '')}</p>
+        </div>
+      `;
+    }
+
+    function renderStageRisk(sym) {
+      const r = sym.risk || {};
+      if (r.note === '数据获取失败') {
+        return `
+          <div class="stage-block">
+            <span class="stage-chip stage-risk"><i data-lucide="shield-alert" class="w-3 h-3"></i>Risk</span>
+            <p class="text-xs text-slate-500 mt-2">数据获取失败</p>
+          </div>
+        `;
+      }
+      return `
+        <div class="stage-block">
+          <span class="stage-chip stage-risk"><i data-lucide="shield-alert" class="w-3 h-3"></i>Risk</span>
+          <div class="mt-2 space-y-1.5 text-[11px]">
+            <div class="flex justify-between"><span class="text-slate-500">不追高于</span><span class="font-mono text-[#ff4466]">${fmt(r.chase_limit_price, 3)}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">止损参考</span><span class="font-mono text-[#f5c842]">${fmt(r.stop_loss_price, 3)}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">仓位建议</span><span class="font-mono text-white">${safeText(r.position_range)}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStageExec(sym) {
+      const e = sym.execution || {};
+      return `
+        <div class="stage-block">
+          <span class="stage-chip stage-exec"><i data-lucide="play" class="w-3 h-3"></i>执行(模拟)</span>
+          <p class="text-xs text-slate-300 mt-2">${safeText(e.simulated_action)}</p>
+          <p class="text-[10px] text-slate-600 mt-1">${e.note || ''}</p>
+        </div>
+      `;
+    }
+
+    function renderStageBacktest(sym) {
+      const b = sym.backtest || {};
+      if (!b.curve || b.curve.length === 0) {
+        return `
+          <div class="stage-block">
+            <span class="stage-chip stage-backtest"><i data-lucide="line-chart" class="w-3 h-3"></i>回报追踪</span>
+            <p class="text-xs text-slate-500 mt-2">${safeText(b.note)}</p>
+          </div>
+        `;
+      }
+      const curve = b.curve;
+      const navs = curve.map(c => c.nav);
+      const min = Math.min(...navs), max = Math.max(...navs);
+      const range = (max - min) || 1;
+      const w = 220, h = 48, pad = 4;
+      const pts = curve.map((c, i) => {
+        const x = pad + (i / (curve.length - 1)) * (w - pad * 2);
+        const y = h - pad - ((c.nav - min) / range) * (h - pad * 2);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      const retColor = b.total_return_pct >= 0 ? '#00d87f' : '#ff4466';
+      return `
+        <div class="stage-block">
+          <div class="flex items-center justify-between mb-2">
+            <span class="stage-chip stage-backtest"><i data-lucide="line-chart" class="w-3 h-3"></i>回报追踪</span>
+            <span class="text-[10px] font-mono" style="color:${retColor}">${sign(b.total_return_pct)}${fmt(b.total_return_pct)}%（近${b.period_days}日）</span>
+          </div>
+          <svg viewBox="0 0 ${w} ${h}" class="w-full h-12">
+            <polyline points="${pts}" fill="none" stroke="${retColor}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>
+          </svg>
+          <p class="text-[9px] text-slate-600 mt-1">${b.note}</p>
+        </div>
+      `;
+    }
+
+    function renderCard(sym, idx) {
+      const delay = idx * 60;
+      const ind = sym.indicators || {};
+      const cc = changeColor(ind.change_pct);
+      const badgeColor = sym.is_index ? 'blue' : 'purple';
+
+      const priceBlock = ind.price != null ? `
+        <div class="flex items-end gap-3">
+          <span class="text-2xl font-black font-mono text-white">${fmt(ind.price, sym.is_index ? 2 : 3)}</span>
+          <span class="text-sm font-mono mb-0.5" style="color:${cc}">${changeArrow(ind.change_pct)} ${sign(ind.change_pct)}${fmt(ind.change_pct)}%</span>
+        </div>
+        <div class="flex items-center gap-3 text-[11px] font-mono text-slate-500 mt-1.5">
+          <span>RSI ${fmt(ind.rsi14, 1)}</span>
+          <span class="text-[#1a2030]">|</span>
+          <span>MACD ${fmt(ind.macd_hist, 2)}</span>
+          <span class="text-[#1a2030]">|</span>
+          <span>支撑 ${fmt(ind.support, sym.is_index?0:2)}</span>
+          <span class="text-[#1a2030]">|</span>
+          <span>压力 ${fmt(ind.resistance, sym.is_index?0:2)}</span>
+        </div>
+      ` : `<p class="text-sm text-slate-500">数据获取失败</p>`;
+
+      return `
+        <div class="glass glass-hover rounded-2xl p-5 card-anim" style="animation-delay:${delay}ms">
+          <div class="flex items-start justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="pill pill-${badgeColor === 'blue' ? 'blue' : 'purple'}">${sym.is_index ? '指数' : '个股'}</span>
+                <span class="text-sm font-semibold text-white">${sym.name}</span>
+                <span class="text-xs font-mono text-slate-500">${sym.short}</span>
+              </div>
+              ${priceBlock}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            ${renderStageDirection(sym)}
+            ${renderStageFast(sym)}
+            ${renderStageDecision(sym)}
+            ${renderStageRisk(sym)}
+            ${renderStageExec(sym)}
+            ${renderStageBacktest(sym)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderEmpty() {
+      return `
+        <div class="empty-state glass rounded-2xl">
+          <i data-lucide="clock" style="width:40px;height:40px;color:#1a2030"></i>
+          <p class="text-base font-medium text-slate-500">暂无数据，稍后重试</p>
+        </div>
+      `;
+    }
+
+    async function main() {
+      const list = document.getElementById('card-list');
+      let data;
+      try {
+        const res = await fetch('data/pipeline.json?t=' + Date.now());
+        if (!res.ok) throw new Error('fetch failed');
+        data = await res.json();
+      } catch (e) {
+        list.innerHTML = renderEmpty();
+        lucide.createIcons();
+        return;
+      }
+
+      renderMetaStrip(data);
+
+      if (!data.symbols || data.symbols.length === 0) {
+        list.innerHTML = renderEmpty();
+        lucide.createIcons();
+        return;
+      }
+
+      list.innerHTML = data.symbols.map((s, i) => renderCard(s, i)).join('');
+      lucide.createIcons();
+    }
+
+    main();
+  </script>
+</body>
+</html>

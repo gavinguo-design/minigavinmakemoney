@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-05",
+    "hsi_close": 25907,
+    "hsi_change": 54,
+    "hsi_change_pct": 0.21,
+    "hsi_open": 25891,
+    "hsi_high": 25974,
+    "hsi_low": 25730,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "平量收涨54点守住25730，尾盘中美反制升级添变数；南向净卖出14亿托底消失，明日等放量选向",
+    "rsi": 0,
+    "macd_signal": "红柱收窄hist=103",
+    "ma20": 0,
+    "support": 25730,
+    "resistance": 25974,
+    "southbound_flow": -14.09,
+    "signals": [
+      "看涨孕线vs黄昏星交织",
+      "下影161点承接",
+      "平量上涨反弹可疑"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-04",
     "hsi_close": 25818,
     "hsi_change": -191,

@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-06",
+    "hsi_close": 25508,
+    "hsi_change": -408,
+    "hsi_change_pct": -1.57,
+    "hsi_open": 25667,
+    "hsi_high": 25667,
+    "hsi_low": 25389,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "跳空低开249点光头阴线收跌408点，中美反制集中定价，缺口25667-25730压顶，平量下跌+南向净卖出13.31亿",
+    "rsi": 0,
+    "macd_signal": "红柱收窄hist=57动能减弱",
+    "ma20": 0,
+    "support": 25389,
+    "resistance": 25730,
+    "southbound_flow": -13.31,
+    "signals": [
+      "跳空缺口25667-25730压顶",
+      "开盘即日高光头阴线",
+      "南向全日转净卖出"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-05",
     "hsi_close": 25907,
     "hsi_change": 54,

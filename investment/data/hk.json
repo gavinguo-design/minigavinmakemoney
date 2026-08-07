@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-07",
+    "hsi_close": 25666,
+    "hsi_change": 136,
+    "hsi_change_pct": 0.53,
+    "hsi_open": 25527,
+    "hsi_high": 25670,
+    "hsi_low": 25393,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "收复25667缺口下沿，但平量反弹与南向流出仍压制追涨",
+    "rsi": 0,
+    "macd_signal": "MACD红柱收窄(hist=32)",
+    "ma20": 0,
+    "support": 25393,
+    "resistance": 25730,
+    "southbound_flow": -8.01,
+    "signals": [
+      "平量上涨",
+      "南向净卖出",
+      "非农待公布"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-06",
     "hsi_close": 25508,
     "hsi_change": -408,

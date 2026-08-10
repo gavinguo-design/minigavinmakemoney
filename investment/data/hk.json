@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-10",
+    "hsi_close": 25954,
+    "hsi_change": 286,
+    "hsi_change_pct": 1.11,
+    "hsi_open": 25805,
+    "hsi_high": 25958,
+    "hsi_low": 25720,
+    "bias": "偏多",
+    "bias_color": "green",
+    "summary": "恒指收涨286点重返25900，南向净流入托底但平量未确认突破",
+    "rsi": 0,
+    "macd_signal": "MACD红柱收窄",
+    "ma20": 0,
+    "support": 25720,
+    "resistance": 26000,
+    "southbound_flow": 20.82,
+    "signals": [
+      "收近全日高位",
+      "MACD红柱收窄",
+      "量比0.92"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-07",
     "hsi_close": 25666,
     "hsi_change": 136,

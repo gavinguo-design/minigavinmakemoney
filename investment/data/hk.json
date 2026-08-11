@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-11",
+    "hsi_close": 25676,
+    "hsi_change": -261,
+    "hsi_change_pct": -1.01,
+    "hsi_open": 25999,
+    "hsi_high": 26060,
+    "hsi_low": 25648,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "高开低走大阴线-1.01%，缩量下跌+南向转净卖出，CPI前避险收缩",
+    "rsi": 0,
+    "macd_signal": "红柱收窄动能减弱",
+    "ma20": 0,
+    "support": 25668,
+    "resistance": 25785,
+    "southbound_flow": -17.1,
+    "signals": [
+      "高开低走大阴线",
+      "跌破25785极性转换位",
+      "南向转净卖出"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-10",
     "hsi_close": 25954,
     "hsi_change": 286,

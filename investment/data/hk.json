@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-08-12",
+    "hsi_close": 25402,
+    "hsi_change": -251,
+    "hsi_change_pct": -0.98,
+    "hsi_open": 25498,
+    "hsi_high": 25498,
+    "hsi_low": 25323,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "跳空低开光头阴线收跌0.98%，CPI前避险主导，南向净卖出28.77亿",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 0,
+    "resistance": 0,
+    "southbound_flow": 0,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-11",
     "hsi_close": 25676,
     "hsi_change": -261,

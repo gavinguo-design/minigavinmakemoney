@@ -1,5 +1,30 @@
 [
   {
+    "date": "2026-08-13",
+    "hsi_close": 25378,
+    "hsi_change": -62,
+    "hsi_change_pct": -0.24,
+    "hsi_open": 25288,
+    "hsi_high": 25519,
+    "hsi_low": 25288,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "低开152点V型收复微跌0.24%，攻缺口25519无量受阻，腾讯绩后尾盘拖累，南向回流38亿",
+    "rsi": 57.9,
+    "macd_signal": "死叉",
+    "ma20": 25468,
+    "support": 25288,
+    "resistance": 25554,
+    "southbound_flow": 38.32,
+    "signals": [
+      "MACD死叉",
+      "缺口25498-25648压顶",
+      "25288双重承接",
+      "南向回流38亿"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-12",
     "hsi_close": 25402,
     "hsi_change": -251,

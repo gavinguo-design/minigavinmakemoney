@@ -1,5 +1,30 @@
 [
   {
+    "date": "2026-08-14",
+    "hsi_close": 25119,
+    "hsi_change": -278,
+    "hsi_change_pct": -1.09,
+    "hsi_open": 25219,
+    "hsi_high": 25312,
+    "hsi_low": 25089,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "低开178点全日弱势，收跌278点破25288颈线，三山顶部确立；京东绩后跌超10%权重杀跌，南向转净卖出17亿，下方看24786",
+    "rsi": 0,
+    "macd_signal": "死叉",
+    "ma20": 0,
+    "support": 25089,
+    "resistance": 25329,
+    "southbound_flow": -16.99,
+    "signals": [
+      "破25288颈线",
+      "三山顶部确立",
+      "平量下跌",
+      "南向转净卖出"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-13",
     "hsi_close": 25378,
     "hsi_change": -62,

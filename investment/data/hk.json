@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-20",
+    "hsi_close": 25726,
+    "hsi_change": 231,
+    "hsi_change_pct": 0.91,
+    "hsi_open": 25779,
+    "hsi_high": 25843,
+    "hsi_low": 25632,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "高开284点收涨231点(+0.91%)收复缺口，但平量+南向近百亿流出背离，明日看放量破25843或回踩25632企稳",
+    "rsi": 0,
+    "macd_signal": "MACD绿柱收窄(hist=-57)底部临近",
+    "ma20": 0,
+    "support": 25537,
+    "resistance": 25843,
+    "southbound_flow": -99.82,
+    "signals": [
+      "跳空高开上影阳线",
+      "平量上涨反弹可疑",
+      "南向近百亿净流出背离"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-17",
     "hsi_close": 25480,
     "hsi_change": 363,

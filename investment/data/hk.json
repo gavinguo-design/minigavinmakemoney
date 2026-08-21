@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-08-21",
+    "hsi_close": 25998,
+    "hsi_change": 300,
+    "hsi_change_pct": 1.17,
+    "hsi_open": 25808,
+    "hsi_high": 26009,
+    "hsi_low": 25808,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "光头长阳收涨300点突破25843创阶段新高直逼26000，但平量+南向74亿流出背离，综合中性",
+    "rsi": 0,
+    "macd_signal": "绿柱收窄hist=-27",
+    "ma20": 0,
+    "support": 25843,
+    "resistance": 26000,
+    "southbound_flow": -73.86,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-20",
     "hsi_close": 25726,
     "hsi_change": 231,

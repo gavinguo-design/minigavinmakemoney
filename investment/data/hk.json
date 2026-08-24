@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-08-24",
+    "hsi_close": 25517,
+    "hsi_change": -492,
+    "hsi_change_pct": -1.89,
+    "hsi_open": 25780,
+    "hsi_high": 25780,
+    "hsi_low": 25431,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "恒指收跌1.89%，阿里配售拖累科技；南向逢跌净流入115.67亿",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 25431,
+    "resistance": 25780,
+    "southbound_flow": 115.67,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-21",
     "hsi_close": 25998,
     "hsi_change": 300,

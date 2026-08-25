@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-08-25",
+    "hsi_close": 25500,
+    "hsi_change": -17,
+    "hsi_change_pct": -0.07,
+    "hsi_open": 25634,
+    "hsi_high": 25677,
+    "hsi_low": 25403,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "今日收盘分析完毕",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 0,
+    "resistance": 0,
+    "southbound_flow": 0,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-24",
     "hsi_close": 25517,
     "hsi_change": -492,

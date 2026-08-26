@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-26",
+    "hsi_close": 25637,
+    "hsi_change": 126,
+    "hsi_change_pct": 0.49,
+    "hsi_open": 25635,
+    "hsi_high": 25800,
+    "hsi_low": 25616,
+    "bias": "偏多",
+    "bias_color": "green",
+    "summary": "反弹+126点收复25600，冲25800缺口受阻留长上影，平量待确认；明日放量站上25808追多看26000，破25537离场",
+    "rsi": 0,
+    "macd_signal": "绿柱收窄(hist=-43)底部临近",
+    "ma20": 0,
+    "support": 25537,
+    "resistance": 25808,
+    "southbound_flow": 6.54,
+    "signals": [
+      "高开冲缺口受阻长上影",
+      "平量上涨反弹可疑",
+      "南向转正6.54亿"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-25",
     "hsi_close": 25500,
     "hsi_change": -17,

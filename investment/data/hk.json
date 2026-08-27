@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-08-27",
+    "hsi_close": 25548,
+    "hsi_change": -105,
+    "hsi_change_pct": -0.41,
+    "hsi_open": 25775,
+    "hsi_high": 25792,
+    "hsi_low": 25501,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "高开122点冲25792二度受阻回落收阴-105点，南向逆势净买33亿现价量背离",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 0,
+    "resistance": 0,
+    "southbound_flow": 32.82,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-26",
     "hsi_close": 25637,
     "hsi_change": 126,

@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-28",
+    "hsi_close": 25584,
+    "hsi_change": 18,
+    "hsi_change_pct": 0.07,
+    "hsi_open": 25410,
+    "hsi_high": 25699,
+    "hsi_low": 25410,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "低开156点V型全收复微涨18点收盘25584，平量量比0.87，南向连续第三日净买13亿，今晚沃什杰克逊霍尔首秀前观望",
+    "rsi": 0,
+    "macd_signal": "死叉绿柱收窄(hist=-44)",
+    "ma20": 0,
+    "support": 25410,
+    "resistance": 25780,
+    "southbound_flow": 12.97,
+    "signals": [
+      "V型反转承接真实",
+      "MACD绿柱收窄底部临近",
+      "25780-25808缺口压制"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-27",
     "hsi_close": 25548,
     "hsi_change": -105,

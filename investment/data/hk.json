@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-08-31",
+    "hsi_close": 25520,
+    "hsi_change": -65,
+    "hsi_change_pct": -0.25,
+    "hsi_open": 25421,
+    "hsi_high": 25566,
+    "hsi_low": 25291,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "低开164点V型修复至近昨收，尾盘仍收跌65点/-0.25%",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 25291,
+    "resistance": 25585,
+    "southbound_flow": 26.24,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-28",
     "hsi_close": 25584,
     "hsi_change": 18,

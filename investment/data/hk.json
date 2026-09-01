@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-01",
+    "hsi_close": 25340,
+    "hsi_change": -227,
+    "hsi_change_pct": -0.89,
+    "hsi_open": 25416,
+    "hsi_high": 25479,
+    "hsi_low": 25240,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "恒指低开阴跌收挫227点(-0.89%)，全球债市抛售压制风险偏好，南向净买入75亿托底守住25240",
+    "rsi": 0,
+    "macd_signal": "死叉延续",
+    "ma20": 0,
+    "support": 25240,
+    "resistance": 25416,
+    "southbound_flow": 75.51,
+    "signals": [
+      "死叉+极性转换延续",
+      "平量下跌量比0.89",
+      "南向净买入75.51亿托底"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-08-31",
     "hsi_close": 25520,
     "hsi_change": -65,

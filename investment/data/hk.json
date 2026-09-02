@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-09-02",
+    "hsi_close": 25311,
+    "hsi_change": -19,
+    "hsi_change_pct": -0.08,
+    "hsi_open": 25281,
+    "hsi_high": 25311,
+    "hsi_low": 25009,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "低开探底25009强势企稳反弹，收跌19点跌幅大幅收窄，南向41亿托底",
+    "rsi": 48.1,
+    "macd_signal": "死叉",
+    "ma20": 0,
+    "support": 25009,
+    "resistance": 25412,
+    "southbound_flow": 40.93,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-01",
     "hsi_close": 25340,
     "hsi_change": -227,

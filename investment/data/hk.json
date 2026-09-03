@@ -1,5 +1,28 @@
 [
   {
+    "date": "2026-09-03",
+    "hsi_close": 25171,
+    "hsi_change": -140,
+    "hsi_change_pct": -0.55,
+    "hsi_open": 25483,
+    "hsi_high": 25538,
+    "hsi_low": 25160,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "高开冲高回落，缩量与南向资金托底形成拉锯",
+    "rsi": 0,
+    "macd_signal": "死叉受限",
+    "ma20": 0,
+    "support": 25160,
+    "resistance": 25311,
+    "southbound_flow": 34.5,
+    "signals": [
+      "RSI底背离",
+      "缩量下跌"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-02",
     "hsi_close": 25311,
     "hsi_change": -19,

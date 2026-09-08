@@ -1,6 +1,30 @@
 [
   {
     "date": "2026-09-08",
+    "hsi_close": 25316,
+    "hsi_change": -97,
+    "hsi_change_pct": -0.38,
+    "hsi_open": 25252,
+    "hsi_high": 25395,
+    "hsi_low": 25226,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "低开探底25226获撑，收25316跌0.38%，死叉延续南向加速抢筹",
+    "rsi": 46.3,
+    "macd_signal": "死叉(HIST=-53.6)",
+    "ma20": 25486,
+    "support": 25226,
+    "resistance": 25413,
+    "southbound_flow": 61.38,
+    "signals": [
+      "连续看跌吞没",
+      "25509极性转换阻力",
+      "平量下跌承接不足"
+    ],
+    "chart_url": null
+  },
+  {
+    "date": "2026-09-08",
     "hsi_close": 25346,
     "hsi_change": -67,
     "hsi_change_pct": -0.26,

@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-08",
+    "hsi_close": 25346,
+    "hsi_change": -67,
+    "hsi_change_pct": -0.26,
+    "hsi_open": 25252,
+    "hsi_high": 25354,
+    "hsi_low": 25226,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "跳空低开缩量整理，25322斐波位拉锯，技术面维持弱势",
+    "rsi": 46.9,
+    "macd_signal": "死叉偏空",
+    "ma20": 25487,
+    "support": 25322,
+    "resistance": 25509,
+    "southbound_flow": 32.3,
+    "signals": [
+      "看跌吞没",
+      "向下跳空缺口",
+      "极性转换25509"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-04",
     "hsi_close": 25665,
     "hsi_change": 452,

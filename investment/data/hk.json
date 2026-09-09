@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-09-09",
+    "hsi_close": 25255,
+    "hsi_change": -62,
+    "hsi_change_pct": -0.24,
+    "hsi_open": 25328,
+    "hsi_high": 25336,
+    "hsi_low": 25162,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "三连阴收25255（-62点/-0.24%），探底25162获承接，布油破100压制风险偏好",
+    "rsi": 0,
+    "macd_signal": "死叉",
+    "ma20": 0,
+    "support": 25162,
+    "resistance": 25413,
+    "southbound_flow": 29.3,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-08",
     "hsi_close": 25316,
     "hsi_change": -97,

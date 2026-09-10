@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-10",
+    "hsi_close": 24956,
+    "hsi_change": -319,
+    "hsi_change_pct": -1.26,
+    "hsi_open": 24985,
+    "hsi_high": 25022,
+    "hsi_low": 24890,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "跳空破位五连阴收24956(-1.26%)，极端超卖空头动能边际衰竭；明日反弹缺口区受阻考虑右侧熊证，站回25162撤偏空",
+    "rsi": 26.6,
+    "macd_signal": "死叉",
+    "ma20": 0,
+    "support": 24890,
+    "resistance": 25022,
+    "southbound_flow": 44.03,
+    "signals": [
+      "RSI超卖27",
+      "跳空缺口25022-25162",
+      "五连阴"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-09",
     "hsi_close": 25255,
     "hsi_change": -62,

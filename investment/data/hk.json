@@ -1,5 +1,30 @@
 [
   {
+    "date": "2026-09-11",
+    "hsi_close": 24811,
+    "hsi_change": -143,
+    "hsi_change_pct": -0.57,
+    "hsi_open": 24718,
+    "hsi_high": 24851,
+    "hsi_low": 24570,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "六连阴收盘24811（-143点/-0.57%），RSI 31超卖极限禁追空，今晚美国CPI定调下周加息，平量下跌南向43亿弱托底",
+    "rsi": 31,
+    "macd_signal": "死叉HIST=-93.8",
+    "ma20": 0,
+    "support": 24570,
+    "resistance": 24890,
+    "southbound_flow": 43.25,
+    "signals": [
+      "六连阴",
+      "RSI超卖极限",
+      "双缺口压顶",
+      "下影148点获承接"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-10",
     "hsi_close": 24956,
     "hsi_change": -319,

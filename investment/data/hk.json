@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-14",
+    "hsi_close": 24892,
+    "hsi_change": 86,
+    "hsi_change_pct": 0.35,
+    "hsi_open": 24701,
+    "hsi_high": 24926,
+    "hsi_low": 24662,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "低开105点V型修复收涨0.35%，南向+46亿托底，FOMC落地前区间震荡",
+    "rsi": 34,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 24851,
+    "resistance": 25022,
+    "southbound_flow": 45.93,
+    "signals": [
+      "RSI低位底部区域",
+      "平量上涨反弹可疑",
+      "南向加速流入"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-11",
     "hsi_close": 24811,
     "hsi_change": -143,

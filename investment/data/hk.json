@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-15",
+    "hsi_close": 24671,
+    "hsi_change": -247,
+    "hsi_change_pct": -0.99,
+    "hsi_open": 24934,
+    "hsi_high": 24934,
+    "hsi_low": 24657,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "平开冲高回落光头长阴-247点，失守24851缺口确认转空，RSI超卖27追空需谨慎；FOMC周三落地前轻仓",
+    "rsi": 27,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 24657,
+    "resistance": 24851,
+    "southbound_flow": 8.21,
+    "signals": [
+      "RSI超卖27",
+      "失守24851缺口",
+      "光头长阴"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-14",
     "hsi_close": 24892,
     "hsi_change": 86,

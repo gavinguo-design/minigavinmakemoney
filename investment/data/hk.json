@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-16",
+    "hsi_close": 24708,
+    "hsi_change": 41,
+    "hsi_change_pct": 0.17,
+    "hsi_open": 24790,
+    "hsi_high": 24790,
+    "hsi_low": 24575,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "止跌+41点收24708，冲24790受阻探24575获承接，FOMC今夜落地前多空僵持，平量0.86观望氛围浓",
+    "rsi": 29,
+    "macd_signal": "绿柱收窄hist=-103底部临近",
+    "ma20": 0,
+    "support": 24575,
+    "resistance": 24790,
+    "southbound_flow": 21.29,
+    "signals": [
+      "RSI超卖29",
+      "看涨孕线",
+      "下影133点承接"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-15",
     "hsi_close": 24671,
     "hsi_change": -247,

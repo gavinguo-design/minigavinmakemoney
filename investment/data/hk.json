@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-17",
+    "hsi_close": 24586,
+    "hsi_change": -128,
+    "hsi_change_pct": -0.52,
+    "hsi_open": 24481,
+    "hsi_high": 24606,
+    "hsi_low": 24358,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "低开探24358三度精准承接，RSI超卖27连续第四日，收盘24586（-0.52%），追空空间有限，明日日央行决议前轻仓",
+    "rsi": 27,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 24358,
+    "resistance": 24714,
+    "southbound_flow": 32.0,
+    "signals": [
+      "RSI超卖27四连日",
+      "24358三度精准承接",
+      "平量下跌量比0.90"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-16",
     "hsi_close": 24708,
     "hsi_change": 41,

@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-18",
+    "hsi_close": 24748,
+    "hsi_change": 144,
+    "hsi_change_pct": 0.59,
+    "hsi_open": 24724,
+    "hsi_high": 24863,
+    "hsi_low": 24704,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "高开冲24863受阻回落，收+144点站稳缺口上沿，平量反弹待验证。日央行加息落地利空出尽，明日放量站稳24786看缺口回补",
+    "rsi": 32,
+    "macd_signal": "绿柱收窄底部临近",
+    "ma20": 0,
+    "support": 24704,
+    "resistance": 24786,
+    "southbound_flow": 7.01,
+    "signals": [
+      "RSI低位32底部区域",
+      "MACD绿柱收窄",
+      "平量上涨反弹可疑"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-17",
     "hsi_close": 24586,
     "hsi_change": -128,

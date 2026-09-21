@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-21",
+    "hsi_close": 25010,
+    "hsi_change": 259,
+    "hsi_change_pct": 1.05,
+    "hsi_open": 24748,
+    "hsi_high": 25015,
+    "hsi_low": 24737,
+    "bias": "偏多",
+    "bias_color": "green",
+    "summary": "元首访美官宣催化，全天单边拉升259点收复25000关口，平量待确认",
+    "rsi": 0,
+    "macd_signal": "绿柱收窄hist=-56",
+    "ma20": 0,
+    "support": 24890,
+    "resistance": 25015,
+    "southbound_flow": 42.01,
+    "signals": [
+      "多头吞没大阳线",
+      "MACD绿柱收窄",
+      "南向净买42亿"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-18",
     "hsi_close": 24748,
     "hsi_change": 144,

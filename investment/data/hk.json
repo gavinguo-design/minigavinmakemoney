@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-22",
+    "hsi_close": 25071,
+    "hsi_change": 28,
+    "hsi_change_pct": 0.11,
+    "hsi_open": 25171,
+    "hsi_high": 25254,
+    "hsi_low": 25044,
+    "bias": "中性偏多",
+    "bias_color": "yellow",
+    "summary": "高开冲25254回落收+0.11%，长上影阴线但25044缺口精准获守，南向129亿创纪录",
+    "rsi": 0,
+    "macd_signal": "绿柱收窄hist=-27底部临近",
+    "ma20": 0,
+    "support": 25044,
+    "resistance": 25254,
+    "southbound_flow": 129.46,
+    "signals": [
+      "高开长上影阴线",
+      "南向129亿创纪录",
+      "平量1.18"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-21",
     "hsi_close": 25010,
     "hsi_change": 259,

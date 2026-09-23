@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-23",
+    "hsi_close": 24830,
+    "hsi_change": -258,
+    "hsi_change_pct": -1.03,
+    "hsi_open": 25065,
+    "hsi_high": 25072,
+    "hsi_low": 24812,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "低开低走大阴线失守25044缺口，访美利好兑现回吐，平量下跌南向骤降，RSI底背离制约下行空间",
+    "rsi": 0,
+    "macd_signal": "绿柱收窄hist=-22",
+    "ma20": 0,
+    "support": 24704,
+    "resistance": 24952,
+    "southbound_flow": 35.34,
+    "signals": [
+      "RSI底背离",
+      "三山+看跌吞没",
+      "失守25044缺口"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-22",
     "hsi_close": 25071,
     "hsi_change": 28,

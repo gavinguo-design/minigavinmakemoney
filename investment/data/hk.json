@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-24",
+    "hsi_close": 24764,
+    "hsi_change": -70,
+    "hsi_change_pct": -0.28,
+    "hsi_open": 24649,
+    "hsi_high": 24791,
+    "hsi_low": 24648,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "低开探底24648午后修复收阳收盘24764，缩量+南向净买+RSI超卖三重对冲技术空头，中美休战延长暖风",
+    "rsi": 30,
+    "macd_signal": "死叉绿柱收窄",
+    "ma20": 0,
+    "support": 24648,
+    "resistance": 24812,
+    "southbound_flow": 30.24,
+    "signals": [
+      "RSI超卖",
+      "缩量0.70",
+      "低开高走阳线"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-23",
     "hsi_close": 24830,
     "hsi_change": -258,

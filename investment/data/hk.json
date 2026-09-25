@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-25",
+    "hsi_close": 24507,
+    "hsi_change": -254,
+    "hsi_change_pct": -1.03,
+    "hsi_open": 24524,
+    "hsi_high": 24537,
+    "hsi_low": 24276,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "低开探底24276后V型修复收盘24507，缩量长下影+RSI超卖杀跌动能衰竭，缺口24537-24648压制，铁律强制中性",
+    "rsi": 30,
+    "macd_signal": "死叉",
+    "ma20": 0,
+    "support": 24276,
+    "resistance": 24648,
+    "southbound_flow": 29.0,
+    "signals": [
+      "RSI超卖",
+      "长下影V型修复",
+      "缩量0.45"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-24",
     "hsi_close": 24764,
     "hsi_change": -70,

@@ -356,7 +356,7 @@
 
   <div class="wrap">
     <h1>恒指交易地图 · miniGG</h1>
-    <p class="sub">^HSI · 数据来源 Yahoo Finance（约 15 分钟延迟）· 绿涨红跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
+    <p class="sub">^HSI · 历史K线：Yahoo Finance · 实时价与最新K线：东方财富（盘中实时）· 绿涨红跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
     <a class="track-link" href="track/">📊 预测战绩 · 历史预测留痕可查 →</a>
 
     <!-- 当前判断卡（3秒读懂） -->
@@ -371,14 +371,14 @@
     </div>
 
     <!-- 盘中周期延迟提示 -->
-    <div class="delay-note hidden" id="delayNote">⚠️ 延迟行情（约 15 分钟），仅用于结构分析，不适合作为实时入场信号</div>
+    <div class="delay-note hidden" id="delayNote">⚠️ 分钟K线历史数据约 15 分钟延迟（Yahoo），顶部最新价为东财实时；分钟结构仅用于分析，不适合作为实时入场信号</div>
 
     <!-- Chart -->
     <div class="chart-card">
       <div id="chart"></div>
       <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
       <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
-      <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能数据可能延迟回填（Yahoo数据源限制）</div>
+      <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能数据暂缺（东财实时源暂不可用，Yahoo未回填）</div>
       <div class="level-tip hidden" id="levelTip"></div>
       <div class="loading" id="loading">加载行情数据…</div>
       <div class="zoom-ctrl">
@@ -862,6 +862,8 @@
   function round2(x) { return Math.round(x * 100) / 100; }
 
   function updateLivePrice(data) {
+    // 东财实时数据有效时，Yahoo 的延迟现价不再覆盖头部（避免tab切换时价格"跳回"延迟值）
+    if (isRealtimeFresh()) return;
     var px = data.regularMarketPrice;
     var prev = data.previousClose;
     if (px == null) return;
@@ -876,6 +878,110 @@
       node.textContent = sign + diff.toFixed(2) + ' (' + sign + pct.toFixed(2) + '%)';
       node.className = 'chg mono ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat');
     }
+  }
+
+  // ---------- 东财实时数据（现价 + 最新日K + 量能） ----------
+  // Yahoo 打底，东财实时数据有效则覆盖：头部现价、日线最后一根K线OHLC、当日量能。
+  // 东财挂了/返回异常 → 静默跳过，页面回退纯 Yahoo，不影响任何已有功能。
+
+  var realtimeData = null;    // 最近一次有效的东财实时数据
+  var realtimeAt = 0;         // 本地拿到该数据的时间戳(ms)
+  var realtimeTimer = null;
+
+  function isRealtimeFresh() {
+    return realtimeData && (Date.now() - realtimeAt) < 10 * 60 * 1000;
+  }
+
+  // 港股交易时段判断（HKT 09:30-12:00 / 13:00-16:00，周一至周五）
+  function isHKTradingTime() {
+    var now = new Date();
+    var hktMs = now.getTime() + (now.getTimezoneOffset() + 480) * 60000;
+    var hkt = new Date(hktMs);
+    var dow = hkt.getDay();
+    if (dow === 0 || dow === 6) return false;
+    var m = hkt.getHours() * 60 + hkt.getMinutes();
+    return (m >= 570 && m <= 725) || (m >= 780 && m <= 965); // 收盘后留5分钟缓冲拿收盘值
+  }
+
+  // 东财 ts(unix秒) → HKT 日期对象（与日线 bar.time 同构）
+  function hktDateOf(ts) {
+    var d = new Date((ts + 28800) * 1000);
+    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+  }
+
+  function sameDay(a, b) {
+    return a && b && a.year === b.year && a.month === b.month && a.day === b.day;
+  }
+
+  function fetchRealtime() {
+    return fetch('/api/realtime').then(function (r) { return r.json(); }).catch(function () { return null; });
+  }
+
+  function applyRealtime(rt) {
+    if (!rt || rt.error || typeof rt.price !== 'number' || rt.price <= 0 || typeof rt.ts !== 'number') return;
+    // 时间戳必须是最近的（7天内），防止上游返回陈旧数据污染图表
+    if (Math.abs(Date.now() / 1000 - rt.ts) > 7 * 86400) return;
+    realtimeData = rt;
+    realtimeAt = Date.now();
+    updateHeaderFromRealtime(rt);
+    mergeRealtimeIntoChart(rt);
+  }
+
+  function updateHeaderFromRealtime(rt) {
+    el('livePrice').textContent = rt.price.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    var jdPx = document.getElementById('jdPrice');
+    if (jdPx) jdPx.textContent = rt.price.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    if (typeof rt.prevClose === 'number' && rt.prevClose > 0) {
+      var diff = rt.price - rt.prevClose;
+      var pct = (diff / rt.prevClose) * 100;
+      var sign = diff >= 0 ? '+' : '';
+      var node = el('liveChg');
+      node.textContent = sign + diff.toFixed(2) + ' (' + sign + pct.toFixed(2) + '%)';
+      node.className = 'chg mono ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat');
+    }
+  }
+
+  // 日线：用东财实时值替换/追加最后一根K线 + 补当日量能
+  function mergeRealtimeIntoChart(rt) {
+    if (currentIv !== '1d' || !currentBars.length) return;
+    if (typeof rt.open !== 'number' || typeof rt.high !== 'number' || typeof rt.low !== 'number') return;
+    var rtDate = hktDateOf(rt.ts);
+    var last = currentBars[currentBars.length - 1];
+    var bar = {
+      time: rtDate,
+      open: round2(rt.open),
+      high: round2(rt.high),
+      low: round2(rt.low),
+      close: round2(rt.price),
+      volume: typeof rt.volume === 'number' && rt.volume > 0 ? rt.volume : null
+    };
+    var lastTs = Date.UTC(last.time.year, last.time.month - 1, last.time.day);
+    var rtTs = Date.UTC(rtDate.year, rtDate.month - 1, rtDate.day);
+    if (rtTs < lastTs) return; // 东财数据比Yahoo最后一根还旧，不动
+    if (sameDay(last.time, rtDate)) {
+      currentBars[currentBars.length - 1] = bar;
+    } else {
+      currentBars.push(bar); // Yahoo 还没出今天的K线，直接追加
+    }
+    try {
+      series.update({ time: bar.time, open: bar.open, high: bar.high, low: bar.low, close: bar.close });
+      if (bar.volume) {
+        var up = bar.close >= bar.open;
+        volumeSeries.update({ time: bar.time, value: bar.volume, color: up ? 'rgba(0,216,127,0.55)' : 'rgba(255,68,102,0.55)' });
+      }
+    } catch (e) { /* 图表更新失败不影响页面其余部分 */ }
+    el('volHint').classList.toggle('hidden', !hasRecentVolumeGap(currentBars));
+  }
+
+  function scheduleRealtime() {
+    if (realtimeTimer) clearTimeout(realtimeTimer);
+    var delay = isHKTradingTime() ? 30000 : 300000; // 盘中30秒 / 盘外5分钟
+    realtimeTimer = setTimeout(function () {
+      fetchRealtime().then(function (rt) {
+        applyRealtime(rt);
+        scheduleRealtime();
+      });
+    }, delay);
   }
 
   // ---------- annotations ----------
@@ -1232,6 +1338,11 @@
       volumeSeries.setData(toVolumeData(currentBars));
       el('volHint').classList.toggle('hidden', !hasRecentVolumeGap(currentBars));
       updateLivePrice(data);
+      // 东财实时数据仍有效则立即合并（tab切换回日线时补上实时K线）
+      if (isRealtimeFresh()) {
+        updateHeaderFromRealtime(realtimeData);
+        mergeRealtimeIntoChart(realtimeData);
+      }
       if (annotations) {
         renderLevels(annotations, iv);
         renderMarkers(annotations, iv, currentBars);
@@ -1311,6 +1422,12 @@
   });
 
   loadInterval('1d');
+
+  // 首次拉取东财实时数据 + 启动定时刷新（盘中30s / 盘外5min）
+  fetchRealtime().then(function (rt) {
+    applyRealtime(rt);
+    scheduleRealtime();
+  });
 })();
 </script>
 </body>

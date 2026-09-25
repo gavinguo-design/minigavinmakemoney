@@ -261,6 +261,15 @@
       .zoom-btn { width: 38px; height: 38px; }
     }
 
+    /* 成交量缺失提示（Yahoo 数据源当日量能未回填） */
+    .vol-hint {
+      position: absolute; left: 10px; bottom: 10px; z-index: 6;
+      font-size: 10px; color: var(--muted);
+      background: rgba(8,12,16,0.8); border: 1px solid var(--border);
+      padding: 3px 8px; border-radius: 6px; pointer-events: none; line-height: 1.4;
+      max-width: 62%;
+    }
+
     /* interval tabs */
     .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
     .tab {
@@ -358,6 +367,7 @@
       <div id="chart"></div>
       <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
       <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
+      <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能数据可能延迟回填（Yahoo数据源限制）</div>
       <div class="loading" id="loading">加载行情数据…</div>
       <div class="zoom-ctrl">
         <div class="zoom-btn" id="zoomIn" title="放大">+</div>
@@ -821,12 +831,19 @@
   }
 
   function toVolumeData(bars) {
+    // Yahoo 对最新交易日经常返回 volume=0（数据未回填），非真实零成交，该柱跳过不绘制，避免误导
     return bars
-      .filter(function (b) { return b.volume != null; })
+      .filter(function (b) { return typeof b.volume === 'number' && b.volume > 0; })
       .map(function (b) {
         var up = b.close >= b.open;
         return { time: b.time, value: b.volume, color: up ? 'rgba(0,216,127,0.55)' : 'rgba(255,68,102,0.55)' };
       });
+  }
+
+  // 检测最近 1-2 根K线是否存在量能缺失（只看尾部，不对历史普遍缺失报警）
+  function hasRecentVolumeGap(bars) {
+    if (!bars.length) return false;
+    return bars.slice(-2).some(function (b) { return b.volume == null || b.volume === 0; });
   }
 
   function round2(x) { return Math.round(x * 100) / 100; }
@@ -1132,6 +1149,7 @@
       currentBars = toBars(data, intraday);
       series.setData(currentBars);
       volumeSeries.setData(toVolumeData(currentBars));
+      el('volHint').classList.toggle('hidden', !hasRecentVolumeGap(currentBars));
       updateLivePrice(data);
       if (annotations) {
         renderLevels(annotations, iv);

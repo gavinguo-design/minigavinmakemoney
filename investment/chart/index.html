@@ -204,6 +204,36 @@
     }
     .track-link:hover { background: rgba(0,216,127,0.15); }
 
+    /* 历史分析回看控件 */
+    .hist-ctrl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 4px 12px; }
+    .hist-ctrl label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .hist-ctrl select {
+      background: var(--card); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 10px; font-size: 12px; font-family: inherit;
+      outline: none; cursor: pointer; max-width: 180px;
+    }
+    .hist-ctrl select:focus { border-color: #334155; }
+    .hist-ctrl .hist-note { font-size: 10px; color: #475569; flex-basis: 100%; line-height: 1.5; }
+
+    /* 历史模式提示条 */
+    .hist-banner {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px;
+      font-size: 12.5px; font-weight: 700; color: var(--gold); line-height: 1.5;
+      background: rgba(245,200,66,0.12); border: 1px solid rgba(245,200,66,0.45);
+      border-radius: 10px; padding: 10px 14px; margin: 0 0 12px;
+    }
+    .hist-banner .hb-back {
+      cursor: pointer; user-select: none; flex-shrink: 0;
+      font-size: 12px; font-weight: 700; color: #000;
+      background: var(--gold); border: none; border-radius: 999px; padding: 5px 14px;
+      font-family: inherit;
+    }
+    .hist-banner .hb-back:hover { filter: brightness(1.1); }
+    @media (max-width: 640px) {
+      .hist-banner { font-size: 12px; padding: 9px 12px; }
+    }
+
     .prob-note { font-size: 10.5px; color: var(--muted); margin: 6px 4px 10px; }
 
     /* scenario cards */
@@ -359,6 +389,16 @@
     <p class="sub">^HSI · 历史K线：Yahoo Finance · 实时价与最新K线：东方财富（盘中实时）· 绿涨红跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
     <a class="track-link" href="track/">📊 预测战绩 · 历史预测留痕可查 →</a>
 
+    <!-- 历史模式提示条 -->
+    <div class="hist-banner hidden" id="histBanner"></div>
+
+    <!-- 历史分析回看控件 -->
+    <div class="hist-ctrl hidden" id="histCtrl">
+      <label for="histSelect">📅 查看历史分析</label>
+      <select id="histSelect"><option value="">最新</option></select>
+      <span class="hist-note">历史存档为当日冻结快照，生成后不可修改（与预测留痕同一原则）· 选中某日可将当天的分析标注叠加在最新真实K线上，反向验证准不准</span>
+    </div>
+
     <!-- 当前判断卡（3秒读懂） -->
     <div class="judge hidden" id="judgeCard"></div>
 
@@ -510,7 +550,9 @@
   window.addEventListener('resize', resizeChart);
   resizeChart();
 
-  var annotations = null;   // annotations.json content
+  var annotations = null;        // 当前渲染用的标注（最新 或 某天历史存档）
+  var latestAnnotations = null;  // 最新 annotations.json 内容
+  var viewingDate = null;        // null=最新；'YYYY-MM-DD'=正在回看该日冻结存档
   var priceLines = [];      // active price line handles
   var levelHitList = [];    // 供十字线悬停提示用的价位信息
   var currentIv = '1d';
@@ -557,6 +599,34 @@
     rrSeriesList = [];
   }
 
+  // ---------- 历史回看：情景/RR 锚点定位 ----------
+  // 最新模式：锚定最后一根K线；历史模式：锚定存档基准日（baseDate/存档日期）对应的K线，
+  // 使情景区域从那天的基准价出发画，预测分界线落在存档日期位置，与后来真实走势直接叠加对比。
+  function anchorIndex(a, bars) {
+    if (!bars.length) return -1;
+    var lastIdx = bars.length - 1;
+    if (!viewingDate) return lastIdx;
+    var dateStr = (a && a.forecast && a.forecast.baseDate) || viewingDate;
+    var t = findBarTime(dateStr, bars, false);
+    if (!t || typeof t !== 'object') return lastIdx;
+    for (var i = bars.length - 1; i >= 0; i--) {
+      var bt = bars[i].time;
+      if (bt.year === t.year && bt.month === t.month && bt.day === t.day) return i;
+    }
+    return lastIdx;
+  }
+
+  // 锚点之后的 n 个时间点：优先用真实已有K线时间，不够再用未来工作日补足
+  function timesAfterAnchor(bars, anchorIdx, n) {
+    var out = [];
+    for (var i = anchorIdx + 1; i < bars.length && out.length < n; i++) out.push(bars[i].time);
+    if (out.length < n) {
+      var lastT = out.length ? out[out.length - 1] : bars[anchorIdx].time;
+      out = out.concat(futureBusinessDays(lastT, n - out.length));
+    }
+    return out;
+  }
+
   // ---------- 盈亏比（R/R）通用计算 ----------
   // 返回 null 表示数据不全/不合法，调用方应隐藏相应 UI（容错）
   function computeRR(rr) {
@@ -585,9 +655,9 @@
     var stat = f ? computeRR(f.rr) : null;
     if (!stat || iv !== '1d' || !bars.length) return;
     var rr = f.rr;
-    var lastBar = bars[bars.length - 1];
-    var futureTimes = futureBusinessDays(lastBar.time, 5);
-    var times = [lastBar.time].concat(futureTimes);
+    var rrAnchorIdx = anchorIndex(a, bars);
+    var anchorBar = bars[rrAnchorIdx];
+    var times = [anchorBar.time].concat(timesAfterAnchor(bars, rrAnchorIdx, 5));
     var makeZone = function (toPrice, colorHex, alpha, labelText) {
       var isUp = toPrice >= rr.refPrice;
       var s = chart.addBaselineSeries({
@@ -634,13 +704,15 @@
     }
     hint.classList.add('hidden'); simBadge.classList.remove('hidden');
 
-    var lastBar = bars[bars.length - 1], maxOffset = 0;
+    // 情景区域锚点：最新模式=最后一根K线；历史回看模式=存档基准日K线（预测分界线画在那天）
+    var fcAnchorIdx = anchorIndex(a, bars);
+    var lastBar = bars[fcAnchorIdx], maxOffset = 0;
     scenarios.forEach(function (sc) {
       var points = zonePoints(sc);
       points.upper.concat(points.lower).forEach(function (p) { if (p.offset > maxOffset) maxOffset = p.offset; });
     });
     if (!maxOffset) return;
-    var futureTimes = futureBusinessDays(lastBar.time, maxOffset);
+    var futureTimes = timesAfterAnchor(bars, fcAnchorIdx, maxOffset);
 
     fcBgSeries = chart.addHistogramSeries({ priceScaleId: 'fc-bg', priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
     chart.priceScale('fc-bg').applyOptions({ scaleMargins: { top: 0, bottom: 0 }, visible: false });
@@ -1049,7 +1121,9 @@
       '<div class="jd-top">' +
         '<span class="jd-symbol">恒指 · 日线</span>' +
         '<span class="jd-state ' + toneCls + '">' + escapeHtml((c.stateEmoji ? c.stateEmoji + ' ' : '') + (c.stateLabel || f.biasLabel || '')) + '</span>' +
-        (basePx != null ? '<span class="jd-px">最新 <span id="jdPrice">' + fmt(basePx) + '</span></span>' : '') +
+        (basePx != null ? (viewingDate
+          ? '<span class="jd-px">当日基准 <span>' + fmt(basePx) + '</span></span>'
+          : '<span class="jd-px">最新 <span id="jdPrice">' + fmt(basePx) + '</span></span>') : '') +
         (f.updatedAt ? '<span class="jd-time">判断更新 ' + escapeHtml(f.updatedAt) + '</span>' : '') +
       '</div>' +
       (lvHtml ? '<div class="jd-levels">' + lvHtml + '</div>' : '') +
@@ -1402,8 +1476,28 @@
 
   // ---------- boot ----------
 
-  fetchAnnotations().then(function (a) {
+  // ---------- 历史分析回看（每日冻结存档） ----------
+  // archive/index.json = ["YYYY-MM-DD", ...]；archive/YYYY-MM-DD.json = 当日冻结的完整 annotations 快照（只读，生成后不修改）。
+  // 切到历史日期：标注（判断卡/价位线/情景区域/playbook等）全部换成那天的内容，K线保持最新真实走势，
+  // 情景区域/预测分界线锚在存档基准日 → 历史预测与后来真实走势直接叠加，准不准一眼见。
+
+  function fetchArchiveIndex() {
+    return fetch('archive/index.json?t=' + Date.now()).then(function (r) {
+      if (!r.ok) throw new Error('archive index ' + r.status);
+      return r.json();
+    }).catch(function () { return null; });
+  }
+
+  function fetchArchive(date) {
+    return fetch('archive/' + encodeURIComponent(date) + '.json?t=' + Date.now()).then(function (r) {
+      if (!r.ok) throw new Error('archive ' + r.status);
+      return r.json();
+    }).catch(function () { return null; });
+  }
+
+  function applyAnnotations(a) {
     annotations = a;
+    activeScenario = -1;
     renderJudgeCard(a);
     renderForecast(a);
     renderReasoning(a);
@@ -1411,14 +1505,69 @@
     renderPathTree(a);
     renderScenarioCards(a);
     renderDisclaimer(a);
-    // if kline already loaded, apply annotations now
+    el('markerDetail').classList.add('hidden');
     if (currentBars.length > 0 && a) {
       renderLevels(a, currentIv);
       renderMarkers(a, currentIv, currentBars);
       renderForecastZones(a, currentIv, currentBars);
       renderRRZones(a, currentIv, currentBars);
-      setDefaultView(currentIv);
     }
+  }
+
+  function updateHistBanner() {
+    var banner = el('histBanner');
+    if (!viewingDate) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
+    banner.innerHTML =
+      '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(viewingDate) + '</b> 冻结的历史分析 · K线为最新真实走势，标注为当日判断，叠加对比即可验证准确度</span>' +
+      '<button class="hb-back" id="histBack" type="button">返回最新</button>';
+    banner.classList.remove('hidden');
+    el('histBack').addEventListener('click', function () { switchToDate(''); });
+  }
+
+  function switchToDate(date) {
+    var sel = el('histSelect');
+    if (!date) {
+      viewingDate = null;
+      if (sel) sel.value = '';
+      updateHistBanner();
+      if (latestAnnotations) applyAnnotations(latestAnnotations);
+      return;
+    }
+    fetchArchive(date).then(function (a) {
+      if (!a) { // 存档拉取失败，回退到最新
+        if (sel) sel.value = viewingDate || '';
+        return;
+      }
+      viewingDate = date;
+      if (sel) sel.value = date;
+      updateHistBanner();
+      applyAnnotations(a);
+    });
+  }
+
+  function initHistCtrl() {
+    fetchArchiveIndex().then(function (list) {
+      if (!Array.isArray(list) || !list.length) return; // 无存档则不显示控件
+      var dates = list.filter(function (d) { return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d); })
+        .sort().reverse(); // 最新日期在前
+      if (!dates.length) return;
+      var sel = el('histSelect');
+      dates.forEach(function (d) {
+        var opt = document.createElement('option');
+        opt.value = d; opt.textContent = d;
+        sel.appendChild(opt);
+      });
+      sel.addEventListener('change', function () { switchToDate(sel.value); });
+      el('histCtrl').classList.remove('hidden');
+    });
+  }
+
+  fetchAnnotations().then(function (a) {
+    latestAnnotations = a;
+    // 若用户已先切到历史日期（理论上不会，防竞态）则不覆盖
+    if (!viewingDate) applyAnnotations(a);
+    if (currentBars.length > 0 && a && !viewingDate) setDefaultView(currentIv);
+    initHistCtrl();
   });
 
   loadInterval('1d');

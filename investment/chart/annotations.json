@@ -1,5 +1,5 @@
 {
-  "$schema_note": "miniGG 恒指分析标注数据 v3。字段说明：meta=元信息；disclaimer=页面底部免责声明；forecast=观点摘要+多情景预测（scenarios[].path 保留为兼容原始情景数据；页面仅渲染 scenarios[].zone 上下边界形成的情景区域，不渲染逐根预测蜡烛，其他周期显示提示；forecast.reasoning=推理链数组，每条一段「证据→结论」推理句）；playbook=条件式交易地图（每条 {state,condition,then,level}：发生 condition 后状态如何变化、下一步看哪里）；pathTree=未来路径树（{price,label,children:[{condition,label,targetZone,children}]}）；levels=水平价格线（支撑/阻力，reason=划线理由）；markers=K线事件标记。所有字段页面均做缺失容错，可只更新部分。",
+  "$schema_note": "miniGG 恒指分析标注数据 v3。字段说明：meta=元信息；disclaimer=页面底部免责声明；forecast=观点摘要+多情景预测（scenarios[].path 保留为兼容原始情景数据；页面仅渲染 scenarios[].zone 上下边界形成的情景区域，不渲染逐根预测蜡烛，其他周期显示提示；forecast.reasoning=推理链数组，每条一段「证据→结论」推理句；forecast.rr=盈亏比标尺数据 {refPrice参考价, target第一目标位, stop失效位, direction: long|short}，页面自动计算 R/R 并渲染标尺，字段缺失则标尺隐藏；scenarios[].rr=触发后参与的盈亏比 {entryHint入场提示, entry触发参与价, target目标, stop防守, direction}，页面自动换算比例）；playbook=条件式交易地图（每条 {state,condition,then,level}：发生 condition 后状态如何变化、下一步看哪里）；pathTree=未来路径树（{price,label,children:[{condition,label,targetZone,children}]}）；levels=水平价格线（支撑/阻力，reason=划线理由）；markers=K线事件标记。所有字段页面均做缺失容错，可只更新部分。",
   "meta": {
     "symbol": "^HSI",
     "updatedAt": "2026-09-25T19:45:00+08:00",
@@ -50,6 +50,13 @@
     "invalidation": "收盘跌破 24,276（9/25低点）主情景失效切换回调剧本；收盘跌破 24,000 转入破位情景；收盘站回 24,812（上方缺口上沿）则空头结构显著弱化",
     "baseDate": "2026-09-25",
     "basePrice": 24510.1,
+    "rr": {
+      "refPrice": 24510.1,
+      "target": 24650,
+      "stop": 24276,
+      "direction": "long",
+      "note": "目标=第一缺口上沿 24,650（短线修复位），失效=24,276（9/25低点、多空分界）"
+    },
     "reasoning": [
       "价格位于全部均线之下（MA20≈25,061 / MA50≈25,322 均下弯）+ MACD 零轴下死叉且柱体再扩张（-72→-90）→ 日线趋势明确偏空，反弹先当反弹处理，不当反转处理",
       "9/24、9/25 连续跳空低开留下 24,537–24,648 与 24,791–24,812 双缺口 → 上方双重压制，缺口未回补前每次触及都先视为压力而非突破机会",
@@ -67,6 +74,13 @@
         "target": "25,050–25,070（20日均线 + 9/21–9/23 高点压力带）",
         "trigger": "守住 24,276–24,358 低点区，放量收阳回补 24,537–24,648 缺口",
         "invalidation": "收盘跌破 24,276 剧本作废",
+        "rr": {
+          "entryHint": "放量收阳站回 24,650（回补第一缺口）后回踩不破确认再参与",
+          "entry": 24650,
+          "target": 24812,
+          "stop": 24537,
+          "direction": "long"
+        },
         "note": "9/25 长下影承接 + RSI14≈38 接近超卖支持修复，但上方双缺口+均线粘合区（MA5≈24,780/MA10≈24,761）需逐级消化，修复节奏预计反复。置信度为模型主观评估。",
         "path": [
           {
@@ -213,6 +227,13 @@
         "target": "24,000 附近（整数关口）获支撑后企稳",
         "trigger": "反弹无量、受阻于 24,648 缺口上沿，随后收盘跌破 24,276",
         "invalidation": "收盘放量站回 24,650 上方剧本作废",
+        "rr": {
+          "entryHint": "收盘跌破 24,276 且反抽收不回 24,358（支撑区上沿）后再参与空头",
+          "entry": 24276,
+          "target": 24000,
+          "stop": 24358,
+          "direction": "short"
+        },
         "note": "MACD 柱再扩张 + 反弹持续缩量（9/24 量比0.78）支持此情景权重上调；9/25 低点 24,275.6 已低于 9/17 低点 24,357.7（低点下移），支撑区并非牢不可破。置信度为模型主观评估。",
         "path": [
           {
@@ -359,6 +380,13 @@
         "target": "23,250–23,500（7月3–6日低点平台 23,226–23,229）",
         "trigger": "收盘接连跌破 24,276 与 24,000，且反抽无力伴随放量下跌",
         "invalidation": "收盘收复 24,500 剧本作废",
+        "rr": {
+          "entryHint": "收盘放量跌破 24,000 且反抽收不回 24,276 后再参与空头",
+          "entry": 24000,
+          "target": 23500,
+          "stop": 24276,
+          "direction": "short"
+        },
         "note": "24,000 下方缺乏近两月成交密集区，若伴随外围风险发酵（地缘/流动性）可能加速下探；需放量下跌确认，缩量阴跌则更接近回调情景。置信度为模型主观评估。",
         "path": [
           {

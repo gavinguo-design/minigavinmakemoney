@@ -74,6 +74,35 @@
     .jd-cond b.chg { color: var(--up); font-weight: 700; }
     .jd-cond b.inv { color: var(--down); font-weight: 700; }
 
+    /* 盈亏比标尺（R/R gauge） */
+    .rr-wrap { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
+    .rr-title { font-size: 11px; color: var(--muted); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.03em; }
+    .rr-now-row { position: relative; height: 16px; margin-bottom: 2px; }
+    .rr-now { position: absolute; transform: translateX(-50%); font-size: 11px; font-weight: 700; color: var(--gold); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+    .rr-bar { display: flex; align-items: stretch; height: 26px; border-radius: 7px; overflow: hidden; border: 1px solid var(--border); }
+    .rr-seg { display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; min-width: 0; }
+    .rr-seg.risk { background: rgba(255,68,102,0.20); color: #ff8fa3; }
+    .rr-seg.reward { background: rgba(0,216,127,0.16); color: #4ade9f; }
+    .rr-mark { flex: 0 0 2px; background: var(--gold); }
+    .rr-ends { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 4px; gap: 8px; }
+    .rr-ends .re-risk { color: #ff8fa3; }
+    .rr-ends .re-reward { color: #4ade9f; }
+    .rr-verdict { margin-top: 8px; font-size: 15px; font-weight: 800; text-align: center; }
+    .rr-verdict .rv-num { font-family: 'JetBrains Mono', monospace; }
+    .rr-verdict.bad .rv-num { color: var(--down); }
+    .rr-verdict.mid .rv-num { color: var(--gold); }
+    .rr-verdict.good .rv-num { color: var(--up); }
+    .rr-advice { margin-top: 5px; font-size: 11.5px; line-height: 1.55; color: #94a3b8; text-align: center; }
+    .rr-note { margin-top: 6px; font-size: 10px; color: #475569; line-height: 1.5; text-align: center; }
+
+    /* 情景卡盈亏比行 */
+    .sc-rr { margin-top: 8px; font-size: 11.5px; line-height: 1.55; color: #cbd5e1; background: rgba(255,255,255,0.03); border: 1px dashed var(--border); border-radius: 8px; padding: 7px 9px; }
+    .sc-rr b { font-family: 'JetBrains Mono', monospace; }
+    .sc-rr .rr-good { color: var(--up); }
+    .sc-rr .rr-mid { color: var(--gold); }
+    .sc-rr .rr-bad { color: var(--down); }
+    .sc-rr .sc-rr-hint { color: #64748b; font-size: 10.5px; display: block; margin-top: 2px; }
+
     /* 延迟行情提示条（15m/60m） */
     .delay-note {
       font-size: 12px; font-weight: 600; color: var(--gold);
@@ -466,6 +495,7 @@
   var markerByTime = {};    // time -> marker obj (for click detail)
   var fcSeriesList = [];    // per-scenario forecast zone series (bands and boundaries)
   var fcBgSeries = null;    // forecast zone background tint (histogram overlay)
+  var rrSeriesList = [];    // risk/reward zone series (daily only)
   var activeScenario = -1;  // -1 = show all scenarios
 
   // ---------- forecast scenario-zone layer ----------
@@ -496,6 +526,65 @@
     });
     fcSeriesList = [];
     if (fcBgSeries) { try { chart.removeSeries(fcBgSeries); } catch (e) {} fcBgSeries = null; }
+    clearRRSeries();
+  }
+
+  function clearRRSeries() {
+    rrSeriesList.forEach(function (s) { try { chart.removeSeries(s); } catch (e) {} });
+    rrSeriesList = [];
+  }
+
+  // ---------- 盈亏比（R/R）通用计算 ----------
+  // 返回 null 表示数据不全/不合法，调用方应隐藏相应 UI（容错）
+  function computeRR(rr) {
+    if (!rr || typeof rr.refPrice !== 'number' || typeof rr.target !== 'number' || typeof rr.stop !== 'number') return null;
+    var dir = rr.direction === 'short' ? 'short' : 'long';
+    var reward = dir === 'long' ? rr.target - rr.refPrice : rr.refPrice - rr.target;
+    var risk = dir === 'long' ? rr.refPrice - rr.stop : rr.stop - rr.refPrice;
+    if (reward <= 0 || risk <= 0) return null;
+    var ratio = reward / risk;
+    var grade = ratio >= 2 ? 'good' : (ratio >= 1 ? 'mid' : 'bad');
+    return {
+      dir: dir, reward: reward, risk: risk, ratio: ratio, grade: grade,
+      emoji: grade === 'good' ? '🟢' : grade === 'mid' ? '🟡' : '🔴',
+      verdict: grade === 'good' ? '划算' : grade === 'mid' ? '一般' : '不划算'
+    };
+  }
+
+  function fmtRatio(r) {
+    return (r >= 10 ? r.toFixed(0) : r.toFixed(1)) + ' : 1';
+  }
+
+  // 风险/回报区色块（仅日线，与情景区域一致）
+  function renderRRZones(a, iv, bars) {
+    clearRRSeries();
+    var f = a && a.forecast;
+    var stat = f ? computeRR(f.rr) : null;
+    if (!stat || iv !== '1d' || !bars.length) return;
+    var rr = f.rr;
+    var lastBar = bars[bars.length - 1];
+    var futureTimes = futureBusinessDays(lastBar.time, 5);
+    var times = [lastBar.time].concat(futureTimes);
+    var makeZone = function (toPrice, colorHex, alpha, labelText) {
+      var isUp = toPrice >= rr.refPrice;
+      var s = chart.addBaselineSeries({
+        baseValue: { type: 'price', price: rr.refPrice },
+        topFillColor1: isUp ? hexToRgba(colorHex, alpha) : 'rgba(0,0,0,0)',
+        topFillColor2: isUp ? hexToRgba(colorHex, alpha) : 'rgba(0,0,0,0)',
+        bottomFillColor1: isUp ? 'rgba(0,0,0,0)' : hexToRgba(colorHex, alpha),
+        bottomFillColor2: isUp ? 'rgba(0,0,0,0)' : hexToRgba(colorHex, alpha),
+        topLineColor: hexToRgba(colorHex, 0.65), bottomLineColor: hexToRgba(colorHex, 0.65),
+        lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted,
+        priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false
+      });
+      s.setData(times.map(function (t) { return { time: t, value: toPrice }; }));
+      var mid = times[Math.min(2, times.length - 1)];
+      s.setMarkers([{ time: mid, position: isUp ? 'aboveBar' : 'belowBar', shape: 'square', color: hexToRgba(colorHex, 0.9), size: 0, text: labelText }]);
+      rrSeriesList.push(s);
+    };
+    var rewardPts = Math.round(stat.reward), riskPts = Math.round(stat.risk);
+    makeZone(rr.target, stat.dir === 'long' ? '#00d87f' : '#00d87f', 0.10, '回报区 ' + (rr.target >= rr.refPrice ? '+' : '-') + rewardPts + '点');
+    makeZone(rr.stop, '#ff4466', 0.10, '风险区 -' + riskPts + '点');
   }
 
   function shortName(name) {
@@ -650,6 +739,16 @@
     title.classList.remove('hidden');
   }
 
+  // 情景卡片「触发后参与」盈亏比行（rr 字段缺失则不渲染）
+  function scenarioRRHtml(sc) {
+    var rr = sc && sc.rr;
+    if (!rr || typeof rr.entry !== 'number' || typeof rr.target !== 'number' || typeof rr.stop !== 'number') return '';
+    var stat = computeRR({ refPrice: rr.entry, target: rr.target, stop: rr.stop, direction: rr.direction });
+    if (!stat) return '';
+    return '<div class="sc-rr">⚡ 触发后参与：目标 <b>' + fmt(rr.target) + '</b> / 防守 <b>' + fmt(rr.stop) + '</b> / 盈亏比 <b class="rr-' + stat.grade + '">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</b>' +
+      (rr.entryHint ? '<span class="sc-rr-hint">' + escapeHtml(rr.entryHint) + '</span>' : '') + '</div>';
+  }
+
   function renderScenarioCards(a) {
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
@@ -669,6 +768,7 @@
         (sc.target ? '<div class="sc-row">目标：<b>' + escapeHtml(sc.target) + '</b></div>' : '') +
         (sc.trigger ? '<div class="sc-row">触发：<b>' + escapeHtml(sc.trigger) + '</b></div>' : '') +
         (sc.invalidation ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(sc.invalidation) + '</b></div>' : '') +
+        scenarioRRHtml(sc) +
         (sc.note ? '<div class="sc-row">' + escapeHtml(sc.note) + '</div>' : '') +
         '<div class="sc-tip">点击卡片单独查看该情景区域</div>';
       card.addEventListener('click', function () {
@@ -770,6 +870,45 @@
         '<span class="lt">' + escapeHtml(kl.tag || '') + '</span>' +
         (kl.tf ? '<span class="ltf">' + escapeHtml(kl.tf) + '</span>' : '') + '</div>';
     }).join('');
+    // 盈亏比标尺（rr 字段缺失/不合法则整体隐藏）
+    var rrHtml = '';
+    var rrStat = computeRR(f.rr);
+    if (rrStat) {
+      var rr = f.rr;
+      var refP = rr.refPrice;
+      var riskPts = Math.round(rrStat.risk), rewardPts = Math.round(rrStat.reward);
+      var riskPct = (rrStat.risk / refP * 100).toFixed(1), rewardPct = (rrStat.reward / refP * 100).toFixed(1);
+      var total = rrStat.risk + rrStat.reward;
+      var riskW = Math.max(12, Math.min(88, rrStat.risk / total * 100));
+      var rewardW = 100 - riskW;
+      var dirTxt = rrStat.dir === 'short' ? '做空' : '做多';
+      // 左=失效位方向（风险），右=目标方向（回报）
+      var leftPrice = rr.stop, rightPrice = rr.target;
+      var advice = '';
+      var biasBearish = f.bias === 'bearish' || f.bias === 'neutral';
+      if (rrStat.dir === 'long' && rrStat.grade === 'bad' && biasBearish) {
+        advice = '当前位置' + dirTxt + '赔率差：离失效位远、离目标近。等回调到支撑附近、或等转强条件触发后再评估，不鼓励在中间位置动手。';
+      } else if (rrStat.grade === 'bad') {
+        advice = '当前位置' + dirTxt + '盈亏比不划算，等更好的位置或条件触发后再评估。';
+      } else if (rrStat.grade === 'mid') {
+        advice = '盈亏比一般，若参与需严格执行失效位纪律。';
+      }
+      rrHtml =
+        '<div class="rr-wrap">' +
+          '<div class="rr-title">盈亏比标尺（' + dirTxt + '视角）</div>' +
+          '<div class="rr-now-row"><span class="rr-now" style="left:' + Math.max(18, Math.min(82, riskW)).toFixed(1) + '%">当前价 ' + fmt(Math.round(refP)) + ' ▼</span></div>' +
+          '<div class="rr-bar">' +
+            '<div class="rr-seg risk" style="width:' + riskW.toFixed(1) + '%">-' + fmt(riskPts) + '点 -' + riskPct + '%</div>' +
+            '<div class="rr-mark"></div>' +
+            '<div class="rr-seg reward" style="width:' + rewardW.toFixed(1) + '%">+' + fmt(rewardPts) + '点 +' + rewardPct + '%</div>' +
+          '</div>' +
+          '<div class="rr-ends"><span class="re-risk">失效 ' + fmt(leftPrice) + '</span><span class="re-reward">目标 ' + fmt(rightPrice) + '</span></div>' +
+          '<div class="rr-verdict ' + rrStat.grade + '">当前位置' + dirTxt + '盈亏比 <span class="rv-num">' + fmtRatio(rrStat.ratio) + '</span> ' + rrStat.emoji + ' ' + rrStat.verdict + '</div>' +
+          (advice ? '<div class="rr-advice">' + escapeHtml(advice) + '</div>' : '') +
+          '<div class="rr-note">盈亏比 = 到目标距离 ÷ 到失效位距离，基于当前价与主情景目标/失效位自动计算 · 阈值：&lt;1 🔴不划算 / 1–2 🟡一般 / ≥2 🟢划算</div>' +
+        '</div>';
+    }
+
     box.innerHTML =
       '<div class="jd-top">' +
         '<span class="jd-symbol">恒指 · 日线</span>' +
@@ -782,7 +921,8 @@
       '<div class="jd-cond">' +
         (c.changeCondition ? '<b class="chg">改变判断：</b>' + escapeHtml(c.changeCondition) + '<br/>' : '') +
         (c.invalidCondition ? '<b class="inv">判断失效：</b>' + escapeHtml(c.invalidCondition) : '') +
-      '</div>';
+      '</div>' +
+      rrHtml;
     box.classList.remove('hidden');
   }
 
@@ -997,6 +1137,7 @@
         renderLevels(annotations, iv);
         renderMarkers(annotations, iv, currentBars);
         renderForecastZones(annotations, iv, currentBars);
+        renderRRZones(annotations, iv, currentBars);
       }
       setDefaultView(iv);
       loadingEl.classList.add('hidden');
@@ -1065,6 +1206,7 @@
       renderLevels(a, currentIv);
       renderMarkers(a, currentIv, currentBars);
       renderForecastZones(a, currentIv, currentBars);
+      renderRRZones(a, currentIv, currentBars);
       setDefaultView(currentIv);
     }
   });

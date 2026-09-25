@@ -290,6 +290,7 @@
           fieldRow('市场状态', p.marketRegime ? (p.marketRegime.trend || '—') + ' · ' + (p.marketRegime.volatility || '—') : '') +
           fieldRow('傻瓜基准', p.baselines ? '简单趋势：' + (p.baselines.naiveTrend && p.baselines.naiveTrend.judgment || '—') + '；MA20：' + (p.baselines.ma20Rule && p.baselines.ma20Rule.judgment || '—') : '') +
           fieldRow('判断', p.judgment || p.biasLabel || p.bias) +
+          fieldRow('发布时赔率', p.rr ? ('盈亏比 ' + (typeof p.rr.ratio === 'number' ? p.rr.ratio.toFixed(1) + ':1' : '—') + ' ' + (p.rr.verdict || '') + '（参考价 ' + fmt(p.rr.refPrice) + ' → 目标 ' + fmt(p.rr.target) + ' / 失效 ' + fmt(p.rr.stop) + '）· 结算时对照实际 MFE/MAE 验证') : '') +
           fieldRow('关键支撑', p.keySupport) +
           fieldRow('转强条件', p.strengthCondition, 'good') +
           fieldRow('失效条件', p.invalidCondition, 'bad') +

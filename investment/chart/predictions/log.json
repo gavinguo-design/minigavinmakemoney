@@ -1,5 +1,5 @@
 {
-  "$schema_note": "miniGG 恒指预测留痕日志 v2。ID 格式：HSI-YYYYMMDD-{D|W|H60|M15}-{三位序号}（D=日线 W=周线 H60=60分钟 M15=15分钟）。不可变原则：预测记录生成后除 outcome/status/updates 三个结算字段外不可回改；后续跟进只能 append 到 updates 数组（每条 {at, text}），不修改原快照。outcome=null 表示进行中；结算后填 {settledAt, priceAtHorizon, hitScenario, directionHit(bool), conditionTriggered(数组), mfe(最大有利偏移点数), mae(最大不利偏移点数), pnlPct(触发后涨跌幅%), note}。status 取值：进行中 / ✓主情景成立 / ✗失效 / 部分命中。统计口径见 stats.metricsNote。每条预测可补充客观元数据 baselines（机械基准判断）与 marketRegime（发布时市场状态）；两者允许后补，不改变预测核心快照。",
+  "$schema_note": "miniGG 恒指预测留痕日志 v2。ID 格式：HSI-YYYYMMDD-{D|W|H60|M15}-{三位序号}（D=日线 W=周线 H60=60分钟 M15=15分钟）。不可变原则：预测记录生成后除 outcome/status/updates 三个结算字段外不可回改；后续跟进只能 append 到 updates 数组（每条 {at, text}），不修改原快照。outcome=null 表示进行中；结算后填 {settledAt, priceAtHorizon, hitScenario, directionHit(bool), conditionTriggered(数组), mfe(最大有利偏移点数), mae(最大不利偏移点数), pnlPct(触发后涨跌幅%), note}。status 取值：进行中 / ✓主情景成立 / ✗失效 / 部分命中。统计口径见 stats.metricsNote。每条预测可补充客观元数据 baselines（机械基准判断）、marketRegime（发布时市场状态）与 rr（发布时盈亏比快照：{refPrice, target, stop, direction, ratio, verdict}，结算时可对照「当时标尺说划算/不划算 vs 实际 MFE/MAE」）；三者允许后补，属新增元数据，不改变预测核心快照。",
   "stats": {
     "minSamplesForStats": 30,
     "note": "样本不足 30 条前不计算/不展示命中率等统计，防止小样本误导",
@@ -71,6 +71,15 @@
         "trend": "下跌趋势",
         "volatility": "正常波动",
         "basis": "MA20斜率5日-0.71% + 收盘低于MA20(25036)；20日均振幅/120日均振幅=0.77"
+      },
+      "rr": {
+        "refPrice": 24510.1,
+        "target": 24650,
+        "stop": 24276,
+        "direction": "long",
+        "ratio": 0.6,
+        "verdict": "🔴 不划算",
+        "note": "发布时快照：当前价 24,510 做多看第一目标 24,650（+140点），失效位 24,276（-234点），R/R≈0.6:1；结算时对照实际 MFE/MAE 验证标尺有效性"
       }
     }
   ]

@@ -324,9 +324,25 @@
     .sc-row.invalid b { color: var(--down); }
     .sc-tip { font-size: 10.5px; color: #475569; margin-top: 6px; }
 
-    /* forecast hint on non-daily intervals */
+    /* 结构状态横幅：全局判断常驻图表左上角，字号明显大于图内其他元素 */
+    .struct-banner {
+      position: absolute; top: 10px; left: 12px; z-index: 8;
+      font-size: 15px; font-weight: 800; line-height: 1.4;
+      padding: 7px 14px; border-radius: 10px;
+      background: rgba(8,12,16,0.85); border: 1px solid var(--border);
+      pointer-events: none; max-width: 74%; letter-spacing: 0.01em;
+    }
+    .struct-banner.weak { color: var(--gold); border-color: rgba(245,200,66,0.5); }
+    .struct-banner.bear { color: var(--down); border-color: rgba(255,68,102,0.5); }
+    .struct-banner.bull { color: var(--up); border-color: rgba(0,216,127,0.5); }
+    @media (max-width: 640px) {
+      .struct-banner { font-size: 13px; max-width: 84%; padding: 6px 11px; }
+      .sim-badge { top: 56px; }
+    }
+
+    /* forecast hint on non-daily intervals（下移避开结构横幅） */
     .fc-hint {
-      position: absolute; top: 10px; left: 12px; z-index: 5;
+      position: absolute; top: 58px; left: 12px; z-index: 5;
       font-size: 11px; color: var(--gold);
       background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.25);
       padding: 4px 10px; border-radius: 999px; pointer-events: none;
@@ -505,8 +521,8 @@
 
     <!-- 形态标注开关 -->
     <div class="pat-bar">
-      <div class="pat-toggle" id="patToggle" title="自动检测经典蜡烛图形态并在图上标注">🕯 形态标注 <b id="patToggleState">开</b></div>
-      <span class="pat-hint">自动检测锤子/吞没/星线/缺口等经典形态，形态名直接标在K线旁 · 大箭头=强信号（近期高低点区）· 小箭头=弱信号 · 绿箭头在K线下方看涨/红箭头在上方看跌 · <b>点击K线看详细解释与数值依据</b> · 觉得密可用开关关闭</span>
+      <div class="pat-toggle" id="patToggle" title="自动检测经典蜡烛图形态并在图上标注（点击切换：仅强 → 全部 → 关）">🕯 形态标注 <b id="patToggleState">仅强</b></div>
+      <span class="pat-hint">单根K线形态是<b>局部信号</b>，≠整体方向，标记刻意做小 · 整体判断看图左上角结构横幅与情景区域 · 默认只显示强信号（近期高低点区），点开关切「全部/关」 · 绿箭头看涨/红箭头看跌 · <b>点击K线看详细解释与数值依据</b></span>
     </div>
 
     <!-- 盘中周期延迟提示 -->
@@ -516,6 +532,7 @@
     <div class="chart-row">
       <div class="chart-card">
         <div id="chart"></div>
+        <div class="struct-banner hidden" id="structBanner"></div>
         <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
         <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
         <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（实时源成交额换算与Yahoo回填均未就绪）</div>
@@ -671,7 +688,16 @@
   var eventChartMarkers = []; // 人工事件 markers（renderMarkers 产出，与形态 markers 合并后上图）
   var patternChartMarkers = []; // 形态检测 markers
   var patternByTime = {};   // time -> pattern hit（点击详情用）
-  var patternsOn = (function () { try { return localStorage.getItem('patternsOn') !== '0'; } catch (e) { return true; } })();
+  // 形态标注三档：'strong'=仅强信号(默认) / 'all'=全部 / 'off'=关闭。
+  // 设计原则：单根K线形态是局部信号，默认收敛，用户主动打开细节而不是被细节轰炸。
+  var patternsMode = (function () {
+    try {
+      var m = localStorage.getItem('patternsMode');
+      if (m === 'strong' || m === 'all' || m === 'off') return m;
+      if (localStorage.getItem('patternsOn') === '0') return 'off'; // 迁移旧开关状态
+    } catch (e) {}
+    return 'strong';
+  })();
   var fcSeriesList = [];    // per-scenario forecast zone series (bands and boundaries)
   var fcBgSeries = null;    // forecast zone background tint (histogram overlay)
   var rrSeriesList = [];    // risk/reward zone series (daily only)
@@ -1270,6 +1296,20 @@
     }).catch(function () { return null; });
   }
 
+  // ---------- 结构状态横幅（图表左上角常驻，全局信息最高视觉权重） ----------
+  // 内容：stateEmoji + stateLabel + structureLine（新增可选字段，一句结构描述；缺失时只显示 stateLabel）
+  function renderStructBanner(a) {
+    var box = el('structBanner');
+    var f = a && a.forecast;
+    var c = f && f.card;
+    if (!c || !(c.stateLabel || f.biasLabel)) { box.classList.add('hidden'); box.textContent = ''; return; }
+    var toneCls = ({ weak: 'weak', bear: 'bear', bull: 'bull' })[c.stateTone] || 'weak';
+    var text = (c.stateEmoji ? c.stateEmoji + ' ' : '') + (c.stateLabel || f.biasLabel || '');
+    if (c.structureLine) text += ' · ' + c.structureLine;
+    box.className = 'struct-banner ' + toneCls;
+    box.textContent = text;
+  }
+
   // ---------- 当前判断卡（3秒读懂） ----------
   function renderJudgeCard(a) {
     var box = el('judgeCard');
@@ -1472,6 +1512,8 @@
       // 当前周期相关价位实显，其他周期价位弱化显示（不隐藏，避免跨周期丢失信息）
       var color = isCurrent ? baseColor : hexToRgba(baseColor, 0.28);
       var strong = lv.strength === 'strong';
+      // 层级原则：强支撑/阻力是结构信息→加粗一档；弱线是参考信息→更淡
+      if (isCurrent && !strong) color = hexToRgba(baseColor, 0.55);
       var showAxis = isCurrent && axisOk.indexOf(lv) !== -1;
       // normal 强度且紧贴最新价（差<300点）的轴标签也收起：当前价标签已锚定该区域，避免 24650/24510 这类挤堆
       if (showAxis && !strong && currentBars.length) {
@@ -1481,7 +1523,7 @@
       var pl = series.createPriceLine({
         price: lv.price,
         color: color,
-        lineWidth: isCurrent && strong ? 2 : 1,
+        lineWidth: isCurrent && strong ? 3 : 1,
         lineStyle: isCurrent && strong ? LightweightCharts.LineStyle.Solid : LightweightCharts.LineStyle.Dashed,
         // 图内不再渲染文字标题（避免叠在情景区域/轴标签上），文字迁到价格轴右侧 #levelGutter；
         // 非当前周期仍只留淡虚线，悬停/点按时由 levelTip 浮层补充信息
@@ -1642,16 +1684,25 @@
       var b = bars[hit.index];
       var strong = hit.strength === 'strong';
       var color = PAT_COLORS[hit.direction] || PAT_COLORS.neutral;
+      // 层级原则：单根K线形态是局部信号，标记整体降级——
+      // 强信号：小号箭头 + 短名；弱信号：极小淡色箭头、不带文字（点击K线仍可看详情）
       patternChartMarkers.push({
         time: b.time,
         position: hit.direction === 'bull' ? 'belowBar' : 'aboveBar',
         shape: hit.direction === 'bull' ? 'arrowUp' : hit.direction === 'bear' ? 'arrowDown' : 'circle',
-        color: strong ? color : hexToRgba(color, 0.55),
-        size: strong ? 1.4 : 0.8,
-        text: hit.short || hit.name || ''
+        color: strong ? hexToRgba(color, 0.85) : hexToRgba(color, 0.4),
+        size: strong ? 0.9 : 0.45,
+        text: strong ? (hit.short || '') : '',
+        patStrength: hit.strength
       });
       patternByTime[timeKey(b.time)] = hit;
     });
+  }
+
+  // 当前模式下某个形态命中是否可见（点击详情与图上标记保持一致）
+  function patternVisible(hit) {
+    if (!hit || patternsMode === 'off') return false;
+    return patternsMode === 'all' || hit.strength === 'strong';
   }
 
   // 合并人工事件 markers + 形态 markers 上图（lightweight-charts 支持同一时间多 marker，
@@ -1659,7 +1710,11 @@
   // 点击详情框里两条都展示（见 subscribeClick）。
   function applyAllMarkers() {
     var all = eventChartMarkers.slice();
-    if (patternsOn) all = all.concat(patternChartMarkers);
+    if (patternsMode !== 'off') {
+      all = all.concat(patternChartMarkers.filter(function (m) {
+        return patternsMode === 'all' || m.patStrength === 'strong';
+      }));
+    }
     all.sort(function (x, y) { return timeSortVal(x.time) - timeSortVal(y.time); });
     series.setMarkers(all);
   }
@@ -1692,15 +1747,17 @@
     box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // 形态标注开关（默认开，状态存 localStorage）
+  // 形态标注三档开关（默认「仅强」，点击循环：仅强 → 全部 → 关；状态存 localStorage）
+  var PAT_MODE_LABEL = { strong: '仅强', all: '全部', off: '关' };
+  var PAT_MODE_NEXT = { strong: 'all', all: 'off', off: 'strong' };
   function updatePatToggleUI() {
     var btn = el('patToggle');
-    btn.classList.toggle('off', !patternsOn);
-    el('patToggleState').textContent = patternsOn ? '开' : '关';
+    btn.classList.toggle('off', patternsMode === 'off');
+    el('patToggleState').textContent = PAT_MODE_LABEL[patternsMode] || '仅强';
   }
   el('patToggle').addEventListener('click', function () {
-    patternsOn = !patternsOn;
-    try { localStorage.setItem('patternsOn', patternsOn ? '1' : '0'); } catch (e) {}
+    patternsMode = PAT_MODE_NEXT[patternsMode] || 'strong';
+    try { localStorage.setItem('patternsMode', patternsMode); } catch (e) {}
     updatePatToggleUI();
     applyAllMarkers();
   });
@@ -1712,7 +1769,8 @@
     if (!param || param.time == null) return;
     var k = timeKey(param.time);
     var m = markerByTime[k];
-    var hit = patternsOn ? patternByTime[k] : null;
+    var hit = patternByTime[k];
+    if (!patternVisible(hit)) hit = null; // 详情可见性与图上标记保持一致
     if (m && hit) {
       showMarkerDetail(m);
       var box = el('markerDetail');
@@ -1856,6 +1914,7 @@
   function applyAnnotations(a) {
     annotations = a;
     activeScenario = -1;
+    renderStructBanner(a);
     renderJudgeCard(a);
     renderForecast(a);
     renderReasoning(a);

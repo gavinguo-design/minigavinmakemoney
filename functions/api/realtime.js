@@ -36,14 +36,19 @@ export async function onRequest(context) {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const url = new URL(request.url);
+  const debug = url.searchParams.get('debug') === '1';
+
   // Short edge cache (15s) — realtime data, but avoid hammering upstreams.
   const cacheKey = new Request('https://cache.internal/api/realtime?symbol=HSI', { method: 'GET' });
   const cache = caches.default;
-  const cached = await cache.match(cacheKey);
-  if (cached) {
-    const resp = new Response(cached.body, cached);
-    resp.headers.set('X-Cache', 'HIT');
-    return resp;
+  if (!debug) {
+    const cached = await cache.match(cacheKey);
+    if (cached) {
+      const resp = new Response(cached.body, cached);
+      resp.headers.set('X-Cache', 'HIT');
+      return resp;
+    }
   }
 
   const errors = [];
@@ -61,6 +66,19 @@ export async function onRequest(context) {
   if (!payload) {
     return json({ error: 'all upstreams failed', detail: errors }, corsHeaders);
   }
+
+  // Quote source lacks share volume (e.g. tencent index feed) → enrich from
+  // Eastmoney daily kline (today's row carries live OHLCV). Best-effort only.
+  if (payload.volume == null) {
+    try {
+      const kv = await fetchEmKlineToday();
+      if (kv && sameHktDay(kv.ts, payload.ts)) payload.volume = kv.volume;
+    } catch (e) {
+      errors.push('emKline: ' + String(e && e.message || e));
+    }
+  }
+
+  if (debug) payload = { ...payload, debugErrors: errors };
 
   const response = json(payload, {
     ...corsHeaders,
@@ -168,6 +186,33 @@ async function fetchSina() {
   };
   if (!valid(p)) throw new Error('invalid values');
   return p;
+}
+
+function sameHktDay(tsA, tsB) {
+  if (typeof tsA !== 'number' || typeof tsB !== 'number') return false;
+  const day = (t) => Math.floor((t + 28800) / 86400);
+  return day(tsA) === day(tsB);
+}
+
+// Eastmoney daily kline, last row = today's live OHLCV during session.
+// f51 date, f56 volume (verified 2026-09-25: "2026-09-25,...,4950067712,...")
+async function fetchEmKlineToday() {
+  const url =
+    'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=100.HSI' +
+    '&klt=101&fqt=0&lmt=1&end=20500101&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57';
+  const r = await fetch(url, {
+    headers: { 'User-Agent': UA, Accept: 'application/json', Referer: 'https://quote.eastmoney.com/' },
+    signal: AbortSignal.timeout(6000),
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const data = await r.json();
+  const rows = data && data.data && data.data.klines;
+  if (!Array.isArray(rows) || !rows.length) throw new Error('no klines');
+  const f = rows[rows.length - 1].split(',');
+  const vol = parseFloat(f[5]);
+  const ts = Math.floor(Date.parse(f[0] + 'T12:00:00+08:00') / 1000);
+  if (!Number.isFinite(vol) || vol <= 0 || !Number.isFinite(ts)) throw new Error('bad row');
+  return { volume: vol, ts };
 }
 
 function json(obj, extraHeaders = {}) {

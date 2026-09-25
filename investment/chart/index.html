@@ -452,7 +452,7 @@
     <!-- 形态标注开关 -->
     <div class="pat-bar">
       <div class="pat-toggle" id="patToggle" title="自动检测经典蜡烛图形态并在图上标注">🕯 形态标注 <b id="patToggleState">开</b></div>
-      <span class="pat-hint">自动检测锤子/吞没/星线/缺口等经典形态 · 实圆点=强信号（近期高低点区）· 淡圆点=弱信号 · 绿点在K线下方看涨/红点在上方看跌 · <b>点击带圆点的K线看形态名称与解释</b></span>
+      <span class="pat-hint">自动检测锤子/吞没/星线/缺口等经典形态，形态名直接标在K线旁 · 大箭头=强信号（近期高低点区）· 小箭头=弱信号 · 绿箭头在K线下方看涨/红箭头在上方看跌 · <b>点击K线看详细解释与数值依据</b> · 觉得密可用开关关闭</span>
     </div>
 
     <!-- 盘中周期延迟提示 -->
@@ -1563,10 +1563,10 @@
 
   // ---------- 蜡烛图形态自动识别 ----------
   // 检测逻辑在 patterns.js（纯函数，可Node单测）；这里只做渲染：
-  // 紧凑圆点徽标贴着K线（不用大箭头不挂文字，避免悬空文字/像垂直线的视觉干扰）：
-  // 看涨=绿色K线下方，看跌=红色K线上方，中性=灰色；
-  // 强信号（发生在近20根极值区）= 实色稍大圆点，弱信号 = 淡色小圆点（视觉分级控密度）；
-  // 形态名/解释一律不上图，点击K线弹详情（复用 markerDetail 机制）显示形态名/含义/教科书解释/数值依据。
+  // 箭头标记 + 形态短名文字（用户明确要求：每个命中形态都要显示名字，一眼看出是什么形态）：
+  // 看涨=绿色箭头K线下方，看跌=红色箭头K线上方，中性=灰色圆点；
+  // 强信号（发生在近20根极值区）= 实色大箭头，弱信号 = 淡色小箭头（视觉分级，密度由形态开关控制）；
+  // 点击K线弹详情（复用 markerDetail 机制）显示形态名/含义/教科书解释/数值依据。
   var PAT_COLORS = { bull: UP, bear: DOWN, neutral: '#8b98ab' };
 
   function computePatterns(iv, bars) {
@@ -1583,25 +1583,21 @@
       patternChartMarkers.push({
         time: b.time,
         position: hit.direction === 'bull' ? 'belowBar' : 'aboveBar',
-        shape: 'circle',
-        color: strong ? color : hexToRgba(color, 0.45),
-        size: strong ? 0.9 : 0.5,
-        text: ''
+        shape: hit.direction === 'bull' ? 'arrowUp' : hit.direction === 'bear' ? 'arrowDown' : 'circle',
+        color: strong ? color : hexToRgba(color, 0.55),
+        size: strong ? 1.4 : 0.8,
+        text: hit.short || hit.name || ''
       });
       patternByTime[timeKey(b.time)] = hit;
     });
   }
 
-  // 合并人工事件 markers + 形态 markers 上图。
-  // 同一根K线同时有事件标记和形态徽标时只保留事件标记（避免双重图标堆叠），
+  // 合并人工事件 markers + 形态 markers 上图（lightweight-charts 支持同一时间多 marker，
+  // 同根K线的事件标记与形态标记各自显示，形态名必须可见）；
   // 点击详情框里两条都展示（见 subscribeClick）。
   function applyAllMarkers() {
     var all = eventChartMarkers.slice();
-    if (patternsOn) {
-      var eventTimes = {};
-      eventChartMarkers.forEach(function (m) { eventTimes[timeKey(m.time)] = true; });
-      all = all.concat(patternChartMarkers.filter(function (m) { return !eventTimes[timeKey(m.time)]; }));
-    }
+    if (patternsOn) all = all.concat(patternChartMarkers);
     all.sort(function (x, y) { return timeSortVal(x.time) - timeSortVal(y.time); });
     series.setMarkers(all);
   }

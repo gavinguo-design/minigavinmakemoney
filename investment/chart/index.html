@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>恒指技术分析 · miniGG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --bg: #080c10;
+      --card: #0e1419;
+      --border: #1a2030;
+      --up: #00d87f;      /* 绿涨（港股习惯） */
+      --down: #ff4466;    /* 红跌 */
+      --gold: #f5c842;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+    html, body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 12px 40px; }
+
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(8,12,16,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.02em; }
+    .brand .logo {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: linear-gradient(135deg, #00d87f, #3b82f6);
+      display: flex; align-items: center; justify-content: center;
+      color: #000; font-size: 12px; font-weight: 900;
+    }
+    .brand a { color: var(--muted); font-size: 12px; text-decoration: none; font-weight: 500; }
+    .brand a:hover { color: var(--text); }
+
+    .price-line { text-align: right; }
+    .price-line .px { font-size: 18px; font-weight: 700; }
+    .price-line .chg { font-size: 12px; }
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+    .flat { color: var(--gold); }
+
+    h1 { font-size: 18px; font-weight: 800; margin: 18px 4px 4px; }
+    .sub { font-size: 12px; color: var(--muted); margin: 0 4px 14px; }
+
+    /* forecast card */
+    .forecast {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 14px 16px; margin-bottom: 14px;
+      display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center;
+    }
+    .badge {
+      font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    .badge.bull { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.3); }
+    .badge.bear { color: var(--down); background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.3); }
+    .badge.neutral { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.3); }
+    .forecast .summary { flex: 1 1 100%; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
+    .forecast .kv { font-size: 12px; color: var(--muted); }
+    .forecast .kv b { color: var(--text); font-weight: 600; }
+
+    /* interval tabs */
+    .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+    .tab {
+      flex: 1; text-align: center; cursor: pointer; user-select: none;
+      padding: 9px 0; font-size: 13px; font-weight: 600;
+      color: var(--muted); background: var(--card);
+      border: 1px solid var(--border); border-radius: 10px;
+      transition: all 0.15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: #000; background: var(--up); border-color: var(--up); }
+
+    /* chart */
+    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; position: relative; }
+    #chart { width: 100%; height: 62vh; min-height: 340px; max-height: 640px; }
+    .loading {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(8,12,16,0.6); font-size: 13px; color: var(--muted); z-index: 10;
+    }
+    .hidden { display: none !important; }
+
+    /* marker detail */
+    .detail {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 12px 16px; margin-top: 12px; font-size: 13px; line-height: 1.6;
+    }
+    .detail .d-title { font-weight: 700; margin-bottom: 4px; }
+    .detail .d-date { font-size: 11px; color: var(--muted); }
+
+    /* marker & level list */
+    .section-title { font-size: 13px; font-weight: 700; margin: 18px 4px 8px; color: #94a3b8; }
+    .anno-list { display: flex; flex-direction: column; gap: 8px; }
+    .anno-item {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; font-size: 12.5px; line-height: 1.55; cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .anno-item:hover { border-color: #334155; }
+    .anno-item .a-head { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+    .anno-item .a-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .anno-item .a-date { margin-left: auto; font-size: 11px; color: var(--muted); }
+    .anno-item .a-body { color: #94a3b8; margin-top: 3px; }
+
+    footer { margin-top: 26px; text-align: center; font-size: 11px; color: #475569; line-height: 1.8; }
+    footer a { color: var(--muted); }
+
+    @media (max-width: 640px) {
+      .price-line .px { font-size: 15px; }
+      h1 { font-size: 16px; }
+      #chart { height: 55vh; }
+      .tab { font-size: 12px; padding: 8px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="logo">M</div>
+      <span>miniGG</span>
+      <a href="/">← 首页</a>
+    </div>
+    <div class="price-line">
+      <div class="px mono" id="livePrice">--</div>
+      <div class="chg mono" id="liveChg">恒生指数</div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <h1>恒指技术分析 · miniGG</h1>
+    <p class="sub">^HSI · 数据来源 Yahoo Finance（约 15 分钟延迟）· 绿涨红跌</p>
+
+    <!-- Forecast card -->
+    <div class="forecast" id="forecastCard">
+      <span class="badge neutral" id="fcBadge">加载中</span>
+      <span class="kv" id="fcTarget"></span>
+      <span class="kv" id="fcHorizon"></span>
+      <span class="kv" id="fcUpdated"></span>
+      <p class="summary" id="fcSummary">正在加载分析标注……</p>
+    </div>
+
+    <!-- Interval tabs -->
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-iv="1d">日线</div>
+      <div class="tab" data-iv="1wk">周线</div>
+      <div class="tab" data-iv="60m">60分钟</div>
+      <div class="tab" data-iv="15m">15分钟</div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-card">
+      <div id="chart"></div>
+      <div class="loading" id="loading">加载行情数据…</div>
+    </div>
+
+    <!-- Marker detail (click) -->
+    <div class="detail hidden" id="markerDetail"></div>
+
+    <!-- Annotation lists -->
+    <div id="levelSection" class="hidden">
+      <div class="section-title">关键价位</div>
+      <div class="anno-list" id="levelList"></div>
+    </div>
+    <div id="markerSection" class="hidden">
+      <div class="section-title">事件标记</div>
+      <div class="anno-list" id="markerList"></div>
+    </div>
+
+    <footer>
+      标注由 miniGG 维护 · 行情数据仅供参考，不构成投资建议<br/>
+      <a href="/">minigavin · 投资雷达</a>
+    </footer>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  var UP = '#00d87f';    // 绿涨
+  var DOWN = '#ff4466';  // 红跌
+  var GOLD = '#f5c842';
+
+  var IV_CONFIG = {
+    '1d':  { range: '2y',  intraday: false, label: '日线' },
+    '1wk': { range: '5y',  intraday: false, label: '周线' },
+    '60m': { range: '3mo', intraday: true,  label: '60分钟' },
+    '15m': { range: '1mo', intraday: true,  label: '15分钟' }
+  };
+
+  var el = function (id) { return document.getElementById(id); };
+  var chartEl = el('chart');
+  var loadingEl = el('loading');
+
+  var chart = LightweightCharts.createChart(chartEl, {
+    layout: {
+      background: { type: 'solid', color: '#0e1419' },
+      textColor: '#94a3b8',
+      fontFamily: "'JetBrains Mono', monospace",
+      fontSize: 11
+    },
+    grid: {
+      vertLines: { color: 'rgba(26,32,48,0.6)' },
+      horzLines: { color: 'rgba(26,32,48,0.6)' }
+    },
+    crosshair: {
+      mode: LightweightCharts.CrosshairMode.Normal,
+      vertLine: { color: '#334155', labelBackgroundColor: '#1a2030' },
+      horzLine: { color: '#334155', labelBackgroundColor: '#1a2030' }
+    },
+    rightPriceScale: { borderColor: '#1a2030' },
+    timeScale: { borderColor: '#1a2030', timeVisible: false, secondsVisible: false },
+    handleScroll: true,
+    handleScale: true
+  });
+
+  var series = chart.addCandlestickSeries({
+    upColor: UP, downColor: DOWN,
+    borderUpColor: UP, borderDownColor: DOWN,
+    wickUpColor: UP, wickDownColor: DOWN
+  });
+
+  function resizeChart() {
+    chart.applyOptions({ width: chartEl.clientWidth, height: chartEl.clientHeight });
+  }
+  window.addEventListener('resize', resizeChart);
+  resizeChart();
+
+  var annotations = null;   // annotations.json content
+  var priceLines = [];      // active price line handles
+  var currentIv = '1d';
+  var currentBars = [];     // current candle data
+  var markerByTime = {};    // time -> marker obj (for click detail)
+
+  // ---------- data loading ----------
+
+  function fetchKline(iv) {
+    var cfg = IV_CONFIG[iv];
+    var url = '/api/kline?interval=' + encodeURIComponent(iv) + '&range=' + encodeURIComponent(cfg.range);
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('API ' + r.status);
+      return r.json();
+    });
+  }
+
+  function toBars(data, intraday) {
+    var ts = data.timestamp || [];
+    var o = data.open || [], h = data.high || [], l = data.low || [], c = data.close || [];
+    var gmt = data.gmtoffset || 28800;
+    var bars = [];
+    for (var i = 0; i < ts.length; i++) {
+      if (o[i] == null || h[i] == null || l[i] == null || c[i] == null) continue;
+      var t;
+      if (intraday) {
+        // shift to HKT so axis shows local session times
+        t = ts[i] + gmt;
+      } else {
+        var d = new Date((ts[i] + gmt) * 1000);
+        t = {
+          year: d.getUTCFullYear(),
+          month: d.getUTCMonth() + 1,
+          day: d.getUTCDate()
+        };
+      }
+      bars.push({
+        time: t,
+        open: round2(o[i]), high: round2(h[i]),
+        low: round2(l[i]), close: round2(c[i])
+      });
+    }
+    return bars;
+  }
+
+  function round2(x) { return Math.round(x * 100) / 100; }
+
+  function updateLivePrice(data) {
+    var px = data.regularMarketPrice;
+    var prev = data.previousClose;
+    if (px == null) return;
+    el('livePrice').textContent = px.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (prev != null && prev > 0) {
+      var diff = px - prev;
+      var pct = (diff / prev) * 100;
+      var sign = diff >= 0 ? '+' : '';
+      var node = el('liveChg');
+      node.textContent = sign + diff.toFixed(2) + ' (' + sign + pct.toFixed(2) + '%)';
+      node.className = 'chg mono ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat');
+    }
+  }
+
+  // ---------- annotations ----------
+
+  function fetchAnnotations() {
+    return fetch('annotations.json?t=' + Date.now()).then(function (r) {
+      if (!r.ok) throw new Error('annotations ' + r.status);
+      return r.json();
+    }).catch(function () { return null; });
+  }
+
+  function renderForecast(a) {
+    var f = (a && a.forecast) || null;
+    var badge = el('fcBadge');
+    if (!f) {
+      badge.textContent = '暂无观点';
+      badge.className = 'badge neutral';
+      el('fcSummary').textContent = '分析标注尚未发布。';
+      return;
+    }
+    var biasMap = { bullish: ['bull', '偏多'], bearish: ['bear', '偏空'], neutral: ['neutral', '震荡'] };
+    var bm = biasMap[f.bias] || ['neutral', f.biasLabel || '观察'];
+    badge.className = 'badge ' + bm[0];
+    badge.textContent = f.biasLabel || bm[1];
+    el('fcSummary').textContent = f.summary || '';
+    el('fcTarget').innerHTML = (f.targetLower != null && f.targetUpper != null)
+      ? '区间 <b>' + fmt(f.targetLower) + ' – ' + fmt(f.targetUpper) + '</b>' : '';
+    el('fcHorizon').innerHTML = f.horizon ? '周期 <b>' + escapeHtml(f.horizon) + '</b>' : '';
+    el('fcUpdated').innerHTML = f.updatedAt ? '更新 <b>' + escapeHtml(f.updatedAt) + '</b>' : '';
+  }
+
+  function fmt(n) { return Number(n).toLocaleString('en-US'); }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function appliesTo(item, iv) {
+    if (!item || !Array.isArray(item.timeframes) || item.timeframes.length === 0) return true;
+    return item.timeframes.indexOf(iv) !== -1;
+  }
+
+  function clearPriceLines() {
+    priceLines.forEach(function (pl) { try { series.removePriceLine(pl); } catch (e) {} });
+    priceLines = [];
+  }
+
+  function renderLevels(a, iv) {
+    clearPriceLines();
+    var list = (a && Array.isArray(a.levels)) ? a.levels : [];
+    var visible = [];
+    list.forEach(function (lv) {
+      if (lv == null || typeof lv.price !== 'number') return;
+      if (!appliesTo(lv, iv)) return;
+      var isSupport = lv.type === 'support';
+      var color = isSupport ? UP : DOWN;
+      var strong = lv.strength === 'strong';
+      var pl = series.createPriceLine({
+        price: lv.price,
+        color: color,
+        lineWidth: strong ? 2 : 1,
+        lineStyle: strong ? LightweightCharts.LineStyle.Solid : LightweightCharts.LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: lv.label || (isSupport ? '支撑' : '阻力')
+      });
+      priceLines.push(pl);
+      visible.push(lv);
+    });
+
+    var section = el('levelSection');
+    var listEl = el('levelList');
+    listEl.innerHTML = '';
+    if (visible.length === 0) { section.classList.add('hidden'); return; }
+    section.classList.remove('hidden');
+    visible.sort(function (x, y) { return y.price - x.price; });
+    visible.forEach(function (lv) {
+      var isSupport = lv.type === 'support';
+      var item = document.createElement('div');
+      item.className = 'anno-item';
+      item.innerHTML =
+        '<div class="a-head"><span class="a-dot" style="background:' + (isSupport ? UP : DOWN) + '"></span>' +
+        '<span>' + escapeHtml(lv.label || (isSupport ? '支撑' : '阻力')) + '</span>' +
+        '<span class="a-date mono">' + fmt(lv.price) + '</span></div>' +
+        (lv.note ? '<div class="a-body">' + escapeHtml(lv.note) + '</div>' : '');
+      listEl.appendChild(item);
+    });
+  }
+
+  // find the bar time closest to a given yyyy-mm-dd date string
+  function findBarTime(dateStr, bars, intraday) {
+    if (!dateStr || bars.length === 0) return null;
+    var target = new Date(dateStr + 'T00:00:00Z').getTime() / 1000;
+    if (isNaN(target)) return null;
+    if (!intraday) {
+      // business-day times: match same date, else nearest earlier bar
+      var best = null;
+      for (var i = 0; i < bars.length; i++) {
+        var t = bars[i].time;
+        var barTs = Date.UTC(t.year, t.month - 1, t.day) / 1000;
+        if (barTs <= target + 86399) best = t; else break;
+      }
+      return best;
+    }
+    // intraday: nearest bar within same day (bars already HKT-shifted)
+    var bestT = null, bestDiff = Infinity;
+    for (var j = 0; j < bars.length; j++) {
+      var diff = Math.abs(bars[j].time - (target + 86400)); // bias toward that day's session
+      if (diff < bestDiff) { bestDiff = diff; bestT = bars[j].time; }
+    }
+    // only attach if within ~3 days, otherwise skip
+    return bestDiff <= 3 * 86400 ? bestT : null;
+  }
+
+  function renderMarkers(a, iv, bars) {
+    markerByTime = {};
+    var list = (a && Array.isArray(a.markers)) ? a.markers : [];
+    var chartMarkers = [];
+    var visible = [];
+    list.forEach(function (m) {
+      if (!m || !m.date) return;
+      if (!appliesTo(m, iv)) return;
+      var t = findBarTime(m.date, bars, IV_CONFIG[iv].intraday);
+      if (t == null) return;
+      var pos = m.position === 'below' ? 'belowBar' : 'aboveBar';
+      var shape = ({ arrowUp: 'arrowUp', arrowDown: 'arrowDown', circle: 'circle', square: 'square' })[m.shape] || 'circle';
+      chartMarkers.push({
+        time: t,
+        position: pos,
+        shape: shape,
+        color: m.color || GOLD,
+        text: m.text || ''
+      });
+      markerByTime[timeKey(t)] = m;
+      visible.push(m);
+    });
+    chartMarkers.sort(function (x, y) { return timeSortVal(x.time) - timeSortVal(y.time); });
+    series.setMarkers(chartMarkers);
+
+    var section = el('markerSection');
+    var listEl = el('markerList');
+    listEl.innerHTML = '';
+    if (visible.length === 0) { section.classList.add('hidden'); return; }
+    section.classList.remove('hidden');
+    visible.sort(function (x, y) { return (y.date || '').localeCompare(x.date || ''); });
+    visible.forEach(function (m) {
+      var item = document.createElement('div');
+      item.className = 'anno-item';
+      item.innerHTML =
+        '<div class="a-head"><span class="a-dot" style="background:' + escapeHtml(m.color || GOLD) + '"></span>' +
+        '<span>' + escapeHtml(m.text || '标记') + '</span>' +
+        '<span class="a-date mono">' + escapeHtml(m.date) + '</span></div>' +
+        (m.detail ? '<div class="a-body">' + escapeHtml(m.detail) + '</div>' : '');
+      item.addEventListener('click', function () { showMarkerDetail(m); });
+      listEl.appendChild(item);
+    });
+  }
+
+  function timeKey(t) {
+    return typeof t === 'object' ? t.year + '-' + t.month + '-' + t.day : String(t);
+  }
+  function timeSortVal(t) {
+    return typeof t === 'object' ? Date.UTC(t.year, t.month - 1, t.day) / 1000 : t;
+  }
+
+  function showMarkerDetail(m) {
+    var box = el('markerDetail');
+    box.classList.remove('hidden');
+    box.innerHTML =
+      '<div class="d-title" style="color:' + escapeHtml(m.color || GOLD) + '">' + escapeHtml(m.text || '标记') + '</div>' +
+      '<div class="d-date mono">' + escapeHtml(m.date || '') + '</div>' +
+      '<div style="margin-top:6px">' + escapeHtml(m.detail || '（无详情）') + '</div>';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // click on chart → show marker detail if that bar has one
+  chart.subscribeClick(function (param) {
+    if (!param || param.time == null) return;
+    var m = markerByTime[timeKey(param.time)];
+    if (m) showMarkerDetail(m);
+  });
+
+  // ---------- interval switching ----------
+
+  function loadInterval(iv) {
+    currentIv = iv;
+    loadingEl.classList.remove('hidden');
+    loadingEl.textContent = '加载' + IV_CONFIG[iv].label + '数据…';
+    var intraday = IV_CONFIG[iv].intraday;
+    chart.applyOptions({ timeScale: { timeVisible: intraday, secondsVisible: false, borderColor: '#1a2030' } });
+
+    fetchKline(iv).then(function (data) {
+      if (currentIv !== iv) return; // stale response
+      currentBars = toBars(data, intraday);
+      series.setData(currentBars);
+      chart.timeScale().fitContent();
+      updateLivePrice(data);
+      if (annotations) {
+        renderLevels(annotations, iv);
+        renderMarkers(annotations, iv, currentBars);
+      }
+      loadingEl.classList.add('hidden');
+    }).catch(function (err) {
+      if (currentIv !== iv) return;
+      loadingEl.textContent = '数据加载失败：' + err.message + '（点击重试）';
+      loadingEl.style.cursor = 'pointer';
+      loadingEl.onclick = function () { loadingEl.onclick = null; loadingEl.style.cursor = ''; loadInterval(iv); };
+    });
+  }
+
+  el('tabs').addEventListener('click', function (e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    var iv = tab.getAttribute('data-iv');
+    if (iv === currentIv) return;
+    document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+    el('markerDetail').classList.add('hidden');
+    loadInterval(iv);
+  });
+
+  // ---------- boot ----------
+
+  fetchAnnotations().then(function (a) {
+    annotations = a;
+    renderForecast(a);
+    // if kline already loaded, apply annotations now
+    if (currentBars.length > 0 && a) {
+      renderLevels(a, currentIv);
+      renderMarkers(a, currentIv, currentBars);
+    }
+  });
+
+  loadInterval('1d');
+})();
+</script>
+</body>
+</html>

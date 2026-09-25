@@ -1,0 +1,73 @@
+{
+  "$schema_note": "miniGG 恒指分析标注数据。字段说明：meta=元信息；forecast=当前观点摘要卡片；levels=水平价格线(支撑/阻力)；markers=K线上的事件/观点标记。所有字段页面均做缺失容错，可只更新部分。",
+  "meta": {
+    "symbol": "^HSI",
+    "updatedAt": "2026-09-25T18:45:00+08:00",
+    "updatedBy": "miniGG",
+    "note": "示例标注，待 miniGG 更新正式分析"
+  },
+  "forecast": {
+    "bias": "neutral",
+    "biasLabel": "震荡",
+    "summary": "示例观点：恒指短线于 24,300–24,750 区间震荡，上方缺口压力、下方均线支撑，等待方向选择。（示例标注，待 miniGG 更新正式分析）",
+    "targetUpper": 25200,
+    "targetLower": 24000,
+    "horizon": "1-2周",
+    "confidence": "low",
+    "updatedAt": "2026-09-25"
+  },
+  "levels": [
+    {
+      "type": "resistance",
+      "price": 25200,
+      "label": "强阻力 25200（前高密集区·示例）",
+      "strength": "strong",
+      "note": "示例标注，待 miniGG 更新正式分析",
+      "timeframes": ["1d", "1wk", "60m", "15m"]
+    },
+    {
+      "type": "resistance",
+      "price": 24750,
+      "label": "阻力 24750（跳空缺口·示例）",
+      "strength": "normal",
+      "note": "示例标注，待 miniGG 更新正式分析",
+      "timeframes": ["1d", "60m", "15m"]
+    },
+    {
+      "type": "support",
+      "price": 24280,
+      "label": "支撑 24280（近期低点·示例）",
+      "strength": "normal",
+      "note": "示例标注，待 miniGG 更新正式分析",
+      "timeframes": ["1d", "60m", "15m"]
+    },
+    {
+      "type": "support",
+      "price": 24000,
+      "label": "强支撑 24000（整数关口·示例）",
+      "strength": "strong",
+      "note": "示例标注，待 miniGG 更新正式分析",
+      "timeframes": ["1d", "1wk", "60m", "15m"]
+    }
+  ],
+  "markers": [
+    {
+      "date": "2026-09-25",
+      "position": "above",
+      "shape": "arrowDown",
+      "color": "#ff4466",
+      "text": "缩量回踩",
+      "detail": "示例标记：当日低开回踩下方支撑区，观察能否企稳。（示例标注，待 miniGG 更新正式分析）",
+      "timeframes": ["1d", "60m", "15m"]
+    },
+    {
+      "date": "2026-09-22",
+      "position": "below",
+      "shape": "arrowUp",
+      "color": "#00d87f",
+      "text": "支撑确认",
+      "detail": "示例标记：回踩后收长下影，短线支撑有效。（示例标注，待 miniGG 更新正式分析）",
+      "timeframes": ["1d"]
+    }
+  ]
+}

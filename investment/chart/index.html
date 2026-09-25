@@ -103,6 +103,26 @@
       padding: 4px 10px; border-radius: 999px; pointer-events: none;
     }
 
+    /* zoom controls */
+    .zoom-ctrl {
+      position: absolute; right: 10px; bottom: 10px; z-index: 20;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .zoom-btn {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: rgba(14,20,25,0.92); border: 1px solid var(--border);
+      color: var(--text); font-size: 17px; font-weight: 700; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; user-select: none; -webkit-user-select: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .zoom-btn:active { background: rgba(0,216,127,0.15); border-color: var(--up); }
+    .zoom-btn:hover { border-color: #334155; }
+    .zoom-btn.reset { font-size: 13px; font-weight: 600; }
+    @media (max-width: 640px) {
+      .zoom-btn { width: 38px; height: 38px; }
+    }
+
     /* interval tabs */
     .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
     .tab {
@@ -116,8 +136,8 @@
     .tab.active { color: #000; background: var(--up); border-color: var(--up); }
 
     /* chart */
-    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; position: relative; }
-    #chart { width: 100%; height: 62vh; min-height: 340px; max-height: 640px; }
+    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: visible; position: relative; }
+    #chart { width: 100%; height: 62vh; min-height: 340px; max-height: 640px; border-radius: 14px; overflow: hidden; }
     .loading {
       position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
       background: rgba(8,12,16,0.6); font-size: 13px; color: var(--muted); z-index: 10;
@@ -201,6 +221,11 @@
       <div id="chart"></div>
       <div class="fc-hint hidden" id="fcHint">预测蜡烛图请切换到日线查看</div>
       <div class="loading" id="loading">加载行情数据…</div>
+      <div class="zoom-ctrl">
+        <div class="zoom-btn" id="zoomIn" title="放大">+</div>
+        <div class="zoom-btn" id="zoomOut" title="缩小">−</div>
+        <div class="zoom-btn reset" id="zoomReset" title="重置视图">⟲</div>
+      </div>
     </div>
 
     <!-- Marker detail (click) -->
@@ -266,8 +291,19 @@
   var series = chart.addCandlestickSeries({
     upColor: UP, downColor: DOWN,
     borderUpColor: UP, borderDownColor: DOWN,
-    wickUpColor: UP, wickDownColor: DOWN
+    wickUpColor: UP, wickDownColor: DOWN,
+    priceScaleId: 'right'
   });
+  chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.06, bottom: 0.24 } });
+
+  // volume histogram (own price scale, pinned to bottom ~20% of chart)
+  var volumeSeries = chart.addHistogramSeries({
+    priceFormat: { type: 'volume' },
+    priceScaleId: 'volume',
+    priceLineVisible: false,
+    lastValueVisible: false
+  });
+  chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 }, visible: false });
 
   function resizeChart() {
     chart.applyOptions({ width: chartEl.clientWidth, height: chartEl.clientHeight });
@@ -457,13 +493,24 @@
           day: d.getUTCDate()
         };
       }
+      var vArr = data.volume || [];
       bars.push({
         time: t,
         open: round2(o[i]), high: round2(h[i]),
-        low: round2(l[i]), close: round2(c[i])
+        low: round2(l[i]), close: round2(c[i]),
+        volume: vArr[i] != null ? vArr[i] : null
       });
     }
     return bars;
+  }
+
+  function toVolumeData(bars) {
+    return bars
+      .filter(function (b) { return b.volume != null; })
+      .map(function (b) {
+        var up = b.close >= b.open;
+        return { time: b.time, value: b.volume, color: up ? 'rgba(0,216,127,0.55)' : 'rgba(255,68,102,0.55)' };
+      });
   }
 
   function round2(x) { return Math.round(x * 100) / 100; }
@@ -687,6 +734,7 @@
       if (currentIv !== iv) return; // stale response
       currentBars = toBars(data, intraday);
       series.setData(currentBars);
+      volumeSeries.setData(toVolumeData(currentBars));
       chart.timeScale().fitContent();
       updateLivePrice(data);
       if (annotations) {
@@ -703,6 +751,21 @@
       loadingEl.onclick = function () { loadingEl.onclick = null; loadingEl.style.cursor = ''; loadInterval(iv); };
     });
   }
+
+  // ---------- zoom controls ----------
+
+  function zoomBy(factor) {
+    var ts = chart.timeScale();
+    var range = ts.getVisibleLogicalRange();
+    if (!range) return;
+    var center = (range.from + range.to) / 2;
+    var half = (range.to - range.from) / 2 * factor;
+    ts.setVisibleLogicalRange({ from: center - half, to: center + half });
+  }
+
+  el('zoomIn').addEventListener('click', function () { zoomBy(0.6); });
+  el('zoomOut').addEventListener('click', function () { zoomBy(1 / 0.6); });
+  el('zoomReset').addEventListener('click', function () { chart.timeScale().fitContent(); });
 
   el('tabs').addEventListener('click', function (e) {
     var tab = e.target.closest('.tab');

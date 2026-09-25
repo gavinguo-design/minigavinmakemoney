@@ -50,6 +50,60 @@
     h1 { font-size: 18px; font-weight: 800; margin: 18px 4px 4px; }
     .sub { font-size: 12px; color: var(--muted); margin: 0 4px 14px; }
 
+    /* 当前判断卡（3秒读懂） */
+    .judge {
+      background: linear-gradient(180deg, rgba(14,20,25,0.98), rgba(14,20,25,0.92));
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .jd-top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+    .jd-symbol { font-size: 13px; font-weight: 800; color: #cbd5e1; }
+    .jd-state { font-size: 14px; font-weight: 800; padding: 4px 12px; border-radius: 999px; border: 1px solid transparent; }
+    .jd-state.weak { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.35); }
+    .jd-state.bear { color: var(--down); background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.35); }
+    .jd-state.bull { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.35); }
+    .jd-px { font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    .jd-time { font-size: 11px; color: var(--muted); margin-left: auto; }
+    .jd-levels { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+    .jd-lv { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; }
+    .jd-lv .lp { font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 58px; }
+    .jd-lv .lt { color: #94a3b8; }
+    .jd-lv .ltf { font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+    .jd-main { margin-top: 10px; font-size: 13px; line-height: 1.6; color: #e2e8f0; font-weight: 600; }
+    .jd-cond { margin-top: 6px; font-size: 12px; line-height: 1.6; color: #94a3b8; }
+    .jd-cond b.chg { color: var(--up); font-weight: 700; }
+    .jd-cond b.inv { color: var(--down); font-weight: 700; }
+
+    /* 延迟行情提示条（15m/60m） */
+    .delay-note {
+      font-size: 12px; font-weight: 600; color: var(--gold);
+      background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.35);
+      border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; line-height: 1.5;
+    }
+
+    /* 情景模拟角标 */
+    .sim-badge {
+      position: absolute; top: 10px; right: 12px; z-index: 5;
+      font-size: 11px; font-weight: 700; color: var(--gold);
+      background: rgba(8,12,16,0.85); border: 1px solid rgba(245,200,66,0.4);
+      padding: 4px 10px; border-radius: 999px; pointer-events: none;
+    }
+
+    /* 详细分析折叠区 */
+    details.more { margin-top: 16px; }
+    details.more > summary {
+      list-style: none; cursor: pointer; user-select: none;
+      font-size: 13px; font-weight: 700; color: #94a3b8;
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 11px 16px; display: flex; align-items: center; gap: 8px;
+      transition: border-color 0.15s;
+    }
+    details.more > summary:hover { border-color: #334155; }
+    details.more > summary::-webkit-details-marker { display: none; }
+    details.more > summary::before { content: '▸'; color: var(--up); transition: transform 0.15s; }
+    details.more[open] > summary::before { transform: rotate(90deg); }
+    details.more > .more-body { margin-top: 12px; }
+
     /* forecast card */
     .forecast {
       background: var(--card); border: 1px solid var(--border); border-radius: 14px;
@@ -216,6 +270,11 @@
       transition: border-color 0.15s;
     }
     .anno-item:hover { border-color: #334155; }
+    .anno-item.dimmed { opacity: 0.45; }
+    .anno-item .a-tf {
+      font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; flex-shrink: 0;
+    }
     .anno-item .a-head { display: flex; align-items: center; gap: 8px; font-weight: 600; }
     .anno-item .a-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .anno-item .a-date { margin-left: auto; font-size: 11px; color: var(--muted); }
@@ -251,31 +310,8 @@
     <p class="sub">^HSI · 数据来源 Yahoo Finance（约 15 分钟延迟）· 绿涨红跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
     <a class="track-link" href="track/">📊 预测战绩 · 历史预测留痕可查 →</a>
 
-    <!-- Forecast card -->
-    <div class="forecast" id="forecastCard">
-      <span class="badge neutral" id="fcBadge">加载中</span>
-      <span class="kv" id="fcTarget"></span>
-      <span class="kv" id="fcHorizon"></span>
-      <span class="kv" id="fcUpdated"></span>
-      <span class="kv warn" id="fcInvalid"></span>
-      <p class="summary" id="fcSummary">正在加载分析标注……</p>
-    </div>
-
-    <!-- 推理链 -->
-    <div class="block-title hidden" id="reasoningTitle">推理过程 <small>每条 = 证据 → 结论，不是指标罗列</small></div>
-    <div class="reasoning hidden" id="reasoningCard"><ol class="rs-list" id="reasoningList"></ol></div>
-
-    <!-- 条件式交易地图 -->
-    <div class="block-title hidden" id="playbookTitle">条件地图 <small>发生什么 → 状态如何变 → 下一步看哪里</small></div>
-    <div class="playbook hidden" id="playbookList"></div>
-
-    <!-- 未来路径树 -->
-    <div class="block-title hidden" id="ptreeTitle">未来路径树 <small>条件分叉，不是单线预言</small></div>
-    <div class="ptree hidden" id="ptreeCard"></div>
-
-    <!-- Scenario cards -->
-    <div class="scenarios hidden" id="scenarioCards"></div>
-    <p class="prob-note hidden" id="probNote">ℹ︎ 情景概率为模型主观估计、非统计值；在对应触发条件出现前，预测蜡烛与概率标签仅供参考，以条件地图为准。</p>
+    <!-- 当前判断卡（3秒读懂） -->
+    <div class="judge hidden" id="judgeCard"></div>
 
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
@@ -285,10 +321,14 @@
       <div class="tab" data-iv="15m">15分钟</div>
     </div>
 
+    <!-- 盘中周期延迟提示 -->
+    <div class="delay-note hidden" id="delayNote">⚠️ 延迟行情（约 15 分钟），仅用于结构分析，不适合作为实时入场信号</div>
+
     <!-- Chart -->
     <div class="chart-card">
       <div id="chart"></div>
-      <div class="fc-hint hidden" id="fcHint">预测蜡烛图请切换到日线查看</div>
+      <div class="fc-hint hidden" id="fcHint">情景模拟蜡烛请切换到日线查看</div>
+      <div class="sim-badge hidden" id="simBadge">Scenario 情景模拟 · 非价格预测</div>
       <div class="loading" id="loading">加载行情数据…</div>
       <div class="zoom-ctrl">
         <div class="zoom-btn" id="zoomIn" title="放大">+</div>
@@ -300,15 +340,49 @@
     <!-- Marker detail (click) -->
     <div class="detail hidden" id="markerDetail"></div>
 
-    <!-- Annotation lists -->
-    <div id="levelSection" class="hidden">
-      <div class="section-title">关键价位</div>
-      <div class="anno-list" id="levelList"></div>
-    </div>
-    <div id="markerSection" class="hidden">
-      <div class="section-title">事件标记</div>
-      <div class="anno-list" id="markerList"></div>
-    </div>
+    <!-- Scenario cards（与情景模拟蜡烛联动） -->
+    <div class="scenarios hidden" id="scenarioCards"></div>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 置信度为模型主观评估，非历史统计概率，样本积累后将改为统计命中率；图上虚影蜡烛为情景模拟路径，不是精确价格预测，以条件地图为准。</p>
+
+    <!-- 详细分析（默认折叠，降低视觉优先级） -->
+    <details class="more" id="moreDetails">
+      <summary>展开详细分析（观点摘要 · 推理链 · 条件地图 · 路径树 · 关键价位）</summary>
+      <div class="more-body">
+
+        <!-- Forecast card -->
+        <div class="forecast" id="forecastCard">
+          <span class="badge neutral" id="fcBadge">加载中</span>
+          <span class="kv" id="fcTarget"></span>
+          <span class="kv" id="fcHorizon"></span>
+          <span class="kv" id="fcUpdated"></span>
+          <span class="kv warn" id="fcInvalid"></span>
+          <p class="summary" id="fcSummary">正在加载分析标注……</p>
+        </div>
+
+        <!-- 推理链 -->
+        <div class="block-title hidden" id="reasoningTitle">推理过程 <small>每条 = 证据 → 结论，不是指标罗列</small></div>
+        <div class="reasoning hidden" id="reasoningCard"><ol class="rs-list" id="reasoningList"></ol></div>
+
+        <!-- 条件式交易地图 -->
+        <div class="block-title hidden" id="playbookTitle">条件地图 <small>发生什么 → 状态如何变 → 下一步看哪里</small></div>
+        <div class="playbook hidden" id="playbookList"></div>
+
+        <!-- 未来路径树 -->
+        <div class="block-title hidden" id="ptreeTitle">未来路径树 <small>条件分叉，不是单线预言</small></div>
+        <div class="ptree hidden" id="ptreeCard"></div>
+
+        <!-- Annotation lists -->
+        <div id="levelSection" class="hidden">
+          <div class="section-title">关键价位 <small style="font-weight:400;color:#475569">· 每条标注来源周期，当前周期相关价位高亮、其余弱化显示</small></div>
+          <div class="anno-list" id="levelList"></div>
+        </div>
+        <div id="markerSection" class="hidden">
+          <div class="section-title">事件标记</div>
+          <div class="anno-list" id="markerList"></div>
+        </div>
+
+      </div>
+    </details>
 
     <footer>
       <span id="disclaimerText">标注由 miniGG 维护 · 行情数据仅供参考，不构成投资建议</span><br/>
@@ -332,6 +406,11 @@
   };
 
   var el = function (id) { return document.getElementById(id); };
+  var TF_LABEL = { '1d': '日线', '1wk': '周线', '60m': '60分钟', '15m': '15分钟' };
+  function tfLabels(item) {
+    if (!item || !Array.isArray(item.timeframes) || !item.timeframes.length) return '全周期';
+    return item.timeframes.map(function (tf) { return TF_LABEL[tf] || tf; }).join('+');
+  }
   var chartEl = el('chart');
   var loadingEl = el('loading');
 
@@ -427,13 +506,16 @@
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
     var hint = el('fcHint');
 
-    if (scenarios.length === 0 || bars.length === 0) { hint.classList.add('hidden'); return; }
+    var simBadge = el('simBadge');
+    if (scenarios.length === 0 || bars.length === 0) { hint.classList.add('hidden'); simBadge.classList.add('hidden'); return; }
     if (iv !== '1d') {
-      // 非日线：优雅隐藏预测层，仅提示
+      // 非日线：优雅隐藏情景模拟层，仅提示
       hint.classList.remove('hidden');
+      simBadge.classList.add('hidden');
       return;
     }
     hint.classList.add('hidden');
+    simBadge.classList.remove('hidden');
 
     var lastBar = bars[bars.length - 1];
     var maxOffset = 0;
@@ -457,9 +539,10 @@
     fcBgSeries.setData(bgData);
 
     scenarios.forEach(function (sc, idx) {
-      var body = hexToRgba(sc.color, 0.40);
-      var border = hexToRgba(sc.color, 0.75);
-      var wick = hexToRgba(sc.color, 0.65);
+      // 情景模拟蜡烛视觉比真实K线更轻：低透明度虺体，强调「这是路径模拟不是精确轨迹」
+      var body = hexToRgba(sc.color, 0.22);
+      var border = hexToRgba(sc.color, 0.55);
+      var wick = hexToRgba(sc.color, 0.40);
       var s = chart.addCandlestickSeries({
         upColor: body, downColor: body,
         borderUpColor: border, borderDownColor: border,
@@ -484,7 +567,7 @@
           position: 'aboveBar',
           shape: 'circle',
           color: hexToRgba(sc.color, 0.9),
-          text: shortName(sc.name) + ' ' + Math.round((sc.probability || 0) * 100) + '%（条件触发前仅供参考）'
+          text: shortName(sc.name) + ' 置信度' + Math.round((sc.probability || 0) * 100) + '%（情景模拟）'
         }]);
       }
       fcSeriesList.push({ series: s, scenario: sc, index: idx });
@@ -584,7 +667,7 @@
       card.style.setProperty('--sc-color', sc.color || '#64748b');
       card.innerHTML =
         '<div class="sc-head"><span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + '</span>' +
-        '<span class="sc-prob">' + Math.round((sc.probability || 0) * 100) + '%</span></div>' +
+        '<span class="sc-prob" title="置信度为模型主观评估，非历史统计概率">置信度 ' + Math.round((sc.probability || 0) * 100) + '%</span></div>' +
         (sc.target ? '<div class="sc-row">目标：<b>' + escapeHtml(sc.target) + '</b></div>' : '') +
         (sc.trigger ? '<div class="sc-row">触发：<b>' + escapeHtml(sc.trigger) + '</b></div>' : '') +
         (sc.invalidation ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(sc.invalidation) + '</b></div>' : '') +
@@ -655,6 +738,8 @@
     var prev = data.previousClose;
     if (px == null) return;
     el('livePrice').textContent = px.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    var jdPx = document.getElementById('jdPrice');
+    if (jdPx) jdPx.textContent = px.toLocaleString('en-US', { maximumFractionDigits: 0 });
     if (prev != null && prev > 0) {
       var diff = px - prev;
       var pct = (diff / prev) * 100;
@@ -672,6 +757,35 @@
       if (!r.ok) throw new Error('annotations ' + r.status);
       return r.json();
     }).catch(function () { return null; });
+  }
+
+  // ---------- 当前判断卡（3秒读懂） ----------
+  function renderJudgeCard(a) {
+    var box = el('judgeCard');
+    var f = a && a.forecast;
+    var c = f && f.card;
+    if (!f || !c) { box.classList.add('hidden'); return; }
+    var toneCls = ({ weak: 'weak', bear: 'bear', bull: 'bull' })[c.stateTone] || 'weak';
+    var basePx = typeof f.basePrice === 'number' ? Math.round(f.basePrice) : null;
+    var lvHtml = (Array.isArray(c.keyLines) ? c.keyLines : []).map(function (kl) {
+      return '<div class="jd-lv"><span class="lp mono">' + fmt(kl.price) + '</span>' +
+        '<span class="lt">' + escapeHtml(kl.tag || '') + '</span>' +
+        (kl.tf ? '<span class="ltf">' + escapeHtml(kl.tf) + '</span>' : '') + '</div>';
+    }).join('');
+    box.innerHTML =
+      '<div class="jd-top">' +
+        '<span class="jd-symbol">恒指 · 日线</span>' +
+        '<span class="jd-state ' + toneCls + '">' + escapeHtml((c.stateEmoji ? c.stateEmoji + ' ' : '') + (c.stateLabel || f.biasLabel || '')) + '</span>' +
+        (basePx != null ? '<span class="jd-px">最新 <span id="jdPrice">' + fmt(basePx) + '</span></span>' : '') +
+        (f.updatedAt ? '<span class="jd-time">判断更新 ' + escapeHtml(f.updatedAt) + '</span>' : '') +
+      '</div>' +
+      (lvHtml ? '<div class="jd-levels">' + lvHtml + '</div>' : '') +
+      (c.mainScenarioLine ? '<div class="jd-main">' + escapeHtml(c.mainScenarioLine) + '</div>' : '') +
+      '<div class="jd-cond">' +
+        (c.changeCondition ? '<b class="chg">改变判断：</b>' + escapeHtml(c.changeCondition) + '<br/>' : '') +
+        (c.invalidCondition ? '<b class="inv">判断失效：</b>' + escapeHtml(c.invalidCondition) : '') +
+      '</div>';
+    box.classList.remove('hidden');
   }
 
   function renderForecast(a) {
@@ -725,20 +839,22 @@
     var visible = [];
     list.forEach(function (lv) {
       if (lv == null || typeof lv.price !== 'number') return;
-      if (!appliesTo(lv, iv)) return;
+      var isCurrent = appliesTo(lv, iv);
       var isSupport = lv.type === 'support';
-      var color = isSupport ? UP : DOWN;
+      var baseColor = isSupport ? UP : DOWN;
+      // 当前周期相关价位实显，其他周期价位弱化显示（不隐藏，避免跨周期丢失信息）
+      var color = isCurrent ? baseColor : hexToRgba(baseColor, 0.28);
       var strong = lv.strength === 'strong';
       var pl = series.createPriceLine({
         price: lv.price,
         color: color,
-        lineWidth: strong ? 2 : 1,
-        lineStyle: strong ? LightweightCharts.LineStyle.Solid : LightweightCharts.LineStyle.Dashed,
-        axisLabelVisible: true,
-        title: lv.label || (isSupport ? '支撑' : '阻力')
+        lineWidth: isCurrent && strong ? 2 : 1,
+        lineStyle: isCurrent && strong ? LightweightCharts.LineStyle.Solid : LightweightCharts.LineStyle.Dashed,
+        axisLabelVisible: isCurrent,
+        title: (lv.label || (isSupport ? '支撑' : '阻力')) + ' · ' + tfLabels(lv)
       });
       priceLines.push(pl);
-      visible.push(lv);
+      visible.push({ lv: lv, current: isCurrent });
     });
 
     var section = el('levelSection');
@@ -746,17 +862,23 @@
     listEl.innerHTML = '';
     if (visible.length === 0) { section.classList.add('hidden'); return; }
     section.classList.remove('hidden');
-    visible.sort(function (x, y) { return y.price - x.price; });
-    visible.forEach(function (lv) {
+    // 当前周期相关优先，同组内按价格降序
+    visible.sort(function (x, y) {
+      if (x.current !== y.current) return x.current ? -1 : 1;
+      return y.lv.price - x.lv.price;
+    });
+    visible.forEach(function (v) {
+      var lv = v.lv;
       var isSupport = lv.type === 'support';
       var item = document.createElement('div');
-      item.className = 'anno-item';
+      item.className = 'anno-item' + (v.current ? '' : ' dimmed');
       var bodyParts = [];
       if (lv.reason) bodyParts.push('理由：' + escapeHtml(lv.reason));
       if (lv.note) bodyParts.push(escapeHtml(lv.note));
       item.innerHTML =
         '<div class="a-head"><span class="a-dot" style="background:' + (isSupport ? UP : DOWN) + '"></span>' +
         '<span>' + escapeHtml(lv.label || (isSupport ? '支撑' : '阻力')) + '</span>' +
+        '<span class="a-tf">' + escapeHtml(tfLabels(lv)) + '</span>' +
         '<span class="a-date mono">' + fmt(lv.price) + '</span></div>' +
         (bodyParts.length ? '<div class="a-body">' + bodyParts.join('<br/>') + '</div>' : '');
       listEl.appendChild(item);
@@ -863,6 +985,8 @@
     loadingEl.classList.remove('hidden');
     loadingEl.textContent = '加载' + IV_CONFIG[iv].label + '数据…';
     var intraday = IV_CONFIG[iv].intraday;
+    // 15m/60m 延迟行情提示（日线/周线不需要，延迟对中长期分析影响小）
+    el('delayNote').classList.toggle('hidden', !intraday);
     chart.applyOptions({ timeScale: { timeVisible: intraday, secondsVisible: false, borderColor: '#1a2030' } });
 
     fetchKline(iv).then(function (data) {
@@ -931,6 +1055,7 @@
 
   fetchAnnotations().then(function (a) {
     annotations = a;
+    renderJudgeCard(a);
     renderForecast(a);
     renderReasoning(a);
     renderPlaybook(a);

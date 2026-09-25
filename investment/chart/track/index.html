@@ -32,11 +32,12 @@
     .sub { font-size: 12px; color: var(--muted); margin: 0 4px 16px; line-height: 1.6; }
 
     /* stats */
-    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 18px; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
     @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
     .stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
-    .stat .v { font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
+    .stat .v { font-size: 15px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--muted); line-height: 1.3; }
     .stat .k { font-size: 10.5px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+    .stat .v.pending { font-size: 11px; font-weight: 600; color: #475569; }
     .stats-note { font-size: 11.5px; color: var(--gold); background: rgba(245,200,66,0.08);
       border: 1px solid rgba(245,200,66,0.25); border-radius: 10px; padding: 8px 12px; margin-bottom: 18px; }
 
@@ -48,6 +49,18 @@
     .p-status.pending { color: var(--gold); background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); }
     .p-status.hit { color: var(--up); background: rgba(0,216,127,0.1); border: 1px solid rgba(0,216,127,0.3); }
     .p-status.miss { color: var(--down); background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.3); }
+    .p-period { font-size: 11px; font-weight: 700; color: #94a3b8; background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; }
+    .p-field { display: flex; gap: 8px; font-size: 12.5px; line-height: 1.6; padding: 4px 0; }
+    .p-field .fk { flex-shrink: 0; width: 72px; color: var(--muted); font-size: 11.5px; padding-top: 1px; }
+    .p-field .fv { color: #cbd5e1; }
+    .p-field .fv.good { color: var(--up); }
+    .p-field .fv.bad { color: var(--down); }
+    .p-updates { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px; }
+    .p-update { font-size: 11.5px; color: #94a3b8; line-height: 1.6; padding: 3px 0; }
+    .p-update .ut { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; margin-right: 6px; }
+    .immutable-note { font-size: 11px; color: var(--muted); background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; margin-bottom: 16px; line-height: 1.6; }
     .p-base { font-size: 13px; margin-bottom: 8px; }
     .p-base b { font-family: 'JetBrains Mono', monospace; }
     .p-bias { font-size: 12px; color: #cbd5e1; margin-bottom: 10px; }
@@ -77,16 +90,21 @@
     <div class="stats" id="statsGrid">
       <div class="stat"><div class="v" id="stTotal">--</div><div class="k">总预测数</div></div>
       <div class="stat"><div class="v" id="stDir">--</div><div class="k">方向命中率</div></div>
-      <div class="stat"><div class="v" id="stCond">--</div><div class="k">条件触发后命中率</div></div>
-      <div class="stat"><div class="v" id="stMfeMae">--</div><div class="k">平均MFE / MAE</div></div>
-      <div class="stat"><div class="v" id="stRR">--</div><div class="k">盈亏比</div></div>
+      <div class="stat"><div class="v" id="stLevel">--</div><div class="k">关键位有效率</div></div>
+      <div class="stat"><div class="v" id="stPnl">--</div><div class="k">触发后平均涨跌幅</div></div>
+      <div class="stat"><div class="v" id="stMfe">--</div><div class="k">平均MFE（最大有利偏移）</div></div>
+      <div class="stat"><div class="v" id="stMae">--</div><div class="k">平均MAE（最大不利偏移）</div></div>
+      <div class="stat"><div class="v" id="stRR">--</div><div class="k">平均盈亏比</div></div>
+      <div class="stat"><div class="v" id="stStreak">--</div><div class="k">最大连续失败次数</div></div>
+      <div class="stat" style="grid-column: span 2"><div class="v" id="stEnv">--</div><div class="k">不同市场环境表现（趋势/震荡）</div></div>
     </div>
     <div class="stats-note" id="statsNote">加载中…</div>
+    <div class="immutable-note">🔒 预测记录生成后不可修改，仅可追加后续更新与结算结果（outcome / status / updates 字段）。每条记录有固定ID，格式 HSI-日期-周期-序号，如 HSI-20260925-D-001。</div>
 
     <div id="predList"><div class="p-row">加载预测记录…</div></div>
 
     <footer>
-      预测为技术面推演，非投资建议 · 概率为模型主观估计，非统计值<br/>
+      预测为技术面推演，非投资建议 · 置信度为模型主观评估，非历史统计概率，样本积累后将改为统计命中率<br/>
       <a href="/">minigavin · 投资雷达</a> · <a href="../">恒指K线分析</a>
     </footer>
   </div>
@@ -113,28 +131,50 @@
 
       // ---- stats：样本不足禁止编造数字 ----
       el('stTotal').textContent = String(preds.length);
+      var statIds = ['stDir', 'stLevel', 'stPnl', 'stMfe', 'stMae', 'stRR', 'stStreak', 'stEnv'];
       if (settled.length >= minN) {
+        var avg = function (arr) { return arr.length ? arr.reduce(function (a, b) { return a + b; }, 0) / arr.length : null; };
         var dirHits = settled.filter(function (p) { return p.outcome.directionHit === true; }).length;
         el('stDir').textContent = (dirHits / settled.length * 100).toFixed(0) + '%';
-        var condSample = settled.filter(function (p) {
-          return Array.isArray(p.outcome.conditionTriggered) && p.outcome.conditionTriggered.length > 0;
-        });
-        el('stCond').textContent = condSample.length
-          ? (condSample.filter(function (p) { return p.outcome.hitScenario && p.outcome.hitScenario !== 'none'; }).length / condSample.length * 100).toFixed(0) + '%'
-          : '—';
+        var lvSample = settled.filter(function (p) { return typeof p.outcome.levelHeld === 'boolean'; });
+        el('stLevel').textContent = lvSample.length
+          ? (lvSample.filter(function (p) { return p.outcome.levelHeld; }).length / lvSample.length * 100).toFixed(0) + '%' : '—';
+        var pnls = settled.map(function (p) { return p.outcome.pnlPct; }).filter(function (x) { return typeof x === 'number'; });
+        var avgPnl = avg(pnls);
+        el('stPnl').textContent = avgPnl != null ? (avgPnl >= 0 ? '+' : '') + avgPnl.toFixed(2) + '%' : '—';
         var mfes = settled.map(function (p) { return p.outcome.mfe; }).filter(function (x) { return typeof x === 'number'; });
         var maes = settled.map(function (p) { return p.outcome.mae; }).filter(function (x) { return typeof x === 'number'; });
-        var avg = function (arr) { return arr.length ? arr.reduce(function (a, b) { return a + b; }, 0) / arr.length : null; };
         var avgMfe = avg(mfes), avgMae = avg(maes);
-        el('stMfeMae').textContent = (avgMfe != null && avgMae != null) ? avgMfe.toFixed(0) + ' / ' + avgMae.toFixed(0) : '—';
+        el('stMfe').textContent = avgMfe != null ? avgMfe.toFixed(0) + ' 点' : '—';
+        el('stMae').textContent = avgMae != null ? avgMae.toFixed(0) + ' 点' : '—';
         el('stRR').textContent = (avgMfe != null && avgMae != null && avgMae > 0) ? (avgMfe / avgMae).toFixed(2) : '—';
+        var streak = 0, maxStreak = 0;
+        settled.slice().sort(function (a, b) { return String(a.createdAt || '').localeCompare(String(b.createdAt || '')); })
+          .forEach(function (p) {
+            if (p.outcome.directionHit === false) { streak++; if (streak > maxStreak) maxStreak = streak; }
+            else streak = 0;
+          });
+        el('stStreak').textContent = String(maxStreak);
+        var envGroups = {};
+        settled.forEach(function (p) {
+          var env = (p.outcome && p.outcome.marketEnv) || '未分类';
+          if (!envGroups[env]) envGroups[env] = { n: 0, hit: 0 };
+          envGroups[env].n++;
+          if (p.outcome.directionHit) envGroups[env].hit++;
+        });
+        el('stEnv').textContent = Object.keys(envGroups).map(function (k) {
+          var g = envGroups[k];
+          return k + ' ' + (g.hit / g.n * 100).toFixed(0) + '%(' + g.n + ')';
+        }).join(' · ') || '—';
         el('statsNote').textContent = '统计基于 ' + settled.length + ' 条已结算预测。';
       } else {
-        el('stDir').textContent = '—';
-        el('stCond').textContent = '—';
-        el('stMfeMae').textContent = '—';
-        el('stRR').textContent = '—';
-        el('statsNote').textContent = '样本积累中（已结算 ' + settled.length + '/' + minN + '）· 样本不足前不展示命中率等统计，避免小样本误导。';
+        var pendingTxt = '样本积累中（' + settled.length + '/' + minN + '）';
+        statIds.forEach(function (id) {
+          var node = el(id);
+          node.textContent = pendingTxt;
+          node.classList.add('pending');
+        });
+        el('statsNote').textContent = '已结算样本 ' + settled.length + '/' + minN + ' 条 · 样本不足前每项统计均显示「样本积累中」，绝不编造数字，避免小样本误导。';
       }
 
       // ---- prediction cards ----
@@ -149,12 +189,23 @@
         card.className = 'pred';
         var o = p.outcome;
         var statusCls, statusTxt;
-        if (o == null) { statusCls = 'pending'; statusTxt = '进行中 · 有效期至 ' + escapeHtml(p.horizonEndDate || '待定'); }
-        else if (o.hitScenario && o.hitScenario !== 'none') { statusCls = 'hit'; statusTxt = '已结算 · 命中：' + escapeHtml(o.hitScenario); }
-        else { statusCls = 'miss'; statusTxt = '已结算 · 未命中'; }
+        var st = p.status || '';
+        if (o == null) {
+          statusCls = 'pending';
+          statusTxt = (st || '进行中') + ' · 有效期至 ' + escapeHtml(p.horizonEndDate || '待定');
+        } else if (o.hitScenario && o.hitScenario !== 'none') {
+          statusCls = 'hit'; statusTxt = st || ('✓ 命中：' + escapeHtml(o.hitScenario));
+        } else {
+          statusCls = 'miss'; statusTxt = st || '✗ 失效';
+        }
+
+        var fieldRow = function (k, v, cls) {
+          if (!v) return '';
+          return '<div class="p-field"><span class="fk">' + k + '</span><span class="fv' + (cls ? ' ' + cls : '') + '">' + escapeHtml(v) + '</span></div>';
+        };
 
         var scRows = (p.scenarios || []).map(function (sc) {
-          return '<div class="p-row"><span class="prob">' + Math.round((sc.probability || 0) * 100) + '%</span> <b>' + escapeHtml(sc.name) + '</b><br/>' +
+          return '<div class="p-row"><span class="prob">置信度 ' + Math.round((sc.probability || 0) * 100) + '%</span> <b>' + escapeHtml(sc.name) + '</b><br/>' +
             '目标：' + escapeHtml(sc.target || '—') + '<br/>' +
             '触发：' + escapeHtml(sc.trigger || '—') + '<br/>' +
             '失效：<b style="color:var(--down)">' + escapeHtml(sc.invalidation || '—') + '</b></div>';
@@ -172,20 +223,35 @@
           outcomeHtml = '<div class="p-outcome"><b>结算结果</b>（' + escapeHtml(o.settledAt || '') + '）：' +
             '期末价 ' + (o.priceAtHorizon != null ? fmt(o.priceAtHorizon) : '—') +
             ' · 方向' + (o.directionHit ? '命中' : '未命中') +
+            (typeof o.pnlPct === 'number' ? ' · 涨跌幅 ' + (o.pnlPct >= 0 ? '+' : '') + o.pnlPct.toFixed(2) + '%' : '') +
             (typeof o.mfe === 'number' ? ' · MFE ' + fmt(o.mfe) : '') +
             (typeof o.mae === 'number' ? ' · MAE ' + fmt(o.mae) : '') +
             (o.note ? '<br/>' + escapeHtml(o.note) : '') + '</div>';
         }
 
+        var updatesHtml = '';
+        if (Array.isArray(p.updates) && p.updates.length) {
+          updatesHtml = '<div class="p-updates"><div class="p-sect">后续更新（仅追加，不改原记录）</div>' +
+            p.updates.map(function (u) {
+              return '<div class="p-update"><span class="ut">' + escapeHtml(u.at || '') + '</span>' + escapeHtml(u.text || '') + '</div>';
+            }).join('') + '</div>';
+        }
+
         card.innerHTML =
           '<div class="p-head"><span class="p-id">' + escapeHtml(p.id) + '</span>' +
+          (p.period ? '<span class="p-period">' + escapeHtml(p.period) + '</span>' : '') +
           '<span class="p-status ' + statusCls + '">' + statusTxt + '</span></div>' +
-          '<div class="p-base">发布时价格 <b>' + fmt(p.basePrice) + '</b>（' + escapeHtml(p.baseDate) + ' 收盘）· 周期 ' + escapeHtml(p.horizon || '') + ' · 区间 <b>' + fmt(p.targetLower) + ' – ' + fmt(p.targetUpper) + '</b></div>' +
-          '<div class="p-bias">观点：' + escapeHtml(p.biasLabel || p.bias || '') + '</div>' +
+          fieldRow('基准价', (p.basePrice != null ? fmt(p.basePrice) : '—') + '（' + (p.baseDate || '') + ' 收盘）') +
+          fieldRow('预测周期', p.horizonDesc || p.horizon) +
+          fieldRow('判断', p.judgment || p.biasLabel || p.bias) +
+          fieldRow('关键支撑', p.keySupport) +
+          fieldRow('转强条件', p.strengthCondition, 'good') +
+          fieldRow('失效条件', p.invalidCondition, 'bad') +
+          fieldRow('目标区间', (p.targetLower != null && p.targetUpper != null) ? fmt(p.targetLower) + ' – ' + fmt(p.targetUpper) : '') +
           '<div class="p-sect">条件地图（发生什么 → 看哪里）</div>' + klRows +
           '<div class="p-sect">情景与失效位</div>' + scRows +
           (p.reasoningDigest ? '<div class="p-digest">推理摘要：' + escapeHtml(p.reasoningDigest) + '</div>' : '') +
-          outcomeHtml;
+          outcomeHtml + updatesHtml;
         listEl.appendChild(card);
       });
     })

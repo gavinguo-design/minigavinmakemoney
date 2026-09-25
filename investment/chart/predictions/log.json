@@ -1,18 +1,25 @@
 {
-  "$schema_note": "miniGG 恒指预测留痕日志。predictions=历史预测快照数组，每条发布时完整冻结，发布后不改（结算只写 outcome）。outcome=null 表示进行中；结算后填 {settledAt, priceAtHorizon, hitScenario(命中的情景名或 none), directionHit(bool), conditionTriggered(触发过的关键条件描述数组), mfe(最大有利偏移点数), mae(最大不利偏移点数), note}。统计口径：方向命中率=directionHit 为 true 的比例；条件触发后命中率=conditionTriggered 非空样本中 hitScenario 非 none 的比例。样本 <30 条时页面只显示「样本积累中」，不显示统计数字。",
+  "$schema_note": "miniGG 恒指预测留痕日志 v2。ID 格式：HSI-YYYYMMDD-{D|W|H60|M15}-{三位序号}（D=日线 W=周线 H60=60分钟 M15=15分钟）。不可变原则：预测记录生成后除 outcome/status/updates 三个结算字段外不可回改；后续跟进只能 append 到 updates 数组（每条 {at, text}），不修改原快照。outcome=null 表示进行中；结算后填 {settledAt, priceAtHorizon, hitScenario, directionHit(bool), conditionTriggered(数组), mfe(最大有利偏移点数), mae(最大不利偏移点数), pnlPct(触发后涨跌幅%), note}。status 取值：进行中 / ✓主情景成立 / ✗失效 / 部分命中。统计口径见 stats.metricsNote。",
   "stats": {
     "minSamplesForStats": 30,
-    "note": "样本不足 30 条前不计算/不展示命中率等统计，防止小样本误导"
+    "note": "样本不足 30 条前不计算/不展示命中率等统计，防止小样本误导",
+    "metricsNote": "统计字段：方向命中率、关键位有效率、触发后平均涨跌幅、平均MFE、平均MAE、平均盈亏比(MFE/MAE)、最大连续失败次数、不同市场环境表现。全部由已结算样本计算，样本不足时页面显示「样本积累中（N/30）」。"
   },
   "predictions": [
     {
-      "id": "hsi-2026-09-25-v1",
+      "id": "HSI-20260925-D-001",
+      "legacyId": "hsi-2026-09-25-v1",
       "createdAt": "2026-09-25T19:45:00+08:00",
       "symbol": "^HSI",
+      "period": "日线",
+      "horizonDesc": "未来约8个交易日（至 2026-10-13）",
       "basePrice": 24510.1,
       "baseDate": "2026-09-25",
       "bias": "neutral",
-      "biasLabel": "弱势震荡 · 中性偏空",
+      "judgment": "弱势震荡 · 中性偏空：全均线之下 + MACD死叉扩张 + 双缺口压顶，反弹按弱势修复处理",
+      "keySupport": "24,276–24,358（9/25低点 + 9/17低点构成的支撑区，多空分界）",
+      "strengthCondition": "放量收阳、收盘站回 24,650（回补第一缺口）→ 修复情景启动；再站回 24,812 → 空头结构显著弱化",
+      "invalidCondition": "收盘跌破 24,276 → 主情景失效，切换回调剧本（下看 24,000）",
       "horizon": "未来约8个交易日",
       "horizonEndDate": "2026-10-13",
       "targetUpper": 25070,
@@ -25,21 +32,21 @@
       },
       "scenarios": [
         {
-          "name": "主情景 · 区间震荡修复",
+          "name": "A · 守住24276后的震荡修复路径",
           "probability": 0.45,
           "target": "25,050–25,070（20日均线 + 9/21–9/23 高点压力带）",
           "trigger": "守住 24,276–24,358 低点区，放量收阳回补 24,537–24,648 缺口",
           "invalidation": "收盘跌破 24,276 剧本作废"
         },
         {
-          "name": "回调情景 · 再探24000",
+          "name": "B · 跌破24276后的回调路径（下看24000）",
           "probability": 0.35,
           "target": "24,000 附近（整数关口）获支撑后企稳",
           "trigger": "反弹无量、受阻于 24,648 缺口上沿，随后收盘跌破 24,276",
           "invalidation": "收盘放量站回 24,650 上方剧本作废"
         },
         {
-          "name": "破位情景 · 下探7月平台",
+          "name": "C · 连破24276/24000后的破位路径",
           "probability": 0.20,
           "target": "23,250–23,500（7月3–6日低点平台）",
           "trigger": "收盘接连跌破 24,276 与 24,000，且反抽无力伴随放量下跌",
@@ -47,7 +54,9 @@
         }
       ],
       "reasoningDigest": "均线全下弯+MACD死叉扩张=趋势偏空；双缺口压顶；缩量反弹量价背离；长下影+RSI38低位有承接；南向29亿属噪音；地缘riskoff与弱美元对冲；60m/15m未获共振",
-      "outcome": null
+      "status": "进行中",
+      "outcome": null,
+      "updates": []
     }
   ]
 }

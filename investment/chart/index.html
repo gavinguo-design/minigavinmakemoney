@@ -735,14 +735,13 @@
       currentBars = toBars(data, intraday);
       series.setData(currentBars);
       volumeSeries.setData(toVolumeData(currentBars));
-      chart.timeScale().fitContent();
       updateLivePrice(data);
       if (annotations) {
         renderLevels(annotations, iv);
         renderMarkers(annotations, iv, currentBars);
         renderForecastCandles(annotations, iv, currentBars);
       }
-      chart.timeScale().fitContent();
+      setDefaultView(iv);
       loadingEl.classList.add('hidden');
     }).catch(function (err) {
       if (currentIv !== iv) return;
@@ -750,6 +749,21 @@
       loadingEl.style.cursor = 'pointer';
       loadingEl.onclick = function () { loadingEl.onclick = null; loadingEl.style.cursor = ''; loadInterval(iv); };
     });
+  }
+
+  // ---------- default view ----------
+  // 默认只看最近一段行情，而不是 fitContent 挤压全部历史
+  var DEFAULT_VISIBLE_BARS = { '1d': 14, '1wk': 30, '60m': 35, '15m': 55 };
+  var FORECAST_EXTRA_BARS = 9; // 日线预测蜡烛区留白
+
+  function setDefaultView(iv) {
+    var n = currentBars.length;
+    if (!n) { chart.timeScale().fitContent(); return; }
+    var visible = DEFAULT_VISIBLE_BARS[iv] || 60;
+    var extra = iv === '1d' ? FORECAST_EXTRA_BARS : 2;
+    var from = Math.max(0, n - visible) - 0.5;
+    var to = n - 1 + extra + 0.5;
+    chart.timeScale().setVisibleLogicalRange({ from: from, to: to });
   }
 
   // ---------- zoom controls ----------
@@ -765,7 +779,7 @@
 
   el('zoomIn').addEventListener('click', function () { zoomBy(0.6); });
   el('zoomOut').addEventListener('click', function () { zoomBy(1 / 0.6); });
-  el('zoomReset').addEventListener('click', function () { chart.timeScale().fitContent(); });
+  el('zoomReset').addEventListener('click', function () { setDefaultView(currentIv); });
 
   el('tabs').addEventListener('click', function (e) {
     var tab = e.target.closest('.tab');
@@ -790,7 +804,7 @@
       renderLevels(a, currentIv);
       renderMarkers(a, currentIv, currentBars);
       renderForecastCandles(a, currentIv, currentBars);
-      chart.timeScale().fitContent();
+      setDefaultView(currentIv);
     }
   });
 

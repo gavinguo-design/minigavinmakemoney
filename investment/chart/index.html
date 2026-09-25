@@ -66,6 +66,42 @@
     .forecast .summary { flex: 1 1 100%; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
     .forecast .kv { font-size: 12px; color: var(--muted); }
     .forecast .kv b { color: var(--text); font-weight: 600; }
+    .forecast .kv.warn b { color: var(--down); }
+
+    /* scenario cards */
+    .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    @media (max-width: 720px) { .scenarios { grid-template-columns: 1fr; } }
+    .sc-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px 14px; cursor: pointer; user-select: none;
+      transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+      position: relative; overflow: hidden;
+    }
+    .sc-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--sc-color, #64748b);
+    }
+    .sc-card:hover { border-color: #334155; }
+    .sc-card.active { border-color: var(--sc-color, #334155); box-shadow: 0 0 0 1px var(--sc-color); }
+    .sc-card.dimmed { opacity: 0.35; }
+    .sc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .sc-name { font-size: 13px; font-weight: 700; }
+    .sc-prob {
+      font-size: 14px; font-weight: 800; font-family: 'JetBrains Mono', monospace;
+      color: var(--sc-color, var(--text));
+    }
+    .sc-row { font-size: 11.5px; color: #94a3b8; margin-top: 6px; line-height: 1.5; }
+    .sc-row b { color: #cbd5e1; font-weight: 600; }
+    .sc-row.invalid b { color: var(--down); }
+    .sc-tip { font-size: 10.5px; color: #475569; margin-top: 6px; }
+
+    /* forecast hint on non-daily intervals */
+    .fc-hint {
+      position: absolute; top: 10px; left: 12px; z-index: 5;
+      font-size: 11px; color: var(--gold);
+      background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.25);
+      padding: 4px 10px; border-radius: 999px; pointer-events: none;
+    }
 
     /* interval tabs */
     .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -145,8 +181,12 @@
       <span class="kv" id="fcTarget"></span>
       <span class="kv" id="fcHorizon"></span>
       <span class="kv" id="fcUpdated"></span>
+      <span class="kv warn" id="fcInvalid"></span>
       <p class="summary" id="fcSummary">正在加载分析标注……</p>
     </div>
+
+    <!-- Scenario cards -->
+    <div class="scenarios hidden" id="scenarioCards"></div>
 
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
@@ -159,6 +199,7 @@
     <!-- Chart -->
     <div class="chart-card">
       <div id="chart"></div>
+      <div class="fc-hint hidden" id="fcHint">预测蜡烛图请切换到日线查看</div>
       <div class="loading" id="loading">加载行情数据…</div>
     </div>
 
@@ -176,7 +217,7 @@
     </div>
 
     <footer>
-      标注由 miniGG 维护 · 行情数据仅供参考，不构成投资建议<br/>
+      <span id="disclaimerText">标注由 miniGG 维护 · 行情数据仅供参考，不构成投资建议</span><br/>
       <a href="/">minigavin · 投资雷达</a>
     </footer>
   </div>
@@ -239,6 +280,152 @@
   var currentIv = '1d';
   var currentBars = [];     // current candle data
   var markerByTime = {};    // time -> marker obj (for click detail)
+  var fcSeriesList = [];    // per-scenario forecast candlestick series
+  var fcBgSeries = null;    // forecast zone background tint (histogram overlay)
+  var activeScenario = -1;  // -1 = show all scenarios
+
+  // ---------- forecast candle layer ----------
+
+  function hexToRgba(hex, alpha) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
+    if (!m) return 'rgba(148,163,184,' + alpha + ')';
+    var n = parseInt(m[1], 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + alpha + ')';
+  }
+
+  // next N business days (skip Sat/Sun) after a business-day time object
+  function futureBusinessDays(lastTime, n) {
+    var out = [];
+    var d = new Date(Date.UTC(lastTime.year, lastTime.month - 1, lastTime.day));
+    while (out.length < n) {
+      d.setUTCDate(d.getUTCDate() + 1);
+      var dow = d.getUTCDay();
+      if (dow === 0 || dow === 6) continue;
+      out.push({ year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() });
+    }
+    return out;
+  }
+
+  function clearForecastSeries() {
+    fcSeriesList.forEach(function (fs) { try { chart.removeSeries(fs.series); } catch (e) {} });
+    fcSeriesList = [];
+    if (fcBgSeries) { try { chart.removeSeries(fcBgSeries); } catch (e) {} fcBgSeries = null; }
+  }
+
+  function shortName(name) {
+    return String(name || '').split('·')[0].trim() || name;
+  }
+
+  function renderForecastCandles(a, iv, bars) {
+    clearForecastSeries();
+    var f = a && a.forecast;
+    var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
+    var hint = el('fcHint');
+
+    if (scenarios.length === 0 || bars.length === 0) { hint.classList.add('hidden'); return; }
+    if (iv !== '1d') {
+      // 非日线：优雅隐藏预测层，仅提示
+      hint.classList.remove('hidden');
+      return;
+    }
+    hint.classList.add('hidden');
+
+    var lastBar = bars[bars.length - 1];
+    var maxOffset = 0;
+    scenarios.forEach(function (sc) {
+      (sc.path || []).forEach(function (p) { if (p.offset > maxOffset) maxOffset = p.offset; });
+    });
+    if (maxOffset === 0) return;
+    var futureTimes = futureBusinessDays(lastBar.time, maxOffset); // index = offset-1
+
+    // 背景色带：区分「历史 | 预测」区域，第一根加深模拟分隔线
+    fcBgSeries = chart.addHistogramSeries({
+      priceScaleId: 'fc-bg',
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false
+    });
+    chart.priceScale('fc-bg').applyOptions({ scaleMargins: { top: 0, bottom: 0 }, visible: false });
+    var bgData = futureTimes.map(function (t, i) {
+      return { time: t, value: 1, color: i === 0 ? 'rgba(245,200,66,0.22)' : 'rgba(148,163,184,0.06)' };
+    });
+    fcBgSeries.setData(bgData);
+
+    scenarios.forEach(function (sc, idx) {
+      var body = hexToRgba(sc.color, 0.40);
+      var border = hexToRgba(sc.color, 0.75);
+      var wick = hexToRgba(sc.color, 0.65);
+      var s = chart.addCandlestickSeries({
+        upColor: body, downColor: body,
+        borderUpColor: border, borderDownColor: border,
+        wickUpColor: wick, wickDownColor: wick,
+        priceLineVisible: false,
+        lastValueVisible: false
+      });
+      var data = (sc.path || [])
+        .filter(function (p) { return p && p.offset >= 1 && p.offset <= maxOffset; })
+        .sort(function (x, y) { return x.offset - y.offset; })
+        .map(function (p) {
+          return {
+            time: futureTimes[p.offset - 1],
+            open: p.o, high: p.h, low: p.l, close: p.c
+          };
+        });
+      s.setData(data);
+      // 概率标签：标在该情景路径最后一根上方
+      if (data.length > 0) {
+        s.setMarkers([{
+          time: data[data.length - 1].time,
+          position: 'aboveBar',
+          shape: 'circle',
+          color: hexToRgba(sc.color, 0.9),
+          text: shortName(sc.name) + ' ' + Math.round((sc.probability || 0) * 100) + '%'
+        }]);
+      }
+      fcSeriesList.push({ series: s, scenario: sc, index: idx });
+    });
+    applyScenarioVisibility();
+  }
+
+  function applyScenarioVisibility() {
+    fcSeriesList.forEach(function (fs) {
+      fs.series.applyOptions({ visible: activeScenario === -1 || fs.index === activeScenario });
+    });
+    var cards = document.querySelectorAll('.sc-card');
+    cards.forEach(function (card) {
+      var i = parseInt(card.getAttribute('data-idx'), 10);
+      card.classList.toggle('active', i === activeScenario);
+      card.classList.toggle('dimmed', activeScenario !== -1 && i !== activeScenario);
+    });
+  }
+
+  function renderScenarioCards(a) {
+    var f = a && a.forecast;
+    var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
+    var wrap = el('scenarioCards');
+    wrap.innerHTML = '';
+    if (scenarios.length === 0) { wrap.classList.add('hidden'); return; }
+    wrap.classList.remove('hidden');
+    scenarios.forEach(function (sc, idx) {
+      var card = document.createElement('div');
+      card.className = 'sc-card';
+      card.setAttribute('data-idx', String(idx));
+      card.style.setProperty('--sc-color', sc.color || '#64748b');
+      card.innerHTML =
+        '<div class="sc-head"><span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + '</span>' +
+        '<span class="sc-prob">' + Math.round((sc.probability || 0) * 100) + '%</span></div>' +
+        (sc.target ? '<div class="sc-row">目标：<b>' + escapeHtml(sc.target) + '</b></div>' : '') +
+        (sc.trigger ? '<div class="sc-row">触发：<b>' + escapeHtml(sc.trigger) + '</b></div>' : '') +
+        (sc.invalidation ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(sc.invalidation) + '</b></div>' : '') +
+        (sc.note ? '<div class="sc-row">' + escapeHtml(sc.note) + '</div>' : '') +
+        '<div class="sc-tip">点击卡片单独查看该情景路径</div>';
+      card.addEventListener('click', function () {
+        activeScenario = (activeScenario === idx) ? -1 : idx;
+        applyScenarioVisibility();
+      });
+      wrap.appendChild(card);
+    });
+  }
 
   // ---------- data loading ----------
 
@@ -323,6 +510,13 @@
       ? '区间 <b>' + fmt(f.targetLower) + ' – ' + fmt(f.targetUpper) + '</b>' : '';
     el('fcHorizon').innerHTML = f.horizon ? '周期 <b>' + escapeHtml(f.horizon) + '</b>' : '';
     el('fcUpdated').innerHTML = f.updatedAt ? '更新 <b>' + escapeHtml(f.updatedAt) + '</b>' : '';
+    el('fcInvalid').innerHTML = f.invalidation ? '失效位 <b>' + escapeHtml(f.invalidation) + '</b>' : '';
+  }
+
+  function renderDisclaimer(a) {
+    if (a && a.disclaimer) {
+      el('disclaimerText').textContent = '标注由 miniGG 维护 · ' + a.disclaimer;
+    }
   }
 
   function fmt(n) { return Number(n).toLocaleString('en-US'); }
@@ -375,11 +569,14 @@
       var isSupport = lv.type === 'support';
       var item = document.createElement('div');
       item.className = 'anno-item';
+      var bodyParts = [];
+      if (lv.reason) bodyParts.push('理由：' + escapeHtml(lv.reason));
+      if (lv.note) bodyParts.push(escapeHtml(lv.note));
       item.innerHTML =
         '<div class="a-head"><span class="a-dot" style="background:' + (isSupport ? UP : DOWN) + '"></span>' +
         '<span>' + escapeHtml(lv.label || (isSupport ? '支撑' : '阻力')) + '</span>' +
         '<span class="a-date mono">' + fmt(lv.price) + '</span></div>' +
-        (lv.note ? '<div class="a-body">' + escapeHtml(lv.note) + '</div>' : '');
+        (bodyParts.length ? '<div class="a-body">' + bodyParts.join('<br/>') + '</div>' : '');
       listEl.appendChild(item);
     });
   }
@@ -495,7 +692,9 @@
       if (annotations) {
         renderLevels(annotations, iv);
         renderMarkers(annotations, iv, currentBars);
+        renderForecastCandles(annotations, iv, currentBars);
       }
+      chart.timeScale().fitContent();
       loadingEl.classList.add('hidden');
     }).catch(function (err) {
       if (currentIv !== iv) return;
@@ -521,10 +720,14 @@
   fetchAnnotations().then(function (a) {
     annotations = a;
     renderForecast(a);
+    renderScenarioCards(a);
+    renderDisclaimer(a);
     // if kline already loaded, apply annotations now
     if (currentBars.length > 0 && a) {
       renderLevels(a, currentIv);
       renderMarkers(a, currentIv, currentBars);
+      renderForecastCandles(a, currentIv, currentBars);
+      chart.timeScale().fitContent();
     }
   });
 

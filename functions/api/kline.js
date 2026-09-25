@@ -1,10 +1,24 @@
 // Cloudflare Pages Function: /api/kline
-// Proxy for Yahoo Finance chart API (^HSI) to avoid browser CORS.
-// Usage: /api/kline?interval=1d&range=2y
-// Whitelisted intervals/ranges only. Responses cached ~5 minutes.
+// Proxy for Yahoo Finance chart API to avoid browser CORS.
+// Usage: /api/kline?symbol=^HSI&interval=1d&range=2y
+// Whitelisted symbols/intervals/ranges only. Responses cached ~5 minutes.
 
 const ALLOWED_INTERVALS = new Set(['1d', '1wk', '60m', '15m']);
 const ALLOWED_RANGES = new Set(['5d', '1mo', '3mo', '6mo', '1y', '2y', '5y']);
+
+// symbol whitelist (prevent open-proxy abuse)
+const ALLOWED_SYMBOLS = new Set([
+  '^HSI',      // 恒生指数
+  '^HSCE',     // 国企指数
+  '^GSPC',     // 标普500
+  '^IXIC',     // 纳斯达克综合
+  '^N225',     // 日经225
+  '000001.SS', // 上证指数
+  '399001.SZ', // 深证成指
+  'QQQ',       // 纳指100 ETF
+  'BTC-USD',   // 比特币
+]);
+const DEFAULT_SYMBOL = '^HSI';
 
 // sane default range per interval
 const DEFAULT_RANGE = {
@@ -30,7 +44,11 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const interval = url.searchParams.get('interval') || '1d';
   let range = url.searchParams.get('range') || DEFAULT_RANGE[interval] || '1y';
+  const symbol = url.searchParams.get('symbol') || DEFAULT_SYMBOL;
 
+  if (!ALLOWED_SYMBOLS.has(symbol)) {
+    return json({ error: 'invalid symbol', allowed: [...ALLOWED_SYMBOLS] }, 400, corsHeaders);
+  }
   if (!ALLOWED_INTERVALS.has(interval)) {
     return json({ error: 'invalid interval', allowed: [...ALLOWED_INTERVALS] }, 400, corsHeaders);
   }
@@ -40,7 +58,7 @@ export async function onRequest(context) {
 
   // Edge cache (keyed by normalized URL)
   const cacheKey = new Request(
-    `https://cache.internal/api/kline?interval=${interval}&range=${range}`,
+    `https://cache.internal/api/kline?symbol=${encodeURIComponent(symbol)}&interval=${interval}&range=${range}`,
     { method: 'GET' }
   );
   const cache = caches.default;
@@ -52,7 +70,7 @@ export async function onRequest(context) {
   }
 
   const yahooUrl =
-    `https://query1.finance.yahoo.com/v8/finance/chart/%5EHSI` +
+    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
     `?interval=${encodeURIComponent(interval)}&range=${encodeURIComponent(range)}`;
 
   let upstream;
@@ -88,7 +106,7 @@ export async function onRequest(context) {
   const q = (result.indicators && result.indicators.quote && result.indicators.quote[0]) || {};
   const meta = result.meta || {};
   const payload = {
-    symbol: meta.symbol || '^HSI',
+    symbol: meta.symbol || symbol,
     interval,
     range,
     gmtoffset: meta.gmtoffset || 28800,

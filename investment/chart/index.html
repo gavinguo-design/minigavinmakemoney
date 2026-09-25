@@ -68,6 +68,61 @@
     .forecast .kv b { color: var(--text); font-weight: 600; }
     .forecast .kv.warn b { color: var(--down); }
 
+    /* playbook (条件式交易地图) */
+    .playbook { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .pb-item {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 11px 14px; font-size: 12.5px; line-height: 1.55; cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .pb-item:hover { border-color: #334155; }
+    .pb-state { font-weight: 700; font-size: 12px; color: #cbd5e1; margin-bottom: 5px; }
+    .pb-flow { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+    .pb-if { color: var(--gold); font-weight: 600; font-size: 11px; flex-shrink: 0; }
+    .pb-cond { color: #e2e8f0; font-weight: 600; }
+    .pb-then-label { color: var(--up); font-weight: 600; font-size: 11px; flex-shrink: 0; }
+    .pb-then { color: #94a3b8; }
+    .pb-level { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 4px; }
+
+    /* path tree */
+    .ptree { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; overflow-x: auto; }
+    .pt-root { font-size: 13px; font-weight: 700; color: var(--text); padding-bottom: 6px; }
+    .pt-root .mono { color: var(--gold); }
+    .pt-children { list-style: none; margin: 0; padding-left: 14px; border-left: 1px dashed #2a3448; }
+    .pt-node { position: relative; padding: 6px 0 6px 14px; }
+    .pt-node::before {
+      content: ''; position: absolute; left: 0; top: 17px; width: 10px; height: 1px;
+      background: #2a3448;
+    }
+    .pt-cond { font-size: 11.5px; color: var(--gold); font-weight: 600; }
+    .pt-label { font-size: 12.5px; font-weight: 700; color: #e2e8f0; margin-top: 1px; }
+    .pt-zone { font-size: 11px; color: #94a3b8; font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+
+    /* reasoning chain */
+    .reasoning { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+    .rs-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .rs-item { display: flex; gap: 10px; font-size: 12.5px; line-height: 1.6; color: #cbd5e1; }
+    .rs-num {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px; margin-top: 1px;
+      background: rgba(0,216,127,0.1); border: 1px solid rgba(0,216,127,0.3);
+      color: var(--up); font-size: 10.5px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .block-title { font-size: 13px; font-weight: 700; margin: 16px 4px 8px; color: #94a3b8; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .block-title small { font-size: 11px; font-weight: 400; color: #475569; }
+
+    .track-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 600; color: var(--up); text-decoration: none;
+      background: rgba(0,216,127,0.08); border: 1px solid rgba(0,216,127,0.3);
+      padding: 6px 14px; border-radius: 999px; margin: 2px 4px 14px;
+    }
+    .track-link:hover { background: rgba(0,216,127,0.15); }
+
+    .prob-note { font-size: 10.5px; color: var(--muted); margin: 6px 4px 10px; }
+
     /* scenario cards */
     .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
     @media (max-width: 720px) { .scenarios { grid-template-columns: 1fr; } }
@@ -192,8 +247,9 @@
   </header>
 
   <div class="wrap">
-    <h1>恒指技术分析 · miniGG</h1>
-    <p class="sub">^HSI · 数据来源 Yahoo Finance（约 15 分钟延迟）· 绿涨红跌</p>
+    <h1>恒指交易地图 · miniGG</h1>
+    <p class="sub">^HSI · 数据来源 Yahoo Finance（约 15 分钟延迟）· 绿涨红跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
+    <a class="track-link" href="track/">📊 预测战绩 · 历史预测留痕可查 →</a>
 
     <!-- Forecast card -->
     <div class="forecast" id="forecastCard">
@@ -205,8 +261,21 @@
       <p class="summary" id="fcSummary">正在加载分析标注……</p>
     </div>
 
+    <!-- 推理链 -->
+    <div class="block-title hidden" id="reasoningTitle">推理过程 <small>每条 = 证据 → 结论，不是指标罗列</small></div>
+    <div class="reasoning hidden" id="reasoningCard"><ol class="rs-list" id="reasoningList"></ol></div>
+
+    <!-- 条件式交易地图 -->
+    <div class="block-title hidden" id="playbookTitle">条件地图 <small>发生什么 → 状态如何变 → 下一步看哪里</small></div>
+    <div class="playbook hidden" id="playbookList"></div>
+
+    <!-- 未来路径树 -->
+    <div class="block-title hidden" id="ptreeTitle">未来路径树 <small>条件分叉，不是单线预言</small></div>
+    <div class="ptree hidden" id="ptreeCard"></div>
+
     <!-- Scenario cards -->
     <div class="scenarios hidden" id="scenarioCards"></div>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 情景概率为模型主观估计、非统计值；在对应触发条件出现前，预测蜡烛与概率标签仅供参考，以条件地图为准。</p>
 
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
@@ -415,7 +484,7 @@
           position: 'aboveBar',
           shape: 'circle',
           color: hexToRgba(sc.color, 0.9),
-          text: shortName(sc.name) + ' ' + Math.round((sc.probability || 0) * 100) + '%'
+          text: shortName(sc.name) + ' ' + Math.round((sc.probability || 0) * 100) + '%（条件触发前仅供参考）'
         }]);
       }
       fcSeriesList.push({ series: s, scenario: sc, index: idx });
@@ -435,13 +504,79 @@
     });
   }
 
+  // ---------- 推理链 ----------
+  function renderReasoning(a) {
+    var f = a && a.forecast;
+    var list = (f && Array.isArray(f.reasoning)) ? f.reasoning : [];
+    var card = el('reasoningCard'), title = el('reasoningTitle'), ol = el('reasoningList');
+    if (!list.length) { card.classList.add('hidden'); title.classList.add('hidden'); return; }
+    ol.innerHTML = '';
+    list.forEach(function (line, i) {
+      var li = document.createElement('li');
+      li.className = 'rs-item';
+      li.innerHTML = '<span class="rs-num">' + (i + 1) + '</span><span>' + escapeHtml(line) + '</span>';
+      ol.appendChild(li);
+    });
+    card.classList.remove('hidden');
+    title.classList.remove('hidden');
+  }
+
+  // ---------- 条件式交易地图 playbook ----------
+  function renderPlaybook(a) {
+    var list = (a && Array.isArray(a.playbook)) ? a.playbook : [];
+    var wrap = el('playbookList'), title = el('playbookTitle');
+    if (!list.length) { wrap.classList.add('hidden'); title.classList.add('hidden'); return; }
+    wrap.innerHTML = '';
+    list.forEach(function (pb) {
+      var item = document.createElement('div');
+      item.className = 'pb-item';
+      item.innerHTML =
+        '<div class="pb-state">' + escapeHtml(pb.state || '') + '</div>' +
+        '<div class="pb-flow"><span class="pb-if">IF</span><span class="pb-cond">' + escapeHtml(pb.condition || '') + '</span></div>' +
+        '<div class="pb-flow"><span class="pb-then-label">THEN</span><span class="pb-then">' + escapeHtml(pb.then || '') + '</span></div>' +
+        (typeof pb.level === 'number' ? '<div class="pb-level">关联价位 ' + fmt(pb.level) + '</div>' : '');
+      wrap.appendChild(item);
+    });
+    wrap.classList.remove('hidden');
+    title.classList.remove('hidden');
+  }
+
+  // ---------- 未来路径树 pathTree ----------
+  function buildTreeNodes(children) {
+    if (!Array.isArray(children) || !children.length) return '';
+    var html = '<ul class="pt-children">';
+    children.forEach(function (node) {
+      html += '<li class="pt-node">' +
+        (node.condition ? '<div class="pt-cond">IF ' + escapeHtml(node.condition) + '</div>' : '') +
+        (node.label ? '<div class="pt-label">' + escapeHtml(node.label) + '</div>' : '') +
+        (node.targetZone ? '<div class="pt-zone">→ ' + escapeHtml(node.targetZone) + '</div>' : '') +
+        buildTreeNodes(node.children) +
+        '</li>';
+    });
+    return html + '</ul>';
+  }
+
+  function renderPathTree(a) {
+    var tree = a && a.pathTree;
+    var card = el('ptreeCard'), title = el('ptreeTitle');
+    if (!tree || !Array.isArray(tree.children) || !tree.children.length) {
+      card.classList.add('hidden'); title.classList.add('hidden'); return;
+    }
+    card.innerHTML =
+      '<div class="pt-root"><span class="mono">' + (typeof tree.price === 'number' ? fmt(tree.price) : '') + '</span> ' + escapeHtml(tree.label || '') + '</div>' +
+      buildTreeNodes(tree.children);
+    card.classList.remove('hidden');
+    title.classList.remove('hidden');
+  }
+
   function renderScenarioCards(a) {
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
     var wrap = el('scenarioCards');
     wrap.innerHTML = '';
-    if (scenarios.length === 0) { wrap.classList.add('hidden'); return; }
+    if (scenarios.length === 0) { wrap.classList.add('hidden'); el('probNote').classList.add('hidden'); return; }
     wrap.classList.remove('hidden');
+    el('probNote').classList.remove('hidden');
     scenarios.forEach(function (sc, idx) {
       var card = document.createElement('div');
       card.className = 'sc-card';
@@ -797,6 +932,9 @@
   fetchAnnotations().then(function (a) {
     annotations = a;
     renderForecast(a);
+    renderReasoning(a);
+    renderPlaybook(a);
+    renderPathTree(a);
     renderScenarioCards(a);
     renderDisclaimer(a);
     // if kline already loaded, apply annotations now

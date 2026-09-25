@@ -1,5 +1,5 @@
 {
-  "$schema_note": "miniGG 恒指分析标注数据 v3。字段说明：meta=元信息；disclaimer=页面底部免责声明；forecast=观点摘要+多情景预测（scenarios[].path 保留为兼容原始情景数据；页面仅渲染 scenarios[].zone 上下边界形成的情景区域，不渲染逐根预测蜡烛，其他周期显示提示；forecast.reasoning=推理链数组，每条一段「证据→结论」推理句；forecast.rr=盈亏比标尺数据 {refPrice参考价, target第一目标位, stop失效位, direction: long|short}，页面自动计算 R/R 并渲染标尺，字段缺失则标尺隐藏；scenarios[].rr=触发后参与的盈亏比 {entryHint入场提示, entry触发参与价, target目标, stop防守, direction}，页面自动换算比例）；playbook=条件式交易地图（每条 {state,condition,then,level}：发生 condition 后状态如何变化、下一步看哪里）；pathTree=未来路径树（{price,label,children:[{condition,label,targetZone,children}]}）；levels=水平价格线（支撑/阻力，reason=划线理由）；markers=K线事件标记。所有字段页面均做缺失容错，可只更新部分。",
+  "$schema_note": "miniGG 恒指分析标注数据 v3。字段说明：meta=元信息；disclaimer=页面底部免责声明；forecast=观点摘要+多情景预测（scenarios[].path 保留为兼容原始情景数据；页面仅渲染 scenarios[].zone 上下边界形成的情景区域，不渲染逐根预测蜡烛，其他周期显示提示；forecast.reasoning=推理链数组，每条一段「证据→结论」推理句；forecast.rr=盈亏比标尺数据，双向新结构 {refPrice参考价, long:{target,stop}, short:{target,stop}}，页面渲染做多/做空两行标尺；向后兼容旧单向结构 {refPrice, target, stop, direction: long|short}（历史存档仍用此格式，按 direction 渲染单行），字段缺失则标尺隐藏；scenarios[].rr=触发后参与的盈亏比 {entryHint入场提示, entry触发参与价, target目标, stop防守, direction}，页面自动换算比例）；playbook=条件式交易地图（每条 {state,condition,then,level}：发生 condition 后状态如何变化、下一步看哪里）；pathTree=未来路径树（{price,label,children:[{condition,label,targetZone,children}]}）；levels=水平价格线（支撑/阻力，reason=划线理由）；markers=K线事件标记。所有字段页面均做缺失容错，可只更新部分。",
   "meta": {
     "symbol": "^HSI",
     "updatedAt": "2026-09-25T19:45:00+08:00",
@@ -52,10 +52,15 @@
     "basePrice": 24510.1,
     "rr": {
       "refPrice": 24510.1,
-      "target": 24650,
-      "stop": 24276,
-      "direction": "long",
-      "note": "目标=第一缺口上沿 24,650（短线修复位），失效=24,276（9/25低点、多空分界）"
+      "long": {
+        "target": 24650,
+        "stop": 24276
+      },
+      "short": {
+        "target": 24000,
+        "stop": 24650
+      },
+      "note": "做多：目标=第一缺口上沿 24,650（短线修复位），失效=24,276（9/25低点、多空分界）；做空：目标=24,000 整数关口（回调情景目标位），失效=24,650（放量回补第一缺口则空头逻辑弱化）"
     },
     "reasoning": [
       "价格位于全部均线之下（MA20≈25,061 / MA50≈25,322 均下弯）+ MACD 零轴下死叉且柱体再扩张（-72→-90）→ 日线趋势明确偏空，反弹先当反弹处理，不当反转处理",

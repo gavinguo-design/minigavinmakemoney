@@ -18,7 +18,10 @@
 //            [3]price [4]prevClose [5]open [30]"2026/09/25 18:31:13"
 //            [33]high [34]low [36]amount(万元)
 //   Sina:    rt_hkHSI="HSI,name,[2]open,[3]prevClose,[4]high,[5]low,[6]price,
-//            [7]chg,[8]pct,,,[11]amount(千元),[12]volume,...,[16]date,[17]time
+//            [7]chg,[8]pct,,,[11]amount(千元),[12]volume,...,[17]date,[18]time
+//            (verified live 2026-09-25: index 16/17 was off-by-one and broke
+//            ts parsing → valid() rejected Sina → silently fell through to
+//            Tencent, which has no share volume. Fixed to 17/18.)
 
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
@@ -65,6 +68,22 @@ export async function onRequest(context) {
 
   if (!payload) {
     return json({ error: 'all upstreams failed', detail: errors }, corsHeaders);
+  }
+
+  // Defensive volume backfill: whichever upstream won the race above may lack
+  // share volume (e.g. Eastmoney's overseas host occasionally omits f47, or a
+  // future reorder puts Tencent first). Sina always carries share volume, so
+  // if the winning payload has none, ask Sina just for that field and merge.
+  if (payload.volume == null && payload.source !== 'sina') {
+    try {
+      const sinaPayload = await fetchSina();
+      if (typeof sinaPayload.volume === 'number' && sinaPayload.volume > 0) {
+        payload.volume = sinaPayload.volume;
+        payload.source = payload.source + '+sina';
+      }
+    } catch (e) {
+      errors.push('sinaVolumeBackfill: ' + String(e && e.message || e));
+    }
   }
 
   // Volume-scale note: EM/Sina report ~2.5× Yahoo's share-volume universe for
@@ -193,7 +212,7 @@ async function fetchSina() {
     price: num(6),
     amount: num(11) != null ? Math.round(num(11) * 1000) : null, // 千元 → 元
     volume: num(12),
-    ts: f[16] && f[17] ? cnTimeToUnix(f[16], f[17]) : null,
+    ts: f[17] && f[18] ? cnTimeToUnix(f[17], f[18]) : null,
     source: 'sina',
   };
   if (!valid(p)) throw new Error('invalid values');

@@ -78,14 +78,22 @@
     /* 盈亏比标尺（R/R gauge） */
     .rr-wrap { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
     .rr-title { font-size: 11px; color: var(--muted); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.03em; }
-    .rr-now-row { position: relative; height: 16px; margin-bottom: 2px; }
-    .rr-now { position: absolute; transform: translateX(-50%); font-size: 11px; font-weight: 700; color: var(--gold); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
-    .rr-bar { display: flex; align-items: stretch; height: 26px; border-radius: 7px; overflow: hidden; border: 1px solid var(--border); }
-    .rr-seg { display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; min-width: 0; }
+    .rr-now-row { position: relative; height: 16px; margin-bottom: 6px; text-align: center; }
+    .rr-now { font-size: 11px; font-weight: 700; color: var(--gold); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+    .rr-dir { margin-bottom: 10px; }
+    .rr-dir:last-of-type { margin-bottom: 0; }
+    .rr-dir-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    .rr-dir-label { font-size: 12px; font-weight: 700; color: #cbd5e1; }
+    .rr-dir-verdict { font-size: 13px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    .rr-dir-verdict.bad { color: var(--down); }
+    .rr-dir-verdict.mid { color: var(--gold); }
+    .rr-dir-verdict.good { color: var(--up); }
+    .rr-bar { display: flex; align-items: stretch; height: 22px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+    .rr-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; min-width: 0; }
     .rr-seg.risk { background: rgba(255,68,102,0.20); color: #ff8fa3; }
     .rr-seg.reward { background: rgba(0,216,127,0.16); color: #4ade9f; }
     .rr-mark { flex: 0 0 2px; background: var(--gold); }
-    .rr-ends { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 4px; gap: 8px; }
+    .rr-ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 3px; gap: 8px; }
     .rr-ends .re-risk { color: #ff8fa3; }
     .rr-ends .re-reward { color: #4ade9f; }
     .rr-verdict { margin-top: 8px; font-size: 15px; font-weight: 800; text-align: center; }
@@ -337,8 +345,26 @@
     .tab.active { color: #000; background: var(--up); border-color: var(--up); }
 
     /* chart */
-    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: visible; position: relative; }
+    .chart-row { display: flex; align-items: stretch; gap: 6px; }
+    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: visible; position: relative; flex: 1 1 auto; min-width: 0; }
     #chart { width: 100%; height: 62vh; min-height: 340px; max-height: 640px; border-radius: 14px; overflow: hidden; }
+
+    /* 价位标签栏：priceLine 文字移出图内，放在价格轴右侧独立列，避免叠在情景区域/轴标签上 */
+    #levelGutter {
+      flex: 0 0 128px; width: 128px; position: relative; overflow: hidden;
+      border: 1px solid var(--border); border-left: none; border-radius: 0 14px 14px 0;
+      background: rgba(14,20,25,0.5);
+    }
+    .gutter-label {
+      position: absolute; left: 8px; right: 6px; transform: translateY(-50%);
+      font-size: 10px; font-weight: 700; line-height: 1.25; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      font-family: 'JetBrains Mono', monospace;
+      text-shadow: 0 0 4px rgba(0,0,0,0.6);
+    }
+    @media (max-width: 768px) {
+      #levelGutter { display: none; }
+    }
     .loading {
       position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
       background: rgba(8,12,16,0.6); font-size: 13px; color: var(--muted); z-index: 10;
@@ -399,7 +425,7 @@
 
   <div class="wrap">
     <h1>恒指交易地图 · miniGG</h1>
-    <p class="sub">^HSI · 历史K线：Yahoo Finance · 实时价与最新K线：东方财富（盘中实时）· 绿涨红跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
+    <p class="sub">^HSI · 历史K线：Yahoo Finance · 实时价与最新K线：东财/新浪/腾讯多源容灾（盘中实时）· 绿涨红跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
     <a class="track-link" href="track/">📊 预测战绩 · 历史预测留痕可查 →</a>
 
     <!-- 历史模式提示条 -->
@@ -426,25 +452,28 @@
     <!-- 形态标注开关 -->
     <div class="pat-bar">
       <div class="pat-toggle" id="patToggle" title="自动检测经典蜡烛图形态并在图上标注">🕯 形态标注 <b id="patToggleState">开</b></div>
-      <span class="pat-hint">自动检测锤子/吞没/星线/缺口等经典形态 · 大箭头=强信号（发生在近期高低点区域）· 小圆点=弱信号 · 点击K线看依据</span>
+      <span class="pat-hint">自动检测锤子/吞没/星线/缺口等经典形态 · 实圆点=强信号（近期高低点区）· 淡圆点=弱信号 · 绿点在K线下方看涨/红点在上方看跌 · <b>点击带圆点的K线看形态名称与解释</b></span>
     </div>
 
     <!-- 盘中周期延迟提示 -->
     <div class="delay-note hidden" id="delayNote">⚠️ 分钟K线历史数据约 15 分钟延迟（Yahoo），顶部最新价为东财实时；分钟结构仅用于分析，不适合作为实时入场信号</div>
 
     <!-- Chart -->
-    <div class="chart-card">
-      <div id="chart"></div>
-      <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
-      <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
-      <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（实时源与Yahoo均未提供）</div>
-      <div class="level-tip hidden" id="levelTip"></div>
-      <div class="loading" id="loading">加载行情数据…</div>
-      <div class="zoom-ctrl">
-        <div class="zoom-btn" id="zoomIn" title="放大">+</div>
-        <div class="zoom-btn" id="zoomOut" title="缩小">−</div>
-        <div class="zoom-btn reset" id="zoomReset" title="重置视图">⟲</div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <div id="chart"></div>
+        <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
+        <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
+        <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（实时源成交额换算与Yahoo回填均未就绪）</div>
+        <div class="level-tip hidden" id="levelTip"></div>
+        <div class="loading" id="loading">加载行情数据…</div>
+        <div class="zoom-ctrl">
+          <div class="zoom-btn" id="zoomIn" title="放大">+</div>
+          <div class="zoom-btn" id="zoomOut" title="缩小">−</div>
+          <div class="zoom-btn reset" id="zoomReset" title="重置视图">⟲</div>
+        </div>
       </div>
+      <div id="levelGutter"></div>
     </div>
 
     <!-- Marker detail (click) -->
@@ -565,15 +594,23 @@
 
   function resizeChart() {
     chart.applyOptions({ width: chartEl.clientWidth, height: chartEl.clientHeight });
+    scheduleGutterRefresh();
   }
   window.addEventListener('resize', resizeChart);
   resizeChart();
+
+  // 价位标签栏跟随缩放/平移刷新：时间轴可见范围变化时价格轴也会联动重绘，
+  // priceToCoordinate 需要在新布局后重新计算，用 rAF 避免频繁同步重绘。
+  chart.timeScale().subscribeVisibleLogicalRangeChange(function () { scheduleGutterRefresh(); });
+  chart.subscribeCrosshairMove(function () { scheduleGutterRefresh(); });
 
   var annotations = null;        // 当前渲染用的标注（最新 或 某天历史存档）
   var latestAnnotations = null;  // 最新 annotations.json 内容
   var viewingDate = null;        // null=最新；'YYYY-MM-DD'=正在回看该日冻结存档
   var priceLines = [];      // active price line handles
   var levelHitList = [];    // 供十字线悬停提示用的价位信息
+  var levelGutterEl = el('levelGutter'); // 价位线文字标签栏（图内 priceLine title 迁出后的载体，在价格轴右侧）
+  var gutterItems = [];     // {price, text, color, source} 当前需要在 gutter 中显示的标签
   var currentIv = '1d';
   var currentBars = [];     // current candle data
   var markerByTime = {};    // time -> marker obj (for click detail)
@@ -614,6 +651,7 @@
     });
     fcSeriesList = [];
     if (fcBgSeries) { try { chart.removeSeries(fcBgSeries); } catch (e) {} fcBgSeries = null; }
+    clearGutterSource('scenario');
     clearRRSeries();
   }
 
@@ -671,20 +709,71 @@
     return (r >= 10 ? r.toFixed(0) : r.toFixed(1)) + ' : 1';
   }
 
+  // 双向 rr 数据归一化：
+  // 新结构 {refPrice, long:{target,stop}, short:{target,stop}} → 两个方向各一条；
+  // 旧结构 {refPrice, target, stop, direction} → 按 direction 一条（向后兼容历史存档）。
+  // 返回 [{dir, target, stop, stat}]，无合法数据返回空数组（调用方隐藏 UI）。
+  function normalizeRRDirs(rr) {
+    if (!rr || typeof rr.refPrice !== 'number') return [];
+    var out = [];
+    var push = function (dir, spec) {
+      if (!spec || typeof spec.target !== 'number' || typeof spec.stop !== 'number') return;
+      var stat = computeRR({ refPrice: rr.refPrice, target: spec.target, stop: spec.stop, direction: dir });
+      if (stat) out.push({ dir: dir, target: spec.target, stop: spec.stop, stat: stat });
+    };
+    if (rr.long || rr.short) {
+      push('long', rr.long);
+      push('short', rr.short);
+    } else if (typeof rr.target === 'number' && typeof rr.stop === 'number') {
+      push(rr.direction === 'short' ? 'short' : 'long', rr);
+    }
+    return out;
+  }
+
+  // 双向对比后的建议文案（单向时退化为原单向建议）
+  function rrAdvice(dirs, bias) {
+    if (!dirs.length) return '';
+    var byDir = {};
+    dirs.forEach(function (d) { byDir[d.dir] = d; });
+    var L = byDir.long, S = byDir.short;
+    if (L && S) {
+      if (L.stat.grade === 'bad' && S.stat.grade === 'good') {
+        return '当前位置做多赔率差、做空赔率占优，与当前偏空结构一致；但做空需等反弹受阻或跌破触发位后再评估，不鼓励裸空追空。';
+      }
+      if (S.stat.grade === 'bad' && L.stat.grade === 'good') {
+        return '当前位置做空赔率差、做多赔率占优；参与做多仍需等触发条件确认，严格执行失效位纪律。';
+      }
+      return '两个方向赔率均非极端，以条件触发为准：等价格走到关键位再评估，不在中间位置动手。';
+    }
+    var d = dirs[0];
+    var dirTxt = d.dir === 'short' ? '做空' : '做多';
+    if (d.stat.grade === 'bad') {
+      if (d.dir === 'long' && (bias === 'bearish' || bias === 'neutral')) {
+        return '当前位置' + dirTxt + '赔率差：离失效位远、离目标近。等回调到支撑附近、或等转强条件触发后再评估，不鼓励在中间位置动手。';
+      }
+      return '当前位置' + dirTxt + '盈亏比不划算，等更好的位置或条件触发后再评估。';
+    }
+    if (d.stat.grade === 'mid') return '盈亏比一般，若参与需严格执行失效位纪律。';
+    return '';
+  }
+
   // 风险/回报区色块（仅日线，与情景区域一致）
+  // 双向数据时只画赔率更优的那一侧（另一侧在判断卡双向标尺里展示，图上双向叠画会互相遮盖）
   function renderRRZones(a, iv, bars) {
     clearRRSeries();
     var f = a && a.forecast;
-    var stat = f ? computeRR(f.rr) : null;
-    if (!stat || iv !== '1d' || !bars.length) return;
-    var rr = f.rr;
+    var dirs = f ? normalizeRRDirs(f.rr) : [];
+    if (!dirs.length || iv !== '1d' || !bars.length) return;
+    var best = dirs.reduce(function (x, y) { return y.stat.ratio > x.stat.ratio ? y : x; });
+    var stat = best.stat;
+    var refPrice = f.rr.refPrice;
     var rrAnchorIdx = anchorIndex(a, bars);
     var anchorBar = bars[rrAnchorIdx];
     var times = [anchorBar.time].concat(timesAfterAnchor(bars, rrAnchorIdx, 5));
     var makeZone = function (toPrice, colorHex, alpha, labelText) {
-      var isUp = toPrice >= rr.refPrice;
+      var isUp = toPrice >= refPrice;
       var s = chart.addBaselineSeries({
-        baseValue: { type: 'price', price: rr.refPrice },
+        baseValue: { type: 'price', price: refPrice },
         topFillColor1: isUp ? hexToRgba(colorHex, alpha) : 'rgba(0,0,0,0)',
         topFillColor2: isUp ? hexToRgba(colorHex, alpha) : 'rgba(0,0,0,0)',
         bottomFillColor1: isUp ? 'rgba(0,0,0,0)' : hexToRgba(colorHex, alpha),
@@ -695,12 +784,13 @@
       });
       s.setData(times.map(function (t) { return { time: t, value: toPrice }; }));
       var mid = times[Math.min(2, times.length - 1)];
-      s.setMarkers([{ time: mid, position: isUp ? 'aboveBar' : 'belowBar', shape: 'square', color: hexToRgba(colorHex, 0.9), size: 0, text: labelText }]);
+      s.setMarkers([{ time: mid, position: isUp ? 'aboveBar' : 'belowBar', shape: 'square', color: hexToRgba(colorHex, 0.9), size: 0, text: '' }]);
       rrSeriesList.push(s);
     };
     var rewardPts = Math.round(stat.reward), riskPts = Math.round(stat.risk);
-    makeZone(rr.target, stat.dir === 'long' ? '#00d87f' : '#00d87f', 0.10, '回报区 ' + (rr.target >= rr.refPrice ? '+' : '-') + rewardPts + '点');
-    makeZone(rr.stop, '#ff4466', 0.10, '风险区 -' + riskPts + '点');
+    var dirTag = best.dir === 'short' ? '做空' : '做多';
+    makeZone(best.target, '#00d87f', 0.10, dirTag + '回报区 ' + (best.target >= refPrice ? '+' : '-') + rewardPts + '点');
+    makeZone(best.stop, '#ff4466', 0.10, dirTag + '风险区 -' + riskPts + '点');
   }
 
   function shortName(name) {
@@ -721,9 +811,9 @@
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
     var hint = el('fcHint'), simBadge = el('simBadge');
-    if (scenarios.length === 0 || bars.length === 0) { hint.classList.add('hidden'); simBadge.classList.add('hidden'); return; }
+    if (scenarios.length === 0 || bars.length === 0) { hint.classList.add('hidden'); simBadge.classList.add('hidden'); scheduleGutterRefresh(); return; }
     if (iv !== '1d') {
-      hint.classList.remove('hidden'); simBadge.classList.add('hidden'); return;
+      hint.classList.remove('hidden'); simBadge.classList.add('hidden'); scheduleGutterRefresh(); return;
     }
     hint.classList.add('hidden'); simBadge.classList.remove('hidden');
 
@@ -772,10 +862,11 @@
       var lowerLine = chart.addLineSeries({ color: hexToRgba(sc.color, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
       upperLine.setData(upperData); lowerLine.setData(lowerData);
 
-      // Only the scenario end gets a target label; do not imply daily precision.
+      // Only the scenario end gets a target marker (dot, no text — the label
+      // moves to #levelGutter to avoid overlapping the zone area/axis labels).
       var end = upperData[upperData.length - 1];
-      upperLine.setMarkers([{ time: end.time, position: 'aboveBar', shape: 'circle', color: hexToRgba(sc.color, 0.95), text: shortName(sc.name) + ' · 目标区' }]);
-      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine], scenario: sc, index: idx });
+      upperLine.setMarkers([{ time: end.time, position: 'aboveBar', shape: 'circle', color: hexToRgba(sc.color, 0.95), text: '' }]);
+      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine], scenario: sc, index: idx, endPrice: end.value });
     });
     applyScenarioVisibility();
   }
@@ -790,6 +881,19 @@
       card.classList.toggle('active', i === activeScenario);
       card.classList.toggle('dimmed', activeScenario !== -1 && i !== activeScenario);
     });
+    // 情景目标区标签同步迁入 gutter：只显示当前可见（全部或单选中）的情景
+    clearGutterSource('scenario');
+    fcSeriesList.forEach(function (fs) {
+      if (activeScenario !== -1 && fs.index !== activeScenario) return;
+      if (typeof fs.endPrice !== 'number') return;
+      gutterItems.push({
+        price: fs.endPrice,
+        text: shortName(fs.scenario.name) + ' · 目标区',
+        color: fs.scenario.color || '#64748b',
+        source: 'scenario'
+      });
+    });
+    scheduleGutterRefresh();
   }
 
   // ---------- 推理链 ----------
@@ -857,13 +961,15 @@
     title.classList.remove('hidden');
   }
 
-  // 情景卡片「触发后参与」盈亏比行（rr 字段缺失则不渲染）
+  // 情景卡片「触发后参与」盈亏比行（rr 字段缺失则不渲染），带方向标注（做多/做空）
   function scenarioRRHtml(sc) {
     var rr = sc && sc.rr;
     if (!rr || typeof rr.entry !== 'number' || typeof rr.target !== 'number' || typeof rr.stop !== 'number') return '';
     var stat = computeRR({ refPrice: rr.entry, target: rr.target, stop: rr.stop, direction: rr.direction });
     if (!stat) return '';
-    return '<div class="sc-rr">⚡ 触发后参与：目标 <b>' + fmt(rr.target) + '</b> / 防守 <b>' + fmt(rr.stop) + '</b> / 盈亏比 <b class="rr-' + stat.grade + '">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</b>' +
+    var dirTxt = stat.dir === 'short' ? '做空' : '做多';
+    var dirColor = stat.dir === 'short' ? 'var(--down)' : 'var(--up)';
+    return '<div class="sc-rr">⚡ 触发后<b style="color:' + dirColor + '">' + dirTxt + '</b>参与：目标 <b>' + fmt(rr.target) + '</b> / 防守 <b>' + fmt(rr.stop) + '</b> / 盈亏比 <b class="rr-' + stat.grade + '">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</b>' +
       (rr.entryHint ? '<span class="sc-rr-hint">' + escapeHtml(rr.entryHint) + '</span>' : '') + '</div>';
   }
 
@@ -1119,42 +1225,41 @@
         '<span class="lt">' + escapeHtml(kl.tag || '') + '</span>' +
         (kl.tf ? '<span class="ltf">' + escapeHtml(kl.tf) + '</span>' : '') + '</div>';
     }).join('');
-    // 盈亏比标尺（rr 字段缺失/不合法则整体隐藏）
+    // 盈亏比标尺（双向：做多/做空各一行；rr 字段缺失/不合法则整体隐藏）
     var rrHtml = '';
-    var rrStat = computeRR(f.rr);
-    if (rrStat) {
-      var rr = f.rr;
-      var refP = rr.refPrice;
-      var riskPts = Math.round(rrStat.risk), rewardPts = Math.round(rrStat.reward);
-      var riskPct = (rrStat.risk / refP * 100).toFixed(1), rewardPct = (rrStat.reward / refP * 100).toFixed(1);
-      var total = rrStat.risk + rrStat.reward;
-      var riskW = Math.max(12, Math.min(88, rrStat.risk / total * 100));
-      var rewardW = 100 - riskW;
-      var dirTxt = rrStat.dir === 'short' ? '做空' : '做多';
-      // 左=失效位方向（风险），右=目标方向（回报）
-      var leftPrice = rr.stop, rightPrice = rr.target;
-      var advice = '';
-      var biasBearish = f.bias === 'bearish' || f.bias === 'neutral';
-      if (rrStat.dir === 'long' && rrStat.grade === 'bad' && biasBearish) {
-        advice = '当前位置' + dirTxt + '赔率差：离失效位远、离目标近。等回调到支撑附近、或等转强条件触发后再评估，不鼓励在中间位置动手。';
-      } else if (rrStat.grade === 'bad') {
-        advice = '当前位置' + dirTxt + '盈亏比不划算，等更好的位置或条件触发后再评估。';
-      } else if (rrStat.grade === 'mid') {
-        advice = '盈亏比一般，若参与需严格执行失效位纪律。';
-      }
-      rrHtml =
-        '<div class="rr-wrap">' +
-          '<div class="rr-title">盈亏比标尺（' + dirTxt + '视角）</div>' +
-          '<div class="rr-now-row"><span class="rr-now" style="left:' + Math.max(18, Math.min(82, riskW)).toFixed(1) + '%">当前价 ' + fmt(Math.round(refP)) + ' ▼</span></div>' +
+    var rrDirs = normalizeRRDirs(f.rr);
+    if (rrDirs.length) {
+      var refP = f.rr.refPrice;
+      var dirRows = rrDirs.map(function (d) {
+        var stat = d.stat;
+        var dirTxt = d.dir === 'short' ? '做空' : '做多';
+        var riskPts = Math.round(stat.risk), rewardPts = Math.round(stat.reward);
+        var riskPct = (stat.risk / refP * 100).toFixed(1), rewardPct = (stat.reward / refP * 100).toFixed(1);
+        var total = stat.risk + stat.reward;
+        var riskW = Math.max(12, Math.min(88, stat.risk / total * 100));
+        var rewardW = 100 - riskW;
+        return '<div class="rr-dir">' +
+          '<div class="rr-dir-head">' +
+            '<span class="rr-dir-label">' + dirTxt + '（目标 ' + fmt(d.target) + ' / 失效 ' + fmt(d.stop) + '）</span>' +
+            '<span class="rr-dir-verdict ' + stat.grade + '">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + ' ' + stat.verdict + '</span>' +
+          '</div>' +
           '<div class="rr-bar">' +
             '<div class="rr-seg risk" style="width:' + riskW.toFixed(1) + '%">-' + fmt(riskPts) + '点 -' + riskPct + '%</div>' +
             '<div class="rr-mark"></div>' +
             '<div class="rr-seg reward" style="width:' + rewardW.toFixed(1) + '%">+' + fmt(rewardPts) + '点 +' + rewardPct + '%</div>' +
           '</div>' +
-          '<div class="rr-ends"><span class="re-risk">失效 ' + fmt(leftPrice) + '</span><span class="re-reward">目标 ' + fmt(rightPrice) + '</span></div>' +
-          '<div class="rr-verdict ' + rrStat.grade + '">当前位置' + dirTxt + '盈亏比 <span class="rv-num">' + fmtRatio(rrStat.ratio) + '</span> ' + rrStat.emoji + ' ' + rrStat.verdict + '</div>' +
+          '<div class="rr-ends"><span class="re-risk">失效 ' + fmt(d.stop) + '</span><span class="re-reward">目标 ' + fmt(d.target) + '</span></div>' +
+        '</div>';
+      }).join('');
+      // 建议行：基于双向对比给一句话结论
+      var advice = rrAdvice(rrDirs, f.bias);
+      rrHtml =
+        '<div class="rr-wrap">' +
+          '<div class="rr-title">盈亏比标尺（双向）</div>' +
+          '<div class="rr-now-row"><span class="rr-now">当前价 ' + fmt(Math.round(refP)) + '</span></div>' +
+          dirRows +
           (advice ? '<div class="rr-advice">' + escapeHtml(advice) + '</div>' : '') +
-          '<div class="rr-note">盈亏比 = 到目标距离 ÷ 到失效位距离，基于当前价与主情景目标/失效位自动计算 · 阈值：&lt;1 🔴不划算 / 1–2 🟡一般 / ≥2 🟢划算</div>' +
+          '<div class="rr-note">盈亏比 = 到目标距离 ÷ 到失效位距离，基于当前价与各方向目标/失效位自动计算 · 阈值：&lt;1 🔴不划算 / 1–2 🟡一般 / ≥2 🟢划算<br/>做空涉及衍生工具成本与强制平仓风险，赔率仅为价格空间估算</div>' +
         '</div>';
     }
 
@@ -1222,6 +1327,48 @@
     priceLines = [];
   }
 
+  // ---------- 价位标签栏（#levelGutter）----------
+  // priceLine 的 title 文字不再画在图内（避免与情景区域/轴标签叠加），改由这里在价格轴右侧独立列渲染。
+  // gutterItems 按 source 分组维护（level/scenario），每次 render 先清空同 source 再重新填充，
+  // 避免切周期/切情景时旧标签残留。实际绘制在 scheduleGutterRefresh 里通过 rAF 循环完成，
+  // 因为 priceToCoordinate 需要在缩放/平移后重新计算，而 lightweight-charts 没有专门的轴变化事件，
+  // rAF 循环比监听多个不完全视图事件更稳定。
+  function clearGutterSource(source) {
+    gutterItems = gutterItems.filter(function (it) { return it.source !== source; });
+  }
+
+  function renderGutter() {
+    if (!levelGutterEl || levelGutterEl.offsetParent === null) return; // 移动端隐藏时跳过（CSS display:none）
+    var h = levelGutterEl.clientHeight;
+    if (!h) { levelGutterEl.innerHTML = ''; return; }
+    var pts = [];
+    gutterItems.forEach(function (it) {
+      var y = series.priceToCoordinate(it.price);
+      if (y == null || y < -20 || y > h + 20) return; // 超出可视范围不画，避免堆在边缘
+      pts.push({ y: y, text: it.text, color: it.color });
+    });
+    pts.sort(function (x, y) { return x.y - y.y; });
+    // 重叠处理：相邻标签 y 距离 <16px 时向下错开（保证至少 16px 间距，不与上一条重叠）
+    var MIN_GAP = 16;
+    for (var i = 1; i < pts.length; i++) {
+      if (pts[i].y - pts[i - 1].y < MIN_GAP) pts[i].y = pts[i - 1].y + MIN_GAP;
+    }
+    var html = pts.map(function (p) {
+      var top = Math.max(6, Math.min(h - 6, p.y));
+      return '<div class="gutter-label" style="top:' + top.toFixed(1) + 'px;color:' + p.color + '">' + escapeHtml(p.text) + '</div>';
+    }).join('');
+    levelGutterEl.innerHTML = html;
+  }
+
+  var gutterRafId = null;
+  function scheduleGutterRefresh() {
+    if (gutterRafId != null) return;
+    gutterRafId = requestAnimationFrame(function () {
+      gutterRafId = null;
+      renderGutter();
+    });
+  }
+
   // 图内线上文字只保留核心名（去掉区间/理由后缀），如「缺口阻力 24,650」
   function shortLevelTitle(lv) {
     var isSupport = lv.type === 'support';
@@ -1233,6 +1380,7 @@
   function renderLevels(a, iv) {
     clearPriceLines();
     levelHitList = [];
+    clearGutterSource('level');
     var list = (a && Array.isArray(a.levels)) ? a.levels : [];
     var visible = [];
 
@@ -1273,9 +1421,10 @@
         color: color,
         lineWidth: isCurrent && strong ? 2 : 1,
         lineStyle: isCurrent && strong ? LightweightCharts.LineStyle.Solid : LightweightCharts.LineStyle.Dashed,
-        // 非当前周期：只留淡虚线，不占轴标签不占图内文字，悬停/点按时由 levelTip 浮层补充信息
+        // 图内不再渲染文字标题（避免叠在情景区域/轴标签上），文字迁到价格轴右侧 #levelGutter；
+        // 非当前周期仍只留淡虚线，悬停/点按时由 levelTip 浮层补充信息
         axisLabelVisible: showAxis,
-        title: isCurrent ? shortLevelTitle(lv) : ''
+        title: ''
       });
       priceLines.push(pl);
       levelHitList.push({
@@ -1285,8 +1434,18 @@
         current: isCurrent,
         color: isCurrent ? baseColor : hexToRgba(baseColor, 0.6)
       });
+      if (isCurrent) {
+        gutterItems.push({
+          price: lv.price,
+          text: shortLevelTitle(lv),
+          color: baseColor,
+          source: 'level'
+        });
+      }
       visible.push({ lv: lv, current: isCurrent });
     });
+
+    scheduleGutterRefresh();
 
     var section = el('levelSection');
     var listEl = el('levelList');
@@ -1404,9 +1563,10 @@
 
   // ---------- 蜡烛图形态自动识别 ----------
   // 检测逻辑在 patterns.js（纯函数，可Node单测）；这里只做渲染：
+  // 紧凑圆点徽标贴着K线（不用大箭头不挂文字，避免悬空文字/像垂直线的视觉干扰）：
   // 看涨=绿色K线下方，看跌=红色K线上方，中性=灰色；
-  // 强信号（发生在近20根极值区）= 大箭头+短名文字，弱信号 = 小圆点无文字（视觉分级控密度），
-  // 点击K线弹详情（复用 markerDetail 机制）显示形态名/含义/教科书解释/数值依据。
+  // 强信号（发生在近20根极值区）= 实色稍大圆点，弱信号 = 淡色小圆点（视觉分级控密度）；
+  // 形态名/解释一律不上图，点击K线弹详情（复用 markerDetail 机制）显示形态名/含义/教科书解释/数值依据。
   var PAT_COLORS = { bull: UP, bear: DOWN, neutral: '#8b98ab' };
 
   function computePatterns(iv, bars) {
@@ -1423,19 +1583,25 @@
       patternChartMarkers.push({
         time: b.time,
         position: hit.direction === 'bull' ? 'belowBar' : 'aboveBar',
-        shape: strong ? (hit.direction === 'bull' ? 'arrowUp' : hit.direction === 'bear' ? 'arrowDown' : 'circle') : 'circle',
-        color: strong ? color : hexToRgba(color, 0.55),
-        size: strong ? 1.6 : 0.6,
-        text: strong ? hit.short : ''
+        shape: 'circle',
+        color: strong ? color : hexToRgba(color, 0.45),
+        size: strong ? 0.9 : 0.5,
+        text: ''
       });
       patternByTime[timeKey(b.time)] = hit;
     });
   }
 
-  // 合并人工事件 markers + 形态 markers 上图（lightweight-charts 支持同一时间多 marker）
+  // 合并人工事件 markers + 形态 markers 上图。
+  // 同一根K线同时有事件标记和形态徽标时只保留事件标记（避免双重图标堆叠），
+  // 点击详情框里两条都展示（见 subscribeClick）。
   function applyAllMarkers() {
     var all = eventChartMarkers.slice();
-    if (patternsOn) all = all.concat(patternChartMarkers);
+    if (patternsOn) {
+      var eventTimes = {};
+      eventChartMarkers.forEach(function (m) { eventTimes[timeKey(m.time)] = true; });
+      all = all.concat(patternChartMarkers.filter(function (m) { return !eventTimes[timeKey(m.time)]; }));
+    }
     all.sort(function (x, y) { return timeSortVal(x.time) - timeSortVal(y.time); });
     series.setMarkers(all);
   }
@@ -1449,18 +1615,22 @@
       ' ' + String(d.getUTCHours()).padStart(2, '0') + ':' + String(d.getUTCMinutes()).padStart(2, '0');
   }
 
-  function showPatternDetail(hit, t) {
-    var box = el('markerDetail');
+  // 形态详情 HTML 片段（可单独展示，也可拼在事件详情下方合并展示）
+  function patternDetailHtml(hit, t) {
     var color = PAT_COLORS[hit.direction] || PAT_COLORS.neutral;
     var dirTxt = hit.direction === 'bull' ? '看涨信号' : hit.direction === 'bear' ? '看跌信号' : '中性/变盘信号';
-    box.classList.remove('hidden');
-    box.innerHTML =
-      '<div class="d-title" style="color:' + color + '">🕯 ' + escapeHtml(hit.name) + ' · ' + dirTxt +
+    return '<div class="d-title" style="color:' + color + '">🕯 ' + escapeHtml(hit.name) + ' · ' + dirTxt +
         (hit.strength === 'strong' ? ' · 强（位于近期极值区）' : ' · 弱（非极值区）') + '</div>' +
       '<div class="d-date mono">' + escapeHtml(fmtBarDate(t)) + ' · ' + escapeHtml(IV_CONFIG[currentIv].label) + ' · 自动识别</div>' +
       '<div style="margin-top:6px">' + escapeHtml(hit.explain) + '</div>' +
       '<div style="margin-top:6px;color:#94a3b8;font-size:12px">数值依据：' + escapeHtml(hit.note) + '</div>' +
       '<div style="margin-top:6px;color:#475569;font-size:10.5px">形态为教科书规则自动检测，仅提示潜在信号，需结合趋势与量能确认，不构成交易建议</div>';
+  }
+
+  function showPatternDetail(hit, t) {
+    var box = el('markerDetail');
+    box.classList.remove('hidden');
+    box.innerHTML = patternDetailHtml(hit, t);
     box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -1478,13 +1648,20 @@
   });
   updatePatToggleUI();
 
-  // click on chart → show marker detail if that bar has one（人工事件优先，其次形态）
+  // click on chart → show marker detail if that bar has one。
+  // 同一根K线同时有人工事件标记和形态命中时，详情框两条都展示（图上已合并为单个标记）。
   chart.subscribeClick(function (param) {
     if (!param || param.time == null) return;
     var k = timeKey(param.time);
     var m = markerByTime[k];
+    var hit = patternsOn ? patternByTime[k] : null;
+    if (m && hit) {
+      showMarkerDetail(m);
+      var box = el('markerDetail');
+      box.innerHTML += '<div style="margin-top:10px;border-top:1px dashed var(--border);padding-top:10px">' + patternDetailHtml(hit, param.time) + '</div>';
+      return;
+    }
     if (m) { showMarkerDetail(m); return; }
-    var hit = patternsOn && patternByTime[k];
     if (hit) showPatternDetail(hit, param.time);
   });
 

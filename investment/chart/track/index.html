@@ -38,6 +38,11 @@
     .stat .v { font-size: 15px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--muted); line-height: 1.3; }
     .stat .k { font-size: 10.5px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
     .stat .v.pending { font-size: 11px; font-weight: 600; color: #475569; }
+    .compare, .regime-stats { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin: 10px 0; }
+    .compare-title { font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 8px; }
+    .compare-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); font-size: 12px; }
+    .compare-row:first-of-type { border-top: 0; }
+    .compare-row span:last-child { color: #475569; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
     .stats-note { font-size: 11.5px; color: var(--gold); background: rgba(245,200,66,0.08);
       border: 1px solid rgba(245,200,66,0.25); border-radius: 10px; padding: 8px 12px; margin-bottom: 18px; }
 
@@ -99,7 +104,18 @@
       <div class="stat" style="grid-column: span 2"><div class="v" id="stEnv">--</div><div class="k">不同市场环境表现（趋势/震荡）</div></div>
     </div>
     <div class="stats-note" id="statsNote">加载中…</div>
-    <div class="immutable-note">🔒 预测记录生成后不可修改，仅可追加后续更新与结算结果（outcome / status / updates 字段）。每条记录有固定ID，格式 HSI-日期-周期-序号，如 HSI-20260925-D-001。</div>
+    <div class="compare" id="benchmarkCompare">
+      <div class="compare-title">对照基准命中率 <span style="font-weight:400;color:#64748b">（同一批已结算样本）</span></div>
+      <div class="compare-row"><span>miniGG 模型</span><span id="bmMini">样本积累中</span></div>
+      <div class="compare-row"><span>随机方向（50%）</span><span id="bmRandom">样本积累中</span></div>
+      <div class="compare-row"><span>简单趋势策略（昨日方向延续）</span><span id="bmNaive">样本积累中</span></div>
+      <div class="compare-row"><span>MA20 规则（价格相对均线）</span><span id="bmMa20">样本积累中</span></div>
+    </div>
+    <div class="regime-stats" id="regimeStats">
+      <div class="compare-title">不同市场环境表现 <span style="font-weight:400;color:#64748b">（趋势 × 波动）</span></div>
+      <div id="regimeRows" class="compare-row"><span>样本积累中</span><span>—</span></div>
+    </div>
+    <div class="immutable-note">🔒 <b>本站不做历史回测拟合。</b>所有预测均为当日实时冻结的前向判断，结算只基于此后真实行情。预测记录生成后不可修改，仅可追加后续更新与结算结果（outcome / status / updates 字段）。每条记录有固定ID，格式 HSI-日期-周期-序号，如 HSI-20260925-D-001。</div>
 
     <div id="predList"><div class="p-row">加载预测记录…</div></div>
 
@@ -177,6 +193,33 @@
         el('statsNote').textContent = '已结算样本 ' + settled.length + '/' + minN + ' 条 · 样本不足前每项统计均显示「样本积累中」，绝不编造数字，避免小样本误导。';
       }
 
+      // ---- benchmark/regime infrastructure: all rows stay blank until enough settled samples ----
+      var pendingBench = '样本积累中（' + settled.length + '/' + minN + '）';
+      ['bmMini', 'bmRandom', 'bmNaive', 'bmMa20'].forEach(function (id) { el(id).textContent = pendingBench; });
+      el('regimeRows').innerHTML = '<span>样本积累中（按发布时 regime 分组）</span><span>' + settled.length + '/' + minN + '</span>';
+      if (settled.length >= minN) {
+        var hitRate = function (items, pick) {
+          var valid = items.filter(function (p) { return typeof pick(p) === 'boolean'; });
+          if (!valid.length) return '—';
+          return (valid.filter(function (p) { return pick(p); }).length / valid.length * 100).toFixed(0) + '% (' + valid.length + ')';
+        };
+        // Baseline result is evaluated against the realized horizon direction, not miniGG's result.
+        var realizedUp = function (p) { return p.outcome && typeof p.outcome.priceAtHorizon === 'number' && typeof p.basePrice === 'number' ? p.outcome.priceAtHorizon >= p.basePrice : null; };
+        var judgmentHit = function (p, key) { var up = realizedUp(p), b = p.baselines && p.baselines[key]; return up == null || !b ? null : (b.judgment === '看涨') === up; };
+        el('bmMini').textContent = hitRate(settled, function (p) { return p.outcome.directionHit; });
+        el('bmRandom').textContent = '50%（理论基线，非样本统计）';
+        el('bmNaive').textContent = hitRate(settled, function (p) { return judgmentHit(p, 'naiveTrend'); });
+        el('bmMa20').textContent = hitRate(settled, function (p) { return judgmentHit(p, 'ma20Rule'); });
+        var groups = {};
+        settled.forEach(function (p) {
+          var r = p.marketRegime || {}, key = (r.trend || '未分类') + ' · ' + (r.volatility || '未分类');
+          if (!groups[key]) groups[key] = []; groups[key].push(p);
+        });
+        el('regimeRows').innerHTML = Object.keys(groups).map(function (key) {
+          return '<div class="compare-row"><span>' + escapeHtml(key) + '</span><span>' + hitRate(groups[key], function (p) { return p.outcome.directionHit; }) + '</span></div>';
+        }).join('') || '<span>无可统计分组</span><span>—</span>';
+      }
+
       // ---- prediction cards ----
       var listEl = el('predList');
       listEl.innerHTML = '';
@@ -241,8 +284,11 @@
           '<div class="p-head"><span class="p-id">' + escapeHtml(p.id) + '</span>' +
           (p.period ? '<span class="p-period">' + escapeHtml(p.period) + '</span>' : '') +
           '<span class="p-status ' + statusCls + '">' + statusTxt + '</span></div>' +
+          fieldRow('冻结时间', p.createdAt ? p.createdAt + '（预测于该时间冻结，此后条件/目标位不可回改）' : '—') +
           fieldRow('基准价', (p.basePrice != null ? fmt(p.basePrice) : '—') + '（' + (p.baseDate || '') + ' 收盘）') +
           fieldRow('预测周期', p.horizonDesc || p.horizon) +
+          fieldRow('市场状态', p.marketRegime ? (p.marketRegime.trend || '—') + ' · ' + (p.marketRegime.volatility || '—') : '') +
+          fieldRow('傻瓜基准', p.baselines ? '简单趋势：' + (p.baselines.naiveTrend && p.baselines.naiveTrend.judgment || '—') + '；MA20：' + (p.baselines.ma20Rule && p.baselines.ma20Rule.judgment || '—') : '') +
           fieldRow('判断', p.judgment || p.biasLabel || p.bias) +
           fieldRow('关键支撑', p.keySupport) +
           fieldRow('转强条件', p.strengthCondition, 'good') +

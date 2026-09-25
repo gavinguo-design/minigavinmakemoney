@@ -1,5 +1,5 @@
 {
-  "$schema_note": "miniGG 恒指预测留痕日志 v2。ID 格式：HSI-YYYYMMDD-{D|W|H60|M15}-{三位序号}（D=日线 W=周线 H60=60分钟 M15=15分钟）。不可变原则：预测记录生成后除 outcome/status/updates 三个结算字段外不可回改；后续跟进只能 append 到 updates 数组（每条 {at, text}），不修改原快照。outcome=null 表示进行中；结算后填 {settledAt, priceAtHorizon, hitScenario, directionHit(bool), conditionTriggered(数组), mfe(最大有利偏移点数), mae(最大不利偏移点数), pnlPct(触发后涨跌幅%), note}。status 取值：进行中 / ✓主情景成立 / ✗失效 / 部分命中。统计口径见 stats.metricsNote。",
+  "$schema_note": "miniGG 恒指预测留痕日志 v2。ID 格式：HSI-YYYYMMDD-{D|W|H60|M15}-{三位序号}（D=日线 W=周线 H60=60分钟 M15=15分钟）。不可变原则：预测记录生成后除 outcome/status/updates 三个结算字段外不可回改；后续跟进只能 append 到 updates 数组（每条 {at, text}），不修改原快照。outcome=null 表示进行中；结算后填 {settledAt, priceAtHorizon, hitScenario, directionHit(bool), conditionTriggered(数组), mfe(最大有利偏移点数), mae(最大不利偏移点数), pnlPct(触发后涨跌幅%), note}。status 取值：进行中 / ✓主情景成立 / ✗失效 / 部分命中。统计口径见 stats.metricsNote。每条预测可补充客观元数据 baselines（机械基准判断）与 marketRegime（发布时市场状态）；两者允许后补，不改变预测核心快照。",
   "stats": {
     "minSamplesForStats": 30,
     "note": "样本不足 30 条前不计算/不展示命中率等统计，防止小样本误导",
@@ -47,7 +47,7 @@
         },
         {
           "name": "C · 连破24276/24000后的破位路径",
-          "probability": 0.20,
+          "probability": 0.2,
           "target": "23,250–23,500（7月3–6日低点平台）",
           "trigger": "收盘接连跌破 24,276 与 24,000，且反抽无力伴随放量下跌",
           "invalidation": "收盘收复 24,500 剧本作废"
@@ -56,7 +56,22 @@
       "reasoningDigest": "均线全下弯+MACD死叉扩张=趋势偏空；双缺口压顶；缩量反弹量价背离；长下影+RSI38低位有承接；南向29亿属噪音；地缘riskoff与弱美元对冲；60m/15m未获共振",
       "status": "进行中",
       "outcome": null,
-      "updates": []
+      "updates": [],
+      "baselines": {
+        "naiveTrend": {
+          "judgment": "看跌",
+          "basis": "昨日涨跌方向延续（最新收盘 24510.1 vs 前日收盘 24761.1）"
+        },
+        "ma20Rule": {
+          "judgment": "看跌",
+          "basis": "价格与MA20相对位置（最新收盘 24510.1 vs MA20 25036.3）"
+        }
+      },
+      "marketRegime": {
+        "trend": "下跌趋势",
+        "volatility": "正常波动",
+        "basis": "MA20斜率5日-0.71% + 收盘低于MA20(25036)；20日均振幅/120日均振幅=0.77"
+      }
     }
   ]
 }

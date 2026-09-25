@@ -327,8 +327,8 @@
     <!-- Chart -->
     <div class="chart-card">
       <div id="chart"></div>
-      <div class="fc-hint hidden" id="fcHint">情景模拟蜡烛请切换到日线查看</div>
-      <div class="sim-badge hidden" id="simBadge">Scenario 情景模拟 · 非价格预测</div>
+      <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
+      <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
       <div class="loading" id="loading">加载行情数据…</div>
       <div class="zoom-ctrl">
         <div class="zoom-btn" id="zoomIn" title="放大">+</div>
@@ -340,9 +340,9 @@
     <!-- Marker detail (click) -->
     <div class="detail hidden" id="markerDetail"></div>
 
-    <!-- Scenario cards（与情景模拟蜡烛联动） -->
+    <!-- Scenario cards（与情景区域联动） -->
     <div class="scenarios hidden" id="scenarioCards"></div>
-    <p class="prob-note hidden" id="probNote">ℹ︎ 置信度为模型主观评估，非历史统计概率，样本积累后将改为统计命中率；图上虚影蜡烛为情景模拟路径，不是精确价格预测，以条件地图为准。</p>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 置信度为模型主观评估，非历史统计概率，样本积累后将改为统计命中率；图上半透明情景区域只表达方向与可能范围，不表示逐日价格路径；以条件地图为准。</p>
 
     <!-- 详细分析（默认折叠，降低视觉优先级） -->
     <details class="more" id="moreDetails">
@@ -464,11 +464,11 @@
   var currentIv = '1d';
   var currentBars = [];     // current candle data
   var markerByTime = {};    // time -> marker obj (for click detail)
-  var fcSeriesList = [];    // per-scenario forecast candlestick series
+  var fcSeriesList = [];    // per-scenario forecast zone series (bands and boundaries)
   var fcBgSeries = null;    // forecast zone background tint (histogram overlay)
   var activeScenario = -1;  // -1 = show all scenarios
 
-  // ---------- forecast candle layer ----------
+  // ---------- forecast scenario-zone layer ----------
 
   function hexToRgba(hex, alpha) {
     var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
@@ -491,7 +491,9 @@
   }
 
   function clearForecastSeries() {
-    fcSeriesList.forEach(function (fs) { try { chart.removeSeries(fs.series); } catch (e) {} });
+    fcSeriesList.forEach(function (fs) {
+      fs.series.forEach(function (s) { try { chart.removeSeries(s); } catch (e) {} });
+    });
     fcSeriesList = [];
     if (fcBgSeries) { try { chart.removeSeries(fcBgSeries); } catch (e) {} fcBgSeries = null; }
   }
@@ -500,84 +502,80 @@
     return String(name || '').split('·')[0].trim() || name;
   }
 
-  function renderForecastCandles(a, iv, bars) {
+  function zonePoints(sc) {
+    // New zone data is preferred. Existing path remains valid source data for old records.
+    // It is converted to high/low envelopes only; no OHLC prediction is rendered.
+    var z = sc.zone || {};
+    var upper = Array.isArray(z.upperBound) ? z.upperBound : (sc.path || []).map(function (p) { return { offset: p.offset, price: p.h }; });
+    var lower = Array.isArray(z.lowerBound) ? z.lowerBound : (sc.path || []).map(function (p) { return { offset: p.offset, price: p.l }; });
+    return { upper: upper, lower: lower };
+  }
+
+  function renderForecastZones(a, iv, bars) {
     clearForecastSeries();
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
-    var hint = el('fcHint');
-
-    var simBadge = el('simBadge');
+    var hint = el('fcHint'), simBadge = el('simBadge');
     if (scenarios.length === 0 || bars.length === 0) { hint.classList.add('hidden'); simBadge.classList.add('hidden'); return; }
     if (iv !== '1d') {
-      // 非日线：优雅隐藏情景模拟层，仅提示
-      hint.classList.remove('hidden');
-      simBadge.classList.add('hidden');
-      return;
+      hint.classList.remove('hidden'); simBadge.classList.add('hidden'); return;
     }
-    hint.classList.add('hidden');
-    simBadge.classList.remove('hidden');
+    hint.classList.add('hidden'); simBadge.classList.remove('hidden');
 
-    var lastBar = bars[bars.length - 1];
-    var maxOffset = 0;
+    var lastBar = bars[bars.length - 1], maxOffset = 0;
     scenarios.forEach(function (sc) {
-      (sc.path || []).forEach(function (p) { if (p.offset > maxOffset) maxOffset = p.offset; });
+      var points = zonePoints(sc);
+      points.upper.concat(points.lower).forEach(function (p) { if (p.offset > maxOffset) maxOffset = p.offset; });
     });
-    if (maxOffset === 0) return;
-    var futureTimes = futureBusinessDays(lastBar.time, maxOffset); // index = offset-1
+    if (!maxOffset) return;
+    var futureTimes = futureBusinessDays(lastBar.time, maxOffset);
 
-    // 背景色带：区分「历史 | 预测」区域，第一根加深模拟分隔线
-    fcBgSeries = chart.addHistogramSeries({
-      priceScaleId: 'fc-bg',
-      priceLineVisible: false,
-      lastValueVisible: false,
-      crosshairMarkerVisible: false
-    });
+    fcBgSeries = chart.addHistogramSeries({ priceScaleId: 'fc-bg', priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
     chart.priceScale('fc-bg').applyOptions({ scaleMargins: { top: 0, bottom: 0 }, visible: false });
-    var bgData = futureTimes.map(function (t, i) {
+    fcBgSeries.setData(futureTimes.map(function (t, i) {
       return { time: t, value: 1, color: i === 0 ? 'rgba(245,200,66,0.22)' : 'rgba(148,163,184,0.06)' };
-    });
-    fcBgSeries.setData(bgData);
+    }));
 
     scenarios.forEach(function (sc, idx) {
-      // 情景模拟蜡烛视觉比真实K线更轻：低透明度虺体，强调「这是路径模拟不是精确轨迹」
-      var body = hexToRgba(sc.color, 0.22);
-      var border = hexToRgba(sc.color, 0.55);
-      var wick = hexToRgba(sc.color, 0.40);
-      var s = chart.addCandlestickSeries({
-        upColor: body, downColor: body,
-        borderUpColor: border, borderDownColor: border,
-        wickUpColor: wick, wickDownColor: wick,
-        priceLineVisible: false,
-        lastValueVisible: false
-      });
-      var data = (sc.path || [])
-        .filter(function (p) { return p && p.offset >= 1 && p.offset <= maxOffset; })
-        .sort(function (x, y) { return x.offset - y.offset; })
-        .map(function (p) {
-          return {
-            time: futureTimes[p.offset - 1],
-            open: p.o, high: p.h, low: p.l, close: p.c
-          };
+      var points = zonePoints(sc), base = typeof f.basePrice === 'number' ? f.basePrice : lastBar.close;
+      var makeData = function (arr) {
+        return arr.filter(function (p) { return p && p.offset >= 0 && p.offset <= maxOffset && typeof p.price === 'number'; })
+          .sort(function (x, y) { return x.offset - y.offset; })
+          .map(function (p) { return { time: p.offset === 0 ? lastBar.time : futureTimes[p.offset - 1], value: p.price }; });
+      };
+      var upperData = makeData(points.upper), lowerData = makeData(points.lower);
+      if (!upperData.length || !lowerData.length) return;
+
+      // Two baseline areas fan out from today's price to the zone bounds. This deliberately
+      // depicts a range from the starting price, never a sequence of predicted OHLC bars.
+      var makeFill = function (data, alpha) {
+        var fill = chart.addBaselineSeries({
+          baseValue: { type: 'price', price: base },
+          topFillColor1: hexToRgba(sc.color, alpha), topFillColor2: hexToRgba(sc.color, 0.01),
+          bottomFillColor1: hexToRgba(sc.color, 0.01), bottomFillColor2: hexToRgba(sc.color, alpha),
+          topLineColor: 'rgba(0,0,0,0)', bottomLineColor: 'rgba(0,0,0,0)',
+          priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false
         });
-      s.setData(data);
-      // 概率标签：标在该情景路径最后一根上方
-      if (data.length > 0) {
-        s.setMarkers([{
-          time: data[data.length - 1].time,
-          position: 'aboveBar',
-          shape: 'circle',
-          color: hexToRgba(sc.color, 0.9),
-          text: shortName(sc.name) + ' 置信度' + Math.round((sc.probability || 0) * 100) + '%（情景模拟）'
-        }]);
-      }
-      fcSeriesList.push({ series: s, scenario: sc, index: idx });
+        fill.setData(data);
+        return fill;
+      };
+      var upperFill = makeFill(upperData, 0.11);
+      var lowerFill = makeFill(lowerData, 0.08);
+      var upperLine = chart.addLineSeries({ color: hexToRgba(sc.color, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      var lowerLine = chart.addLineSeries({ color: hexToRgba(sc.color, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      upperLine.setData(upperData); lowerLine.setData(lowerData);
+
+      // Only the scenario end gets a target label; do not imply daily precision.
+      var end = upperData[upperData.length - 1];
+      upperLine.setMarkers([{ time: end.time, position: 'aboveBar', shape: 'circle', color: hexToRgba(sc.color, 0.95), text: shortName(sc.name) + ' · 目标区' }]);
+      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine], scenario: sc, index: idx });
     });
     applyScenarioVisibility();
   }
 
   function applyScenarioVisibility() {
     fcSeriesList.forEach(function (fs) {
-      fs.series.applyOptions({ visible: activeScenario === -1 || fs.index === activeScenario });
+      fs.series.forEach(function (s) { s.applyOptions({ visible: activeScenario === -1 || fs.index === activeScenario }); });
     });
     var cards = document.querySelectorAll('.sc-card');
     cards.forEach(function (card) {
@@ -672,7 +670,7 @@
         (sc.trigger ? '<div class="sc-row">触发：<b>' + escapeHtml(sc.trigger) + '</b></div>' : '') +
         (sc.invalidation ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(sc.invalidation) + '</b></div>' : '') +
         (sc.note ? '<div class="sc-row">' + escapeHtml(sc.note) + '</div>' : '') +
-        '<div class="sc-tip">点击卡片单独查看该情景路径</div>';
+        '<div class="sc-tip">点击卡片单独查看该情景区域</div>';
       card.addEventListener('click', function () {
         activeScenario = (activeScenario === idx) ? -1 : idx;
         applyScenarioVisibility();
@@ -998,7 +996,7 @@
       if (annotations) {
         renderLevels(annotations, iv);
         renderMarkers(annotations, iv, currentBars);
-        renderForecastCandles(annotations, iv, currentBars);
+        renderForecastZones(annotations, iv, currentBars);
       }
       setDefaultView(iv);
       loadingEl.classList.add('hidden');
@@ -1066,7 +1064,7 @@
     if (currentBars.length > 0 && a) {
       renderLevels(a, currentIv);
       renderMarkers(a, currentIv, currentBars);
-      renderForecastCandles(a, currentIv, currentBars);
+      renderForecastZones(a, currentIv, currentBars);
       setDefaultView(currentIv);
     }
   });

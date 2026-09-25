@@ -65,6 +65,12 @@
     .jd-state.bull { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.35); }
     .jd-px { font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
     .jd-time { font-size: 11px; color: var(--muted); margin-left: auto; }
+    .jd-frozen {
+      display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px;
+      font-size: 11.5px; font-weight: 800; color: var(--gold);
+      background: rgba(245,200,66,0.1); border: 1px dashed rgba(245,200,66,0.5);
+      border-radius: 8px; padding: 4px 10px;
+    }
     .jd-levels { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
     .jd-lv { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; }
     .jd-lv .lp { font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 58px; }
@@ -224,6 +230,52 @@
     }
     .hist-ctrl select:focus { border-color: #334155; }
     .hist-ctrl .hist-note { font-size: 10px; color: #475569; flex-basis: 100%; line-height: 1.5; }
+    .hist-ctrl .cal-btn {
+      background: var(--card); color: var(--text); cursor: pointer;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 10px; font-size: 13px; line-height: 1; font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .hist-ctrl .cal-btn:hover { border-color: #334155; }
+    .hist-ctrl .cal-btn.on { border-color: var(--gold); color: var(--gold); }
+
+    /* 简易日历面板（纯JS/CSS，仅存档日期可选） */
+    .cal-panel {
+      position: absolute; top: calc(100% + 6px); left: 0; z-index: 60;
+      width: 252px; max-width: calc(100vw - 32px);
+      background: var(--card); border: 1px solid #2a3448; border-radius: 12px;
+      padding: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+    }
+    .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .cal-title { font-size: 12.5px; font-weight: 700; color: #e2e8f0; }
+    .cal-nav {
+      width: 26px; height: 26px; border-radius: 7px; cursor: pointer;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      color: var(--text); font-size: 14px; line-height: 1;
+    }
+    .cal-nav:disabled { opacity: 0.25; cursor: default; }
+    .cal-nav:not(:disabled):hover { border-color: #334155; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+    .cal-dow { font-size: 10px; color: var(--muted); text-align: center; padding: 3px 0 5px; font-weight: 700; }
+    .cal-day {
+      height: 30px; display: flex; align-items: center; justify-content: center;
+      font-size: 11.5px; font-family: 'JetBrains Mono', monospace; border-radius: 7px;
+    }
+    span.cal-day.off { color: #334155; }
+    button.cal-day.has {
+      cursor: pointer; border: 1px solid rgba(245,200,66,0.45);
+      background: rgba(245,200,66,0.10); color: var(--gold); font-weight: 700;
+    }
+    button.cal-day.has:hover { background: rgba(245,200,66,0.22); }
+    button.cal-day.has.sel { background: var(--gold); color: #000; border-color: var(--gold); }
+    .cal-foot { margin-top: 8px; font-size: 10px; color: #475569; line-height: 1.4; }
+    .cal-latest {
+      margin-top: 6px; width: 100%; cursor: pointer;
+      font-size: 11px; font-weight: 700; color: #cbd5e1;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 0; font-family: inherit;
+    }
+    .cal-latest:hover { border-color: #334155; }
 
     /* 历史模式提示条 */
     .hist-banner {
@@ -432,10 +484,12 @@
     <div class="hist-banner hidden" id="histBanner"></div>
 
     <!-- 历史分析回看控件 -->
-    <div class="hist-ctrl hidden" id="histCtrl">
-      <label for="histSelect">📅 查看历史分析</label>
+    <div class="hist-ctrl hidden" id="histCtrl" style="position:relative">
+      <label for="histSelect">查看历史分析</label>
       <select id="histSelect"><option value="">最新</option></select>
-      <span class="hist-note">历史存档为当日冻结快照，生成后不可修改（与预测留痕同一原则）· 选中某日可将当天的分析标注叠加在最新真实K线上，反向验证准不准</span>
+      <button class="cal-btn" id="calBtn" type="button" title="打开日历选择存档日期">📅</button>
+      <div class="cal-panel hidden" id="calPanel"></div>
+      <span class="hist-note">历史存档为当日冻结快照，生成后不可修改（与预测留痕同一原则）· 选中某日：情景区域从那天的K线出发展开，此后已发生的真实K线叠加其上，预测 vs 现实一眼对比</span>
     </div>
 
     <!-- 当前判断卡（3秒读懂） -->
@@ -829,9 +883,13 @@
 
     fcBgSeries = chart.addHistogramSeries({ priceScaleId: 'fc-bg', priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
     chart.priceScale('fc-bg').applyOptions({ scaleMargins: { top: 0, bottom: 0 }, visible: false });
-    fcBgSeries.setData(futureTimes.map(function (t, i) {
-      return { time: t, value: 1, color: i === 0 ? 'rgba(245,200,66,0.22)' : 'rgba(148,163,184,0.06)' };
-    }));
+    // 历史|预测分界金色竖带：最新模式画在第一个未来日（原行为不变）；
+    // 历史回看模式画在存档基准日 D 本身，直观标出「从这天开始是当日的预测」
+    var tintData = futureTimes.map(function (t, i) {
+      return { time: t, value: 1, color: (!viewingDate && i === 0) ? 'rgba(245,200,66,0.22)' : 'rgba(148,163,184,0.06)' };
+    });
+    if (viewingDate) tintData.unshift({ time: lastBar.time, value: 1, color: 'rgba(245,200,66,0.22)' });
+    fcBgSeries.setData(tintData);
 
     scenarios.forEach(function (sc, idx) {
       var points = zonePoints(sc), base = typeof f.basePrice === 'number' ? f.basePrice : lastBar.close;
@@ -1263,7 +1321,11 @@
         '</div>';
     }
 
+    var frozenHtml = viewingDate
+      ? '<div class="jd-frozen">📅 ' + escapeHtml(viewingDate) + '（' + weekdayOf(viewingDate) + '）冻结的分析 · 非最新判断</div>'
+      : '';
     box.innerHTML =
+      frozenHtml +
       '<div class="jd-top">' +
         '<span class="jd-symbol">恒指 · 日线</span>' +
         '<span class="jd-state ' + toneCls + '">' + escapeHtml((c.stateEmoji ? c.stateEmoji + ' ' : '') + (c.stateLabel || f.biasLabel || '')) + '</span>' +
@@ -1719,7 +1781,7 @@
         renderForecastZones(annotations, iv, currentBars);
         renderRRZones(annotations, iv, currentBars);
       }
-      setDefaultView(iv);
+      if (viewingDate && iv === '1d') setHistView(); else setDefaultView(iv);
       loadingEl.classList.add('hidden');
     }).catch(function (err) {
       if (currentIv !== iv) return;
@@ -1810,14 +1872,37 @@
     }
   }
 
+  // 日期辅助：'2026-09-25' → '9月25日' / '周四'
+  function weekdayOf(dateStr) {
+    var d = new Date(dateStr + 'T00:00:00Z');
+    if (isNaN(d.getTime())) return '';
+    return ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getUTCDay()];
+  }
+  function cnDate(dateStr) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr || '');
+    if (!m) return dateStr;
+    return parseInt(m[2], 10) + '月' + parseInt(m[3], 10) + '日';
+  }
+
   function updateHistBanner() {
     var banner = el('histBanner');
     if (!viewingDate) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
     banner.innerHTML =
-      '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(viewingDate) + '</b> 冻结的历史分析 · K线为最新真实走势，标注为当日判断，叠加对比即可验证准确度</span>' +
+      '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(cnDate(viewingDate) + '（' + weekdayOf(viewingDate) + '）') + '</b> 冻结的分析 · 情景区域从当天K线展开，右侧叠加此后真实走势，预测 vs 现实直接对比</span>' +
       '<button class="hb-back" id="histBack" type="button">返回最新</button>';
     banner.classList.remove('hidden');
     el('histBack').addEventListener('click', function () { switchToDate(''); });
+  }
+
+  // 历史模式视图：把锚点K线放在可视区中左侧，左留几根背景、右侧留足情景区间，
+  // 让「当天预测路径 + 此后真实K线」同框可见
+  function setHistView() {
+    if (currentIv !== '1d' || !currentBars.length || !annotations) return;
+    var idx = anchorIndex(annotations, currentBars);
+    if (idx < 0) return;
+    var from = Math.max(0, idx - 8) - 0.5;
+    var to = Math.max(currentBars.length - 1, idx + 9) + FORECAST_EXTRA_BARS * 0.4 + 0.5;
+    chart.timeScale().setVisibleLogicalRange({ from: from, to: to });
   }
 
   function switchToDate(date) {
@@ -1826,7 +1911,9 @@
       viewingDate = null;
       if (sel) sel.value = '';
       updateHistBanner();
+      renderCalPanel();
       if (latestAnnotations) applyAnnotations(latestAnnotations);
+      if (currentBars.length) setDefaultView(currentIv);
       return;
     }
     fetchArchive(date).then(function (a) {
@@ -1837,8 +1924,68 @@
       viewingDate = date;
       if (sel) sel.value = date;
       updateHistBanner();
+      renderCalPanel();
       applyAnnotations(a);
+      setHistView();
     });
+  }
+
+  // ---------- 简易日历面板（只有存档日期可选，其余置灰） ----------
+  var archiveDates = [];      // 已排序（新→旧）的存档日期
+  var archiveDateSet = {};    // date → true
+  var calMonth = null;        // 日历当前显示月份 'YYYY-MM'
+
+  function monthOf(dateStr) { return dateStr.slice(0, 7); }
+  function shiftMonth(ym, delta) {
+    var y = parseInt(ym.slice(0, 4), 10), m = parseInt(ym.slice(5, 7), 10) - 1 + delta;
+    var d = new Date(Date.UTC(y, m, 1));
+    return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
+  }
+
+  function renderCalPanel() {
+    var panel = el('calPanel');
+    if (!panel || panel.classList.contains('hidden') || !archiveDates.length) return;
+    if (!calMonth) calMonth = monthOf(viewingDate || archiveDates[0]);
+    var minMonth = monthOf(archiveDates[archiveDates.length - 1]);
+    var maxMonth = monthOf(archiveDates[0]);
+    var y = parseInt(calMonth.slice(0, 4), 10), mo = parseInt(calMonth.slice(5, 7), 10);
+    var firstDow = new Date(Date.UTC(y, mo - 1, 1)).getUTCDay();
+    var daysInMonth = new Date(Date.UTC(y, mo, 0)).getUTCDate();
+    var html =
+      '<div class="cal-head">' +
+        '<button class="cal-nav" id="calPrev" type="button"' + (calMonth <= minMonth ? ' disabled' : '') + '>‹</button>' +
+        '<span class="cal-title">' + y + ' 年 ' + mo + ' 月</span>' +
+        '<button class="cal-nav" id="calNext" type="button"' + (calMonth >= maxMonth ? ' disabled' : '') + '>›</button>' +
+      '</div><div class="cal-grid">';
+    ['日', '一', '二', '三', '四', '五', '六'].forEach(function (w) { html += '<div class="cal-dow">' + w + '</div>'; });
+    for (var b = 0; b < firstDow; b++) html += '<span class="cal-day"></span>';
+    for (var day = 1; day <= daysInMonth; day++) {
+      var ds = calMonth + '-' + String(day).padStart(2, '0');
+      if (archiveDateSet[ds]) {
+        html += '<button type="button" class="cal-day has' + (ds === viewingDate ? ' sel' : '') + '" data-date="' + ds + '">' + day + '</button>';
+      } else {
+        html += '<span class="cal-day off">' + day + '</span>';
+      }
+    }
+    html += '</div><div class="cal-foot">金色日期 = 有冻结存档可回看 · 其余日期无存档</div>' +
+      '<button class="cal-latest" id="calLatest" type="button">回到最新分析</button>';
+    panel.innerHTML = html;
+    var prev = document.getElementById('calPrev'), next = document.getElementById('calNext');
+    if (prev) prev.addEventListener('click', function (e) { e.stopPropagation(); calMonth = shiftMonth(calMonth, -1); renderCalPanel(); });
+    if (next) next.addEventListener('click', function (e) { e.stopPropagation(); calMonth = shiftMonth(calMonth, 1); renderCalPanel(); });
+    var latestBtn = document.getElementById('calLatest');
+    if (latestBtn) latestBtn.addEventListener('click', function () { hideCalPanel(); switchToDate(''); });
+    panel.querySelectorAll('button.cal-day.has').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        hideCalPanel();
+        switchToDate(btn.getAttribute('data-date'));
+      });
+    });
+  }
+
+  function hideCalPanel() {
+    el('calPanel').classList.add('hidden');
+    el('calBtn').classList.remove('on');
   }
 
   function initHistCtrl() {
@@ -1847,13 +1994,35 @@
       var dates = list.filter(function (d) { return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d); })
         .sort().reverse(); // 最新日期在前
       if (!dates.length) return;
+      archiveDates = dates;
+      archiveDateSet = {};
+      dates.forEach(function (d) { archiveDateSet[d] = true; });
       var sel = el('histSelect');
       dates.forEach(function (d) {
         var opt = document.createElement('option');
-        opt.value = d; opt.textContent = d;
+        opt.value = d; opt.textContent = d + ' ' + weekdayOf(d); // 显示星期几，方便「切到周三」这种心智
         sel.appendChild(opt);
       });
       sel.addEventListener('change', function () { switchToDate(sel.value); });
+      var calBtn = el('calBtn');
+      calBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var panel = el('calPanel');
+        var opening = panel.classList.contains('hidden');
+        if (opening) {
+          calMonth = monthOf(viewingDate || archiveDates[0]);
+          panel.classList.remove('hidden');
+          calBtn.classList.add('on');
+          renderCalPanel();
+        } else {
+          hideCalPanel();
+        }
+      });
+      document.addEventListener('click', function (e) {
+        var panel = el('calPanel');
+        if (panel.classList.contains('hidden')) return;
+        if (!panel.contains(e.target) && e.target !== calBtn) hideCalPanel();
+      });
       el('histCtrl').classList.remove('hidden');
     });
   }

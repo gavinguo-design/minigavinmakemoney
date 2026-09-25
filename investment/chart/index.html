@@ -270,6 +270,17 @@
       max-width: 62%;
     }
 
+    /* 价位线悬停浮层（十字线靠近价位线时显示） */
+    .level-tip {
+      position: absolute; left: 10px; z-index: 15;
+      font-size: 11px; line-height: 1.4; white-space: nowrap;
+      background: rgba(8,12,16,0.92); border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 8px; pointer-events: none;
+      color: var(--text); font-family: 'JetBrains Mono', monospace;
+      transform: translateY(-50%); max-width: 78%;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
     /* interval tabs */
     .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
     .tab {
@@ -368,6 +379,7 @@
       <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
       <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
       <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能数据可能延迟回填（Yahoo数据源限制）</div>
+      <div class="level-tip hidden" id="levelTip"></div>
       <div class="loading" id="loading">加载行情数据…</div>
       <div class="zoom-ctrl">
         <div class="zoom-btn" id="zoomIn" title="放大">+</div>
@@ -500,6 +512,7 @@
 
   var annotations = null;   // annotations.json content
   var priceLines = [];      // active price line handles
+  var levelHitList = [];    // 供十字线悬停提示用的价位信息
   var currentIv = '1d';
   var currentBars = [];     // current candle data
   var markerByTime = {};    // time -> marker obj (for click detail)
@@ -988,10 +1001,38 @@
     priceLines = [];
   }
 
+  // 图内线上文字只保留核心名（去掉区间/理由后缀），如「缺口阻力 24,650」
+  function shortLevelTitle(lv) {
+    var isSupport = lv.type === 'support';
+    var name = String(lv.label || '').replace(/\s*[0-9][0-9,，.\s\-–—~～]*$/, '').trim();
+    if (!name) name = (lv.strength === 'strong' ? '强' : '') + (isSupport ? '支撑' : '阻力');
+    return name + ' ' + fmt(lv.price);
+  }
+
   function renderLevels(a, iv) {
     clearPriceLines();
+    levelHitList = [];
     var list = (a && Array.isArray(a.levels)) ? a.levels : [];
     var visible = [];
+
+    // 当前周期内价位过近（差<80点）时，轴标签只保留更重要的一条（strong 优先），避免右侧标签重叠
+    var AXIS_MERGE_GAP = 80;
+    var currents = list.filter(function (lv) {
+      return lv && typeof lv.price === 'number' && appliesTo(lv, iv);
+    }).sort(function (x, y) { return y.price - x.price; });
+    var axisOk = [];
+    currents.forEach(function (lv) {
+      var clash = null;
+      for (var i = 0; i < axisOk.length; i++) {
+        if (Math.abs(axisOk[i].price - lv.price) < AXIS_MERGE_GAP) { clash = axisOk[i]; break; }
+      }
+      if (!clash) { axisOk.push(lv); return; }
+      // 冲突：strong 替换 normal，否则保留已有
+      if (lv.strength === 'strong' && clash.strength !== 'strong') {
+        axisOk[axisOk.indexOf(clash)] = lv;
+      }
+    });
+
     list.forEach(function (lv) {
       if (lv == null || typeof lv.price !== 'number') return;
       var isCurrent = appliesTo(lv, iv);
@@ -1000,15 +1041,29 @@
       // 当前周期相关价位实显，其他周期价位弱化显示（不隐藏，避免跨周期丢失信息）
       var color = isCurrent ? baseColor : hexToRgba(baseColor, 0.28);
       var strong = lv.strength === 'strong';
+      var showAxis = isCurrent && axisOk.indexOf(lv) !== -1;
+      // normal 强度且紧贴最新价（差<300点）的轴标签也收起：当前价标签已锚定该区域，避免 24650/24510 这类挤堆
+      if (showAxis && !strong && currentBars.length) {
+        var lastClose = currentBars[currentBars.length - 1].close;
+        if (typeof lastClose === 'number' && Math.abs(lv.price - lastClose) < 300) showAxis = false;
+      }
       var pl = series.createPriceLine({
         price: lv.price,
         color: color,
         lineWidth: isCurrent && strong ? 2 : 1,
         lineStyle: isCurrent && strong ? LightweightCharts.LineStyle.Solid : LightweightCharts.LineStyle.Dashed,
-        axisLabelVisible: isCurrent,
-        title: (lv.label || (isSupport ? '支撑' : '阻力')) + ' · ' + tfLabels(lv)
+        // 非当前周期：只留淡虚线，不占轴标签不占图内文字，悬停/点按时由 levelTip 浮层补充信息
+        axisLabelVisible: showAxis,
+        title: isCurrent ? shortLevelTitle(lv) : ''
       });
       priceLines.push(pl);
+      levelHitList.push({
+        price: lv.price,
+        name: lv.label || (isSupport ? '支撑' : '阻力'),
+        tf: tfLabels(lv),
+        current: isCurrent,
+        color: isCurrent ? baseColor : hexToRgba(baseColor, 0.6)
+      });
       visible.push({ lv: lv, current: isCurrent });
     });
 
@@ -1131,6 +1186,32 @@
     if (!param || param.time == null) return;
     var m = markerByTime[timeKey(param.time)];
     if (m) showMarkerDetail(m);
+  });
+
+  // ---------- 价位线悬停提示 ----------
+  // 非当前周期价位线不占轴标签，十字线（鼠标/手机点按）靠近任意价位线时浮层显示详情
+  var levelTipEl = el('levelTip');
+  var LEVEL_HIT_PX = 8; // 命中容差（像素）
+  chart.subscribeCrosshairMove(function (param) {
+    if (!param || !param.point || param.point.y == null || !levelHitList.length) {
+      levelTipEl.classList.add('hidden'); return;
+    }
+    var best = null, bestDist = LEVEL_HIT_PX + 1;
+    levelHitList.forEach(function (L) {
+      var y = series.priceToCoordinate(L.price);
+      if (y == null) return;
+      var d = Math.abs(y - param.point.y);
+      if (d < bestDist) { bestDist = d; best = { L: L, y: y }; }
+    });
+    if (!best) { levelTipEl.classList.add('hidden'); return; }
+    var L = best.L;
+    // 标签文本里已含数字（如区间）就不重复拼价格
+    var nameHtml = escapeHtml(L.name) + (/[0-9]/.test(L.name) ? '' : ' <b>' + fmt(L.price) + '</b>');
+    levelTipEl.innerHTML = '<span style="color:' + L.color + '">●</span> ' +
+      nameHtml + ' · ' + escapeHtml(L.tf) +
+      (L.current ? '' : ' <span style="color:var(--muted)">（非当前周期）</span>');
+    levelTipEl.style.top = best.y + 'px';
+    levelTipEl.classList.remove('hidden');
   });
 
   // ---------- interval switching ----------

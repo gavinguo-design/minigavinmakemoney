@@ -4,8 +4,8 @@
 // Upstream chain (first success wins):
 //   1. Eastmoney push2   (often blocks overseas CF edge IPs → 502, kept first
 //                         in case of region-specific success)
-//   2. Tencent qt.gtimg.cn (globally accessible, verified same values as EM)
-//   3. Sina hq.sinajs.cn   (backup)
+//   2. Sina hq.sinajs.cn   (globally accessible, includes share volume)
+//   3. Tencent qt.gtimg.cn (backup; index feed lacks share volume)
 // Returns normalized JSON:
 //   { price, open, high, low, volume, amount, prevClose, ts, source }
 // On total failure returns { error } with HTTP 200 so the frontend can fall
@@ -49,7 +49,7 @@ export async function onRequest(context) {
   const errors = [];
   let payload = null;
 
-  for (const fetcher of [fetchEastmoney, fetchTencent, fetchSina]) {
+  for (const fetcher of [fetchEastmoney, fetchSina, fetchTencent]) {
     try {
       payload = await fetcher();
       if (payload) break;

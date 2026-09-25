@@ -67,14 +67,17 @@ export async function onRequest(context) {
     return json({ error: 'all upstreams failed', detail: errors }, corsHeaders);
   }
 
-  // Quote source lacks share volume (e.g. tencent index feed) → enrich from
-  // Eastmoney daily kline (today's row carries live OHLCV). Best-effort only.
-  if (payload.volume == null) {
+  // Volume-scale note: EM/Sina report ~2.5× Yahoo's share-volume universe for
+  // HSI, so raw upstream volume must NOT be drawn on the Yahoo-based
+  // histogram. Instead we ship today's + prev-day turnover (amount, same
+  // source → consistent) so the frontend can estimate today's volume in
+  // Yahoo scale: estVol = prevYahooVol × (amount / prevAmount).
+  if (typeof payload.amount === 'number' && payload.amount > 0) {
     try {
-      const kv = await fetchEmKlineToday();
-      if (kv && sameHktDay(kv.ts, payload.ts)) payload.volume = kv.volume;
+      const pa = await fetchTencentPrevAmount(payload.ts);
+      if (pa) payload.prevAmount = pa;
     } catch (e) {
-      errors.push('emKline: ' + String(e && e.message || e));
+      errors.push('prevAmount: ' + String(e && e.message || e));
     }
   }
 
@@ -96,15 +99,24 @@ function valid(p) {
 }
 
 async function fetchEastmoney() {
-  const url =
-    'https://push2.eastmoney.com/api/qt/stock/get?secid=100.HSI' +
-    '&fields=f43,f44,f45,f46,f47,f48,f57,f58,f60,f86';
-  const r = await fetch(url, {
-    headers: { 'User-Agent': UA, Accept: 'application/json', Referer: 'https://quote.eastmoney.com/' },
-    signal: AbortSignal.timeout(6000),
-  });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  const data = await r.json();
+  // push2 blocks overseas CF edge IPs (502); push2delay is a second chance.
+  const hosts = ['push2.eastmoney.com', 'push2delay.eastmoney.com'];
+  let data = null, lastErr = null;
+  for (const host of hosts) {
+    try {
+      const r = await fetch(
+        `https://${host}/api/qt/stock/get?secid=100.HSI&fields=f43,f44,f45,f46,f47,f48,f57,f58,f60,f86`,
+        {
+          headers: { 'User-Agent': UA, Accept: 'application/json', Referer: 'https://quote.eastmoney.com/' },
+          signal: AbortSignal.timeout(5000),
+        }
+      );
+      if (!r.ok) { lastErr = new Error('HTTP ' + r.status); continue; }
+      data = await r.json();
+      break;
+    } catch (e) { lastErr = e; }
+  }
+  if (!data) throw (lastErr || new Error('all hosts failed'));
   const d = data && data.data;
   if (!d || typeof d.f43 !== 'number' || d.f43 <= 0) throw new Error('no data');
   const scale = (v) => (typeof v === 'number' && v > 0 ? v / 100 : null);
@@ -188,31 +200,28 @@ async function fetchSina() {
   return p;
 }
 
-function sameHktDay(tsA, tsB) {
-  if (typeof tsA !== 'number' || typeof tsB !== 'number') return false;
-  const day = (t) => Math.floor((t + 28800) / 86400);
-  return day(tsA) === day(tsB);
-}
-
-// Eastmoney daily kline, last row = today's live OHLCV during session.
-// f51 date, f56 volume (verified 2026-09-25: "2026-09-25,...,4950067712,...")
-async function fetchEmKlineToday() {
-  const url =
-    'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=100.HSI' +
-    '&klt=101&fqt=0&lmt=1&end=20500101&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57';
-  const r = await fetch(url, {
-    headers: { 'User-Agent': UA, Accept: 'application/json', Referer: 'https://quote.eastmoney.com/' },
-    signal: AbortSignal.timeout(6000),
-  });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  const data = await r.json();
-  const rows = data && data.data && data.data.klines;
-  if (!Array.isArray(rows) || !rows.length) throw new Error('no klines');
-  const f = rows[rows.length - 1].split(',');
-  const vol = parseFloat(f[5]);
-  const ts = Math.floor(Date.parse(f[0] + 'T12:00:00+08:00') / 1000);
-  if (!Number.isFinite(vol) || vol <= 0 || !Number.isFinite(ts)) throw new Error('bad row');
-  return { volume: vol, ts };
+// Tencent daily kline: rows [date, open, close, high, low, amount(元)].
+// Verified 2026-09-25: ["2026-09-25",...,"102202959184.000"] = today's turnover.
+// Returns the most recent completed trading day's amount before quoteTs's day.
+async function fetchTencentPrevAmount(quoteTs) {
+  const text = await fetchText(
+    'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=hkHSI,day,,,5,qfq',
+    { 'User-Agent': UA, Referer: 'https://gu.qq.com/' }
+  );
+  const data = JSON.parse(text);
+  const node = data && data.data && data.data.hkHSI;
+  const rows = node && (node.day || node.qfqday);
+  if (!Array.isArray(rows) || rows.length < 2) throw new Error('no kline rows');
+  const quoteDay = typeof quoteTs === 'number'
+    ? new Date((quoteTs + 28800) * 1000).toISOString().slice(0, 10)
+    : null;
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const [date, , , , , amt] = rows[i];
+    if (quoteDay && date >= quoteDay) continue; // skip today's (live) row
+    const v = parseFloat(amt);
+    if (Number.isFinite(v) && v > 0) return v;
+  }
+  throw new Error('no prev amount');
 }
 
 function json(obj, extraHeaders = {}) {

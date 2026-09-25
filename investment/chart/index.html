@@ -418,7 +418,7 @@
       <div id="chart"></div>
       <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
       <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
-      <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能数据暂缺（东财实时源暂不可用，Yahoo未回填）</div>
+      <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（实时源与Yahoo均未提供）</div>
       <div class="level-tip hidden" id="levelTip"></div>
       <div class="loading" id="loading">加载行情数据…</div>
       <div class="zoom-ctrl">
@@ -1013,24 +1013,39 @@
     }
   }
 
-  // 日线：用东财实时值替换/追加最后一根K线 + 补当日量能
+  // 实时源量能与 Yahoo 口径不一致（统计范围不同，约2.5~5倍差异），不能直接上图。
+  // 用同源成交额比例换算：今日估算量 = 前一日Yahoo量 × (今日成交额 / 前一日成交额)
+  function estimateTodayVolume(rt, prevBar) {
+    if (!rt || typeof rt.amount !== 'number' || rt.amount <= 0) return null;
+    if (typeof rt.prevAmount !== 'number' || rt.prevAmount <= 0) return null;
+    if (!prevBar || typeof prevBar.volume !== 'number' || prevBar.volume <= 0) return null;
+    return Math.round(prevBar.volume * (rt.amount / rt.prevAmount));
+  }
+
+  // 日线：用实时值替换/追加最后一根K线 + 补当日量能（成交额换算）
   function mergeRealtimeIntoChart(rt) {
     if (currentIv !== '1d' || !currentBars.length) return;
     if (typeof rt.open !== 'number' || typeof rt.high !== 'number' || typeof rt.low !== 'number') return;
     var rtDate = hktDateOf(rt.ts);
     var last = currentBars[currentBars.length - 1];
+    var isNewBar = !sameDay(last.time, rtDate);
+    var prevBar = isNewBar ? last : (currentBars.length > 1 ? currentBars[currentBars.length - 2] : null);
     var bar = {
       time: rtDate,
       open: round2(rt.open),
       high: round2(rt.high),
       low: round2(rt.low),
       close: round2(rt.price),
-      volume: typeof rt.volume === 'number' && rt.volume > 0 ? rt.volume : null
+      volume: estimateTodayVolume(rt, prevBar)
     };
     var lastTs = Date.UTC(last.time.year, last.time.month - 1, last.time.day);
     var rtTs = Date.UTC(rtDate.year, rtDate.month - 1, rtDate.day);
-    if (rtTs < lastTs) return; // 东财数据比Yahoo最后一根还旧，不动
-    if (sameDay(last.time, rtDate)) {
+    if (rtTs < lastTs) return; // 实时数据比Yahoo最后一根还旧，不动
+    // 当日已收盘且 Yahoo 已回填真实量能时，保留 Yahoo 真实值不用估算值
+    if (!isNewBar && typeof last.volume === 'number' && last.volume > 0) {
+      bar.volume = last.volume;
+    }
+    if (!isNewBar) {
       currentBars[currentBars.length - 1] = bar;
     } else {
       currentBars.push(bar); // Yahoo 还没出今天的K线，直接追加

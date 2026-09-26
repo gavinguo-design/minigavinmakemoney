@@ -20,6 +20,7 @@ const SECRET = 'mg-auth-06745e6f2f34d7a8d1e8f772e31cb09be7175a27bd84bf19b675598a
 const COOKIE_NAME = 'mg_auth';
 
 const WHITELIST_EXACT = new Set([
+  '/login',        // Pages pretty-URL (308 from /login.html)
   '/login.html',
   '/api/login',
   '/favicon.ico',
@@ -96,7 +97,7 @@ export async function onRequest(context) {
   return new Response(null, {
     status: 302,
     headers: {
-      Location: `/login.html?redirect=${redirect}`,
+      Location: `/login?redirect=${redirect}`,
       'Cache-Control': 'no-store',
     },
   });

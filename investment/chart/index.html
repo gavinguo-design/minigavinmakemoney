@@ -81,8 +81,17 @@
     .jd-cond b.chg { color: var(--up); font-weight: 700; }
     .jd-cond b.inv { color: var(--down); font-weight: 700; }
 
+    /* 顶部双卡行：当前判断卡 + 盈亏比标尺卡，桌面端左右并排，窄屏上下堆叠 */
+    .judge-row { display: flex; align-items: stretch; gap: 12px; margin-bottom: 12px; }
+    .judge-row .judge { flex: 1 1 50%; min-width: 0; margin-bottom: 0; }
+    @media (max-width: 768px) {
+      .judge-row { flex-direction: column; gap: 10px; }
+      .judge-row .judge { flex: 1 1 auto; }
+    }
+
     /* 盈亏比标尺（R/R gauge） */
     .rr-wrap { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
+    #rrCard .rr-wrap { margin-top: 0; border-top: none; padding-top: 0; }
     .rr-title { font-size: 11px; color: var(--muted); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.03em; }
     .rr-now-row { position: relative; height: 16px; margin-bottom: 6px; text-align: center; }
     .rr-now { font-size: 11px; font-weight: 700; color: var(--gold); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
@@ -508,8 +517,11 @@
       <span class="hist-note">历史存档为当日冻结快照，生成后不可修改（与预测留痕同一原则）· 选中某日：情景区域从那天的K线出发展开，此后已发生的真实K线叠加其上，预测 vs 现实一眼对比</span>
     </div>
 
-    <!-- 当前判断卡（3秒读懂） -->
-    <div class="judge hidden" id="judgeCard"></div>
+    <!-- 顶部双卡：当前判断卡（3秒读懂）+ 盈亏比标尺卡，桌面端左右并排 -->
+    <div class="judge-row hidden" id="judgeRow">
+      <div class="judge" id="judgeCard"></div>
+      <div class="judge hidden" id="rrCard"></div>
+    </div>
 
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
@@ -1310,12 +1322,14 @@
     box.textContent = text;
   }
 
-  // ---------- 当前判断卡（3秒读懂） ----------
+  // ---------- 当前判断卡（3秒读懂）+ 盈亏比标尺卡（顶部双卡） ----------
   function renderJudgeCard(a) {
+    var row = el('judgeRow');
     var box = el('judgeCard');
+    var rrBox = el('rrCard');
     var f = a && a.forecast;
     var c = f && f.card;
-    if (!f || !c) { box.classList.add('hidden'); return; }
+    if (!f || !c) { row.classList.add('hidden'); box.innerHTML = ''; rrBox.innerHTML = ''; rrBox.classList.add('hidden'); return; }
     var toneCls = ({ weak: 'weak', bear: 'bear', bull: 'bull' })[c.stateTone] || 'weak';
     var basePx = typeof f.basePrice === 'number' ? Math.round(f.basePrice) : null;
     var lvHtml = (Array.isArray(c.keyLines) ? c.keyLines : []).map(function (kl) {
@@ -1379,9 +1393,16 @@
       '<div class="jd-cond">' +
         (c.changeCondition ? '<b class="chg">改变判断：</b>' + escapeHtml(c.changeCondition) + '<br/>' : '') +
         (c.invalidCondition ? '<b class="inv">判断失效：</b>' + escapeHtml(c.invalidCondition) : '') +
-      '</div>' +
-      rrHtml;
-    box.classList.remove('hidden');
+      '</div>';
+    // 盈亏比标尺独立成第二张卡片（桌面端与判断卡左右并排，窄屏堆叠）；无 rr 数据时隐藏，判断卡占满整行
+    if (rrHtml) {
+      rrBox.innerHTML = rrHtml;
+      rrBox.classList.remove('hidden');
+    } else {
+      rrBox.innerHTML = '';
+      rrBox.classList.add('hidden');
+    }
+    row.classList.remove('hidden');
   }
 
   function renderForecast(a) {

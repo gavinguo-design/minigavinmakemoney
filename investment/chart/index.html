@@ -655,8 +655,19 @@
     },
     rightPriceScale: { borderColor: '#1a2030' },
     timeScale: { borderColor: '#1a2030', timeVisible: false, secondsVisible: false },
-    handleScroll: true,
-    handleScale: true
+    // 视口防跑飞（2026-09-26）：
+    // 1) 禁用价格轴拖动与纵向平移 —— lightweight-charts 里用户一旦纵向拖动，
+    //    autoScale 会被静默置为 false 且永不恢复，手机上滑动页面极易误触，
+    //    导致K线整体飞出画面（只剩情景虚线和悬空形态箭头）。
+    // 2) 价格轴始终 autoScale 跟随可见K线；横向平移/缩放保留，
+    //    但由下方 clampLogicalRange 做边界钳制 + recoverIfViewportLost 自动回弹兜底。
+    handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
+    handleScale: {
+      mouseWheel: true,
+      pinch: true,
+      axisPressedMouseMove: { time: true, price: false },
+      axisDoubleClickReset: { time: true, price: true }
+    }
   });
 
   var series = chart.addCandlestickSeries({
@@ -1877,6 +1888,8 @@
   var FORECAST_EXTRA_BARS = 9; // 日线预测蜡烛区留白
 
   function setDefaultView(iv) {
+    // 先恢复价格轴 autoScale（若被任何交互关掉，重置必须连纵向一起复位）
+    try { chart.priceScale('right').applyOptions({ autoScale: true }); } catch (e) {}
     var n = currentBars.length;
     if (!n) { chart.timeScale().fitContent(); return; }
     var visible = DEFAULT_VISIBLE_BARS[iv] || 60;
@@ -1885,6 +1898,59 @@
     var to = n - 1 + extra + 0.5;
     chart.timeScale().setVisibleLogicalRange({ from: from, to: to });
   }
+
+  // ---------- 视口边界钳制 + 跑飞自动回弹（2026-09-26） ----------
+  // 横向钳制：不允许把视口平移/惯性甩到完全脱离K线与情景区域的空区，
+  // 保底至少约3根K线（或情景区域尾部）留在画面内。
+  var clampGuard = false;
+  function clampLogicalRange(range) {
+    if (clampGuard || !range || !currentBars.length) return;
+    var n = currentBars.length;
+    var extra = currentIv === '1d' ? FORECAST_EXTRA_BARS : 2;
+    var span = range.to - range.from;
+    if (!(span > 0)) return;
+    var minTo = Math.min(3, n - 1);      // 视口右缘不得早于前几根K线
+    var maxFrom = n - 1 + extra;         // 视口左缘不得越过K线+情景区域末端
+    var from = range.from, to = range.to;
+    if (to < minTo) { to = minTo; from = to - span; }
+    else if (from > maxFrom) { from = maxFrom; to = from + span; }
+    else return;
+    clampGuard = true;
+    chart.timeScale().setVisibleLogicalRange({ from: from, to: to });
+    requestAnimationFrame(function () { clampGuard = false; });
+  }
+  chart.timeScale().subscribeVisibleLogicalRangeChange(clampLogicalRange);
+
+  // 纵向兜底回弹：若可视价格区间与当前横向可见K线的高低价完全无交集（视口跑飞），
+  // 自动恢复 autoScale 让K线回到画面内。价格轴拖动已禁用，此处为安全网。
+  function recoverIfViewportLost() {
+    var n = currentBars.length;
+    if (!n) return;
+    var h = chartEl.clientHeight;
+    if (!h) return;
+    var lr = chart.timeScale().getVisibleLogicalRange();
+    if (!lr) return;
+    var iFrom = Math.max(0, Math.floor(lr.from));
+    var iTo = Math.min(n - 1, Math.ceil(lr.to));
+    if (iTo < iFrom) return; // 横向已无K线，交给 clampLogicalRange 处理
+    var lo = Infinity, hi = -Infinity;
+    for (var i = iFrom; i <= iTo; i++) {
+      var b = currentBars[i];
+      if (b.low < lo) lo = b.low;
+      if (b.high > hi) hi = b.high;
+    }
+    if (!isFinite(lo) || !isFinite(hi)) return;
+    var topPrice = series.coordinateToPrice(0);
+    var bottomPrice = series.coordinateToPrice(h);
+    if (topPrice === null || bottomPrice === null) return;
+    // topPrice 是画面顶部价格（大），bottomPrice 是底部价格（小）
+    if (bottomPrice > hi || topPrice < lo) {
+      try { chart.priceScale('right').applyOptions({ autoScale: true }); } catch (e) {}
+    }
+  }
+  ['pointerup', 'touchend', 'mouseup'].forEach(function (evt) {
+    chartEl.addEventListener(evt, function () { setTimeout(recoverIfViewportLost, 80); }, true);
+  });
 
   // ---------- zoom controls ----------
 

@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>登录 · minigavin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -27,7 +30,7 @@
     .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
     .logo {
       width: 34px; height: 34px; border-radius: 8px;
-      background: linear-gradient(135deg, #00d87f, #3b82f6);
+      background: none; object-fit: cover;
       display: flex; align-items: center; justify-content: center;
       color: #000; font-size: 15px; font-weight: 900;
     }
@@ -60,7 +63,7 @@
 <body>
   <form class="box" id="loginForm">
     <div class="brand">
-      <div class="logo">M</div>
+      <img class="logo" src="/icon-192.png" alt="minigavin">
       <h1>minigavin · 投资雷达</h1>
     </div>
     <p class="sub">私有站点，请登录后访问</p>

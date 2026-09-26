@@ -24,6 +24,11 @@ const WHITELIST_EXACT = new Set([
   '/login.html',
   '/api/login',
   '/favicon.ico',
+  '/favicon-32.png',
+  '/favicon-16.png',
+  '/apple-touch-icon.png',
+  '/icon-192.png',
+  '/icon-512.png',
   '/robots.txt',
   '/chart/annotations.json',
 ]);

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>交易战绩 · miniGG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --bg: #080c10;
+      --card: #0e1419;
+      --border: #1a2030;
+      --up: #00d87f;      /* 绿涨（港股习惯） */
+      --down: #ff4466;    /* 红跌 */
+      --gold: #f5c842;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+    html, body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 0 12px 40px; }
+
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(8,12,16,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.02em; }
+    .brand .logo {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: linear-gradient(135deg, #00d87f, #3b82f6);
+      display: flex; align-items: center; justify-content: center;
+      color: #000; font-size: 12px; font-weight: 900;
+    }
+    .brand a { color: var(--muted); font-size: 12px; text-decoration: none; font-weight: 500; }
+    .brand a:hover { color: var(--text); }
+
+    h1 { font-size: 18px; font-weight: 800; margin: 18px 4px 4px; }
+    .sub { font-size: 12px; color: var(--muted); margin: 0 4px 16px; }
+
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+    .flat { color: var(--gold); }
+
+    /* stats bar */
+    .stats {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+      margin-bottom: 16px;
+    }
+    .stat {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px 10px; text-align: center;
+    }
+    .stat .v { font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    .stat .k { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    @media (max-width: 560px) {
+      .stats { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    h2 { font-size: 14px; font-weight: 800; margin: 20px 4px 10px; display: flex; align-items: center; gap: 8px; }
+    h2 .cnt { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+    .trade {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 13px 15px; margin-bottom: 10px;
+    }
+    .t-top { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+    .t-sym { font-size: 14px; font-weight: 800; }
+    .t-name { font-size: 12px; color: #94a3b8; }
+    .t-dir {
+      font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; border: 1px solid transparent;
+    }
+    .t-dir.long { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.35); }
+    .t-dir.short { color: var(--down); background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.35); }
+    .t-pnl { margin-left: auto; text-align: right; }
+    .t-pnl .p { font-size: 15px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    .t-pnl .pp { font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+    .t-grid {
+      display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 8px;
+      font-size: 12px; color: #94a3b8;
+    }
+    .t-grid .lbl { color: var(--muted); font-size: 11px; }
+    .t-grid .val { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #cbd5e1; }
+    .t-note { margin-top: 8px; font-size: 12px; line-height: 1.55; color: #94a3b8; border-top: 1px dashed var(--border); padding-top: 8px; }
+
+    .empty {
+      background: var(--card); border: 1px dashed var(--border); border-radius: 12px;
+      padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px;
+    }
+    .loading { text-align: center; color: var(--muted); font-size: 13px; padding: 30px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">M</div>
+      <span>miniGG</span>
+      <a href="./">← 交易地图</a>
+      <a href="/">首页</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <h1>📒 交易战绩</h1>
+    <p class="sub">真实交易记录 · 逐笔留痕 · 开平仓价格与盈亏可查</p>
+
+    <div id="content" class="loading">加载中…</div>
+  </div>
+
+  <script>
+    const fmtNum = (n, d = 2) => (n === null || n === undefined || isNaN(n)) ? '--' : Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const signed = (n, d = 2) => (n === null || n === undefined || isNaN(n)) ? '--' : (n > 0 ? '+' : '') + fmtNum(n, d);
+    const cls = (n) => (n === null || n === undefined || isNaN(n)) ? 'flat' : (n > 0 ? 'up' : n < 0 ? 'down' : 'flat');
+
+    function tradeCard(t) {
+      const isClosed = t.status === 'closed';
+      const pnlHtml = isClosed
+        ? `<div class="t-pnl">
+             <div class="p ${cls(t.pnl)}">${signed(t.pnl)}</div>
+             <div class="pp ${cls(t.pnlPct)}">${signed(t.pnlPct)}%</div>
+           </div>`
+        : `<div class="t-pnl"><div class="pp flat">持仓中</div></div>`;
+      return `
+        <div class="trade">
+          <div class="t-top">
+            <span class="t-sym mono">${t.symbol || '--'}</span>
+            <span class="t-name">${t.name || ''}</span>
+            <span class="t-dir ${t.direction}">${t.direction === 'short' ? '做空 SHORT' : '做多 LONG'}</span>
+            ${pnlHtml}
+          </div>
+          <div class="t-grid">
+            <span><span class="lbl">开仓</span> <span class="val">${t.openDate || '--'} @ ${fmtNum(t.openPrice)}</span></span>
+            ${isClosed
+              ? `<span><span class="lbl">平仓</span> <span class="val">${t.closeDate || '--'} @ ${fmtNum(t.closePrice)}</span></span>`
+              : ''}
+            ${t.size ? `<span><span class="lbl">仓位</span> <span class="val">${t.size}</span></span>` : ''}
+            <span><span class="lbl">编号</span> <span class="val">${t.id || ''}</span></span>
+          </div>
+          ${t.note ? `<div class="t-note">${t.note}</div>` : ''}
+        </div>`;
+    }
+
+    async function load() {
+      const el = document.getElementById('content');
+      let data;
+      try {
+        const res = await fetch('trades.json?t=' + Date.now());
+        data = await res.json();
+      } catch {
+        el.className = 'empty';
+        el.textContent = '加载失败，请刷新重试';
+        return;
+      }
+
+      const trades = Array.isArray(data.trades) ? data.trades : [];
+      const open = trades.filter((t) => t.status === 'open');
+      const closed = trades.filter((t) => t.status === 'closed');
+
+      // stats: prefer server-provided, fallback to computed
+      const s = data.stats || {};
+      const wins = s.wins ?? closed.filter((t) => (t.pnl ?? 0) > 0).length;
+      const losses = s.losses ?? closed.filter((t) => (t.pnl ?? 0) < 0).length;
+      const total = s.total ?? trades.length;
+      const winRate = s.winRate ?? (closed.length ? (wins / closed.length) * 100 : null);
+      const totalPnl = s.totalPnl ?? (closed.length ? closed.reduce((a, t) => a + (t.pnl || 0), 0) : null);
+
+      let html = `
+        <div class="stats">
+          <div class="stat"><div class="v">${total}</div><div class="k">总笔数</div></div>
+          <div class="stat"><div class="v up">${wins}</div><div class="k">胜</div></div>
+          <div class="stat"><div class="v down">${losses}</div><div class="k">负</div></div>
+          <div class="stat"><div class="v ${winRate === null ? 'flat' : winRate >= 50 ? 'up' : 'down'}">${winRate === null ? '--' : fmtNum(winRate, 1) + '%'}</div><div class="k">胜率</div></div>
+          <div class="stat"><div class="v ${cls(totalPnl)}">${totalPnl === null ? '--' : signed(totalPnl)}</div><div class="k">累计盈亏</div></div>
+        </div>`;
+
+      if (!trades.length) {
+        html += `<div class="empty">暂无交易记录</div>`;
+      } else {
+        if (open.length) {
+          html += `<h2>🟢 持仓中 <span class="cnt">${open.length} 笔</span></h2>`;
+          html += open.map(tradeCard).join('');
+        }
+        if (closed.length) {
+          html += `<h2>✅ 已平仓 <span class="cnt">${closed.length} 笔</span></h2>`;
+          // newest close first
+          html += closed.slice().sort((a, b) => String(b.closeDate || '').localeCompare(String(a.closeDate || ''))).map(tradeCard).join('');
+        }
+      }
+
+      el.className = '';
+      el.innerHTML = html;
+    }
+
+    load();
+  </script>
+</body>
+</html>

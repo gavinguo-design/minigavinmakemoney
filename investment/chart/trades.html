@@ -14,8 +14,8 @@
       --bg: #080c10;
       --card: #0e1419;
       --border: #1a2030;
-      --up: #00d87f;      /* 绿涨（港股习惯） */
-      --down: #ff4466;    /* 红跌 */
+      --up: #FF453A;      /* 红涨/盈（A股习惯） */
+      --down: #32D74B;    /* 绿跌/亏 */
       --gold: #f5c842;
       --text: #e2e8f0;
       --muted: #64748b;
@@ -76,8 +76,8 @@
     .t-dir {
       font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; border: 1px solid transparent;
     }
-    .t-dir.long { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.35); }
-    .t-dir.short { color: var(--down); background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.35); }
+    .t-dir.long { color: var(--up); background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.35); }
+    .t-dir.short { color: var(--down); background: rgba(50,215,75,0.1); border-color: rgba(50,215,75,0.35); }
     .t-pnl { margin-left: auto; text-align: right; }
     .t-pnl .p { font-size: 15px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
     .t-pnl .pp { font-size: 11px; font-family: 'JetBrains Mono', monospace; }
@@ -105,8 +105,8 @@
       transition: border-color .15s, background .15s;
     }
     .btn:hover { border-color: #2a3550; }
-    .btn.primary { background: rgba(0,216,127,0.12); border-color: rgba(0,216,127,0.4); color: var(--up); }
-    .btn.danger { background: rgba(255,68,102,0.08); border-color: rgba(255,68,102,0.3); color: var(--down); }
+    .btn.primary { background: rgba(10,132,255,0.14); border-color: rgba(10,132,255,0.4); color: #0A84FF; }
+    .btn.danger { background: rgba(50,215,75,0.08); border-color: rgba(50,215,75,0.3); color: var(--down); }
     .btn.small { padding: 4px 10px; font-size: 11px; border-radius: 7px; }
     .btn:disabled { opacity: .5; cursor: not-allowed; }
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }

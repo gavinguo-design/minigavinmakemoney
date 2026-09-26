@@ -16,8 +16,10 @@
       --bg: #080c10;
       --card: #0e1419;
       --border: #1a2030;
-      --up: #00d87f;      /* 绿涨（港股习惯） */
-      --down: #ff4466;    /* 红跌 */
+      --up: #FF453A;      /* 红涨（A股习惯） */
+      --down: #32D74B;    /* 绿跌 */
+      --good: #32D74B;    /* 评价语义：绿=好（划算/胜） */
+      --bad: #FF453A;     /* 评价语义：红=坏（不划算/负） */
       --gold: #f5c842;
       --text: #e2e8f0;
       --muted: #64748b;
@@ -65,8 +67,8 @@
     .jd-symbol { font-size: 14px; font-weight: 800; color: #cbd5e1; }
     .jd-state { font-size: 15px; font-weight: 800; padding: 4px 12px; border-radius: 999px; border: 1px solid transparent; }
     .jd-state.weak { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.35); }
-    .jd-state.bear { color: var(--down); background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.35); }
-    .jd-state.bull { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.35); }
+    .jd-state.bear { color: var(--down); background: rgba(50,215,75,0.1); border-color: rgba(50,215,75,0.35); }
+    .jd-state.bull { color: var(--up); background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.35); }
     .jd-px { font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
     .jd-time { font-size: 11px; color: var(--muted); margin-left: auto; }
     .jd-frozen {
@@ -82,8 +84,8 @@
     .jd-lv .ltf { font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
     .jd-main { margin-top: 12px; font-size: 15px; line-height: 1.6; color: #f1f5f9; font-weight: 700; }
     .jd-cond { margin-top: 6px; font-size: 12.5px; line-height: 1.65; color: #94a3b8; font-weight: 400; }
-    .jd-cond b.chg { color: var(--up); font-weight: 700; }
-    .jd-cond b.inv { color: var(--down); font-weight: 700; }
+    .jd-cond b.chg { color: var(--good); font-weight: 700; }
+    .jd-cond b.inv { color: var(--bad); font-weight: 700; }
 
     /* 顶部双卡行：当前判断卡 + 盈亏比标尺卡，桌面端左右并排，窄屏上下堆叠 */
     .judge-row { display: flex; align-items: stretch; gap: 12px; margin-bottom: 12px; }
@@ -104,31 +106,31 @@
     .rr-dir-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
     .rr-dir-label { font-size: 13px; font-weight: 700; color: #cbd5e1; }
     .rr-dir-verdict { font-size: 14px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
-    .rr-dir-verdict.bad { color: var(--down); }
+    .rr-dir-verdict.bad { color: var(--bad); }
     .rr-dir-verdict.mid { color: var(--gold); }
-    .rr-dir-verdict.good { color: var(--up); }
+    .rr-dir-verdict.good { color: var(--good); }
     .rr-bar { display: flex; align-items: stretch; height: 22px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
     .rr-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; min-width: 0; }
-    .rr-seg.risk { background: rgba(255,68,102,0.20); color: #ff8fa3; }
-    .rr-seg.reward { background: rgba(0,216,127,0.16); color: #4ade9f; }
+    .rr-seg.risk { background: rgba(50,215,75,0.16); color: #7CE596; }
+    .rr-seg.reward { background: rgba(255,69,58,0.18); color: #FF8D85; }
     .rr-mark { flex: 0 0 2px; background: var(--gold); }
     .rr-ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 3px; gap: 8px; }
-    .rr-ends .re-risk { color: #ff8fa3; }
-    .rr-ends .re-reward { color: #4ade9f; }
+    .rr-ends .re-risk { color: #7CE596; }
+    .rr-ends .re-reward { color: #FF8D85; }
     .rr-verdict { margin-top: 8px; font-size: 17px; font-weight: 800; text-align: center; }
     .rr-verdict .rv-num { font-family: 'JetBrains Mono', monospace; }
-    .rr-verdict.bad .rv-num { color: var(--down); }
+    .rr-verdict.bad .rv-num { color: var(--bad); }
     .rr-verdict.mid .rv-num { color: var(--gold); }
-    .rr-verdict.good .rv-num { color: var(--up); }
+    .rr-verdict.good .rv-num { color: var(--good); }
     .rr-advice { margin-top: 5px; font-size: 12.5px; line-height: 1.6; color: #94a3b8; text-align: center; font-weight: 400; }
     .rr-note { margin-top: 6px; font-size: 11px; color: #475569; line-height: 1.5; text-align: center; }
 
     /* 情景卡盈亏比行 */
     .sc-rr { margin-top: 8px; font-size: 12.5px; line-height: 1.6; color: #cbd5e1; background: rgba(255,255,255,0.03); border: 1px dashed var(--border); border-radius: 8px; padding: 7px 9px; }
     .sc-rr b { font-family: 'JetBrains Mono', monospace; }
-    .sc-rr .rr-good { color: var(--up); }
+    .sc-rr .rr-good { color: var(--good); }
     .sc-rr .rr-mid { color: var(--gold); }
-    .sc-rr .rr-bad { color: var(--down); }
+    .sc-rr .rr-bad { color: var(--bad); }
     .sc-rr .sc-rr-hint { color: #64748b; font-size: 11px; display: block; margin-top: 2px; }
 
     /* 延迟行情提示条（15m/60m） */
@@ -157,7 +159,7 @@
     }
     details.more > summary:hover { border-color: #334155; }
     details.more > summary::-webkit-details-marker { display: none; }
-    details.more > summary::before { content: '▸'; color: var(--up); transition: transform 0.15s; }
+    details.more > summary::before { content: '▸'; color: var(--good); transition: transform 0.15s; }
     details.more[open] > summary::before { transform: rotate(90deg); }
     details.more > .more-body { margin-top: 12px; }
 
@@ -171,8 +173,8 @@
       font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
       border: 1px solid transparent;
     }
-    .badge.bull { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.3); }
-    .badge.bear { color: var(--down); background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.3); }
+    .badge.bull { color: var(--up); background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.3); }
+    .badge.bear { color: var(--down); background: rgba(50,215,75,0.1); border-color: rgba(50,215,75,0.3); }
     .badge.neutral { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.3); }
     .forecast .summary { flex: 1 1 100%; font-size: 14px; line-height: 1.7; color: #cbd5e1; font-weight: 400; }
     .forecast .kv { font-size: 12px; color: var(--muted); }
@@ -191,7 +193,7 @@
     .pb-flow { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
     .pb-if { color: var(--gold); font-weight: 700; font-size: 11.5px; flex-shrink: 0; }
     .pb-cond { color: #e2e8f0; font-weight: 600; }
-    .pb-then-label { color: var(--up); font-weight: 700; font-size: 11.5px; flex-shrink: 0; }
+    .pb-then-label { color: var(--good); font-weight: 700; font-size: 11.5px; flex-shrink: 0; }
     .pb-then { color: #94a3b8; font-weight: 400; }
     .pb-level { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 5px; }
 
@@ -215,8 +217,8 @@
     .rs-item { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.65; color: #cbd5e1; font-weight: 400; }
     .rs-num {
       flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px; margin-top: 1px;
-      background: rgba(0,216,127,0.1); border: 1px solid rgba(0,216,127,0.3);
-      color: var(--up); font-size: 10.5px; font-weight: 700;
+      background: rgba(50,215,75,0.1); border: 1px solid rgba(50,215,75,0.3);
+      color: var(--good); font-size: 10.5px; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
       font-family: 'JetBrains Mono', monospace;
     }
@@ -226,11 +228,11 @@
 
     .track-link {
       display: inline-flex; align-items: center; gap: 5px;
-      font-size: 12px; font-weight: 600; color: var(--up); text-decoration: none;
-      background: rgba(0,216,127,0.08); border: 1px solid rgba(0,216,127,0.3);
+      font-size: 12px; font-weight: 600; color: var(--good); text-decoration: none;
+      background: rgba(50,215,75,0.08); border: 1px solid rgba(50,215,75,0.3);
       padding: 6px 14px; border-radius: 999px; margin: 2px 4px 14px;
     }
-    .track-link:hover { background: rgba(0,216,127,0.15); }
+    .track-link:hover { background: rgba(50,215,75,0.15); }
 
     /* 历史分析回看控件 */
     .hist-ctrl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 4px 12px; }
@@ -346,8 +348,8 @@
       pointer-events: none; max-width: 74%; letter-spacing: 0.01em;
     }
     .struct-banner.weak { color: var(--gold); border-color: rgba(245,200,66,0.5); }
-    .struct-banner.bear { color: var(--down); border-color: rgba(255,68,102,0.5); }
-    .struct-banner.bull { color: var(--up); border-color: rgba(0,216,127,0.5); }
+    .struct-banner.bear { color: var(--down); border-color: rgba(50,215,75,0.5); }
+    .struct-banner.bull { color: var(--up); border-color: rgba(255,69,58,0.5); }
     @media (max-width: 640px) {
       .struct-banner { font-size: 13px; max-width: 84%; padding: 6px 11px; }
       .sim-badge { top: 56px; }
@@ -374,7 +376,7 @@
       cursor: pointer; user-select: none; -webkit-user-select: none;
       transition: background 0.15s, border-color 0.15s;
     }
-    .zoom-btn:active { background: rgba(0,216,127,0.15); border-color: var(--up); }
+    .zoom-btn:active { background: rgba(50,215,75,0.15); border-color: var(--good); }
     .zoom-btn:hover { border-color: #334155; }
     .zoom-btn.reset { font-size: 13px; font-weight: 600; }
     @media (max-width: 640px) {
@@ -405,8 +407,8 @@
     .pat-bar { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; flex-wrap: wrap; }
     .pat-toggle {
       display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
-      font-size: 12px; font-weight: 600; color: var(--up);
-      background: rgba(0,216,127,0.08); border: 1px solid rgba(0,216,127,0.3);
+      font-size: 12px; font-weight: 600; color: var(--good);
+      background: rgba(50,215,75,0.08); border: 1px solid rgba(50,215,75,0.3);
       padding: 6px 14px; border-radius: 999px; transition: all 0.15s;
     }
     .pat-toggle.off { color: var(--muted); background: var(--card); border-color: var(--border); }
@@ -423,7 +425,7 @@
       transition: all 0.15s;
     }
     .tab:hover { color: var(--text); }
-    .tab.active { color: #000; background: var(--up); border-color: var(--up); }
+    .tab.active { color: #000; background: var(--good); border-color: var(--good); }
 
     /* chart */
     .chart-row { display: flex; align-items: stretch; gap: 6px; }
@@ -517,7 +519,7 @@
 
   <div class="wrap">
     <h1>恒指交易地图 · miniGG</h1>
-    <p class="sub">^HSI · 历史K线：Yahoo Finance · 实时价与最新K线：东财/新浪/腾讯多源容灾（盘中实时）· 绿涨红跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
+    <p class="sub">^HSI · 历史K线：Yahoo Finance · 实时价与最新K线：东财/新浪/腾讯多源容灾（盘中实时）· 红涨绿跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
     <a class="track-link" href="track/">📊 预测战绩 · 历史预测留痕可查 →</a>
     <a class="track-link" href="trades.html">📒 交易战绩 · 真实交易逐笔留痕 →</a>
 
@@ -550,7 +552,7 @@
     <!-- 形态标注开关 -->
     <div class="pat-bar">
       <div class="pat-toggle" id="patToggle" title="自动检测经典蜡烛图形态并在图上标注（点击切换：仅强 → 全部 → 关）">🕯 形态标注 <b id="patToggleState">仅强</b></div>
-      <span class="pat-hint">单根K线形态是<b>局部信号</b>，≠整体方向，标记刻意做小 · 整体判断看图左上角结构横幅与情景区域 · 默认只显示强信号（近期高低点区），点开关切「全部/关」 · 绿箭头看涨/红箭头看跌 · <b>点击K线看详细解释与数值依据</b></span>
+      <span class="pat-hint">单根K线形态是<b>局部信号</b>，≠整体方向，标记刻意做小 · 整体判断看图左上角结构横幅与情景区域 · 默认只显示强信号（近期高低点区），点开关切「全部/关」 · 红箭头看涨/绿箭头看跌 · <b>点击K线看详细解释与数值依据</b></span>
     </div>
 
     <!-- 盘中周期延迟提示 -->
@@ -632,8 +634,10 @@
 (function () {
   'use strict';
 
-  var UP = '#00d87f';    // 绿涨
-  var DOWN = '#ff4466';  // 红跌
+  var UP = '#FF453A';      // 红涨（A股习惯）
+  var DOWN = '#32D74B';    // 绿跌
+  var SUPPORT = '#32ADE6'; // 支撑线：青（避免与红涨绿跌方向色混淆）
+  var RESIST = '#FF9F0A';  // 阻力线：橙
   var GOLD = '#f5c842';
 
   var IV_CONFIG = {
@@ -908,8 +912,8 @@
     };
     var rewardPts = Math.round(stat.reward), riskPts = Math.round(stat.risk);
     var dirTag = best.dir === 'short' ? '做空' : '做多';
-    makeZone(best.target, '#00d87f', 0.10, dirTag + '回报区 ' + (best.target >= refPrice ? '+' : '-') + rewardPts + '点');
-    makeZone(best.stop, '#ff4466', 0.10, dirTag + '风险区 -' + riskPts + '点');
+    makeZone(best.target, '#FF453A', 0.10, dirTag + '回报区 ' + (best.target >= refPrice ? '+' : '-') + rewardPts + '点');
+    makeZone(best.stop, '#32D74B', 0.10, dirTag + '风险区 -' + riskPts + '点');
   }
 
   function shortName(name) {
@@ -1173,7 +1177,7 @@
       .filter(function (b) { return typeof b.volume === 'number' && b.volume > 0; })
       .map(function (b) {
         var up = b.close >= b.open;
-        return { time: b.time, value: b.volume, color: up ? 'rgba(0,216,127,0.55)' : 'rgba(255,68,102,0.55)' };
+        return { time: b.time, value: b.volume, color: up ? 'rgba(255,69,58,0.5)' : 'rgba(50,215,75,0.5)' };
       });
   }
 
@@ -1306,7 +1310,7 @@
       series.update({ time: bar.time, open: bar.open, high: bar.high, low: bar.low, close: bar.close });
       if (bar.volume) {
         var up = bar.close >= bar.open;
-        volumeSeries.update({ time: bar.time, value: bar.volume, color: up ? 'rgba(0,216,127,0.55)' : 'rgba(255,68,102,0.55)' });
+        volumeSeries.update({ time: bar.time, value: bar.volume, color: up ? 'rgba(255,69,58,0.5)' : 'rgba(50,215,75,0.5)' });
       }
     } catch (e) { /* 图表更新失败不影响页面其余部分 */ }
     // 实时K线变化可能产生/取消最后一根的形态，重跑检测（纯计算，开销可忽略）
@@ -1556,7 +1560,7 @@
       if (lv == null || typeof lv.price !== 'number') return;
       var isCurrent = appliesTo(lv, iv);
       var isSupport = lv.type === 'support';
-      var baseColor = isSupport ? UP : DOWN;
+      var baseColor = isSupport ? SUPPORT : RESIST;
       // 当前周期相关价位实显，其他周期价位弱化显示（不隐藏，避免跨周期丢失信息）
       var color = isCurrent ? baseColor : hexToRgba(baseColor, 0.28);
       var strong = lv.strength === 'strong';
@@ -1618,7 +1622,7 @@
       if (lv.reason) bodyParts.push('理由：' + escapeHtml(lv.reason));
       if (lv.note) bodyParts.push(escapeHtml(lv.note));
       item.innerHTML =
-        '<div class="a-head"><span class="a-dot" style="background:' + (isSupport ? UP : DOWN) + '"></span>' +
+        '<div class="a-head"><span class="a-dot" style="background:' + (isSupport ? SUPPORT : RESIST) + '"></span>' +
         '<span>' + escapeHtml(lv.label || (isSupport ? '支撑' : '阻力')) + '</span>' +
         '<span class="a-tf">' + escapeHtml(tfLabels(lv)) + '</span>' +
         '<span class="a-date mono">' + fmt(lv.price) + '</span></div>' +

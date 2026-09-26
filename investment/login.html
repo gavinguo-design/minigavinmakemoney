@@ -11,21 +11,23 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     :root {
-      --bg: #080c10;
-      --card: #0e1419;
-      --border: #1a2030;
+      --bg: #0D0D0F;
+      --card: #1C1C1E;
+      --border: rgba(255,255,255,0.08);
       --up: #FF453A;
       --down: #32D74B;
       --gold: #f5c842;
-      --text: #e2e8f0;
-      --muted: #64748b;
+      --accent: #0A84FF;
+      --text: #F5F5F7;
+      --muted: rgba(235,235,245,0.5);
     }
-    html, body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; }
+    html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", 'Inter', system-ui, sans-serif; min-height: 100vh; }
     body { display: flex; align-items: center; justify-content: center; padding: 20px; }
     .box {
       width: 100%; max-width: 360px;
-      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
       padding: 32px 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     }
     .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
     .logo {
@@ -36,27 +38,28 @@
     }
     .brand h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
     .sub { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
-    label { display: block; font-size: 12px; font-weight: 600; color: #94a3b8; margin: 14px 0 6px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: rgba(235,235,245,0.6); margin: 14px 0 6px; }
     input {
       width: 100%; padding: 11px 12px;
       background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px;
       color: var(--text); font-size: 14px; font-family: inherit;
       outline: none; transition: border-color .15s;
     }
-    input:focus { border-color: #3b82f6; }
+    input { min-height: 44px; }
+    input:focus { border-color: var(--accent); background: rgba(10,132,255,0.06); }
     button {
-      width: 100%; margin-top: 22px; padding: 12px;
-      background: linear-gradient(135deg, #00d87f, #3b82f6);
-      border: none; border-radius: 10px;
-      color: #04110a; font-size: 14px; font-weight: 800; font-family: inherit;
-      cursor: pointer; transition: opacity .15s;
+      width: 100%; margin-top: 22px; padding: 13px; min-height: 44px;
+      background: var(--accent);
+      border: none; border-radius: 12px;
+      color: #fff; font-size: 15px; font-weight: 700; font-family: inherit;
+      cursor: pointer; transition: opacity 0.2s ease;
     }
-    button:hover { opacity: 0.9; }
+    button:hover { opacity: 0.88; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
     .err {
       display: none; margin-top: 14px; padding: 9px 12px;
-      background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.35); border-radius: 8px;
-      color: var(--down); font-size: 12.5px; font-weight: 600;
+      background: rgba(255,69,58,0.12); border: 1px solid rgba(255,69,58,0.35); border-radius: 10px;
+      color: #FF453A; font-size: 12.5px; font-weight: 600;
     }
   </style>
 </head>

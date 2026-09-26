@@ -1,26 +1,10 @@
 {
-  "trades": [
-    {
-      "id": "T20260926-qgup",
-      "status": "closed",
-      "symbol": "TEST",
-      "name": "验证用",
-      "direction": "long",
-      "openDate": "2026-09-26",
-      "openPrice": 100,
-      "size": "2手",
-      "note": "api test",
-      "pnl": 20,
-      "pnlPct": 10,
-      "closeDate": "2026-09-26",
-      "closePrice": 110
-    }
-  ],
+  "trades": [],
   "stats": {
-    "total": 1,
-    "wins": 1,
+    "total": 0,
+    "wins": 0,
     "losses": 0,
-    "winRate": 100,
-    "totalPnl": 20
+    "winRate": null,
+    "totalPnl": null
   }
 }

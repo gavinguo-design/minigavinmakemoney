@@ -48,8 +48,9 @@
     .down { color: var(--down); }
     .flat { color: var(--gold); }
 
-    h1 { font-size: 18px; font-weight: 800; margin: 18px 4px 4px; }
-    .sub { font-size: 12px; color: var(--muted); margin: 0 4px 14px; }
+    /* typography scale v2 (2026-09-26): L1 20/800 · L2 16/800 · L3 14-15/700 · body 13.5/400 · aux 11/400 */
+    h1 { font-size: 20px; font-weight: 800; margin: 20px 4px 6px; letter-spacing: -0.01em; }
+    .sub { font-size: 12px; color: var(--muted); margin: 0 4px 16px; }
 
     /* 当前判断卡（3秒读懂） */
     .judge {
@@ -58,8 +59,8 @@
       padding: 14px 16px; margin-bottom: 12px;
     }
     .jd-top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
-    .jd-symbol { font-size: 13px; font-weight: 800; color: #cbd5e1; }
-    .jd-state { font-size: 14px; font-weight: 800; padding: 4px 12px; border-radius: 999px; border: 1px solid transparent; }
+    .jd-symbol { font-size: 14px; font-weight: 800; color: #cbd5e1; }
+    .jd-state { font-size: 15px; font-weight: 800; padding: 4px 12px; border-radius: 999px; border: 1px solid transparent; }
     .jd-state.weak { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.35); }
     .jd-state.bear { color: var(--down); background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.35); }
     .jd-state.bull { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.35); }
@@ -72,12 +73,12 @@
       border-radius: 8px; padding: 4px 10px;
     }
     .jd-levels { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
-    .jd-lv { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; }
+    .jd-lv { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
     .jd-lv .lp { font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 58px; }
     .jd-lv .lt { color: #94a3b8; }
     .jd-lv .ltf { font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
-    .jd-main { margin-top: 10px; font-size: 13px; line-height: 1.6; color: #e2e8f0; font-weight: 600; }
-    .jd-cond { margin-top: 6px; font-size: 12px; line-height: 1.6; color: #94a3b8; }
+    .jd-main { margin-top: 12px; font-size: 15px; line-height: 1.6; color: #f1f5f9; font-weight: 700; }
+    .jd-cond { margin-top: 6px; font-size: 12.5px; line-height: 1.65; color: #94a3b8; font-weight: 400; }
     .jd-cond b.chg { color: var(--up); font-weight: 700; }
     .jd-cond b.inv { color: var(--down); font-weight: 700; }
 
@@ -92,14 +93,14 @@
     /* 盈亏比标尺（R/R gauge） */
     .rr-wrap { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
     #rrCard .rr-wrap { margin-top: 0; border-top: none; padding-top: 0; }
-    .rr-title { font-size: 11px; color: var(--muted); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.03em; }
+    .rr-title { font-size: 13px; color: #cbd5e1; font-weight: 800; margin-bottom: 10px; letter-spacing: 0.03em; }
     .rr-now-row { position: relative; height: 16px; margin-bottom: 6px; text-align: center; }
     .rr-now { font-size: 11px; font-weight: 700; color: var(--gold); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
     .rr-dir { margin-bottom: 10px; }
     .rr-dir:last-of-type { margin-bottom: 0; }
     .rr-dir-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-    .rr-dir-label { font-size: 12px; font-weight: 700; color: #cbd5e1; }
-    .rr-dir-verdict { font-size: 13px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    .rr-dir-label { font-size: 13px; font-weight: 700; color: #cbd5e1; }
+    .rr-dir-verdict { font-size: 14px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
     .rr-dir-verdict.bad { color: var(--down); }
     .rr-dir-verdict.mid { color: var(--gold); }
     .rr-dir-verdict.good { color: var(--up); }
@@ -111,21 +112,21 @@
     .rr-ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 3px; gap: 8px; }
     .rr-ends .re-risk { color: #ff8fa3; }
     .rr-ends .re-reward { color: #4ade9f; }
-    .rr-verdict { margin-top: 8px; font-size: 15px; font-weight: 800; text-align: center; }
+    .rr-verdict { margin-top: 8px; font-size: 17px; font-weight: 800; text-align: center; }
     .rr-verdict .rv-num { font-family: 'JetBrains Mono', monospace; }
     .rr-verdict.bad .rv-num { color: var(--down); }
     .rr-verdict.mid .rv-num { color: var(--gold); }
     .rr-verdict.good .rv-num { color: var(--up); }
-    .rr-advice { margin-top: 5px; font-size: 11.5px; line-height: 1.55; color: #94a3b8; text-align: center; }
-    .rr-note { margin-top: 6px; font-size: 10px; color: #475569; line-height: 1.5; text-align: center; }
+    .rr-advice { margin-top: 5px; font-size: 12.5px; line-height: 1.6; color: #94a3b8; text-align: center; font-weight: 400; }
+    .rr-note { margin-top: 6px; font-size: 11px; color: #475569; line-height: 1.5; text-align: center; }
 
     /* 情景卡盈亏比行 */
-    .sc-rr { margin-top: 8px; font-size: 11.5px; line-height: 1.55; color: #cbd5e1; background: rgba(255,255,255,0.03); border: 1px dashed var(--border); border-radius: 8px; padding: 7px 9px; }
+    .sc-rr { margin-top: 8px; font-size: 12.5px; line-height: 1.6; color: #cbd5e1; background: rgba(255,255,255,0.03); border: 1px dashed var(--border); border-radius: 8px; padding: 7px 9px; }
     .sc-rr b { font-family: 'JetBrains Mono', monospace; }
     .sc-rr .rr-good { color: var(--up); }
     .sc-rr .rr-mid { color: var(--gold); }
     .sc-rr .rr-bad { color: var(--down); }
-    .sc-rr .sc-rr-hint { color: #64748b; font-size: 10.5px; display: block; margin-top: 2px; }
+    .sc-rr .sc-rr-hint { color: #64748b; font-size: 11px; display: block; margin-top: 2px; }
 
     /* 延迟行情提示条（15m/60m） */
     .delay-note {
@@ -146,9 +147,9 @@
     details.more { margin-top: 16px; }
     details.more > summary {
       list-style: none; cursor: pointer; user-select: none;
-      font-size: 13px; font-weight: 700; color: #94a3b8;
+      font-size: 14.5px; font-weight: 700; color: #cbd5e1;
       background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 11px 16px; display: flex; align-items: center; gap: 8px;
+      padding: 12px 16px; display: flex; align-items: center; gap: 8px;
       transition: border-color 0.15s;
     }
     details.more > summary:hover { border-color: #334155; }
@@ -170,7 +171,7 @@
     .badge.bull { color: var(--up); background: rgba(0,216,127,0.1); border-color: rgba(0,216,127,0.3); }
     .badge.bear { color: var(--down); background: rgba(255,68,102,0.1); border-color: rgba(255,68,102,0.3); }
     .badge.neutral { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.3); }
-    .forecast .summary { flex: 1 1 100%; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
+    .forecast .summary { flex: 1 1 100%; font-size: 14px; line-height: 1.7; color: #cbd5e1; font-weight: 400; }
     .forecast .kv { font-size: 12px; color: var(--muted); }
     .forecast .kv b { color: var(--text); font-weight: 600; }
     .forecast .kv.warn b { color: var(--down); }
@@ -179,21 +180,21 @@
     .playbook { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
     .pb-item {
       background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 11px 14px; font-size: 12.5px; line-height: 1.55; cursor: pointer;
+      padding: 12px 14px; font-size: 13.5px; line-height: 1.6; cursor: pointer;
       transition: border-color 0.15s;
     }
     .pb-item:hover { border-color: #334155; }
-    .pb-state { font-weight: 700; font-size: 12px; color: #cbd5e1; margin-bottom: 5px; }
+    .pb-state { font-weight: 700; font-size: 14px; color: #e2e8f0; margin-bottom: 6px; }
     .pb-flow { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
-    .pb-if { color: var(--gold); font-weight: 600; font-size: 11px; flex-shrink: 0; }
+    .pb-if { color: var(--gold); font-weight: 700; font-size: 11.5px; flex-shrink: 0; }
     .pb-cond { color: #e2e8f0; font-weight: 600; }
-    .pb-then-label { color: var(--up); font-weight: 600; font-size: 11px; flex-shrink: 0; }
-    .pb-then { color: #94a3b8; }
-    .pb-level { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 4px; }
+    .pb-then-label { color: var(--up); font-weight: 700; font-size: 11.5px; flex-shrink: 0; }
+    .pb-then { color: #94a3b8; font-weight: 400; }
+    .pb-level { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 5px; }
 
     /* path tree */
     .ptree { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; overflow-x: auto; }
-    .pt-root { font-size: 13px; font-weight: 700; color: var(--text); padding-bottom: 6px; }
+    .pt-root { font-size: 15px; font-weight: 800; color: var(--text); padding-bottom: 8px; }
     .pt-root .mono { color: var(--gold); }
     .pt-children { list-style: none; margin: 0; padding-left: 14px; border-left: 1px dashed #2a3448; }
     .pt-node { position: relative; padding: 6px 0 6px 14px; }
@@ -201,14 +202,14 @@
       content: ''; position: absolute; left: 0; top: 17px; width: 10px; height: 1px;
       background: #2a3448;
     }
-    .pt-cond { font-size: 11.5px; color: var(--gold); font-weight: 600; }
-    .pt-label { font-size: 12.5px; font-weight: 700; color: #e2e8f0; margin-top: 1px; }
+    .pt-cond { font-size: 12px; color: var(--gold); font-weight: 600; }
+    .pt-label { font-size: 13.5px; font-weight: 700; color: #e2e8f0; margin-top: 2px; }
     .pt-zone { font-size: 11px; color: #94a3b8; font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
 
     /* reasoning chain */
     .reasoning { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
     .rs-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-    .rs-item { display: flex; gap: 10px; font-size: 12.5px; line-height: 1.6; color: #cbd5e1; }
+    .rs-item { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.65; color: #cbd5e1; font-weight: 400; }
     .rs-num {
       flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px; margin-top: 1px;
       background: rgba(0,216,127,0.1); border: 1px solid rgba(0,216,127,0.3);
@@ -217,8 +218,8 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    .block-title { font-size: 13px; font-weight: 700; margin: 16px 4px 8px; color: #94a3b8; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-    .block-title small { font-size: 11px; font-weight: 400; color: #475569; }
+    .block-title { font-size: 16px; font-weight: 800; margin: 28px 4px 10px; color: #e2e8f0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; letter-spacing: -0.01em; }
+    .block-title small { font-size: 11px; font-weight: 400; color: #64748b; }
 
     .track-link {
       display: inline-flex; align-items: center; gap: 5px;
@@ -304,7 +305,7 @@
       .hist-banner { font-size: 12px; padding: 9px 12px; }
     }
 
-    .prob-note { font-size: 10.5px; color: var(--muted); margin: 6px 4px 10px; }
+    .prob-note { font-size: 11px; color: var(--muted); margin: 6px 4px 12px; }
 
     /* scenario cards */
     .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
@@ -323,15 +324,15 @@
     .sc-card.active { border-color: var(--sc-color, #334155); box-shadow: 0 0 0 1px var(--sc-color); }
     .sc-card.dimmed { opacity: 0.35; }
     .sc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .sc-name { font-size: 13px; font-weight: 700; }
+    .sc-name { font-size: 15px; font-weight: 700; }
     .sc-prob {
-      font-size: 14px; font-weight: 800; font-family: 'JetBrains Mono', monospace;
+      font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace;
       color: var(--sc-color, var(--text));
     }
-    .sc-row { font-size: 11.5px; color: #94a3b8; margin-top: 6px; line-height: 1.5; }
+    .sc-row { font-size: 12.5px; color: #94a3b8; margin-top: 7px; line-height: 1.55; font-weight: 400; }
     .sc-row b { color: #cbd5e1; font-weight: 600; }
     .sc-row.invalid b { color: var(--down); }
-    .sc-tip { font-size: 10.5px; color: #475569; margin-top: 6px; }
+    .sc-tip { font-size: 11px; color: #475569; margin-top: 7px; }
 
     /* 结构状态横幅：全局判断常驻图表左上角，字号明显大于图内其他元素 */
     .struct-banner {
@@ -451,17 +452,17 @@
     /* marker detail */
     .detail {
       background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-      padding: 12px 16px; margin-top: 12px; font-size: 13px; line-height: 1.6;
+      padding: 12px 16px; margin-top: 12px; font-size: 13.5px; line-height: 1.65;
     }
-    .detail .d-title { font-weight: 700; margin-bottom: 4px; }
+    .detail .d-title { font-weight: 700; font-size: 14.5px; margin-bottom: 5px; color: #e2e8f0; }
     .detail .d-date { font-size: 11px; color: var(--muted); }
 
     /* marker & level list */
-    .section-title { font-size: 13px; font-weight: 700; margin: 18px 4px 8px; color: #94a3b8; }
+    .section-title { font-size: 16px; font-weight: 800; margin: 28px 4px 10px; color: #e2e8f0; letter-spacing: -0.01em; }
     .anno-list { display: flex; flex-direction: column; gap: 8px; }
     .anno-item {
       background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      padding: 10px 14px; font-size: 12.5px; line-height: 1.55; cursor: pointer;
+      padding: 10px 14px; font-size: 13px; line-height: 1.6; cursor: pointer;
       transition: border-color 0.15s;
     }
     .anno-item:hover { border-color: #334155; }
@@ -480,9 +481,20 @@
 
     @media (max-width: 640px) {
       .price-line .px { font-size: 15px; }
-      h1 { font-size: 16px; }
+      h1 { font-size: 18px; }
       #chart { height: 55vh; }
       .tab { font-size: 12px; padding: 8px 0; }
+      /* 移动端字阶整体略降一档，层级比例保持 */
+      .block-title, .section-title { font-size: 15px; margin-top: 24px; }
+      .jd-main { font-size: 14px; }
+      .jd-state { font-size: 14px; }
+      .sc-name { font-size: 14px; }
+      .sc-prob { font-size: 15px; }
+      .pb-state { font-size: 13.5px; }
+      .pt-root { font-size: 14px; }
+      .rr-verdict { font-size: 16px; }
+      .forecast .summary { font-size: 13.5px; }
+      .rs-item, .pb-item { font-size: 13px; }
     }
   </style>
 </head>

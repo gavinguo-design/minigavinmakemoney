@@ -1922,7 +1922,8 @@
     var span = range.to - range.from;
     if (!(span > 0)) return;
     var minTo = Math.min(3, n - 1);      // 视口右缘不得早于前几根K线
-    var maxFrom = n - 1 + extra;         // 视口左缘不得越过K线+情景区域末端
+    var maxFrom = Math.max(0, n - 4);    // 视口左缘最多推到倒数第4根K线：保证至少~3根真K线在画面内，
+                                         // 情景区域（extra根预测位）仍可完整展示，但不允许甩到纯K线真空区
     var from = range.from, to = range.to;
     if (to < minTo) { to = minTo; from = to - span; }
     else if (from > maxFrom) { from = maxFrom; to = from + span; }
@@ -1930,6 +1931,8 @@
     clampGuard = true;
     chart.timeScale().setVisibleLogicalRange({ from: from, to: to });
     requestAnimationFrame(function () { clampGuard = false; });
+    // 钳制后顺手恢复价格轴自适应，避免只剩情景系列时价格区间被带偏后残留
+    setTimeout(recoverIfViewportLost, 100);
   }
   chart.timeScale().subscribeVisibleLogicalRangeChange(clampLogicalRange);
 

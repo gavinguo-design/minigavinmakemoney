@@ -100,6 +100,11 @@
     .rr-wrap { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
     #rrCard .rr-wrap { margin-top: 0; border-top: none; padding-top: 0; }
     .rr-title { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.03em; }
+    .rr-title .rr-tf { font-size: 11px; font-weight: 400; color: rgba(235,235,245,0.5); margin-left: 6px; letter-spacing: 0; }
+    /* 建议入场行（由 2:1 赔率反解入场价，动态计算，见 renderJudgeCard） */
+    .rr-entry { margin-top: 4px; font-size: 11px; color: rgba(235,235,245,0.5); line-height: 1.5; }
+    .rr-entry b { font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.85); font-weight: 700; }
+    .rr-entry .re-good { color: var(--good); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
     .rr-now-row { position: relative; height: 16px; margin-bottom: 6px; text-align: center; }
     .rr-now { font-size: 11px; font-weight: 700; color: var(--gold); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
     .rr-dir { margin-bottom: 10px; }
@@ -466,7 +471,16 @@
     .detail {
       background: var(--card); border: 1px solid var(--border); border-radius: 14px;
       padding: 12px 16px; margin-top: 12px; font-size: 13.5px; line-height: 1.65;
+      position: relative;
     }
+    .detail .d-close {
+      position: absolute; top: 10px; right: 12px; cursor: pointer;
+      font-size: 11px; font-weight: 600; color: var(--accent); line-height: 1;
+      background: rgba(10,132,255,0.1); border: 1px solid rgba(10,132,255,0.3);
+      border-radius: 999px; padding: 5px 11px; font-family: inherit;
+      transition: background 0.2s ease;
+    }
+    .detail .d-close:hover { background: rgba(10,132,255,0.18); }
     .detail .d-title { font-weight: 700; font-size: 14.5px; margin-bottom: 5px; color: #F5F5F7; }
     .detail .d-date { font-size: 11px; color: var(--muted); }
 
@@ -1384,6 +1398,23 @@
       var dirRows = rrDirs.map(function (d) {
         var stat = d.stat;
         var dirTxt = d.dir === 'short' ? '做空' : '做多';
+        // 建议入场点：令赔率 = ENTRY_RATIO，反解入场价。
+        // 做多：(target-entry)/(entry-stop)=R → entry=(target+R*stop)/(R+1)；做空同形式（方向相反，公式一致）。
+        // 数据全部来自 annotations 的 rr 字段（target/stop），不硬编码价位。
+        var ENTRY_RATIO = 2;
+        var entryPx = (d.target + ENTRY_RATIO * d.stop) / (ENTRY_RATIO + 1);
+        var entryValid = d.dir === 'long'
+          ? (entryPx > d.stop && entryPx < d.target)
+          : (entryPx < d.stop && entryPx > d.target);
+        var entryHtml;
+        if (!entryValid) {
+          entryHtml = '<div class="rr-entry">↳ 当前结构无合理' + dirTxt + '入场点</div>';
+        } else if (stat.ratio >= ENTRY_RATIO) {
+          entryHtml = '<div class="rr-entry">↳ 当前价 <b>' + fmt(Math.round(refP)) + '</b> 已满足 <span class="re-good">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</span>，无需等更好价位</div>';
+        } else {
+          var moveTxt = d.dir === 'long' ? '回调至' : '反弹至';
+          entryHtml = '<div class="rr-entry">↳ ' + moveTxt + ' <b>' + fmt(Math.round(entryPx)) + '</b> 附近' + dirTxt + '入场 → <span class="re-good">' + ENTRY_RATIO.toFixed(1) + ':1 🟢</span></div>';
+        }
         var riskPts = Math.round(stat.risk), rewardPts = Math.round(stat.reward);
         var riskPct = (stat.risk / refP * 100).toFixed(1), rewardPct = (stat.reward / refP * 100).toFixed(1);
         var total = stat.risk + stat.reward;
@@ -1400,13 +1431,14 @@
             '<div class="rr-seg reward" style="width:' + rewardW.toFixed(1) + '%">+' + fmt(rewardPts) + '点 +' + rewardPct + '%</div>' +
           '</div>' +
           '<div class="rr-ends"><span class="re-risk">失效 ' + fmt(d.stop) + '</span><span class="re-reward">目标 ' + fmt(d.target) + '</span></div>' +
+          entryHtml +
         '</div>';
       }).join('');
       // 建议行：基于双向对比给一句话结论
       var advice = rrAdvice(rrDirs, f.bias);
       rrHtml =
         '<div class="rr-wrap">' +
-          '<div class="rr-title">盈亏比标尺（双向）</div>' +
+          '<div class="rr-title">盈亏比标尺（双向）<span class="rr-tf">波段视角 · 非日内</span></div>' +
           '<div class="rr-now-row"><span class="rr-now">当前价 ' + fmt(Math.round(refP)) + '</span></div>' +
           dirRows +
           (advice ? '<div class="rr-advice">' + escapeHtml(advice) + '</div>' : '') +
@@ -1715,14 +1747,33 @@
     return typeof t === 'object' ? Date.UTC(t.year, t.month - 1, t.day) / 1000 : t;
   }
 
-  function showMarkerDetail(m) {
+  // ---------- 详情框统一开/关（2026-09-26 追加） ----------
+  // 点击K线弹详情后：点图表外非K线区域 / 再点同一根K线 / 点图内空白处 / 点右上角✕ → 恢复默认视图
+  var lastDetailKey = null; // 当前详情对应的K线 timeKey（非K线详情为 null）
+  var DETAIL_CLOSE_HTML = '<button type="button" class="d-close" data-detail-close>✕ 返回当前</button>';
+
+  function showDetailBox(html, key) {
     var box = el('markerDetail');
     box.classList.remove('hidden');
-    box.innerHTML =
+    box.innerHTML = DETAIL_CLOSE_HTML + html;
+    lastDetailKey = (key != null) ? key : null;
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function hideMarkerDetail() {
+    var box = el('markerDetail');
+    box.classList.add('hidden');
+    box.innerHTML = '';
+    lastDetailKey = null;
+  }
+
+  function showMarkerDetail(m, key) {
+    showDetailBox(
       '<div class="d-title" style="color:' + escapeHtml(m.color || GOLD) + '">' + escapeHtml(m.text || '标记') + '</div>' +
       '<div class="d-date mono">' + escapeHtml(m.date || '') + '</div>' +
-      '<div style="margin-top:6px">' + escapeHtml(m.detail || '（无详情）') + '</div>';
-    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      '<div style="margin-top:6px">' + escapeHtml(m.detail || '（无详情）') + '</div>',
+      key
+    );
   }
 
   // ---------- 蜡烛图形态自动识别 ----------
@@ -1801,10 +1852,7 @@
   }
 
   function showPatternDetail(hit, t) {
-    var box = el('markerDetail');
-    box.classList.remove('hidden');
-    box.innerHTML = patternDetailHtml(hit, t);
-    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    showDetailBox(patternDetailHtml(hit, t), timeKey(t));
   }
 
   // 形态标注三档开关（默认「仅强」，点击循环：仅强 → 全部 → 关；状态存 localStorage）
@@ -1825,20 +1873,36 @@
 
   // click on chart → show marker detail if that bar has one。
   // 同一根K线同时有人工事件标记和形态命中时，详情框两条都展示（图上已合并为单个标记）。
+  // 点图内空白（无 time）/ 点无详情的K线 / 再次点同一根K线 → 收起详情恢复默认。
   chart.subscribeClick(function (param) {
-    if (!param || param.time == null) return;
+    if (!param || param.time == null) { hideMarkerDetail(); return; }
     var k = timeKey(param.time);
     var m = markerByTime[k];
     var hit = patternByTime[k];
     if (!patternVisible(hit)) hit = null; // 详情可见性与图上标记保持一致
+    if (!m && !hit) { hideMarkerDetail(); return; } // 点到无详情的K线 → 恢复默认
+    if (lastDetailKey === k && !el('markerDetail').classList.contains('hidden')) {
+      hideMarkerDetail(); return; // 再次点同一根 → 收起
+    }
     if (m && hit) {
-      showMarkerDetail(m);
+      showMarkerDetail(m, k);
       var box = el('markerDetail');
       box.innerHTML += '<div style="margin-top:10px;border-top:1px dashed var(--border);padding-top:10px">' + patternDetailHtml(hit, param.time) + '</div>';
       return;
     }
-    if (m) { showMarkerDetail(m); return; }
+    if (m) { showMarkerDetail(m, k); return; }
     if (hit) showPatternDetail(hit, param.time);
+  });
+
+  // 点击图表区域以外（且非详情框、非事件列表项）→ 收起详情，信息区恢复默认当前状态
+  document.addEventListener('click', function (e) {
+    var box = el('markerDetail');
+    if (box.classList.contains('hidden')) return;
+    if (e.target.closest('[data-detail-close]')) { hideMarkerDetail(); return; } // ✕ 按钮兜底
+    if (e.target.closest('.chart-row')) return;       // 图表内的点击由 subscribeClick 处理
+    if (e.target.closest('#markerDetail')) return;    // 点详情框自身不收起
+    if (e.target.closest('.anno-item')) return;       // 事件列表项点击是打开详情，不收起
+    hideMarkerDetail();
   });
 
   // ---------- 价位线悬停提示 ----------
@@ -2004,7 +2068,7 @@
     if (iv === currentIv) return;
     document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
     tab.classList.add('active');
-    el('markerDetail').classList.add('hidden');
+    hideMarkerDetail();
     loadInterval(iv);
   });
 
@@ -2040,7 +2104,7 @@
     renderPathTree(a);
     renderScenarioCards(a);
     renderDisclaimer(a);
-    el('markerDetail').classList.add('hidden');
+    hideMarkerDetail();
     if (currentBars.length > 0 && a) {
       renderLevels(a, currentIv);
       renderMarkers(a, currentIv, currentBars);

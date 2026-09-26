@@ -660,7 +660,8 @@
   var DOWN = '#32D74B';    // 绿跌
   var SUPPORT = '#32ADE6'; // 支撑线：青（避免与红涨绿跌方向色混淆）
   var RESIST = '#FF9F0A';  // 阻力线：橙
-  var GOLD = '#f5c842';
+  var GOLD = '#f5c842';    // 金色：仅给结构横幅/历史|预测分界线使用，不再用于个别标记/形态
+  var NEUTRAL = 'rgba(235,235,245,0.6)'; // 中性标记/形态默认灰色
 
   var IV_CONFIG = {
     '1d':  { range: '2y',  intraday: false, label: '日线' },
@@ -1696,6 +1697,23 @@
     return bestDiff <= 3 * 86400 ? bestT : null;
   }
 
+  // 人工事件标记颜色语义（2026-09-26 统一）：方向性箭头（arrowUp/arrowDown）不信任 annotations.json 里
+  // 可能残留的旧配色字段（旧数据是绿涨红跌时代留下的），统一改由 shape 推方向，与形态箭头（PAT_COLORS）同源：
+  // arrowUp=看涨信号→红（UP），arrowDown=看跌信号→绿（DOWN）；中性 circle/square 标记（信息类，非方向判断）仍用自带颜色/金色。
+  function markerSemanticColor(m) {
+    if (m.shape === 'arrowUp') return UP;
+    if (m.shape === 'arrowDown') return DOWN;
+    return m.color || NEUTRAL; // 中性标记（circle/square）默认灰色，金色保留给结构横幅/预测分界线
+  }
+
+  // 图内标签文字防重叠：小屏（≤64mm≈640px）只显箭头不带文字，完整文字点击详情都可见；
+  // 大屏长文本（>8字）截断显示，完整文字仍在事件列表/点击详情里可见
+  function shortMarkerText(text) {
+    if (window.innerWidth <= 640) return '';
+    var s = String(text || '');
+    return s.length > 8 ? s.slice(0, 8) + '…' : s;
+  }
+
   function renderMarkers(a, iv, bars) {
     markerByTime = {};
     var list = (a && Array.isArray(a.markers)) ? a.markers : [];
@@ -1712,8 +1730,8 @@
         time: t,
         position: pos,
         shape: shape,
-        color: m.color || GOLD,
-        text: m.text || ''
+        color: markerSemanticColor(m),
+        text: shortMarkerText(m.text)
       });
       markerByTime[timeKey(t)] = m;
       visible.push(m);
@@ -1731,7 +1749,7 @@
       var item = document.createElement('div');
       item.className = 'anno-item';
       item.innerHTML =
-        '<div class="a-head"><span class="a-dot" style="background:' + escapeHtml(m.color || GOLD) + '"></span>' +
+        '<div class="a-head"><span class="a-dot" style="background:' + escapeHtml(markerSemanticColor(m)) + '"></span>' +
         '<span>' + escapeHtml(m.text || '标记') + '</span>' +
         '<span class="a-date mono">' + escapeHtml(m.date) + '</span></div>' +
         (m.detail ? '<div class="a-body">' + escapeHtml(m.detail) + '</div>' : '');
@@ -1769,7 +1787,7 @@
 
   function showMarkerDetail(m, key) {
     showDetailBox(
-      '<div class="d-title" style="color:' + escapeHtml(m.color || GOLD) + '">' + escapeHtml(m.text || '标记') + '</div>' +
+      '<div class="d-title" style="color:' + escapeHtml(markerSemanticColor(m)) + '">' + escapeHtml(m.text || '标记') + '</div>' +
       '<div class="d-date mono">' + escapeHtml(m.date || '') + '</div>' +
       '<div style="margin-top:6px">' + escapeHtml(m.detail || '（无详情）') + '</div>',
       key
@@ -1779,10 +1797,10 @@
   // ---------- 蜡烛图形态自动识别 ----------
   // 检测逻辑在 patterns.js（纯函数，可Node单测）；这里只做渲染：
   // 箭头标记 + 形态短名文字（用户明确要求：每个命中形态都要显示名字，一眼看出是什么形态）：
-  // 看涨=绿色箭头K线下方，看跌=红色箭头K线上方，中性=灰色圆点；
+  // 看涨=红色箭头K线下方，看跌=绿色箭头K线上方，中性=灰色圆点；
   // 强信号（发生在近20根极值区）= 实色大箭头，弱信号 = 淡色小箭头（视觉分级，密度由形态开关控制）；
   // 点击K线弹详情（复用 markerDetail 机制）显示形态名/含义/教科书解释/数值依据。
-  var PAT_COLORS = { bull: UP, bear: DOWN, neutral: 'rgba(235,235,245,0.6)' };
+  var PAT_COLORS = { bull: UP, bear: DOWN, neutral: NEUTRAL }; // 看涨=红，看跌=绿，中性=灰，与人工事件标记同一语义（markerSemanticColor）
 
   function computePatterns(iv, bars) {
     patternChartMarkers = [];

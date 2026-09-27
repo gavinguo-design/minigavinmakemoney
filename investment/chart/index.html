@@ -58,86 +58,98 @@
     h1 { font-size: 20px; font-weight: 800; margin: 20px 4px 6px; letter-spacing: -0.01em; }
     .sub { font-size: 12px; color: var(--muted); margin: 0 4px 16px; }
 
-    /* 当前判断卡（3秒读懂） */
-    .judge {
+    /* 顶部状态条（极简一行：日期 + 偏向 + 现价 + 关键区间；判断依据折叠收纳） */
+    .status-bar {
       background: linear-gradient(180deg, rgba(28,28,30,0.96), rgba(28,28,30,0.9));
-      border: 1px solid var(--border); border-radius: 14px;
-      padding: 14px 16px; margin-bottom: 12px;
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px 14px; margin-bottom: 12px;
     }
-    .jd-top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
-    .jd-symbol { font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.85); }
-    .jd-state { font-size: 15px; font-weight: 800; padding: 4px 12px; border-radius: 999px; border: 1px solid transparent; }
-    .jd-state.weak { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.35); }
-    .jd-state.bear { color: var(--down); background: rgba(50,215,75,0.1); border-color: rgba(50,215,75,0.35); }
-    .jd-state.bull { color: var(--up); background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.35); }
-    .jd-px { font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
-    .jd-time { font-size: 11px; color: var(--muted); margin-left: auto; }
-    .jd-frozen {
-      display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px;
+    .sb-line { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
+    .sb-date { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .sb-date .sb-frozen-tag { color: var(--gold); font-weight: 800; }
+    .sb-state { font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 999px; border: 1px solid transparent; }
+    .sb-state.weak { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.35); }
+    .sb-state.bear { color: var(--down); background: rgba(50,215,75,0.1); border-color: rgba(50,215,75,0.35); }
+    .sb-state.bull { color: var(--up); background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.35); }
+    .sb-kv { font-size: 12px; color: var(--muted); display: inline-flex; align-items: baseline; gap: 5px; }
+    .sb-kv b { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; color: #F5F5F7; }
+    .sb-details { margin-top: 4px; }
+    .sb-details > summary {
+      list-style: none; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11.5px; font-weight: 600; color: var(--muted);
+    }
+    .sb-details > summary::-webkit-details-marker { display: none; }
+    .sb-details > summary::before { content: '▸'; color: var(--accent); transition: transform 0.2s ease; }
+    .sb-details[open] > summary::before { transform: rotate(90deg); }
+    .sb-body { margin-top: 8px; font-size: 12.5px; line-height: 1.65; color: rgba(235,235,245,0.6); border-top: 1px dashed var(--border); padding-top: 8px; }
+    .sb-frozen {
+      display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px;
       font-size: 11.5px; font-weight: 800; color: var(--gold);
       background: rgba(245,200,66,0.1); border: 1px dashed rgba(245,200,66,0.5);
-      border-radius: 8px; padding: 4px 10px;
+      border-radius: 8px; padding: 3px 9px;
     }
-    .jd-levels { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
-    .jd-lv { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
-    .jd-lv .lp { font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 58px; }
-    .jd-lv .lt { color: rgba(235,235,245,0.6); }
-    .jd-lv .ltf { font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
-    .jd-main { margin-top: 12px; font-size: 15px; line-height: 1.6; color: #FFFFFF; font-weight: 700; }
-    .jd-cond { margin-top: 6px; font-size: 12.5px; line-height: 1.65; color: rgba(235,235,245,0.6); font-weight: 400; }
-    .jd-cond b.chg { color: var(--good); font-weight: 700; }
-    .jd-cond b.inv { color: var(--bad); font-weight: 700; }
-
-    /* 顶部双卡行：当前判断卡 + 盈亏比标尺卡，桌面端左右并排，窄屏上下堆叠 */
-    .judge-row { display: flex; align-items: stretch; gap: 12px; margin-bottom: 12px; }
-    .judge-row .judge { flex: 1 1 50%; min-width: 0; margin-bottom: 0; }
-    @media (max-width: 768px) {
-      .judge-row { flex-direction: column; gap: 10px; }
-      .judge-row .judge { flex: 1 1 auto; }
+    .sb-lv { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; margin-top: 3px; }
+    .sb-lv .lp { font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 58px; color: rgba(255,255,255,0.85); }
+    .sb-lv .lt { color: rgba(235,235,245,0.6); }
+    .sb-lv .ltf { font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+    .sb-main { margin-top: 8px; font-size: 13.5px; line-height: 1.6; color: #FFFFFF; font-weight: 700; }
+    .sb-cond { margin-top: 5px; }
+    .sb-cond b.chg { color: var(--good); font-weight: 700; }
+    .sb-cond b.inv { color: var(--bad); font-weight: 700; }
+    .sb-time { margin-top: 5px; font-size: 11px; color: var(--muted); }
+    @media (max-width: 640px) {
+      .sb-line { gap: 5px 10px; }
+      .sb-kv b { font-size: 14px; }
     }
 
-    /* 盈亏比标尺（R/R gauge） */
-    .rr-wrap { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
-    #rrCard .rr-wrap { margin-top: 0; border-top: none; padding-top: 0; }
-    .rr-title { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.03em; }
-    .rr-title .rr-tf { font-size: 11px; font-weight: 400; color: rgba(235,235,245,0.5); margin-left: 6px; letter-spacing: 0; }
-    /* 建议入场行（由 2:1 赔率反解入场价，动态计算，见 renderJudgeCard） */
-    .rr-entry { margin-top: 4px; font-size: 11px; color: rgba(235,235,245,0.5); line-height: 1.5; }
-    .rr-entry b { font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.85); font-weight: 700; }
-    .rr-entry .re-good { color: var(--good); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-    .rr-now-row { position: relative; height: 16px; margin-bottom: 6px; text-align: center; }
-    .rr-now { font-size: 11px; font-weight: 700; color: var(--gold); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
-    .rr-dir { margin-bottom: 10px; }
-    .rr-dir:last-of-type { margin-bottom: 0; }
-    .rr-dir-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-    .rr-dir-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); }
-    .rr-dir-verdict { font-size: 14px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
-    .rr-dir-verdict.bad { color: var(--bad); }
-    .rr-dir-verdict.mid { color: var(--gold); }
-    .rr-dir-verdict.good { color: var(--good); }
-    .rr-bar { display: flex; align-items: stretch; height: 22px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
-    .rr-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; min-width: 0; }
-    .rr-seg.risk { background: rgba(50,215,75,0.16); color: #7CE596; }
-    .rr-seg.reward { background: rgba(255,69,58,0.18); color: #FF8D85; }
-    .rr-mark { flex: 0 0 2px; background: var(--gold); }
-    .rr-ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 3px; gap: 8px; }
-    .rr-ends .re-risk { color: #7CE596; }
-    .rr-ends .re-reward { color: #FF8D85; }
-    .rr-verdict { margin-top: 8px; font-size: 17px; font-weight: 800; text-align: center; }
-    .rr-verdict .rv-num { font-family: 'JetBrains Mono', monospace; }
-    .rr-verdict.bad .rv-num { color: var(--bad); }
-    .rr-verdict.mid .rv-num { color: var(--gold); }
-    .rr-verdict.good .rv-num { color: var(--good); }
-    .rr-advice { margin-top: 5px; font-size: 12.5px; line-height: 1.6; color: rgba(235,235,245,0.6); text-align: center; font-weight: 400; }
-    .rr-note { margin-top: 6px; font-size: 11px; color: rgba(235,235,245,0.3); line-height: 1.5; text-align: center; }
-
-    /* 情景卡盈亏比行 */
-    .sc-rr { margin-top: 8px; font-size: 12.5px; line-height: 1.6; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.03); border: 1px dashed var(--border); border-radius: 8px; padding: 7px 9px; }
-    .sc-rr b { font-family: 'JetBrains Mono', monospace; }
-    .sc-rr .rr-good { color: var(--good); }
-    .sc-rr .rr-mid { color: var(--gold); }
-    .sc-rr .rr-bad { color: var(--bad); }
-    .sc-rr .sc-rr-hint { color: rgba(235,235,245,0.5); font-size: 11px; display: block; margin-top: 2px; }
+    /* 情景卡信息可视化：触发状态 badge + 关键价位数字组 + 盈亏标尺条 */
+    .sc-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .sc-status { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+    .sc-status.wait { color: rgba(235,235,245,0.5); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.14); }
+    .sc-status.fired { color: var(--good); background: rgba(50,215,75,0.12); border-color: rgba(50,215,75,0.45); }
+    .sc-name { margin-top: 8px; display: block; }
+    .sc-trig { margin-top: 8px; font-size: 12.5px; line-height: 1.55; color: rgba(235,235,245,0.75); }
+    .sc-trig .k { font-size: 10.5px; font-weight: 800; color: var(--gold); margin-right: 6px; }
+    .sc-dir { font-weight: 800; }
+    .sc-dir.long { color: var(--up); }
+    .sc-dir.short { color: var(--down); }
+    .sc-nums { display: flex; gap: 6px; margin-top: 9px; }
+    .sc-num { flex: 1 1 0; min-width: 0; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 5px 4px; text-align: center; }
+    .sc-num span { display: block; font-size: 10px; color: var(--muted); font-weight: 700; }
+    .sc-num b { display: block; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; color: #F5F5F7; margin-top: 1px; }
+    .sc-num.tg b { color: #FF8D85; }
+    .sc-num.st b { color: #7CE596; }
+    .sc-ruler { margin-top: 10px; }
+    .sc-ruler-head { display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; color: var(--muted); font-weight: 700; margin-bottom: 6px; gap: 8px; }
+    .sc-ratio { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .sc-ratio.good { color: var(--good); }
+    .sc-ratio.mid { color: var(--gold); }
+    .sc-ratio.bad { color: var(--bad); }
+    .sc-track { position: relative; height: 10px; border-radius: 5px; background: rgba(255,255,255,0.05); margin: 6px 0 0; }
+    .sc-seg { position: absolute; top: 0; bottom: 0; }
+    .sc-seg.loss { background: rgba(50,215,75,0.28); }
+    .sc-seg.gain { background: rgba(255,69,58,0.30); }
+    .sc-tick { position: absolute; top: -3px; bottom: -3px; width: 2px; border-radius: 1px; }
+    .sc-tick.stop { background: #7CE596; }
+    .sc-tick.entry { background: rgba(255,255,255,0.9); }
+    .sc-tick.target { background: #FF8D85; }
+    .sc-cursor { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--gold); box-shadow: 0 0 5px rgba(245,200,66,0.9); }
+    .sc-cursor::after {
+      content: ''; position: absolute; top: -4px; left: -3px;
+      border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--gold);
+    }
+    .sc-ruler-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--muted); gap: 4px; }
+    .sc-ruler-labels .rl { display: flex; flex-direction: column; min-width: 0; }
+    .sc-ruler-labels .rl:nth-child(2) { align-items: center; text-align: center; }
+    .sc-ruler-labels .rl:last-child { align-items: flex-end; text-align: right; }
+    .sc-ruler-labels .rl b { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.85); }
+    .sc-cursor-note { margin-top: 4px; font-size: 10px; color: var(--gold); font-family: 'JetBrains Mono', monospace; }
+    .sc-more { margin-top: 8px; }
+    .sc-more > summary { list-style: none; cursor: pointer; font-size: 11px; color: var(--muted); user-select: none; }
+    .sc-more > summary::-webkit-details-marker { display: none; }
+    .sc-more > summary::before { content: '▸ '; color: var(--accent); }
+    .sc-more[open] > summary::before { content: '▾ '; }
+    .sc-more .sc-row { margin-top: 5px; }
 
     /* 延迟行情提示条（15m/60m） */
     .delay-note {
@@ -513,13 +525,13 @@
       .tab { font-size: 12px; padding: 8px 0; }
       /* 移动端字阶整体略降一档，层级比例保持 */
       .block-title, .section-title { font-size: 15px; margin-top: 24px; }
-      .jd-main { font-size: 14px; }
-      .jd-state { font-size: 14px; }
+      .sb-main { font-size: 13px; }
+      .sb-state { font-size: 12.5px; }
       .sc-name { font-size: 14px; }
       .sc-prob { font-size: 15px; }
+      .sc-num b { font-size: 14px; }
       .pb-state { font-size: 13.5px; }
       .pt-root { font-size: 14px; }
-      .rr-verdict { font-size: 16px; }
       .forecast .summary { font-size: 13.5px; }
       .rs-item, .pb-item { font-size: 13px; }
     }
@@ -557,11 +569,8 @@
       <span class="hist-note">历史存档为当日冻结快照，生成后不可修改（与预测留痕同一原则）· 选中某日：情景区域从那天的K线出发展开，此后已发生的真实K线叠加其上，预测 vs 现实一眼对比</span>
     </div>
 
-    <!-- 顶部双卡：当前判断卡（3秒读懂）+ 盈亏比标尺卡，桌面端左右并排 -->
-    <div class="judge-row hidden" id="judgeRow">
-      <div class="judge" id="judgeCard"></div>
-      <div class="judge hidden" id="rrCard"></div>
-    </div>
+    <!-- 顶部状态条：日期 + 偏向胶囊 + 当前价 + 关键区间，判断依据折叠收纳 -->
+    <div class="status-bar hidden" id="statusBar"></div>
 
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
@@ -876,33 +885,6 @@
     return out;
   }
 
-  // 双向对比后的建议文案（单向时退化为原单向建议）
-  function rrAdvice(dirs, bias) {
-    if (!dirs.length) return '';
-    var byDir = {};
-    dirs.forEach(function (d) { byDir[d.dir] = d; });
-    var L = byDir.long, S = byDir.short;
-    if (L && S) {
-      if (L.stat.grade === 'bad' && S.stat.grade === 'good') {
-        return '当前位置做多赔率差、做空赔率占优，与当前偏空结构一致；但做空需等反弹受阻或跌破触发位后再评估，不鼓励裸空追空。';
-      }
-      if (S.stat.grade === 'bad' && L.stat.grade === 'good') {
-        return '当前位置做空赔率差、做多赔率占优；参与做多仍需等触发条件确认，严格执行失效位纪律。';
-      }
-      return '两个方向赔率均非极端，以条件触发为准：等价格走到关键位再评估，不在中间位置动手。';
-    }
-    var d = dirs[0];
-    var dirTxt = d.dir === 'short' ? '做空' : '做多';
-    if (d.stat.grade === 'bad') {
-      if (d.dir === 'long' && (bias === 'bearish' || bias === 'neutral')) {
-        return '当前位置' + dirTxt + '赔率差：离失效位远、离目标近。等回调到支撑附近、或等转强条件触发后再评估，不鼓励在中间位置动手。';
-      }
-      return '当前位置' + dirTxt + '盈亏比不划算，等更好的位置或条件触发后再评估。';
-    }
-    if (d.stat.grade === 'mid') return '盈亏比一般，若参与需严格执行失效位纪律。';
-    return '';
-  }
-
   // 风险/回报区色块（仅日线，与情景区域一致）
   // 双向数据时只画赔率更优的那一侧（另一侧在判断卡双向标尺里展示，图上双向叠画会互相遮盖）
   function renderRRZones(a, iv, bars) {
@@ -1111,16 +1093,68 @@
     title.classList.remove('hidden');
   }
 
-  // 情景卡片「触发后参与」盈亏比行（rr 字段缺失则不渲染），带方向标注（做多/做空）
-  function scenarioRRHtml(sc) {
+  // ---------- 情景卡信息可视化 ----------
+  // 当前参考价：东财实时价新鲜且非历史回看时用实时价；否则用标注里的 refPrice/basePrice（历史存档=当日冻结价）。
+  function scenarioRefPrice(f) {
+    if (!viewingDate && isRealtimeFresh() && typeof realtimeData.price === 'number') return realtimeData.price;
+    if (f && f.rr && typeof f.rr.refPrice === 'number') return f.rr.refPrice;
+    if (f && typeof f.basePrice === 'number') return f.basePrice;
+    return null;
+  }
+
+  // 触发状态判定：用当前价 vs 情景入场价（rr.entry）方向比较；无可判定字段 → 默认等待态（容错）。
+  // 注：价格触及仅为必要条件近似（真实触发还要求量能/收盘确认），文案用「价格触及」避免误导。
+  function scenarioTriggerState(sc, refPx) {
+    var rr = sc && sc.rr;
+    if (!rr || typeof rr.entry !== 'number' || typeof refPx !== 'number') return 'wait';
+    var dir = rr.direction === 'short' ? 'short' : 'long';
+    return (dir === 'long' ? refPx >= rr.entry : refPx <= rr.entry) ? 'fired' : 'wait';
+  }
+
+  // 横向价格标尺条：止损—入场—目标三刻度 + 红/绿盈亏分段 + 当前价游标 + 赔率。
+  // 纯 CSS 百分比定位；rr 字段缺失/不合法返回空串（不渲染，优雅降级）。
+  function scenarioRulerHtml(sc, refPx) {
     var rr = sc && sc.rr;
     if (!rr || typeof rr.entry !== 'number' || typeof rr.target !== 'number' || typeof rr.stop !== 'number') return '';
     var stat = computeRR({ refPrice: rr.entry, target: rr.target, stop: rr.stop, direction: rr.direction });
     if (!stat) return '';
     var dirTxt = stat.dir === 'short' ? '做空' : '做多';
-    var dirColor = stat.dir === 'short' ? 'var(--down)' : 'var(--up)';
-    return '<div class="sc-rr">⚡ 触发后<b style="color:' + dirColor + '">' + dirTxt + '</b>参与：目标 <b>' + fmt(rr.target) + '</b> / 防守 <b>' + fmt(rr.stop) + '</b> / 盈亏比 <b class="rr-' + stat.grade + '">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</b>' +
-      (rr.entryHint ? '<span class="sc-rr-hint">' + escapeHtml(rr.entryHint) + '</span>' : '') + '</div>';
+    // 标尺坐标系：覆盖 stop/entry/target（及游标价），两端留 4% 内边距
+    var ps = [rr.stop, rr.entry, rr.target];
+    var hasCur = typeof refPx === 'number';
+    if (hasCur) ps.push(refPx);
+    var lo = Math.min.apply(null, ps), hi = Math.max.apply(null, ps);
+    var span = hi - lo;
+    if (!(span > 0)) return '';
+    var pad = span * 0.04;
+    lo -= pad; hi += pad; span = hi - lo;
+    var pos = function (p) { return Math.max(0, Math.min(100, (p - lo) / span * 100)); };
+    var pStop = pos(rr.stop), pEntry = pos(rr.entry), pTarget = pos(rr.target);
+    var segHtml =
+      '<div class="sc-seg loss" style="left:' + Math.min(pStop, pEntry).toFixed(1) + '%;width:' + Math.abs(pEntry - pStop).toFixed(1) + '%"></div>' +
+      '<div class="sc-seg gain" style="left:' + Math.min(pEntry, pTarget).toFixed(1) + '%;width:' + Math.abs(pTarget - pEntry).toFixed(1) + '%"></div>';
+    var cursorHtml = hasCur ? '<div class="sc-cursor" style="left:' + pos(refPx).toFixed(1) + '%" title="当前价 ' + fmt(Math.round(refPx)) + '"></div>' : '';
+    // 标签按标尺实际左中右顺序排列（做空时 target 在左、stop 在右）
+    var pts = [
+      { p: pStop, label: '止损', px: rr.stop },
+      { p: pEntry, label: '入场', px: rr.entry },
+      { p: pTarget, label: '目标', px: rr.target }
+    ].sort(function (x, y) { return x.p - y.p; });
+    var labelHtml = pts.map(function (pt) {
+      return '<span class="rl"><span>' + pt.label + '</span><b>' + fmt(pt.px) + '</b></span>';
+    }).join('');
+    return '<div class="sc-ruler">' +
+      '<div class="sc-ruler-head"><span>盈亏标尺（' + dirTxt + '）</span>' +
+        '<span class="sc-ratio ' + stat.grade + '" title="盈亏比 = 入场到目标距离 ÷ 入场到止损距离">赔率 ' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</span></div>' +
+      '<div class="sc-track" data-lo="' + lo + '" data-hi="' + hi + '">' + segHtml +
+        '<div class="sc-tick stop" style="left:' + pStop.toFixed(1) + '%"></div>' +
+        '<div class="sc-tick entry" style="left:' + pEntry.toFixed(1) + '%"></div>' +
+        '<div class="sc-tick target" style="left:' + pTarget.toFixed(1) + '%"></div>' +
+        cursorHtml +
+      '</div>' +
+      '<div class="sc-ruler-labels">' + labelHtml + '</div>' +
+      (hasCur ? '<div class="sc-cursor-note">▼ 当前价 ' + fmt(Math.round(refPx)) + '</div>' : '') +
+    '</div>';
   }
 
   function renderScenarioCards(a) {
@@ -1131,25 +1165,85 @@
     if (scenarios.length === 0) { wrap.classList.add('hidden'); el('probNote').classList.add('hidden'); return; }
     wrap.classList.remove('hidden');
     el('probNote').classList.remove('hidden');
+    var refPx = scenarioRefPrice(f);
     scenarios.forEach(function (sc, idx) {
       var card = document.createElement('div');
       card.className = 'sc-card';
       card.setAttribute('data-idx', String(idx));
       card.style.setProperty('--sc-color', sc.color || 'rgba(235,235,245,0.5)');
-      card.innerHTML =
-        '<div class="sc-head"><span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + '</span>' +
-        '<span class="sc-prob" title="置信度为模型主观评估，非历史统计概率">置信度 ' + Math.round((sc.probability || 0) * 100) + '%</span></div>' +
-        (sc.target ? '<div class="sc-row">目标：<b>' + escapeHtml(sc.target) + '</b></div>' : '') +
-        (sc.trigger ? '<div class="sc-row">触发：<b>' + escapeHtml(sc.trigger) + '</b></div>' : '') +
+      var rr = sc.rr || {};
+      var hasRR = typeof rr.entry === 'number' && typeof rr.target === 'number' && typeof rr.stop === 'number';
+      var trigState = scenarioTriggerState(sc, refPx);
+      var badgeHtml = trigState === 'fired'
+        ? '<span class="sc-status fired" title="当前价已触及入场价位（价格条件近似判定，量能/收盘确认仍需人工核实）">✅ 条件触发</span>'
+        : '<span class="sc-status wait" title="当前价未触及入场价位，或无可判定字段">⏳ 等待触发</span>';
+      var dir = rr.direction === 'short' ? 'short' : 'long';
+      var dirTxt = dir === 'short' ? '做空' : '做多';
+      // 关键价位数字组：入场 / 目标 / 止损（放大加粗，rr 缺失则不渲染）
+      var numsHtml = hasRR
+        ? '<div class="sc-nums">' +
+            '<div class="sc-num"><span>入场<span class="sc-dir ' + dir + '">·' + dirTxt + '</span></span><b>' + fmt(rr.entry) + '</b></div>' +
+            '<div class="sc-num tg"><span>目标</span><b>' + fmt(rr.target) + '</b></div>' +
+            '<div class="sc-num st"><span>止损</span><b>' + fmt(rr.stop) + '</b></div>' +
+          '</div>'
+        : '';
+      // 低密度补充信息折叠收纳（目标描述/失效条件/入场提示/备注）
+      var moreRows =
+        (sc.target ? '<div class="sc-row">目标区：<b>' + escapeHtml(sc.target) + '</b></div>' : '') +
         (sc.invalidation ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(sc.invalidation) + '</b></div>' : '') +
-        scenarioRRHtml(sc) +
-        (sc.note ? '<div class="sc-row">' + escapeHtml(sc.note) + '</div>' : '') +
+        (rr.entryHint ? '<div class="sc-row">入场确认：' + escapeHtml(rr.entryHint) + '</div>' : '') +
+        (sc.note ? '<div class="sc-row">' + escapeHtml(sc.note) + '</div>' : '');
+      card.innerHTML =
+        '<div class="sc-topline">' + badgeHtml +
+          '<span class="sc-prob" title="置信度为模型主观评估，非历史统计概率">' + Math.round((sc.probability || 0) * 100) + '%</span></div>' +
+        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + '</span>' +
+        (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
+        numsHtml +
+        scenarioRulerHtml(sc, refPx) +
+        (moreRows ? '<details class="sc-more"><summary>详情与备注</summary>' + moreRows + '</details>' : '') +
         '<div class="sc-tip">点击卡片单独查看该情景区域</div>';
       card.addEventListener('click', function () {
         activeScenario = (activeScenario === idx) ? -1 : idx;
         applyScenarioVisibility();
       });
+      // 折叠区展开/收起不触发卡片选中切换
+      var more = card.querySelector('details.sc-more');
+      if (more) more.addEventListener('click', function (e) { e.stopPropagation(); });
       wrap.appendChild(card);
+    });
+  }
+
+  // 实时价变化时轻量刷新情景卡：只更新触发 badge 与标尺游标，不重建 DOM（保留用户展开的折叠区/选中态）
+  function refreshScenarioLive() {
+    if (viewingDate || !annotations) return;
+    var f = annotations.forecast;
+    var refPx = scenarioRefPrice(f);
+    if (typeof refPx !== 'number') return;
+    var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
+    var cards = document.querySelectorAll('#scenarioCards .sc-card');
+    Array.prototype.forEach.call(cards, function (card) {
+      var idx = parseInt(card.getAttribute('data-idx'), 10);
+      var sc = scenarios[idx];
+      if (!sc) return;
+      var badge = card.querySelector('.sc-status');
+      if (badge && sc.rr && typeof sc.rr.entry === 'number') {
+        var fired = scenarioTriggerState(sc, refPx) === 'fired';
+        badge.className = 'sc-status ' + (fired ? 'fired' : 'wait');
+        badge.textContent = fired ? '✅ 条件触发' : '⏳ 等待触发';
+      }
+      var track = card.querySelector('.sc-track');
+      var cursor = card.querySelector('.sc-cursor');
+      if (track && cursor) {
+        var lo = parseFloat(track.getAttribute('data-lo'));
+        var hi = parseFloat(track.getAttribute('data-hi'));
+        if (isFinite(lo) && isFinite(hi) && hi > lo) {
+          var pct = Math.max(0, Math.min(100, (refPx - lo) / (hi - lo) * 100));
+          cursor.style.left = pct.toFixed(1) + '%';
+          cursor.title = '当前价 ' + fmt(Math.round(refPx));
+        }
+      }
+      var note = card.querySelector('.sc-cursor-note');
+      if (note) note.textContent = '▼ 当前价 ' + fmt(Math.round(refPx));
     });
   }
 
@@ -1276,6 +1370,7 @@
     realtimeAt = Date.now();
     updateHeaderFromRealtime(rt);
     mergeRealtimeIntoChart(rt);
+    refreshScenarioLive();
   }
 
   function updateHeaderFromRealtime(rt) {
@@ -1376,107 +1471,69 @@
     box.textContent = text;
   }
 
-  // ---------- 当前判断卡（3秒读懂）+ 盈亏比标尺卡（顶部双卡） ----------
-  function renderJudgeCard(a) {
-    var row = el('judgeRow');
-    var box = el('judgeCard');
-    var rrBox = el('rrCard');
+  // ---------- 顶部状态条（极简一行：日期 + 偏向胶囊 + 当前价 + 关键区间；判断依据折叠收纳） ----------
+  // 关键区间：优先取 keyLines 里的最低支撑与最近修复/压力位；缺失时回退 targetLower/targetUpper；再缺失则不显示。
+  function statusRange(f, c) {
+    var lines = (c && Array.isArray(c.keyLines)) ? c.keyLines.filter(function (kl) { return kl && typeof kl.price === 'number'; }) : [];
+    if (lines.length >= 2) {
+      var ps = lines.map(function (kl) { return kl.price; }).sort(function (x, y) { return x - y; });
+      return [ps[0], ps[1]]; // 最低支撑 → 第一个上方关键位（如 24,276–24,650）
+    }
+    if (f && typeof f.targetLower === 'number' && typeof f.targetUpper === 'number') return [f.targetLower, f.targetUpper];
+    return null;
+  }
+
+  function renderStatusBar(a) {
+    var box = el('statusBar');
+    if (!box) return;
     var f = a && a.forecast;
     var c = f && f.card;
-    if (!f || !c) { row.classList.add('hidden'); box.innerHTML = ''; rrBox.innerHTML = ''; rrBox.classList.add('hidden'); return; }
+    if (!f || !c) { box.classList.add('hidden'); box.innerHTML = ''; return; }
     var toneCls = ({ weak: 'weak', bear: 'bear', bull: 'bull' })[c.stateTone] || 'weak';
     var basePx = typeof f.basePrice === 'number' ? Math.round(f.basePrice) : null;
+    var dateStr = viewingDate || f.baseDate || '';
+    var dateHtml = dateStr
+      ? '<span class="sb-date">' + escapeHtml(cnDate(dateStr)) + (weekdayOf(dateStr) ? '（' + weekdayOf(dateStr) + '）' : '') +
+        (viewingDate ? ' <span class="sb-frozen-tag">冻结</span>' : '') + '</span>'
+      : '';
+    var range = statusRange(f, c);
+    var pxHtml = basePx != null
+      ? '<span class="sb-kv">' + (viewingDate ? '当日基准' : '现价') + ' <b' + (viewingDate ? '' : ' id="jdPrice"') + '>' + fmt(basePx) + '</b></span>'
+      : '';
+    var rangeHtml = range
+      ? '<span class="sb-kv">关键区间 <b>' + fmt(range[0]) + '–' + fmt(range[1]) + '</b></span>'
+      : '';
+
+    // 折叠区：原判断卡的全部依据（关键价位 / 主情景一句话 / 改变与失效条件）
     var lvHtml = (Array.isArray(c.keyLines) ? c.keyLines : []).map(function (kl) {
-      return '<div class="jd-lv"><span class="lp mono">' + fmt(kl.price) + '</span>' +
+      return '<div class="sb-lv"><span class="lp">' + fmt(kl.price) + '</span>' +
         '<span class="lt">' + escapeHtml(kl.tag || '') + '</span>' +
         (kl.tf ? '<span class="ltf">' + escapeHtml(kl.tf) + '</span>' : '') + '</div>';
     }).join('');
-    // 盈亏比标尺（双向：做多/做空各一行；rr 字段缺失/不合法则整体隐藏）
-    var rrHtml = '';
-    var rrDirs = normalizeRRDirs(f.rr);
-    if (rrDirs.length) {
-      var refP = f.rr.refPrice;
-      var dirRows = rrDirs.map(function (d) {
-        var stat = d.stat;
-        var dirTxt = d.dir === 'short' ? '做空' : '做多';
-        // 建议入场点：令赔率 = ENTRY_RATIO，反解入场价。
-        // 做多：(target-entry)/(entry-stop)=R → entry=(target+R*stop)/(R+1)；做空同形式（方向相反，公式一致）。
-        // 数据全部来自 annotations 的 rr 字段（target/stop），不硬编码价位。
-        var ENTRY_RATIO = 2;
-        var entryPx = (d.target + ENTRY_RATIO * d.stop) / (ENTRY_RATIO + 1);
-        var entryValid = d.dir === 'long'
-          ? (entryPx > d.stop && entryPx < d.target)
-          : (entryPx < d.stop && entryPx > d.target);
-        var entryHtml;
-        if (!entryValid) {
-          entryHtml = '<div class="rr-entry">↳ 当前结构无合理' + dirTxt + '入场点</div>';
-        } else if (stat.ratio >= ENTRY_RATIO) {
-          var nakedTxt = d.dir === 'short' ? '裸空追空' : '裸多追多';
-          entryHtml = '<div class="rr-entry">↳ 当前价 <b>' + fmt(Math.round(refP)) + '</b> 已满足 <span class="re-good">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</span>（赔率达标），但赔率≠入场信号：仍需等触发条件确认后再' + dirTxt + '，不鼓励' + nakedTxt + '</div>';
-        } else {
-          var moveTxt = d.dir === 'long' ? '回调至' : '反弹至';
-          entryHtml = '<div class="rr-entry">↳ ' + moveTxt + ' <b>' + fmt(Math.round(entryPx)) + '</b> 附近' + dirTxt + '入场 → <span class="re-good">' + ENTRY_RATIO.toFixed(1) + ':1 🟢</span></div>';
-        }
-        var riskPts = Math.round(stat.risk), rewardPts = Math.round(stat.reward);
-        var riskPct = (stat.risk / refP * 100).toFixed(1), rewardPct = (stat.reward / refP * 100).toFixed(1);
-        var total = stat.risk + stat.reward;
-        var riskW = Math.max(12, Math.min(88, stat.risk / total * 100));
-        var rewardW = 100 - riskW;
-        return '<div class="rr-dir">' +
-          '<div class="rr-dir-head">' +
-            '<span class="rr-dir-label">' + dirTxt + '（目标 ' + fmt(d.target) + ' / 失效 ' + fmt(d.stop) + '）</span>' +
-            '<span class="rr-dir-verdict ' + stat.grade + '">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + ' ' + stat.verdict + '</span>' +
-          '</div>' +
-          '<div class="rr-bar">' +
-            '<div class="rr-seg risk" style="width:' + riskW.toFixed(1) + '%">-' + fmt(riskPts) + '点 -' + riskPct + '%</div>' +
-            '<div class="rr-mark"></div>' +
-            '<div class="rr-seg reward" style="width:' + rewardW.toFixed(1) + '%">+' + fmt(rewardPts) + '点 +' + rewardPct + '%</div>' +
-          '</div>' +
-          '<div class="rr-ends"><span class="re-risk">失效 ' + fmt(d.stop) + '</span><span class="re-reward">目标 ' + fmt(d.target) + '</span></div>' +
-          entryHtml +
-        '</div>';
-      }).join('');
-      // 建议行：基于双向对比给一句话结论
-      var advice = rrAdvice(rrDirs, f.bias);
-      rrHtml =
-        '<div class="rr-wrap">' +
-          '<div class="rr-title">盈亏比标尺（双向）<span class="rr-tf">波段视角 · 非日内</span></div>' +
-          '<div class="rr-now-row"><span class="rr-now">当前价 ' + fmt(Math.round(refP)) + '</span></div>' +
-          dirRows +
-          (advice ? '<div class="rr-advice">' + escapeHtml(advice) + '</div>' : '') +
-          '<div class="rr-note">盈亏比 = 到目标距离 ÷ 到失效位距离，基于当前价与各方向目标/失效位自动计算 · 阈值：&lt;1 🔴不划算 / 1–2 🟡一般 / ≥2 🟢划算<br/>做空涉及衍生工具成本与强制平仓风险，赔率仅为价格空间估算</div>' +
-        '</div>';
-    }
-
     var frozenHtml = viewingDate
-      ? '<div class="jd-frozen">📅 ' + escapeHtml(viewingDate) + '（' + weekdayOf(viewingDate) + '）冻结的分析 · 非最新判断</div>'
+      ? '<div class="sb-frozen">📅 ' + escapeHtml(viewingDate) + '（' + weekdayOf(viewingDate) + '）冻结的分析 · 非最新判断</div>'
       : '';
-    box.innerHTML =
+    var bodyHtml =
       frozenHtml +
-      '<div class="jd-top">' +
-        '<span class="jd-symbol">恒指 · 日线</span>' +
-        '<span class="jd-state ' + toneCls + '">' + escapeHtml((c.stateEmoji ? c.stateEmoji + ' ' : '') + (c.stateLabel || f.biasLabel || '')) + '</span>' +
-        (basePx != null ? (viewingDate
-          ? '<span class="jd-px">当日基准 <span>' + fmt(basePx) + '</span></span>'
-          : '<span class="jd-px">最新 <span id="jdPrice">' + fmt(basePx) + '</span></span>') : '') +
-        (f.updatedAt ? '<span class="jd-time">判断更新 ' + escapeHtml(f.updatedAt) + '</span>' : '') +
-      '</div>' +
-      (lvHtml ? '<div class="jd-levels">' + lvHtml + '</div>' : '') +
-      (c.mainScenarioLine ? '<div class="jd-main">' + escapeHtml(c.mainScenarioLine) + '</div>' : '') +
-      '<div class="jd-cond">' +
+      (lvHtml || '') +
+      (c.mainScenarioLine ? '<div class="sb-main">' + escapeHtml(c.mainScenarioLine) + '</div>' : '') +
+      '<div class="sb-cond">' +
         (c.changeCondition ? '<b class="chg">改变判断：</b>' + escapeHtml(c.changeCondition) + '<br/>' : '') +
         (c.invalidCondition ? '<b class="inv">判断失效：</b>' + escapeHtml(c.invalidCondition) : '') +
-      '</div>';
-    // 盈亏比标尺独立成第二张卡片（桌面端与判断卡左右并排，窄屏堆叠）；无 rr 数据时隐藏，判断卡占满整行
-    if (rrHtml) {
-      rrBox.innerHTML = rrHtml;
-      rrBox.classList.remove('hidden');
-    } else {
-      rrBox.innerHTML = '';
-      rrBox.classList.add('hidden');
-    }
-    row.classList.remove('hidden');
+      '</div>' +
+      (f.updatedAt ? '<div class="sb-time">判断更新 ' + escapeHtml(f.updatedAt) + '</div>' : '');
+
+    box.innerHTML =
+      '<div class="sb-line">' +
+        dateHtml +
+        '<span class="sb-state ' + toneCls + '">' + escapeHtml((c.stateEmoji ? c.stateEmoji + ' ' : '') + (c.stateLabel || f.biasLabel || '')) + '</span>' +
+        pxHtml +
+        rangeHtml +
+      '</div>' +
+      '<details class="sb-details"><summary>判断依据</summary><div class="sb-body">' + bodyHtml + '</div></details>';
+    box.classList.remove('hidden');
   }
+
 
   function renderForecast(a) {
     var f = (a && a.forecast) || null;
@@ -2116,7 +2173,7 @@
     annotations = a;
     activeScenario = -1;
     renderStructBanner(a);
-    renderJudgeCard(a);
+    renderStatusBar(a);
     renderForecast(a);
     renderReasoning(a);
     renderPlaybook(a);

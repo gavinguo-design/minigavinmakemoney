@@ -727,16 +727,19 @@
     wickUpColor: UP, wickDownColor: DOWN,
     priceScaleId: 'right'
   });
-  chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.06, bottom: 0.24 } });
+  // 顶部/底部各留出足够刻度文字高度：top 0.06→0.10 避免最高刻度数字被画布上边缘裁切；
+  // bottom 0.24→0.28 让价格轴底部刻度与下方成交量柱之间留出安全间距（2026-09-28 修复刻度裁切/遮挡反馈）。
+  chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.10, bottom: 0.28 } });
 
-  // volume histogram (own price scale, pinned to bottom ~20% of chart)
+  // volume histogram (own price scale, pinned to bottom ~14% of chart)
   var volumeSeries = chart.addHistogramSeries({
     priceFormat: { type: 'volume' },
     priceScaleId: 'volume',
     priceLineVisible: false,
     lastValueVisible: false
   });
-  chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 }, visible: false });
+  // top 0.82→0.86：成交量柱区域收窄，进一步降低与价格轴底部刻度重叠的概率
+  chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.86, bottom: 0 }, visible: false });
 
   function resizeChart() {
     chart.applyOptions({ width: chartEl.clientWidth, height: chartEl.clientHeight });
@@ -1601,10 +1604,24 @@
       pts.push({ y: y, text: it.text, color: it.color });
     });
     pts.sort(function (x, y) { return x.y - y.y; });
-    // 重叠处理：相邻标签 y 距离 <16px 时向下错开（保证至少 16px 间距，不与上一条重叠）
+    // 重叠处理（2026-09-28 修复）：旧版只做「向下错开」再统一 clamp 到 [6, h-6]，
+    // 当密集价位（如均线密集区 25,320 附近）把多条标签向下推出可视区下边界后，
+    // 全部被 clamp 到同一个 h-6 像素，导致文字重叠压在一起。现改为标准三步防重叠：
+    // 1) 正向压：从上到下保证相邻间距 ≥ MIN_GAP；2) 若最后一条仍超出底部，先把它
+    // 钳制到底部，再反向压：从下到上保证间距，把上面的条目顶回去；3) 最后再统一
+    // clamp 到 [6, h-6] 兜底（此时理论上已不会再触发重叠）。
     var MIN_GAP = 16;
     for (var i = 1; i < pts.length; i++) {
       if (pts[i].y - pts[i - 1].y < MIN_GAP) pts[i].y = pts[i - 1].y + MIN_GAP;
+    }
+    if (pts.length) {
+      var last = pts.length - 1;
+      if (pts[last].y > h - 6) {
+        pts[last].y = h - 6;
+        for (var j = last - 1; j >= 0; j--) {
+          if (pts[j + 1].y - pts[j].y < MIN_GAP) pts[j].y = pts[j + 1].y - MIN_GAP;
+        }
+      }
     }
     var html = pts.map(function (p) {
       var top = Math.max(6, Math.min(h - 6, p.y));
@@ -1769,7 +1786,19 @@
   function shortMarkerText(text) {
     if (window.innerWidth <= 640) return '';
     var s = String(text || '');
-    return s.length > 8 ? s.slice(0, 8) + '…' : s;
+    // 2026-09-28 修复：旧阈值8字固定截断会硬生生切在价位数字中间（如"光头阳冲
+    // 25043后无量滞涨"被切成"光头阳冲2504…"，价位数字丢尾）。现改为：阈值放宽
+    // 到10字，且若截断点恰好落在一串数字（价位）中间，则把截断点后移到该数字
+    // 串结束之后，确保价位数字永远完整不被截断（文字描述部分可以被截，数字不行）。
+    var LIMIT = 10;
+    if (s.length <= LIMIT) return s;
+    var cut = LIMIT;
+    var digitRe = /[0-9][0-9,]*/g, m;
+    while ((m = digitRe.exec(s))) {
+      var start = m.index, end = start + m[0].length;
+      if (cut > start && cut < end) { cut = end; break; }
+    }
+    return s.length > cut ? s.slice(0, cut) + '…' : s;
   }
 
   function renderMarkers(a, iv, bars) {

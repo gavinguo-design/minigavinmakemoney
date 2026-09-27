@@ -1411,7 +1411,8 @@
         if (!entryValid) {
           entryHtml = '<div class="rr-entry">↳ 当前结构无合理' + dirTxt + '入场点</div>';
         } else if (stat.ratio >= ENTRY_RATIO) {
-          entryHtml = '<div class="rr-entry">↳ 当前价 <b>' + fmt(Math.round(refP)) + '</b> 已满足 <span class="re-good">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</span>，无需等更好价位</div>';
+          var nakedTxt = d.dir === 'short' ? '裸空追空' : '裸多追多';
+          entryHtml = '<div class="rr-entry">↳ 当前价 <b>' + fmt(Math.round(refP)) + '</b> 已满足 <span class="re-good">' + fmtRatio(stat.ratio) + ' ' + stat.emoji + '</span>（赔率达标），但赔率≠入场信号：仍需等触发条件确认后再' + dirTxt + '，不鼓励' + nakedTxt + '</div>';
         } else {
           var moveTxt = d.dir === 'long' ? '回调至' : '反弹至';
           entryHtml = '<div class="rr-entry">↳ ' + moveTxt + ' <b>' + fmt(Math.round(entryPx)) + '</b> 附近' + dirTxt + '入场 → <span class="re-good">' + ENTRY_RATIO.toFixed(1) + ':1 🟢</span></div>';

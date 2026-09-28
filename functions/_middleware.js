@@ -7,6 +7,7 @@
 //       /api/kline            Yahoo K-line proxy
 //       /api/realtime         realtime HSI quote (multi-upstream)
 //       /chart/annotations.json
+//       /chart/scenario_status.json  scenario trigger checklist (hourly cron data)
 //       /chart/archive/*      frozen daily snapshots (read-only history)
 //       /chart/predictions/*  prediction log (public track record data)
 //
@@ -31,6 +32,7 @@ const WHITELIST_EXACT = new Set([
   '/icon-512.png',
   '/robots.txt',
   '/chart/annotations.json',
+  '/chart/scenario_status.json',
 ]);
 
 const WHITELIST_PREFIX = [

@@ -102,6 +102,37 @@
       .sb-kv b { font-size: 14px; }
     }
 
+    /* 波段节奏顶部横幅 */
+    .swing-rhythm-banner {
+      font-size: 13px; font-weight: 600; color: rgba(235,235,245,0.88); line-height: 1.6;
+      background: linear-gradient(90deg, rgba(10,132,255,0.14), rgba(50,215,75,0.10));
+      border: 1px solid rgba(10,132,255,0.35);
+      border-radius: 10px; padding: 9px 14px; margin: 8px 0 12px;
+    }
+    .swing-rhythm-banner b { color: var(--accent); font-weight: 800; }
+    @media (max-width: 640px) { .swing-rhythm-banner { font-size: 12px; padding: 8px 11px; } }
+
+    /* judgment_mode 顶部胶囊（intraday_preview / close_final） */
+    .jm-badge {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 800;
+      padding: 2px 8px; border-radius: 999px; margin-left: 6px; white-space: nowrap;
+    }
+    .jm-badge.preview { color: var(--gold); background: rgba(245,200,66,0.13); border: 1px solid rgba(245,200,66,0.4); }
+    .jm-badge.final { color: var(--good); background: rgba(50,215,75,0.12); border: 1px solid rgba(50,215,75,0.4); }
+    /* 情景卡持仓周期小标 */
+    .sc-holding {
+      display: inline-block; margin-left: 8px; font-size: 10.5px; font-weight: 700;
+      color: rgba(235,235,245,0.7); padding: 2px 8px; border-radius: 999px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    }
+    /* 单条条件口径小标（收盘定/盘中预览） */
+    .sc-cond-mode {
+      display: inline-block; margin-left: 5px; font-size: 9.5px; font-weight: 700;
+      padding: 1px 5px; border-radius: 3px; vertical-align: middle;
+    }
+    .sc-cond-mode.close { color: var(--good); background: rgba(50,215,75,0.12); }
+    .sc-cond-mode.preview { color: var(--gold); background: rgba(245,200,66,0.13); }
+
     /* 情景卡信息可视化：触发状态 badge + 关键价位数字组 + 盈亏标尺条 */
     .sc-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .sc-status { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
@@ -601,6 +632,9 @@
     <p class="sub">^HSI · 历史K线：Yahoo Finance · 实时价与最新K线：东财/新浪/腾讯多源容灾（盘中实时）· 红涨绿跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
     <a class="track-link" href="track/">📊 预测战绩 · 历史预测留痕可查 →</a>
     <a class="track-link" href="trades.html">📒 交易战绩 · 真实交易逐笔留痕 →</a>
+
+    <!-- 波段节奏说明条 -->
+    <div class="swing-rhythm-banner">⏱ <b>波段节奏</b>：本地图为波段（持仓 1–5 个交易日）行动指引 · <b>决策点=盘前 09:15 前 + 收盘 16:10 后</b>（每日两次，无需盯盘）· 盘中波动不构成操作信号，仅侜预览。</div>
 
     <!-- 历史模式提示条 -->
     <div class="hist-banner hidden" id="histBanner"></div>
@@ -1251,6 +1285,14 @@
     }).catch(function () { return null; });
   }
 
+  // judgment_mode 胶囊：收盘定案 / 盘中预览（波段口径：最终打勾以收盘为准）
+  function jmBadgeHtml() {
+    var jm = scenarioStatus && scenarioStatus.judgment_mode;
+    if (jm === 'close_final') return '<span class="jm-badge final" title="收盘定案：收盘确认类条件已用收盘价判定">收盘定</span>';
+    if (jm === 'intraday_preview') return '<span class="jm-badge preview" title="盘中预览：现价近似收盘价，若此刻收盘则如图；最终打勾以收盘为准，不构成操作信号">盘中预览</span>';
+    return '';
+  }
+
   // 按情景名首字母（A/B/C…）匹配 scenario_status.scenarios[].name_prefix
   function statusForScenario(sc) {
     if (!scenarioStatus || !Array.isArray(scenarioStatus.scenarios) || !sc || !sc.name) return null;
@@ -1268,10 +1310,14 @@
     var st = viewingDate ? null : statusForScenario(sc);
     if (st && typeof st.core_total === 'number' && st.core_total > 0 &&
         (st.triggered === true || st.triggered === false)) {
+      var preview = scenarioStatus && scenarioStatus.judgment_mode === 'intraday_preview';
       if (st.triggered) {
-        return '<span class="sc-status fired" title="核心结构条件（价格类）全部满足；量能/资金为确认项，见确认强度">🎯 已触发</span>';
+        if (preview) {
+          return '<span class="sc-status fired" title="盘中预览：若此刻收盘则触发；最终以收盘为准，不构成盘中操作信号">🔵 若收盘则触发（预览）</span>';
+        }
+        return '<span class="sc-status fired" title="核心结构条件（收盘确认口径）全部满足；量能/资金为确认项，见确认强度">🎯 已触发（收盘确认）</span>';
       }
-      return '<span class="sc-status wait" title="核心结构条件未全部满足">⏳ 未触发（core ' + st.core_met + '/' + st.core_total + '）</span>';
+      return '<span class="sc-status wait" title="核心结构条件未全部满足' + (preview ? '（盘中预览，最终以收盘为准）' : '') + '">⏳ 未触发（core ' + st.core_met + '/' + st.core_total + '）</span>';
     }
     return scenarioTriggerState(sc, refPx) === 'fired'
       ? '<span class="sc-status fired" title="当前价已触及入场价位（价格条件近似判定，量能/收盘确认仍需人工核实）">✅ 条件触发</span>'
@@ -1290,14 +1336,27 @@
       var m = String(scenarioStatus.updated_at).match(/T(\d{2}:\d{2})/);
       if (m) upd = m[1];
     }
+    // 单条口径小标：core 且仅涉及收盘确认类规则（id 含 fill_gap/hold_low/break_24276/break_24000/rej_gap）依据 judgment_mode 区分；
+    // 其他条件（量能/南向/瞬时触及）不强制标小标
+    function condModeBadge(c) {
+      if (!c || c.role !== 'core') return '';
+      var jm = scenarioStatus && scenarioStatus.judgment_mode;
+      if (!jm) return '';
+      if (jm === 'close_final') return '<span class="sc-cond-mode close" title="收盘定案">收盘定</span>';
+      return '<span class="sc-cond-mode preview" title="盘中预览：若此刻收盘则如图，不构成操作信号">盘中预览</span>';
+    }
     function rowHtml(c) {
       var met = c.met === true;
       var unknown = (c.met !== true && c.met !== false);   // 数据缺失/API失败 → 不打假勾
-      var icon = met ? '✅' : (unknown ? '⏳' : '⬜');
+      var jm = scenarioStatus && scenarioStatus.judgment_mode;
+      // 盘中预览时 ✅ 换成 ✓(预览)，避免误读为确认触发
+      var icon;
+      if (met && jm === 'intraday_preview' && c.role === 'core') icon = '🔵';  // 蓝圆点：若此刻收盘则为真
+      else icon = met ? '✅' : (unknown ? '⏳' : '⬜');
       var cls = met ? 'met' : (unknown ? 'unknown' : 'unmet');
       return '<div class="sc-cond ' + cls + '"><span class="sc-cond-ic">' + icon + '</span>' +
-        '<span class="sc-cond-body"><span class="sc-cond-label">' + escapeHtml(c.label || '') + '</span>' +
-        (c.value_text ? '<span class="sc-cond-val">' + escapeHtml(c.value_text) + '</span>' : '') +
+        '<span class="sc-cond-body"><span class="sc-cond-label">' + escapeHtml(c.label || '') + condModeBadge(c) + '</span>' +
+        (c.value_text ? '<span class="sc-cond-val">' + escapeHtml(c.value_text) + (jm === 'intraday_preview' && c.role === 'core' && (met || met === false) ? ' · 若此刻收盘则' + (met ? '✅' : '⬜') : '') + '</span>' : '') +
         '</span></div>';
     }
     var hasRoles = st.conditions.some(function (c) { return c.role === 'confirm'; });
@@ -1341,7 +1400,7 @@
       }
     }
     return '<div class="sc-checklist">' +
-      '<div class="sc-cl-head"><span>触发条件清单</span>' + head + '</div>' +
+      '<div class="sc-cl-head"><span>触发条件清单' + jmBadgeHtml() + '</span>' + head + '</div>' +
       body +
       strengthHtml +
       (upd ? '<div class="sc-cl-upd">数据更新时间 ' + upd + '</div>' : '') +
@@ -1434,10 +1493,11 @@
         (sc.invalidation ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(sc.invalidation) + '</b></div>' : '') +
         (rr.entryHint ? '<div class="sc-row">入场确认：' + escapeHtml(rr.entryHint) + '</div>' : '') +
         (sc.note ? '<div class="sc-row">' + escapeHtml(sc.note) + '</div>' : '');
+      var holdingHtml = sc.holding_period ? '<span class="sc-holding" title="预期持仓周期">⏱ 持仓 ' + escapeHtml(sc.holding_period) + '</span>' : '';
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
           '<span class="sc-prob" title="置信度为模型主观评估，非历史统计概率">' + Math.round((sc.probability || 0) * 100) + '%</span></div>' +
-        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + '</span>' +
+        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + holdingHtml + '</span>' +
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>' +
         numsHtml +

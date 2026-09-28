@@ -1,7 +1,9 @@
 {
- "updated_at": "2026-09-28T22:34:30+08:00",
+ "updated_at": "2026-09-28T23:47:19+08:00",
  "data_stale": false,
  "stale_reason": null,
+ "conditions_date": "2026-09-28",
+ "conditions_stale": false,
  "metrics": {
   "price": 24642.51,
   "open": 24554.58,

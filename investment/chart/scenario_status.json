@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-09-28T22:09:14+08:00",
+ "updated_at": "2026-09-28T22:19:17+08:00",
  "data_stale": false,
  "stale_reason": null,
  "metrics": {
@@ -17,13 +17,13 @@
  "scenarios": [
   {
    "name_prefix": "A",
-   "triggered": true,
-   "core_met": 2,
+   "triggered": false,
+   "core_met": 1,
    "core_total": 2,
    "confirm_met": 0,
    "confirm_total": 2,
-   "strength": "弱",
-   "met_count": 2,
+   "strength": null,
+   "met_count": 1,
    "total": 4,
    "conditions": [
     {
@@ -35,9 +35,9 @@
     },
     {
      "id": "fill_gap",
-     "label": "回补缺口 24,537–24,648（盘中最高穿越 24,648）",
+     "label": "站稳缺口上沿 24,648（现价 ≥ 24,648，摸高回落不算）",
      "role": "core",
-     "met": true,
+     "met": false,
      "value_text": "盘中最高 24,767"
     },
     {
@@ -69,7 +69,7 @@
    "conditions": [
     {
      "id": "rej_gap",
-     "label": "反弹受阻于缺口上沿（现价 < 24,648）",
+     "label": "冲高受阻回落（盘中触及 24,648 上方、现价回落至其下方）",
      "role": "core",
      "met": true,
      "value_text": "现价 24,643"

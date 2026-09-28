@@ -1044,16 +1044,51 @@
       // Only the scenario end gets a target marker (dot, no text — the label
       // moves to #levelGutter to avoid overlapping the zone area/axis labels).
       var end = upperData[upperData.length - 1];
-      upperLine.setMarkers([{ time: end.time, position: 'aboveBar', shape: 'circle', color: hexToRgba(sc.color, 0.95), text: '' }]);
-      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine], scenario: sc, index: idx, endPrice: end.value });
+      var endMarker = [{ time: end.time, position: 'aboveBar', shape: 'circle', color: hexToRgba(sc.color, 0.95), text: '' }];
+      upperLine.setMarkers(endMarker);
+      // 情景显隐用「颜色透明化」而非 series.visible 开关（2026-09-28 修复）：
+      // visible:false 会把该系列从价格轴 autoScale 计算中剔除，导致点击情景卡
+      // 切换时纵向视野跳动重置。透明化让所有系列始终参与布局与 autoScale，
+      // 切换只改观感，图表视野纹丝不动。
+      var setShown = (function (upperFill, lowerFill, upperLine, lowerLine, color, endMarker) {
+        var TRANS = 'rgba(0,0,0,0)';
+        return function (shown) {
+          upperFill.applyOptions({
+            topFillColor1: shown ? hexToRgba(color, 0.11) : TRANS,
+            topFillColor2: shown ? hexToRgba(color, 0.01) : TRANS,
+            bottomFillColor1: shown ? hexToRgba(color, 0.01) : TRANS,
+            bottomFillColor2: shown ? hexToRgba(color, 0.11) : TRANS
+          });
+          lowerFill.applyOptions({
+            topFillColor1: shown ? hexToRgba(color, 0.08) : TRANS,
+            topFillColor2: shown ? hexToRgba(color, 0.01) : TRANS,
+            bottomFillColor1: shown ? hexToRgba(color, 0.01) : TRANS,
+            bottomFillColor2: shown ? hexToRgba(color, 0.08) : TRANS
+          });
+          var lineColor = shown ? hexToRgba(color, 0.8) : TRANS;
+          upperLine.applyOptions({ color: lineColor });
+          lowerLine.applyOptions({ color: lineColor });
+          upperLine.setMarkers(shown ? endMarker : []);
+        };
+      })(upperFill, lowerFill, upperLine, lowerLine, sc.color, endMarker);
+      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine], scenario: sc, index: idx, endPrice: end.value, setShown: setShown });
     });
     applyScenarioVisibility();
   }
 
   function applyScenarioVisibility() {
+    // 切换前后保持时间轴视野不变：先记下当前 logical range，切换后原样恢复（安全网，
+    // 配合颜色透明化方案，确保情景卡切换时用户的缩放/平移位置不被重置）
+    var savedRange = null;
+    try { savedRange = chart.timeScale().getVisibleLogicalRange(); } catch (e) {}
     fcSeriesList.forEach(function (fs) {
-      fs.series.forEach(function (s) { s.applyOptions({ visible: activeScenario === -1 || fs.index === activeScenario }); });
+      var shown = activeScenario === -1 || fs.index === activeScenario;
+      if (fs.setShown) fs.setShown(shown);
+      else fs.series.forEach(function (s) { s.applyOptions({ visible: shown }); });
     });
+    if (savedRange) {
+      try { chart.timeScale().setVisibleLogicalRange(savedRange); } catch (e) {}
+    }
     var cards = document.querySelectorAll('.sc-card');
     cards.forEach(function (card) {
       var i = parseInt(card.getAttribute('data-idx'), 10);

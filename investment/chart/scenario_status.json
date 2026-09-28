@@ -1,18 +1,18 @@
 {
- "updated_at": "2026-09-28T16:00:17+08:00",
+ "updated_at": "2026-09-28T16:34:34+08:00",
  "data_stale": false,
  "stale_reason": null,
  "metrics": {
-  "price": 24658.11,
+  "price": 24642.51,
   "open": 24554.58,
   "high": 24767.22,
   "low": 24554.58,
   "prev_close": 24510.09,
   "update_time": "2026-09-28 16:00:00",
-  "volume_ratio": 0.94,
-  "today_turnover_yi": 1697.0,
+  "volume_ratio": 0.99,
+  "today_turnover_yi": 1774.8,
   "ref_turnover_yi": 1796.0,
-  "southbound_net_yi": -63.8
+  "southbound_net_yi": -65.5
  },
  "scenarios": [
   {
@@ -36,38 +36,38 @@
      "id": "vol_green",
      "label": "放量收阳（量比 ≥ 1.2 且现价高于今开）",
      "met": false,
-     "value_text": "量比 0.94 · 今开 24,555 → 现价 24,658"
+     "value_text": "量比 0.99 · 今开 24,555 → 现价 24,643"
     },
     {
      "id": "southbound",
      "label": "南向资金确认（净买 > 50 亿）",
      "met": false,
-     "value_text": "南向净买 -63.8 亿"
+     "value_text": "南向净买 -65.5 亿"
     }
    ]
   },
   {
    "name_prefix": "B",
-   "met_count": 0,
+   "met_count": 1,
    "total": 3,
    "conditions": [
     {
      "id": "rej_gap",
      "label": "反弹受阻于缺口上沿（现价 < 24,648）",
-     "met": false,
-     "value_text": "现价 24,658"
+     "met": true,
+     "value_text": "现价 24,643"
     },
     {
      "id": "low_vol",
      "label": "反弹无量（量比 < 0.9）",
      "met": false,
-     "value_text": "量比 0.94"
+     "value_text": "量比 0.99"
     },
     {
      "id": "break_support",
      "label": "跌破多空分界（现价 < 24,276，收盘确认更严）",
      "met": false,
-     "value_text": "现价 24,658"
+     "value_text": "现价 24,643"
     }
    ]
   },
@@ -80,19 +80,19 @@
      "id": "break_24276",
      "label": "跌破 24,276（现价 < 24,276）",
      "met": false,
-     "value_text": "现价 24,658"
+     "value_text": "现价 24,643"
     },
     {
      "id": "break_24000",
      "label": "跌破 24,000 整数关口（现价 < 24,000）",
      "met": false,
-     "value_text": "现价 24,658"
+     "value_text": "现价 24,643"
     },
     {
      "id": "vol_down",
      "label": "放量下跌（量比 ≥ 1.2 且现价低于昨收）",
      "met": false,
-     "value_text": "量比 0.94 · 昨收 24,510 → 现价 24,658"
+     "value_text": "量比 0.99 · 昨收 24,510 → 现价 24,643"
     }
    ]
   }

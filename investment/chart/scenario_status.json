@@ -1,0 +1,101 @@
+{
+ "updated_at": "2026-09-28T10:38:22+08:00",
+ "data_stale": false,
+ "stale_reason": null,
+ "metrics": {
+  "price": 24628.7,
+  "open": 24554.58,
+  "high": 24767.22,
+  "low": 24554.58,
+  "prev_close": 24510.09,
+  "update_time": "2026-09-28 10:38:20",
+  "volume_ratio": 0.93,
+  "today_turnover_yi": 664.5,
+  "ref_turnover_yi": 711.3,
+  "southbound_net_yi": 10.8
+ },
+ "scenarios": [
+  {
+   "name_prefix": "A",
+   "met_count": 2,
+   "total": 4,
+   "conditions": [
+    {
+     "id": "hold_low",
+     "label": "守住低点区 24,276–24,358（盘中低点不破 24,276）",
+     "met": true,
+     "value_text": "盘中低点 24,555"
+    },
+    {
+     "id": "fill_gap",
+     "label": "回补缺口 24,537–24,648（盘中最高穿越 24,648）",
+     "met": true,
+     "value_text": "盘中最高 24,767"
+    },
+    {
+     "id": "vol_green",
+     "label": "放量收阳（量比 ≥ 1.2 且现价高于今开）",
+     "met": false,
+     "value_text": "量比 0.93 · 今开 24,555 → 现价 24,629"
+    },
+    {
+     "id": "southbound",
+     "label": "南向资金确认（净买 > 50 亿）",
+     "met": false,
+     "value_text": "南向净买 +10.8 亿"
+    }
+   ]
+  },
+  {
+   "name_prefix": "B",
+   "met_count": 1,
+   "total": 3,
+   "conditions": [
+    {
+     "id": "rej_gap",
+     "label": "反弹受阻于缺口上沿（现价 < 24,648）",
+     "met": true,
+     "value_text": "现价 24,629"
+    },
+    {
+     "id": "low_vol",
+     "label": "反弹无量（量比 < 0.9）",
+     "met": false,
+     "value_text": "量比 0.93"
+    },
+    {
+     "id": "break_support",
+     "label": "跌破多空分界（现价 < 24,276，收盘确认更严）",
+     "met": false,
+     "value_text": "现价 24,629"
+    }
+   ]
+  },
+  {
+   "name_prefix": "C",
+   "met_count": 0,
+   "total": 3,
+   "conditions": [
+    {
+     "id": "break_24276",
+     "label": "跌破 24,276（现价 < 24,276）",
+     "met": false,
+     "value_text": "现价 24,629"
+    },
+    {
+     "id": "break_24000",
+     "label": "跌破 24,000 整数关口（现价 < 24,000）",
+     "met": false,
+     "value_text": "现价 24,629"
+    },
+    {
+     "id": "vol_down",
+     "label": "放量下跌（量比 ≥ 1.2 且现价低于昨收）",
+     "met": false,
+     "value_text": "量比 0.93 · 昨收 24,510 → 现价 24,629"
+    }
+   ]
+  }
+ ],
+ "note": "条件判定来自实时API计算（富途OpenD行情+量比 / 东财南向）。盘中判定为近似（收盘确认类条件以收盘为准）。"
+}

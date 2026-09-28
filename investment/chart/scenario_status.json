@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-09-28T22:19:17+08:00",
+ "updated_at": "2026-09-28T22:34:30+08:00",
  "data_stale": false,
  "stale_reason": null,
  "metrics": {
@@ -38,7 +38,7 @@
      "label": "站稳缺口上沿 24,648（现价 ≥ 24,648，摸高回落不算）",
      "role": "core",
      "met": false,
-     "value_text": "盘中最高 24,767"
+     "value_text": "盘中最高 24,767 · ⚠️ 临界，差 5 点"
     },
     {
      "id": "vol_green",

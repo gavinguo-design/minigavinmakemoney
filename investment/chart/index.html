@@ -158,6 +158,14 @@
     .sc-ruler-labels .rl:last-child { align-items: flex-end; text-align: right; }
     .sc-ruler-labels .rl b { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.85); }
     .sc-cursor-note { margin-top: 4px; font-size: 10px; color: var(--gold); font-family: 'JetBrains Mono', monospace; }
+    /* 实时赔率补充行：视觉弱化一档（小字/灰度），数字按赔率优劣着色 */
+    .sc-live-rr { margin-top: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 10px; color: var(--muted); opacity: 0.88; }
+    .sc-live-rr .sc-live-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
+    .sc-live-rr .sc-live-num.good { color: var(--good); }
+    .sc-live-rr .sc-live-num.mid { color: var(--gold); }
+    .sc-live-rr .sc-live-num.bad { color: var(--bad); }
+    .sc-live-rr .sc-live-flag { font-weight: 600; color: rgba(235,235,245,0.65); }
+    .sc-live-rr .sc-live-warn { color: var(--gold); font-weight: 600; }
     .sc-more { margin-top: 8px; }
     .sc-more > summary { list-style: none; cursor: pointer; font-size: 11px; color: var(--muted); user-select: none; }
     .sc-more > summary::-webkit-details-marker { display: none; }
@@ -1226,7 +1234,39 @@
     '</div>';
   }
 
-  // 只重渲染各卡片内的 checklist 区块，不重建整卡 DOM（保留用户展开的折叠区/选中态）
+  // 实时赔率补充行：用 scenario_status.json 的 metrics.price 作为「此刻进场」的实际入场价重算 RR。
+  // 固定标尺是计划赔率（按 rr.entry 参与）；此行回答「现在这个价追进去还划不划算」。
+  // rr 缺失 / 无现价 / 历史回看模式 → 返回空串不渲染（容错）。rr.interim（中途目标）按需求忽略。
+  function scenarioLiveRRHtml(sc) {
+    if (viewingDate) return '';
+    var rr = sc && sc.rr;
+    if (!rr || typeof rr.entry !== 'number' || typeof rr.target !== 'number' || typeof rr.stop !== 'number') return '';
+    var px = (scenarioStatus && scenarioStatus.metrics && typeof scenarioStatus.metrics.price === 'number')
+      ? scenarioStatus.metrics.price : null;
+    if (px === null) return '';
+    var dir = rr.direction === 'short' ? 'short' : 'long';
+    var body;
+    if ((dir === 'short' && px - rr.entry > 200) || (dir === 'long' && rr.entry - px > 200)) {
+      // 方向与当前价格位置矛盾（偏离入场价 >200 点、且在未入场一侧）→ 情景未触发
+      body = '<span class="sc-live-flag">未触发</span>';
+    } else if (dir === 'long' ? px >= rr.target : px <= rr.target) {
+      body = '<span class="sc-live-flag">已达标</span>';
+    } else if (dir === 'long' ? px <= rr.stop : px >= rr.stop) {
+      body = '<span class="sc-live-flag">已失效</span>';
+    } else {
+      var reward = Math.abs(rr.target - px);
+      var risk = Math.abs(px - rr.stop);
+      if (!(risk > 0)) return '';
+      var ratio = reward / risk;
+      var grade = ratio >= 2 ? 'good' : (ratio >= 1 ? 'mid' : 'bad');
+      body = '<b class="sc-live-num ' + grade + '">' + fmtRatio(ratio) + '</b>' +
+        (risk < 30 ? '<span class="sc-live-warn">⚠️贴近止损</span>' : '');
+    }
+    return '<div class="sc-live-rr" title="用最近一次数据更新的现价作为实际入场价重算的盈亏比（|目标-现价| ÷ |现价-止损|）；上方标尺为按计划入场价的固定赔率">' +
+      '<span>实时赔率（按当前价 ' + fmt(Math.round(px)) + ' 参与）</span>' + body + '</div>';
+  }
+
+  // 只重渲染各卡片内的 checklist / 实时赔率区块，不重建整卡 DOM（保留用户展开的折叠区/选中态）
   function refreshScenarioChecklists() {
     if (viewingDate || !annotations) return;
     var f = annotations.forecast;
@@ -1238,6 +1278,8 @@
       if (!sc) return;
       var holder = card.querySelector('.sc-checklist-holder');
       if (holder) holder.innerHTML = scenarioChecklistHtml(sc);
+      var liveHolder = card.querySelector('.sc-live-rr-holder');
+      if (liveHolder) liveHolder.innerHTML = scenarioLiveRRHtml(sc);
     });
   }
 
@@ -1285,6 +1327,7 @@
         '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>' +
         numsHtml +
         scenarioRulerHtml(sc, refPx) +
+        '<div class="sc-live-rr-holder">' + scenarioLiveRRHtml(sc) + '</div>' +
         (moreRows ? '<details class="sc-more"><summary>详情与备注</summary>' + moreRows + '</details>' : '') +
         '<div class="sc-tip">点击卡片单独查看该情景区域</div>';
       card.addEventListener('click', function () {

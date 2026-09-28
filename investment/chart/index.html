@@ -437,7 +437,16 @@
       .zoom-btn { width: 38px; height: 38px; }
     }
 
-    /* 成交量缺失提示（Yahoo 数据源当日量能未回填） */
+    /* 成交额/成交量图例（左下角常驻，标注量能柱口径与数据源） */
+    .vol-legend {
+      position: absolute; left: 10px; bottom: 34px; z-index: 5;
+      font-size: 10px; color: var(--muted);
+      background: rgba(13,13,15,0.55); border-radius: 5px;
+      padding: 2px 7px; pointer-events: none; line-height: 1.4;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* 成交量缺失提示（当日量能未回填） */
     .vol-hint {
       position: absolute; left: 10px; bottom: 10px; z-index: 6;
       font-size: 10px; color: var(--muted);
@@ -630,7 +639,8 @@
         <div class="struct-banner hidden" id="structBanner"></div>
         <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
         <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
-        <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（实时源成交额换算与Yahoo回填均未就绪）</div>
+        <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（数据源尚未回填）</div>
+        <div class="vol-legend hidden" id="volLegend"></div>
         <div class="level-tip hidden" id="levelTip"></div>
         <div class="loading" id="loading">加载行情数据…</div>
         <div class="zoom-ctrl">
@@ -1438,6 +1448,57 @@
     });
   }
 
+  // ---------- 富途日K静态数据源（2026-09-28 全站统一富途口径） ----------
+  // 本机 cron 从富途 OpenD 拉日K+盘中快照 → 推 kline_futu.json → CF Pages 静态分发。
+  // volume 字段承载 turnover_yi（成交额，亿元），与 Yahoo 成交股数口径不同，
+  // 两者不可混用；当前数据源记在 klineSource，量能图例/实时合并逻辑据此分支。
+  var klineSource = 'yahoo'; // 'futu' | 'yahoo'（仅日线可能为 futu）
+
+  function futuToBars(fj) {
+    var candles = (fj && fj.candles) || [];
+    var bars = [];
+    for (var i = 0; i < candles.length; i++) {
+      var c = candles[i];
+      if (c == null || c.open == null || c.high == null || c.low == null || c.close == null || !c.date) continue;
+      var p = String(c.date).split('-');
+      if (p.length !== 3) continue;
+      bars.push({
+        time: { year: +p[0], month: +p[1], day: +p[2] },
+        open: round2(c.open), high: round2(c.high),
+        low: round2(c.low), close: round2(c.close),
+        volume: (typeof c.turnover_yi === 'number' && c.turnover_yi > 0) ? c.turnover_yi : null,
+        partial: !!c.partial
+      });
+    }
+    return bars;
+  }
+
+  // 日线：优先富途静态 JSON，失败回退 Yahoo /api/kline（保底不白屏）
+  function fetchBars(iv, intraday) {
+    if (iv === '1d') {
+      return fetch('/chart/kline_futu.json?t=' + Date.now())
+        .then(function (r) {
+          if (!r.ok) throw new Error('futu json ' + r.status);
+          return r.json();
+        })
+        .then(function (fj) {
+          var bars = futuToBars(fj);
+          if (!bars.length) throw new Error('futu json empty');
+          klineSource = 'futu';
+          return { bars: bars, raw: null };
+        })
+        .catch(function () {
+          return fetchKline(iv).then(function (data) {
+            klineSource = 'yahoo';
+            return { bars: toBars(data, intraday), raw: data };
+          });
+        });
+    }
+    return fetchKline(iv).then(function (data) {
+      return { bars: toBars(data, intraday), raw: data };
+    });
+  }
+
   function toBars(data, intraday) {
     var ts = data.timestamp || [];
     var o = data.open || [], h = data.high || [], l = data.low || [], c = data.close || [];
@@ -1469,13 +1530,26 @@
   }
 
   function toVolumeData(bars) {
-    // Yahoo 对最新交易日经常返回 volume=0（数据未回填），非真实零成交，该柱跳过不绘制，避免误导
+    // 富途源：volume=turnover_yi（成交额亿元）恒有值；Yahoo 源对最新交易日经常返回 volume=0（数据未回填），非真实零成交，该柱跳过不绘制，避免误导
     return bars
       .filter(function (b) { return typeof b.volume === 'number' && b.volume > 0; })
       .map(function (b) {
         var up = b.close >= b.open;
         return { time: b.time, value: b.volume, color: up ? 'rgba(255,69,58,0.5)' : 'rgba(50,215,75,0.5)' };
       });
+  }
+
+  // 量能柱图例：标注当前量能柱的口径（富途=成交额亿元 / Yahoo=成交股数）
+  function updateVolLegend(iv) {
+    var lg = el('volLegend');
+    if (!lg) return;
+    if (iv === '1d' && klineSource === 'futu') {
+      lg.textContent = '▪ 成交额(亿) · 富途';
+      lg.classList.remove('hidden');
+    } else {
+      lg.textContent = '▪ 成交量(股) · Yahoo';
+      lg.classList.remove('hidden');
+    }
   }
 
   // 检测最近 1-2 根K线是否存在量能缺失（只看尾部，不对历史普遍缺失报警）
@@ -1567,10 +1641,15 @@
     }
   }
 
-  // 实时源量能与 Yahoo 口径不一致（统计范围不同，约2.5~5倍差异），不能直接上图。
-  // 用同源成交额比例换算：今日估算量 = 前一日Yahoo量 × (今日成交额 / 前一日成交额)
+  // 量能口径按数据源分支：
+  //   futu 源：volume=成交额(亿) → 东财实时 amount(元) 直接换算 /1e8，同口径可直接上图
+  //   yahoo 源：volume=成交股数，与实时源口径不一致（约2.5~5倍差异），
+  //           用同源成交额比例换算：今日估算量 = 前一日Yahoo量 × (今日成交额 / 前一日成交额)
   function estimateTodayVolume(rt, prevBar) {
     if (!rt || typeof rt.amount !== 'number' || rt.amount <= 0) return null;
+    if (klineSource === 'futu') {
+      return Math.round(rt.amount / 1e8 * 10) / 10; // 元 → 亿，保留一位小数
+    }
     if (typeof rt.prevAmount !== 'number' || rt.prevAmount <= 0) return null;
     if (!prevBar || typeof prevBar.volume !== 'number' || prevBar.volume <= 0) return null;
     return Math.round(prevBar.volume * (rt.amount / rt.prevAmount));
@@ -1595,8 +1674,9 @@
     var lastTs = Date.UTC(last.time.year, last.time.month - 1, last.time.day);
     var rtTs = Date.UTC(rtDate.year, rtDate.month - 1, rtDate.day);
     if (rtTs < lastTs) return; // 实时数据比Yahoo最后一根还旧，不动
-    // 当日已收盘且 Yahoo 已回填真实量能时，保留 Yahoo 真实值不用估算值
-    if (!isNewBar && typeof last.volume === 'number' && last.volume > 0) {
+    // 当日K线已收盘定型（非 partial）且有真实量能时，保留原值不用实时换算值；
+    // 富途盘中 partial K线的成交额允许被更实时的东财 amount 覆盖
+    if (!isNewBar && !last.partial && typeof last.volume === 'number' && last.volume > 0) {
       bar.volume = last.volume;
     }
     if (!isNewBar) {
@@ -2224,16 +2304,17 @@
     el('delayNote').classList.toggle('hidden', !intraday);
     chart.applyOptions({ timeScale: { timeVisible: intraday, secondsVisible: false, borderColor: 'rgba(255,255,255,0.08)' } });
 
-    fetchKline(iv).then(function (data) {
+    fetchBars(iv, intraday).then(function (result) {
       if (currentIv !== iv) return; // stale response
-      currentBars = toBars(data, intraday);
+      currentBars = result.bars;
       series.setData(currentBars);
       volumeSeries.setData(toVolumeData(currentBars));
+      updateVolLegend(iv);
       eventChartMarkers = [];
       computePatterns(iv, currentBars);
       applyAllMarkers();
       el('volHint').classList.toggle('hidden', !hasRecentVolumeGap(currentBars));
-      updateLivePrice(data);
+      if (result.raw) updateLivePrice(result.raw);
       // 东财实时数据仍有效则立即合并（tab切换回日线时补上实时K线）
       if (isRealtimeFresh()) {
         updateHeaderFromRealtime(realtimeData);

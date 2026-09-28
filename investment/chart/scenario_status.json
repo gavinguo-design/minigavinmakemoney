@@ -1,8 +1,10 @@
 {
- "updated_at": "2026-09-28T23:47:32+08:00",
+ "updated_at": "2026-09-28T16:30:00+08:00",
+ "judgment_mode": "close_final",
+ "judgment_mode_note": "收盘定案：close_gte/close_lt 类条件已用收盘价确认",
  "data_stale": false,
  "stale_reason": null,
- "conditions_date": "2026-09-28",
+ "conditions_date": "2026-09-29",
  "conditions_stale": false,
  "metrics": {
   "price": 24642.51,
@@ -30,21 +32,21 @@
    "conditions": [
     {
      "id": "hold_low",
-     "label": "守住低点区 24,276–24,358（盘中低点不破 24,276）",
+     "label": "守住低点区 24,276–24,358（收盘不跌破 24,276）",
      "role": "core",
      "met": true,
-     "value_text": "盘中低点 24,555"
+     "value_text": "收盘 24,643（已定案）· 盘中低点 24,555"
     },
     {
      "id": "fill_gap",
-     "label": "站稳缺口上沿 24,648（现价 ≥ 24,648，摸高回落不算）",
+     "label": "收盘收于缺口上沿 24,648 之上（收盘确认，摸高回落不算触发）",
      "role": "core",
      "met": false,
-     "value_text": "盘中最高 24,767 · ⚠️ 临界，差 5 点"
+     "value_text": "收盘 24,643（已定案）· 盘中最高 24,767 · ⚠️ 临界，差 5 点"
     },
     {
      "id": "vol_green",
-     "label": "放量收阳（量比 ≥ 1.1 且现价高于今开）",
+     "label": "放量收阳（量比 ≥ 1.1 且收盘高于今日开盘）",
      "role": "confirm",
      "met": false,
      "value_text": "量比 0.99 · 今开 24,555 → 现价 24,643"
@@ -71,14 +73,14 @@
    "conditions": [
     {
      "id": "rej_gap",
-     "label": "冲高受阻回落（盘中触及 24,648 上方、现价回落至其下方）",
+     "label": "冲高受阻：盘中触及 24,648 上方、但收盘收于其下方（受阻回落收盘确认）",
      "role": "core",
      "met": true,
-     "value_text": "现价 24,643"
+     "value_text": "盘中最高 24,767 · 收盘 24,643（已定案）"
     },
     {
      "id": "low_vol",
-     "label": "反弹无量（量比 < 0.9）",
+     "label": "反弹无量（量比 < 0.9，弱势确认）",
      "role": "confirm",
      "met": false,
      "value_text": "量比 0.99"
@@ -98,21 +100,21 @@
    "conditions": [
     {
      "id": "break_24276",
-     "label": "跌破 24,276（现价 < 24,276）",
+     "label": "收盘跌破 24,276（收盘确认，非盘中一过即算）",
      "role": "core",
      "met": false,
-     "value_text": "现价 24,643"
+     "value_text": "收盘 24,643（已定案）"
     },
     {
      "id": "break_24000",
-     "label": "跌破 24,000 整数关口（现价 < 24,000）",
+     "label": "收盘跌破 24,000 整数关口（收盘确认）",
      "role": "confirm",
      "met": false,
-     "value_text": "现价 24,643"
+     "value_text": "收盘 24,643（已定案）"
     },
     {
      "id": "vol_down",
-     "label": "放量下跌（量比 ≥ 1.1 且现价低于昨收）",
+     "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收）",
      "role": "confirm",
      "met": false,
      "value_text": "量比 0.99 · 昨收 24,510 → 现价 24,643"
@@ -120,5 +122,5 @@
    ]
   }
  ],
- "note": "判定逻辑：core（结构/价格）条件全满足=情景触发；confirm（量能/资金）条件只决定确认强度（强/中/弱）。条件判定来自实时API计算（富途OpenD行情+量比 / 东财南向）。盘中判定为近似（收盘确认类条件以收盘为准）。"
+ "note": "波段节奏（決策点=盘前09:15+收盘 16:10后）。判定口径：core 收盘确认条件全满足=情景触发；confirm 量能/资金只决确认强度。盘中运行标记 intraday_preview（近似预览，不构成操作信号）；16:10后标记 close_final（收盘确认）。"
 }

@@ -8,6 +8,7 @@
 //       /api/realtime         realtime HSI quote (multi-upstream)
 //       /chart/annotations.json
 //       /chart/scenario_status.json  scenario trigger checklist (hourly cron data)
+//       /chart/kline_futu.json       futu-sourced daily K-line static data (cron pushed)
 //       /chart/archive/*      frozen daily snapshots (read-only history)
 //       /chart/predictions/*  prediction log (public track record data)
 //
@@ -33,6 +34,7 @@ const WHITELIST_EXACT = new Set([
   '/robots.txt',
   '/chart/annotations.json',
   '/chart/scenario_status.json',
+  '/chart/kline_futu.json',
 ]);
 
 const WHITELIST_PREFIX = [
@@ -109,3 +111,4 @@ export async function onRequest(context) {
     },
   });
 }
+

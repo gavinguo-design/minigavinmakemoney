@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-09-28T16:34:34+08:00",
+ "updated_at": "2026-09-28T22:09:14+08:00",
  "data_stale": false,
  "stale_reason": null,
  "metrics": {
@@ -17,30 +17,40 @@
  "scenarios": [
   {
    "name_prefix": "A",
+   "triggered": true,
+   "core_met": 2,
+   "core_total": 2,
+   "confirm_met": 0,
+   "confirm_total": 2,
+   "strength": "弱",
    "met_count": 2,
    "total": 4,
    "conditions": [
     {
      "id": "hold_low",
      "label": "守住低点区 24,276–24,358（盘中低点不破 24,276）",
+     "role": "core",
      "met": true,
      "value_text": "盘中低点 24,555"
     },
     {
      "id": "fill_gap",
      "label": "回补缺口 24,537–24,648（盘中最高穿越 24,648）",
+     "role": "core",
      "met": true,
      "value_text": "盘中最高 24,767"
     },
     {
      "id": "vol_green",
-     "label": "放量收阳（量比 ≥ 1.2 且现价高于今开）",
+     "label": "放量收阳（量比 ≥ 1.1 且现价高于今开）",
+     "role": "confirm",
      "met": false,
      "value_text": "量比 0.99 · 今开 24,555 → 现价 24,643"
     },
     {
      "id": "southbound",
-     "label": "南向资金确认（净买 > 50 亿）",
+     "label": "南向资金确认（净买 ≥ 30 亿）",
+     "role": "confirm",
      "met": false,
      "value_text": "南向净买 -65.5 亿"
     }
@@ -48,54 +58,65 @@
   },
   {
    "name_prefix": "B",
+   "triggered": true,
+   "core_met": 1,
+   "core_total": 1,
+   "confirm_met": 0,
+   "confirm_total": 1,
+   "strength": "弱",
    "met_count": 1,
-   "total": 3,
+   "total": 2,
    "conditions": [
     {
      "id": "rej_gap",
      "label": "反弹受阻于缺口上沿（现价 < 24,648）",
+     "role": "core",
      "met": true,
      "value_text": "现价 24,643"
     },
     {
      "id": "low_vol",
      "label": "反弹无量（量比 < 0.9）",
+     "role": "confirm",
      "met": false,
      "value_text": "量比 0.99"
-    },
-    {
-     "id": "break_support",
-     "label": "跌破多空分界（现价 < 24,276，收盘确认更严）",
-     "met": false,
-     "value_text": "现价 24,643"
     }
    ]
   },
   {
    "name_prefix": "C",
+   "triggered": false,
+   "core_met": 0,
+   "core_total": 1,
+   "confirm_met": 0,
+   "confirm_total": 2,
+   "strength": null,
    "met_count": 0,
    "total": 3,
    "conditions": [
     {
      "id": "break_24276",
      "label": "跌破 24,276（现价 < 24,276）",
+     "role": "core",
      "met": false,
      "value_text": "现价 24,643"
     },
     {
      "id": "break_24000",
      "label": "跌破 24,000 整数关口（现价 < 24,000）",
+     "role": "confirm",
      "met": false,
      "value_text": "现价 24,643"
     },
     {
      "id": "vol_down",
-     "label": "放量下跌（量比 ≥ 1.2 且现价低于昨收）",
+     "label": "放量下跌（量比 ≥ 1.1 且现价低于昨收）",
+     "role": "confirm",
      "met": false,
      "value_text": "量比 0.99 · 昨收 24,510 → 现价 24,643"
     }
    ]
   }
  ],
- "note": "条件判定来自实时API计算（富途OpenD行情+量比 / 东财南向）。盘中判定为近似（收盘确认类条件以收盘为准）。"
+ "note": "判定逻辑：core（结构/价格）条件全满足=情景触发；confirm（量能/资金）条件只决定确认强度（强/中/弱）。条件判定来自实时API计算（富途OpenD行情+量比 / 东财南向）。盘中判定为近似（收盘确认类条件以收盘为准）。"
 }

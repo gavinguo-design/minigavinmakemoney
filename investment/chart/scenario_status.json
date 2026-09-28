@@ -1,18 +1,18 @@
 {
- "updated_at": "2026-09-28T11:32:52+08:00",
+ "updated_at": "2026-09-28T12:00:21+08:00",
  "data_stale": false,
  "stale_reason": null,
  "metrics": {
-  "price": 24681.93,
+  "price": 24666.09,
   "open": 24554.58,
   "high": 24767.22,
   "low": 24554.58,
   "prev_close": 24510.09,
-  "update_time": "2026-09-28 11:32:52",
+  "update_time": "2026-09-28 12:00:00",
   "volume_ratio": 0.96,
-  "today_turnover_yi": 887.8,
-  "ref_turnover_yi": 928.4,
-  "southbound_net_yi": 3.8
+  "today_turnover_yi": 947.8,
+  "ref_turnover_yi": 989.4,
+  "southbound_net_yi": 1.5
  },
  "scenarios": [
   {
@@ -36,13 +36,13 @@
      "id": "vol_green",
      "label": "放量收阳（量比 ≥ 1.2 且现价高于今开）",
      "met": false,
-     "value_text": "量比 0.96 · 今开 24,555 → 现价 24,682"
+     "value_text": "量比 0.96 · 今开 24,555 → 现价 24,666"
     },
     {
      "id": "southbound",
      "label": "南向资金确认（净买 > 50 亿）",
      "met": false,
-     "value_text": "南向净买 +3.8 亿"
+     "value_text": "南向净买 +1.5 亿"
     }
    ]
   },
@@ -55,7 +55,7 @@
      "id": "rej_gap",
      "label": "反弹受阻于缺口上沿（现价 < 24,648）",
      "met": false,
-     "value_text": "现价 24,682"
+     "value_text": "现价 24,666"
     },
     {
      "id": "low_vol",
@@ -67,7 +67,7 @@
      "id": "break_support",
      "label": "跌破多空分界（现价 < 24,276，收盘确认更严）",
      "met": false,
-     "value_text": "现价 24,682"
+     "value_text": "现价 24,666"
     }
    ]
   },
@@ -80,19 +80,19 @@
      "id": "break_24276",
      "label": "跌破 24,276（现价 < 24,276）",
      "met": false,
-     "value_text": "现价 24,682"
+     "value_text": "现价 24,666"
     },
     {
      "id": "break_24000",
      "label": "跌破 24,000 整数关口（现价 < 24,000）",
      "met": false,
-     "value_text": "现价 24,682"
+     "value_text": "现价 24,666"
     },
     {
      "id": "vol_down",
      "label": "放量下跌（量比 ≥ 1.2 且现价低于昨收）",
      "met": false,
-     "value_text": "量比 0.96 · 昨收 24,510 → 现价 24,682"
+     "value_text": "量比 0.96 · 昨收 24,510 → 现价 24,666"
     }
    ]
   }

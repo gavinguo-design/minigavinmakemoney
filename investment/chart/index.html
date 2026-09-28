@@ -134,6 +134,8 @@
     .sc-cond.unknown .sc-cond-label { color: rgba(235,235,245,0.45); }
     .sc-cond-val { display: block; font-size: 10.5px; font-family: 'JetBrains Mono', monospace; color: var(--muted); margin-top: 1px; }
     .sc-cl-upd { margin-top: 6px; font-size: 10px; color: var(--muted); text-align: right; }
+    .sc-cond-date { margin-top: 5px; font-size: 10px; color: var(--muted); text-align: right; }
+    .sc-cond-date.stale-warn { color: #F5A623; font-weight: 700; }
     .sc-trig { margin-top: 8px; font-size: 12.5px; line-height: 1.55; color: rgba(235,235,245,0.75); }
     .sc-trig .k { font-size: 10.5px; font-weight: 800; color: var(--gold); margin-right: 6px; }
     .sc-dir { font-weight: 800; }
@@ -1327,11 +1329,23 @@
       strengthHtml = '<div class="sc-strength ' + scls + '">确认强度：<b>' + s + '</b>（确认条件 ' + st.confirm_met + '/' + st.confirm_total + '）' +
         '<span class="sc-strength-tip">' + tip + '</span></div>';
     }
+    // conditions_date / conditions_stale 标注
+    var condDateHtml = '';
+    if (scenarioStatus) {
+      if (scenarioStatus.conditions_stale) {
+        condDateHtml = '<div class="sc-cond-date stale-warn">⚠️ 条件定义未随今日更新</div>';
+      } else if (scenarioStatus.conditions_date) {
+        var cd = String(scenarioStatus.conditions_date);
+        var cdFmt = cd.replace(/^\d{4}-/, '').replace('-', '-');  // YYYY-MM-DD → MM-DD
+        condDateHtml = '<div class="sc-cond-date">条件基于 ' + cdFmt + ' 盘前地图</div>';
+      }
+    }
     return '<div class="sc-checklist">' +
       '<div class="sc-cl-head"><span>触发条件清单</span>' + head + '</div>' +
       body +
       strengthHtml +
       (upd ? '<div class="sc-cl-upd">数据更新时间 ' + upd + '</div>' : '') +
+      condDateHtml +
     '</div>';
   }
 

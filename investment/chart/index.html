@@ -108,6 +108,20 @@
     .sc-status.wait { color: rgba(235,235,245,0.5); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.14); }
     .sc-status.fired { color: var(--good); background: rgba(50,215,75,0.12); border-color: rgba(50,215,75,0.45); }
     .sc-name { margin-top: 8px; display: block; }
+    /* 情景触发条件清单 checklist（scenario_status.json 每小时刷新） */
+    .sc-checklist { margin-top: 9px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; }
+    .sc-cl-head { display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; font-weight: 800; color: var(--muted); margin-bottom: 5px; gap: 8px; }
+    .sc-cl-sum { white-space: nowrap; }
+    .sc-cl-sum b { font-family: 'JetBrains Mono', monospace; color: var(--gold); }
+    .sc-cl-sum.stale { color: var(--gold); }
+    .sc-cond { display: flex; gap: 6px; padding: 3px 0; align-items: flex-start; }
+    .sc-cond-ic { flex: 0 0 auto; font-size: 12px; line-height: 1.5; }
+    .sc-cond-body { min-width: 0; }
+    .sc-cond-label { display: block; font-size: 12px; line-height: 1.5; color: rgba(235,235,245,0.78); }
+    .sc-cond.met .sc-cond-label { color: #F5F5F7; }
+    .sc-cond.unknown .sc-cond-label { color: rgba(235,235,245,0.45); }
+    .sc-cond-val { display: block; font-size: 10.5px; font-family: 'JetBrains Mono', monospace; color: var(--muted); margin-top: 1px; }
+    .sc-cl-upd { margin-top: 6px; font-size: 10px; color: var(--muted); text-align: right; }
     .sc-trig { margin-top: 8px; font-size: 12.5px; line-height: 1.55; color: rgba(235,235,245,0.75); }
     .sc-trig .k { font-size: 10.5px; font-weight: 800; color: var(--gold); margin-right: 6px; }
     .sc-dir { font-weight: 800; }
@@ -1160,6 +1174,73 @@
     '</div>';
   }
 
+  // ---------- 情景触发条件清单（scenario_status.json，后台 cron 每小时更新，前端每小时自动刷新） ----------
+  var scenarioStatus = null;   // 最近一次有效的条件清单数据
+
+  function fetchScenarioStatus() {
+    return fetch('scenario_status.json?t=' + Date.now()).then(function (r) {
+      if (!r.ok) throw new Error('status ' + r.status);
+      return r.json();
+    }).catch(function () { return null; });
+  }
+
+  // 按情景名首字母（A/B/C…）匹配 scenario_status.scenarios[].name_prefix
+  function statusForScenario(sc) {
+    if (!scenarioStatus || !Array.isArray(scenarioStatus.scenarios) || !sc || !sc.name) return null;
+    var name = String(sc.name).trim();
+    for (var i = 0; i < scenarioStatus.scenarios.length; i++) {
+      var s = scenarioStatus.scenarios[i];
+      if (s && s.name_prefix && name.indexOf(s.name_prefix) === 0) return s;
+    }
+    return null;
+  }
+
+  // checklist HTML：每条条件 ✅已满足 / ⬜未满足 / ⏳数据待更新 + 汇总「已满足 x/y 条」+ 数据更新时间
+  function scenarioChecklistHtml(sc) {
+    if (viewingDate) return '';   // 历史回看模式不显示实时条件清单
+    var st = statusForScenario(sc);
+    if (!st || !Array.isArray(st.conditions) || st.conditions.length === 0) return '';
+    var stale = !!(scenarioStatus && scenarioStatus.data_stale);
+    var upd = '';
+    if (scenarioStatus && scenarioStatus.updated_at) {
+      var m = String(scenarioStatus.updated_at).match(/T(\d{2}:\d{2})/);
+      if (m) upd = m[1];
+    }
+    var rows = st.conditions.map(function (c) {
+      var met = c.met === true;
+      var unknown = (c.met !== true && c.met !== false);   // 数据缺失/API失败 → 不打假勾
+      var icon = met ? '✅' : (unknown ? '⏳' : '⬜');
+      var cls = met ? 'met' : (unknown ? 'unknown' : 'unmet');
+      return '<div class="sc-cond ' + cls + '"><span class="sc-cond-ic">' + icon + '</span>' +
+        '<span class="sc-cond-body"><span class="sc-cond-label">' + escapeHtml(c.label || '') + '</span>' +
+        (c.value_text ? '<span class="sc-cond-val">' + escapeHtml(c.value_text) + '</span>' : '') +
+        '</span></div>';
+    }).join('');
+    var head = stale
+      ? '<span class="sc-cl-sum stale" title="' + escapeHtml(scenarioStatus.stale_reason || '数据源暂不可用') + '">⚠️ 数据待更新</span>'
+      : '<span class="sc-cl-sum">已满足 <b>' + st.met_count + '/' + st.total + '</b> 条</span>';
+    return '<div class="sc-checklist">' +
+      '<div class="sc-cl-head"><span>触发条件清单</span>' + head + '</div>' +
+      rows +
+      (upd ? '<div class="sc-cl-upd">数据更新时间 ' + upd + '</div>' : '') +
+    '</div>';
+  }
+
+  // 只重渲染各卡片内的 checklist 区块，不重建整卡 DOM（保留用户展开的折叠区/选中态）
+  function refreshScenarioChecklists() {
+    if (viewingDate || !annotations) return;
+    var f = annotations.forecast;
+    var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
+    var cards = document.querySelectorAll('#scenarioCards .sc-card');
+    Array.prototype.forEach.call(cards, function (card) {
+      var idx = parseInt(card.getAttribute('data-idx'), 10);
+      var sc = scenarios[idx];
+      if (!sc) return;
+      var holder = card.querySelector('.sc-checklist-holder');
+      if (holder) holder.innerHTML = scenarioChecklistHtml(sc);
+    });
+  }
+
   function renderScenarioCards(a) {
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
@@ -1201,6 +1282,7 @@
           '<span class="sc-prob" title="置信度为模型主观评估，非历史统计概率">' + Math.round((sc.probability || 0) * 100) + '%</span></div>' +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + '</span>' +
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
+        '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>' +
         numsHtml +
         scenarioRulerHtml(sc, refPx) +
         (moreRows ? '<details class="sc-more"><summary>详情与备注</summary>' + moreRows + '</details>' : '') +
@@ -2388,6 +2470,16 @@
     applyRealtime(rt);
     scheduleRealtime();
   });
+
+  // 情景条件清单：首次拉取 + 每小时自动重新 fetch scenario_status.json 并重渲染
+  fetchScenarioStatus().then(function (s) {
+    if (s) { scenarioStatus = s; refreshScenarioChecklists(); }
+  });
+  setInterval(function () {
+    fetchScenarioStatus().then(function (s) {
+      if (s) { scenarioStatus = s; refreshScenarioChecklists(); }
+    });
+  }, 60 * 60 * 1000);
 })();
 </script>
 </body>

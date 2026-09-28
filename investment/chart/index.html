@@ -114,6 +114,18 @@
     .sc-cl-sum { white-space: nowrap; }
     .sc-cl-sum b { font-family: 'JetBrains Mono', monospace; color: var(--gold); }
     .sc-cl-sum.stale { color: var(--gold); }
+    /* core / confirm 条件分组（触发条件 vs 确认条件） */
+    .sc-cl-gh { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; color: var(--muted); margin: 7px 0 2px; opacity: 0.85; }
+    .sc-cl-group:first-of-type .sc-cl-gh { margin-top: 1px; }
+    /* 确认强度行（仅已触发时显示） */
+    .sc-strength { margin-top: 8px; padding-top: 7px; border-top: 1px dashed rgba(255,255,255,0.12); font-size: 11.5px; font-weight: 700; color: rgba(235,235,245,0.8); }
+    .sc-strength b { font-size: 12.5px; }
+    .sc-strength.strong b { color: var(--good); }
+    .sc-strength.mid b { color: var(--gold); }
+    .sc-strength.weak b { color: var(--gold); }
+    .sc-strength-tip { display: block; margin-top: 2px; font-size: 10.5px; font-weight: 600; color: var(--muted); line-height: 1.5; }
+    .sc-strength.strong .sc-strength-tip { color: rgba(50,215,75,0.8); }
+    .sc-strength.weak .sc-strength-tip { color: rgba(245,200,66,0.85); }
     .sc-cond { display: flex; gap: 6px; padding: 3px 0; align-items: flex-start; }
     .sc-cond-ic { flex: 0 0 auto; font-size: 12px; line-height: 1.5; }
     .sc-cond-body { min-width: 0; }
@@ -1203,7 +1215,24 @@
     return null;
   }
 
-  // checklist HTML：每条条件 ✅已满足 / ⬜未满足 / ⏳数据待更新 + 汇总「已满足 x/y 条」+ 数据更新时间
+  // 触发 badge：优先用 scenario_status.json 的 core 触发判定（core 全满足=已触发）；
+  // 无清单数据/历史回看时回退旧的价格近似判定（现价 vs rr.entry）。
+  function scenarioBadgeHtml(sc, refPx) {
+    var st = viewingDate ? null : statusForScenario(sc);
+    if (st && typeof st.core_total === 'number' && st.core_total > 0 &&
+        (st.triggered === true || st.triggered === false)) {
+      if (st.triggered) {
+        return '<span class="sc-status fired" title="核心结构条件（价格类）全部满足；量能/资金为确认项，见确认强度">🎯 已触发</span>';
+      }
+      return '<span class="sc-status wait" title="核心结构条件未全部满足">⏳ 未触发（core ' + st.core_met + '/' + st.core_total + '）</span>';
+    }
+    return scenarioTriggerState(sc, refPx) === 'fired'
+      ? '<span class="sc-status fired" title="当前价已触及入场价位（价格条件近似判定，量能/收盘确认仍需人工核实）">✅ 条件触发</span>'
+      : '<span class="sc-status wait" title="当前价未触及入场价位，或无可判定字段">⏳ 等待触发</span>';
+  }
+
+  // checklist HTML：每条条件 ✅已满足 / ⬜未满足 / ⏳数据待更新；
+  // core/confirm 分组展示（触发条件 / 确认条件）+ 已触发时显示确认强度（强/中/弱）。
   function scenarioChecklistHtml(sc) {
     if (viewingDate) return '';   // 历史回看模式不显示实时条件清单
     var st = statusForScenario(sc);
@@ -1214,7 +1243,7 @@
       var m = String(scenarioStatus.updated_at).match(/T(\d{2}:\d{2})/);
       if (m) upd = m[1];
     }
-    var rows = st.conditions.map(function (c) {
+    function rowHtml(c) {
       var met = c.met === true;
       var unknown = (c.met !== true && c.met !== false);   // 数据缺失/API失败 → 不打假勾
       var icon = met ? '✅' : (unknown ? '⏳' : '⬜');
@@ -1223,13 +1252,40 @@
         '<span class="sc-cond-body"><span class="sc-cond-label">' + escapeHtml(c.label || '') + '</span>' +
         (c.value_text ? '<span class="sc-cond-val">' + escapeHtml(c.value_text) + '</span>' : '') +
         '</span></div>';
-    }).join('');
-    var head = stale
-      ? '<span class="sc-cl-sum stale" title="' + escapeHtml(scenarioStatus.stale_reason || '数据源暂不可用') + '">⚠️ 数据待更新</span>'
-      : '<span class="sc-cl-sum">已满足 <b>' + st.met_count + '/' + st.total + '</b> 条</span>';
+    }
+    var hasRoles = st.conditions.some(function (c) { return c.role === 'confirm'; });
+    var body;
+    if (hasRoles) {
+      var coreRows = st.conditions.filter(function (c) { return c.role !== 'confirm'; }).map(rowHtml).join('');
+      var confRows = st.conditions.filter(function (c) { return c.role === 'confirm'; }).map(rowHtml).join('');
+      body =
+        '<div class="sc-cl-group"><div class="sc-cl-gh">触发条件（结构，全满足即触发）</div>' + coreRows + '</div>' +
+        (confRows ? '<div class="sc-cl-group"><div class="sc-cl-gh">确认条件（量能/资金，定确认强度）</div>' + confRows + '</div>' : '');
+    } else {
+      body = st.conditions.map(rowHtml).join('');
+    }
+    var head;
+    if (stale) {
+      head = '<span class="sc-cl-sum stale" title="' + escapeHtml(scenarioStatus.stale_reason || '数据源暂不可用') + '">⚠️ 数据待更新</span>';
+    } else if (hasRoles && typeof st.core_total === 'number') {
+      head = '<span class="sc-cl-sum">触发 <b>' + st.core_met + '/' + st.core_total + '</b> · 确认 <b>' + st.confirm_met + '/' + st.confirm_total + '</b></span>';
+    } else {
+      head = '<span class="sc-cl-sum">已满足 <b>' + st.met_count + '/' + st.total + '</b> 条</span>';
+    }
+    // 确认强度行：仅情景已触发且数据可用时显示
+    var strengthHtml = '';
+    if (!stale && st.triggered === true && typeof st.confirm_total === 'number' && st.confirm_total > 0) {
+      var s = st.strength || (st.confirm_met === st.confirm_total ? '强' : (st.confirm_met === 0 ? '弱' : '中'));
+      var scls = s === '强' ? 'strong' : (s === '中' ? 'mid' : 'weak');
+      var tip = s === '强' ? '结构+量资共振，高置信度'
+        : (s === '弱' ? '结构成立·量资未确认，轻仓试探级别' : '结构成立·量资部分确认，中等置信度');
+      strengthHtml = '<div class="sc-strength ' + scls + '">确认强度：<b>' + s + '</b>（确认条件 ' + st.confirm_met + '/' + st.confirm_total + '）' +
+        '<span class="sc-strength-tip">' + tip + '</span></div>';
+    }
     return '<div class="sc-checklist">' +
       '<div class="sc-cl-head"><span>触发条件清单</span>' + head + '</div>' +
-      rows +
+      body +
+      strengthHtml +
       (upd ? '<div class="sc-cl-upd">数据更新时间 ' + upd + '</div>' : '') +
     '</div>';
   }
@@ -1280,6 +1336,9 @@
       if (holder) holder.innerHTML = scenarioChecklistHtml(sc);
       var liveHolder = card.querySelector('.sc-live-rr-holder');
       if (liveHolder) liveHolder.innerHTML = scenarioLiveRRHtml(sc);
+      // 清单数据刷新后同步更新触发 badge（core 判定可能变化）
+      var badge = card.querySelector('.sc-status');
+      if (badge) badge.outerHTML = scenarioBadgeHtml(sc, scenarioRefPrice(f));
     });
   }
 
@@ -1299,10 +1358,7 @@
       card.style.setProperty('--sc-color', sc.color || 'rgba(235,235,245,0.5)');
       var rr = sc.rr || {};
       var hasRR = typeof rr.entry === 'number' && typeof rr.target === 'number' && typeof rr.stop === 'number';
-      var trigState = scenarioTriggerState(sc, refPx);
-      var badgeHtml = trigState === 'fired'
-        ? '<span class="sc-status fired" title="当前价已触及入场价位（价格条件近似判定，量能/收盘确认仍需人工核实）">✅ 条件触发</span>'
-        : '<span class="sc-status wait" title="当前价未触及入场价位，或无可判定字段">⏳ 等待触发</span>';
+      var badgeHtml = scenarioBadgeHtml(sc, refPx);
       var dir = rr.direction === 'short' ? 'short' : 'long';
       var dirTxt = dir === 'short' ? '做空' : '做多';
       // 关键价位数字组：入场 / 目标 / 止损（放大加粗，rr 缺失则不渲染）
@@ -1354,11 +1410,7 @@
       var sc = scenarios[idx];
       if (!sc) return;
       var badge = card.querySelector('.sc-status');
-      if (badge && sc.rr && typeof sc.rr.entry === 'number') {
-        var fired = scenarioTriggerState(sc, refPx) === 'fired';
-        badge.className = 'sc-status ' + (fired ? 'fired' : 'wait');
-        badge.textContent = fired ? '✅ 条件触发' : '⏳ 等待触发';
-      }
+      if (badge) badge.outerHTML = scenarioBadgeHtml(sc, refPx);
       var track = card.querySelector('.sc-track');
       var cursor = card.querySelector('.sc-cursor');
       if (track && cursor) {

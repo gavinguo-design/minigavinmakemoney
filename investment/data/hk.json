@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-29",
+    "hsi_close": 24500,
+    "hsi_change": -143,
+    "hsi_change_pct": -0.58,
+    "hsi_open": 24649,
+    "hsi_high": 24649,
+    "hsi_low": 24444,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "高开即回落收跌0.58%，平量阴线承接不足，RSI超卖禁追空；明日24444不破轻仓博反抽24555-24600",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 24444,
+    "resistance": 24555,
+    "southbound_flow": 1.68,
+    "signals": [
+      "RSI超卖",
+      "光头大阴线",
+      "平量下跌"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-25",
     "hsi_close": 24507,
     "hsi_change": -254,

@@ -1,95 +1,91 @@
 {
- "updated_at": "2026-09-28T16:30:00+08:00",
+ "updated_at": "2026-09-29T08:55:28+08:00",
  "judgment_mode": "close_final",
  "judgment_mode_note": "收盘定案：close_gte/close_lt 类条件已用收盘价确认",
- "data_stale": false,
- "stale_reason": null,
+ "data_stale": true,
+ "stale_reason": "行情数据失败: 今日 2026-09-29 无1分钟K线（非交易日？）",
  "conditions_date": "2026-09-29",
  "conditions_stale": false,
  "metrics": {
   "price": 24642.51,
-  "open": 24554.58,
-  "high": 24767.22,
-  "low": 24554.58,
-  "prev_close": 24510.09,
-  "update_time": "2026-09-28 16:00:00",
-  "volume_ratio": 0.99,
-  "today_turnover_yi": 1774.8,
-  "ref_turnover_yi": 1796.0,
-  "southbound_net_yi": -65.5
+  "open": 0.0,
+  "high": 0.0,
+  "low": 0.0,
+  "prev_close": 24642.51,
+  "update_time": "2026-09-28 16:00:00"
  },
  "scenarios": [
   {
    "name_prefix": "A",
-   "triggered": false,
-   "core_met": 1,
+   "triggered": null,
+   "core_met": 0,
    "core_total": 2,
    "confirm_met": 0,
    "confirm_total": 2,
    "strength": null,
-   "met_count": 1,
+   "met_count": 0,
    "total": 4,
    "conditions": [
     {
-     "id": "hold_low",
-     "label": "守住低点区 24,276–24,358（收盘不跌破 24,276）",
+     "id": "hold_gap_low",
+     "label": "守住 9/28 新上行缺口（收盘不跌破 24,537）",
      "role": "core",
-     "met": true,
-     "value_text": "收盘 24,643（已定案）· 盘中低点 24,555"
+     "met": null,
+     "value_text": "数据待更新"
     },
     {
      "id": "fill_gap",
      "label": "收盘收于缺口上沿 24,648 之上（收盘确认，摸高回落不算触发）",
      "role": "core",
-     "met": false,
-     "value_text": "收盘 24,643（已定案）· 盘中最高 24,767 · ⚠️ 临界，差 5 点"
+     "met": null,
+     "value_text": "数据待更新"
     },
     {
      "id": "vol_green",
      "label": "放量收阳（量比 ≥ 1.1 且收盘高于今日开盘）",
      "role": "confirm",
-     "met": false,
-     "value_text": "量比 0.99 · 今开 24,555 → 现价 24,643"
+     "met": null,
+     "value_text": "数据待更新"
     },
     {
      "id": "southbound",
      "label": "南向资金确认（净买 ≥ 30 亿）",
      "role": "confirm",
-     "met": false,
-     "value_text": "南向净买 -65.5 亿"
+     "met": null,
+     "value_text": "数据待更新"
     }
    ]
   },
   {
    "name_prefix": "B",
-   "triggered": true,
-   "core_met": 1,
+   "triggered": null,
+   "core_met": 0,
    "core_total": 1,
    "confirm_met": 0,
    "confirm_total": 1,
-   "strength": "弱",
-   "met_count": 1,
+   "strength": null,
+   "met_count": 0,
    "total": 2,
    "conditions": [
     {
      "id": "rej_gap",
-     "label": "冲高受阻：盘中触及 24,648 上方、但收盘收于其下方（受阻回落收盘确认）",
+     "label": "冲高受阻：盘中触及 24,648 上方、但收盘收于其下方（受阻回落收盘确认；9/28 已首现弱确认）",
      "role": "core",
-     "met": true,
-     "value_text": "盘中最高 24,767 · 收盘 24,643（已定案）"
+     "met": null,
+     "value_text": "数据待更新"
     },
     {
      "id": "low_vol",
      "label": "反弹无量（量比 < 0.9，弱势确认）",
      "role": "confirm",
-     "met": false,
-     "value_text": "量比 0.99"
+     "met": null,
+     "value_text": "数据待更新"
     }
    ]
   },
   {
    "name_prefix": "C",
-   "triggered": false,
+   "triggered": null,
    "core_met": 0,
    "core_total": 1,
    "confirm_met": 0,
@@ -102,22 +98,22 @@
      "id": "break_24276",
      "label": "收盘跌破 24,276（收盘确认，非盘中一过即算）",
      "role": "core",
-     "met": false,
-     "value_text": "收盘 24,643（已定案）"
+     "met": null,
+     "value_text": "数据待更新"
     },
     {
      "id": "break_24000",
      "label": "收盘跌破 24,000 整数关口（收盘确认）",
      "role": "confirm",
-     "met": false,
-     "value_text": "收盘 24,643（已定案）"
+     "met": null,
+     "value_text": "数据待更新"
     },
     {
      "id": "vol_down",
      "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收）",
      "role": "confirm",
-     "met": false,
-     "value_text": "量比 0.99 · 昨收 24,510 → 现价 24,643"
+     "met": null,
+     "value_text": "数据待更新"
     }
    ]
   }

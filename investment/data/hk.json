@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-30",
+    "hsi_close": 24613,
+    "hsi_change": 89,
+    "hsi_change_pct": 0.36,
+    "hsi_open": 24394,
+    "hsi_high": 24638,
+    "hsi_low": 24333,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "低开探24333深V收24613，刺透线+RSI超卖+南向66亿抢筹，平量未确认，明日国庆休市",
+    "rsi": 30,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 24444,
+    "resistance": 24638,
+    "southbound_flow": 66.11,
+    "signals": [
+      "刺透线",
+      "RSI超卖",
+      "南向66亿净买"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-29",
     "hsi_close": 24500,
     "hsi_change": -143,

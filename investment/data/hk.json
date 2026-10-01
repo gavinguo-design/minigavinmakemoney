@@ -1,5 +1,25 @@
 [
   {
+    "date": "2026-10-01",
+    "hsi_close": 24613,
+    "hsi_change": 89,
+    "hsi_change_pct": 0.36,
+    "hsi_open": 24394,
+    "hsi_high": 24638,
+    "hsi_low": 24333,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "今日国庆休市无交易，数据为9-30收盘快照；节后不追高，回踩24500-24555试多看24700-24800，破24444观望",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 24444,
+    "resistance": 24700,
+    "southbound_flow": 0,
+    "signals": [],
+    "chart_url": null
+  },
+  {
     "date": "2026-09-30",
     "hsi_close": 24613,
     "hsi_change": 89,

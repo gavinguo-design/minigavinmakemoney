@@ -325,8 +325,39 @@
     .fab-refresh.spinning .fab-icon { animation: fabspin 0.8s linear infinite; }
     @keyframes fabspin { to { transform: rotate(360deg); } }
 
-    /* 情景剧本适用日标注 */
-    .sc-applicable { font-size: 10.5px; color: rgba(235,235,245,0.4); margin: 3px 0 8px; }
+    /* 次日预案草稿（next_day_draft，非正式留痕） */
+    .nextdraft { background: var(--card); border: 1px solid rgba(255, 159, 10, 0.55); border-radius: 16px; padding: 13px 15px; margin-bottom: 14px; }
+    .nextdraft .nd-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .nextdraft .nd-title { font-size: 13px; font-weight: 700; color: #FF9F0A; }
+    .nextdraft .nd-badge { font-size: 10px; font-weight: 700; color: #FF9F0A; border: 1px solid rgba(255, 159, 10, 0.45); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+    .nextdraft .nd-note { font-size: 11px; color: rgba(235,235,245,0.45); margin: 0 0 10px; line-height: 1.5; }
+    .nextdraft .nd-line { font-size: 12px; color: rgba(235,235,245,0.75); line-height: 1.6; margin: 0 0 6px; }
+    .nextdraft .nd-line b { color: var(--text); font-weight: 600; }
+    .nextdraft .nd-scenarios { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin: 10px 0; }
+    .nextdraft .nd-sc { border: 1px solid var(--border); border-radius: 12px; padding: 10px 11px; background: rgba(255,255,255,0.03); }
+    .nextdraft .nd-sc h4 { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #FF9F0A; }
+    .nextdraft .nd-sc p { margin: 0 0 4px; font-size: 11px; line-height: 1.55; color: rgba(235,235,245,0.7); }
+    .nextdraft .nd-sc p b { color: rgba(235,235,245,0.9); font-weight: 600; }
+    .nextdraft .nd-src { font-size: 10px; color: rgba(235,235,245,0.3); margin: 8px 0 0; line-height: 1.5; }
+
+    /* 情景展示层切换（display-layer only，不动数据文件） */
+    .sc-settled-bar { background: rgba(255,159,10,0.06); border: 1px solid rgba(255,159,10,0.28); border-radius: 10px; padding: 8px 13px; margin-bottom: 10px; cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .sc-settled-bar:hover { border-color: rgba(255,159,10,0.5); }
+    .sc-settled-label { font-size: 12px; color: rgba(235,235,245,0.72); }
+    .sc-settled-toggle { color: #FF9F0A; font-size: 11.5px; white-space: nowrap; }
+    .sc-settled-old { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; opacity: 0.42; filter: grayscale(0.55); }
+    @media (max-width: 720px) { .sc-settled-old { grid-template-columns: 1fr; } }
+    .sc-card-settled { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; position: relative; }
+    .sc-card-settled::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: rgba(160,160,170,0.4); }
+    .sc-draft-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 4px 0 10px; }
+    .sc-draft-title { font-size: 13px; font-weight: 700; color: #FF9F0A; }
+    .sc-draft-meta { font-size: 10.5px; color: rgba(235,235,245,0.5); }
+    .sc-draft-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+    @media (max-width: 720px) { .sc-draft-grid { grid-template-columns: 1fr; } }
+    .sc-card-draft { position: relative; overflow: visible; background: var(--card); border: 1px solid rgba(255,159,10,0.4); border-radius: 16px; padding: 12px 14px; }
+    .sc-card-draft::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #FF9F0A; border-radius: 16px 0 0 16px; }
+    .sc-draft-corner { position: absolute; top: 8px; right: 8px; font-size: 9.5px; font-weight: 700; color: #FF9F0A; background: rgba(255,159,10,0.15); border: 1px solid rgba(255,159,10,0.45); border-radius: 6px; padding: 2px 7px; white-space: nowrap; z-index: 1; }
+    .sc-draft-advice { font-size: 12px; color: rgba(235,235,245,0.72); background: rgba(255,159,10,0.06); border: 1px solid rgba(255,159,10,0.22); border-radius: 8px; padding: 7px 12px; margin-bottom: 8px; line-height: 1.55; }
 
     /* playbook (条件式交易地图) */
     .playbook { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
@@ -807,6 +838,9 @@
     <!-- 盘中参考（intraday_playbook，字段缺失则隐藏） -->
     <div class="intraday hidden" id="intradayPanel"></div>
 
+    <!-- 次日预案草稿（next_day_draft，字段缺失则隐藏；非正式留痕，08:45盘前冻结后被正式版覆盖） -->
+    <div class="nextdraft hidden" id="nextDraftPanel"></div>
+
     <!-- Scenario cards（与情景区域联动） -->
     <div class="scenarios hidden" id="scenarioCards"></div>
     <p class="prob-note hidden" id="probNote">ℹ︎ 置信度为模型主观评估，非历史统计概率，样本积累后将改为统计命中率；图上半透明情景区域只表达方向与可能范围，不表示逐日价格路径；以条件地图为准。</p>
@@ -1181,6 +1215,13 @@
       hint.classList.remove('hidden'); simBadge.classList.add('hidden'); scheduleGutterRefresh(); return;
     }
     hint.classList.add('hidden'); simBadge.classList.remove('hidden');
+
+    // 结算后：当日正式情景已失效/过期，清空图上情景区域（不画旧的、不乱画草稿价位，避免误导）
+    if (isScenarioSettled(a)) {
+      simBadge.classList.add('hidden');
+      scheduleGutterRefresh();
+      return;
+    }
 
     // 情景区域锚点：最新模式=最后一根K线；历史回看模式=存档基准日K线（预测分界线画在那天）
     var fcAnchorIdx = anchorIndex(a, bars);
@@ -1732,33 +1773,121 @@
     });
   }
 
+// ---------- 情景展示层状态判断（display-layer only；不改 annotations.json） ----------
+  // 盘中（周一至五 09:30–16:10 北京时间）维持正式冻结 ABC 展示；其余时段（收盘后/盘前/周末）
+  // 若 next_day_draft 存在 → 判定「当日正式 ABC 已结算过期」，主卡区域切至草稿。
+  function isScenarioSettled(a) {
+    if (!a || !a.next_day_draft) return false;
+    if (viewingDate) return false;   // 历史回看不切换，保留当日原始留痕
+    var meta = a.meta || {};
+    if (String(meta.note || '').indexOf('盘后更新') !== -1) return true;
+    var now = new Date();
+    // 用 getTimezoneOffset 把本地时区折算到北京时间（+480 分钟）
+    var bj = new Date(now.getTime() + (480 + now.getTimezoneOffset()) * 60000);
+    var dow = bj.getDay();
+    if (dow === 0 || dow === 6) return true;
+    var mi = bj.getHours() * 60 + bj.getMinutes();
+    return mi < 570 || mi >= 970;    // < 09:30 或 ≥ 16:10
+  }
+
   function renderScenarioCards(a) {
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
     var wrap = el('scenarioCards');
     wrap.innerHTML = '';
+
+    // === 结算后展示切换：主位→次日草稿，正式ABC折叠 ===
+    if (isScenarioSettled(a)) {
+      var nd = a.next_day_draft;
+      var draftScs = Array.isArray(nd && nd.scenarios) ? nd.scenarios : [];
+      if (!draftScs.length && !scenarios.length) {
+        wrap.classList.add('hidden'); el('probNote').classList.add('hidden'); return;
+      }
+      wrap.classList.remove('hidden');
+      el('probNote').classList.add('hidden');
+
+      if (scenarios.length) {
+        var bar = document.createElement('div');
+        bar.className = 'sc-settled-bar';
+        var lbl = '今日情景已结算';
+        if (scenarioStatus && Array.isArray(scenarioStatus.scenarios)) {
+          var fired = scenarioStatus.scenarios.filter(function (s) { return s && s.triggered; });
+          if (fired.length) lbl += '（已触发 ' + fired.map(function (s) { return s.name_prefix; }).join('/') + '）';
+          else lbl += '（未触发/已失效）';
+        }
+        bar.innerHTML =
+          '<span class="sc-settled-label">📌 ' + escapeHtml(lbl) + '</span>' +
+          '<span class="sc-settled-toggle">点击回看 ▼</span>';
+        var oldGrid = document.createElement('div');
+        oldGrid.className = 'sc-settled-old hidden';
+        scenarios.forEach(function (sc, idx) {
+          var card = document.createElement('div');
+          card.className = 'sc-card-settled';
+          var moreRows =
+            (sc.target ? '<div class="sc-row">目标区：<b>' + escapeHtml(sc.target) + '</b></div>' : '') +
+            (sc.invalidation ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(sc.invalidation) + '</b></div>' : '');
+          card.innerHTML =
+            '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + '</span>' +
+            (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
+            (moreRows ? '<details class="sc-more"><summary>触发条件与失效线</summary>' + moreRows + '</details>' : '') +
+            '<div class="sc-row" style="font-size:11px;opacity:0.6">⏸ 已结算，仅留痕参考</div>';
+          oldGrid.appendChild(card);
+        });
+        bar.addEventListener('click', function () {
+          var hidden = oldGrid.classList.toggle('hidden');
+          var tog = bar.querySelector('.sc-settled-toggle');
+          if (tog) tog.textContent = hidden ? '点击回看 ▼' : '收起 ▲';
+        });
+        wrap.appendChild(bar);
+        wrap.appendChild(oldGrid);
+      }
+
+      if (draftScs.length) {
+        var head = document.createElement('div');
+        head.className = 'sc-draft-head';
+        var dstr = nd.draftFor
+          ? '面向 ' + cnDate(nd.draftFor) + '（' + weekdayOf(nd.draftFor) + '）'
+          : '次日预案';
+        head.innerHTML =
+          '<span class="sc-draft-title">📋 次日预案草稿</span>' +
+          '<span class="sc-draft-meta">' + escapeHtml(dstr) + ' · 08:45盘前冻结后转正</span>';
+        wrap.appendChild(head);
+
+        var grid = document.createElement('div');
+        grid.className = 'sc-draft-grid';
+        draftScs.forEach(function (s) {
+          var card = document.createElement('div');
+          card.className = 'sc-card-draft';
+          card.innerHTML =
+            '<div class="sc-draft-corner">📋 草稿 · 08:45转正</div>' +
+            '<span class="sc-name">' + escapeHtml((s.id ? s.id + ' · ' : '') + (s.label || '')) + '</span>' +
+            (s.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(s.trigger) + '</div>' : '') +
+            (s.action ? '<div class="sc-row"><b>动作：</b>' + escapeHtml(s.action) + '</div>' : '') +
+            (s.invalid ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(s.invalid) + '</b></div>' : '');
+          grid.appendChild(card);
+        });
+        wrap.appendChild(grid);
+
+        if (nd.positionAdvice) {
+          var adv = document.createElement('div');
+          adv.className = 'sc-draft-advice';
+          adv.textContent = '🎯 仓位：' + nd.positionAdvice;
+          wrap.appendChild(adv);
+        }
+        if (nd.overnight && nd.overnight.implication) {
+          var ov = document.createElement('div');
+          ov.className = 'sc-draft-advice';
+          ov.innerHTML = '🌙 隔夜：' + escapeHtml(nd.overnight.implication);
+          wrap.appendChild(ov);
+        }
+      }
+      return;
+    }
+
+    // === 盘中正常渲染正式冻结 ABC ===
     if (scenarios.length === 0) { wrap.classList.add('hidden'); el('probNote').classList.add('hidden'); return; }
     wrap.classList.remove('hidden');
     el('probNote').classList.remove('hidden');
-    // 适用日标注（盘后更新为次交易日剧本时展示，让用户明确看的是哪天的剧本）
-    var applicableDate = (f && f.applicable_date) || null;
-    var applicableEl = document.getElementById('scenarioApplicable');
-    if (!applicableEl) {
-      applicableEl = document.createElement('p');
-      applicableEl.id = 'scenarioApplicable';
-      applicableEl.className = 'sc-applicable';
-      wrap.parentNode.insertBefore(applicableEl, wrap);
-    }
-    if (applicableDate && !viewingDate) {
-      var ad = new Date(applicableDate + 'T00:00:00Z');
-      var wds = ['周日','周一','周二','周三','周四','周五','周六'][ad.getUTCDay()];
-      var adLabel = (ad.getUTCMonth()+1) + '月' + ad.getUTCDate() + '日';
-      var noteStr = (a && a.meta && a.meta.note) ? a.meta.note : '盘后更新';
-      applicableEl.textContent = '适用：' + adLabel + ' ' + wds + ' · ' + noteStr;
-      applicableEl.classList.remove('hidden');
-    } else {
-      if (applicableEl) applicableEl.classList.add('hidden');
-    }
     var refPx = scenarioRefPrice(f);
     scenarios.forEach(function (sc, idx) {
       var card = document.createElement('div');
@@ -1770,7 +1899,6 @@
       var badgeHtml = scenarioBadgeHtml(sc, refPx);
       var dir = rr.direction === 'short' ? 'short' : 'long';
       var dirTxt = dir === 'short' ? '做空' : '做多';
-      // 关键价位数字组：入场 / 目标 / 止损（放大加粗，rr 缺失则不渲染）
       var numsHtml = hasRR
         ? '<div class="sc-nums">' +
             '<div class="sc-num"><span>入场<span class="sc-dir ' + dir + '">·' + dirTxt + '</span></span><b>' + fmt(rr.entry) + '</b></div>' +
@@ -1778,7 +1906,6 @@
             '<div class="sc-num st"><span>止损</span><b>' + fmt(rr.stop) + '</b></div>' +
           '</div>'
         : '';
-      // 低密度补充信息折叠收纳（目标描述/失效条件/入场提示/备注）
       var moreRows =
         (sc.target ? '<div class="sc-row">目标区：<b>' + escapeHtml(sc.target) + '</b></div>' : '') +
         (sc.invalidation ? '<div class="sc-row invalid">失效：<b>' + escapeHtml(sc.invalidation) + '</b></div>' : '') +
@@ -1800,14 +1927,13 @@
         activeScenario = (activeScenario === idx) ? -1 : idx;
         applyScenarioVisibility();
       });
-      // 折叠区展开/收起不触发卡片选中切换
       var more = card.querySelector('details.sc-more');
       if (more) more.addEventListener('click', function (e) { e.stopPropagation(); });
       wrap.appendChild(card);
     });
   }
 
-  // 实时价变化时轻量刷新情景卡：只更新触发 badge 与标尺游标，不重建 DOM（保留用户展开的折叠区/选中态）
+    // 实时价变化时轻量刷新情景卡：只更新触发 badge 与标尺游标，不重建 DOM（保留用户展开的折叠区/选中态）
   function refreshScenarioLive() {
     if (viewingDate || !annotations) return;
     var f = annotations.forecast;
@@ -2872,6 +2998,59 @@
     }).catch(function () { return null; });
   }
 
+  // ---------- 次日预案草稿（next_day_draft，字段缺失则隐藏；与正式冻结情景严格隔离） ----------
+  function renderNextDayDraft(a) {
+    var box = el('nextDraftPanel');
+    if (!box) return;
+    var nd = a && a.next_day_draft;
+    // 结算后草稿已被提升到主情景卡区域展示，这里避免重复渲染
+    if (!nd || viewingDate || isScenarioSettled(a)) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+    var html = '';
+    html += '<div class="nd-head"><span class="nd-title">📋 次日预案草稿</span>';
+    if (nd.draftFor) html += '<span class="nd-badge">面向 ' + escapeHtml(cnDate(nd.draftFor)) + '（' + escapeHtml(weekdayOf(nd.draftFor)) + '）</span>';
+    html += '<span class="nd-badge">非正式留痕 · 08:45盘前冻结后更新</span></div>';
+    if (nd.note) html += '<p class="nd-note">' + escapeHtml(nd.note) + '</p>';
+    var tc = nd.todayClose || {};
+    if (tc.structureNote) {
+      var tcHead = '';
+      if (tc.price != null) {
+        tcHead = '收 <b>' + fmt(tc.price) + '</b>';
+        if (tc.change != null && tc.changePct != null) tcHead += '（' + (tc.change > 0 ? '+' : '') + fmt(tc.change) + '点 / ' + (tc.changePct > 0 ? '+' : '') + tc.changePct + '%）';
+        if (tc.volumeRatio != null) tcHead += ' · 量比 ' + tc.volumeRatio;
+        if (tc.rsi14 != null) tcHead += ' · RSI14 ' + tc.rsi14;
+        tcHead += ' · ';
+      }
+      html += '<p class="nd-line"><b>今日定位：</b>' + tcHead + escapeHtml(tc.structureNote) + '</p>';
+    }
+    var ov = nd.overnight || {};
+    if (ov.nfp || ov.implication) {
+      var parts = [];
+      if (ov.nfp) parts.push(escapeHtml(ov.nfp));
+      if (ov.fedExpectation) parts.push(escapeHtml(ov.fedExpectation));
+      if (ov.usEquities) parts.push(escapeHtml(ov.usEquities));
+      if (ov.bonds) parts.push(escapeHtml(ov.bonds));
+      if (ov.oil) parts.push(escapeHtml(ov.oil));
+      html += '<p class="nd-line"><b>隔夜：</b>' + parts.join('；') + '</p>';
+      if (ov.implication) html += '<p class="nd-line"><b>含义：</b>' + escapeHtml(ov.implication) + '</p>';
+    }
+    var scs = Array.isArray(nd.scenarios) ? nd.scenarios : [];
+    if (scs.length) {
+      html += '<div class="nd-scenarios">';
+      scs.forEach(function (s) {
+        html += '<div class="nd-sc"><h4>' + escapeHtml((s.id ? s.id + ' · ' : '') + (s.label || '')) + '</h4>';
+        if (s.trigger) html += '<p><b>触发：</b>' + escapeHtml(s.trigger) + '</p>';
+        if (s.action) html += '<p><b>动作：</b>' + escapeHtml(s.action) + '</p>';
+        if (s.invalid) html += '<p><b>失效：</b>' + escapeHtml(s.invalid) + '</p>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+    if (nd.positionAdvice) html += '<p class="nd-line"><b>仓位：</b>' + escapeHtml(nd.positionAdvice) + '</p>';
+    if (nd.dataSources) html += '<p class="nd-src">数据来源：' + escapeHtml(nd.dataSources) + '</p>';
+    box.innerHTML = html;
+    box.classList.remove('hidden');
+  }
+
   function applyAnnotations(a) {
     annotations = a;
     activeScenario = -1;
@@ -2884,6 +3063,7 @@
     renderScenarioCards(a);
     renderDisclaimer(a);
     renderIntradayPanel();
+    renderNextDayDraft(a);
     hideMarkerDetail();
     if (currentBars.length > 0 && a) {
       renderLevels(a, currentIv);

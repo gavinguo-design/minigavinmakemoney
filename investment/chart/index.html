@@ -563,6 +563,22 @@
       .zoom-btn { width: 38px; height: 38px; }
     }
 
+    /* 均线图例（右上角常驻，小字号不挡K线） */
+    .ma-legend {
+      position: absolute; right: 68px; top: 10px; z-index: 7;
+      font-size: 11px; line-height: 1.4; pointer-events: none;
+      background: rgba(13,13,15,0.55); border-radius: 5px;
+      padding: 2px 8px; font-family: 'JetBrains Mono', monospace;
+      display: flex; gap: 8px;
+    }
+    .ma-legend .ma5  { color: rgba(255,255,255,0.9); }
+    .ma-legend .ma10 { color: #f5c842; }
+    .ma-legend .ma20 { color: #0A84FF; }
+    .ma-legend .ma60 { color: #BF5AF2; }
+    @media (max-width: 640px) {
+      .ma-legend { font-size: 10px; gap: 6px; right: 62px; }
+    }
+
     /* 成交额/成交量图例（左下角常驻，标注量能柱口径与数据源） */
     .vol-legend {
       position: absolute; left: 10px; bottom: 34px; z-index: 5;
@@ -770,6 +786,7 @@
         <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
         <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（数据源尚未回填）</div>
         <div class="vol-legend hidden" id="volLegend"></div>
+        <div class="ma-legend" id="maLegend"><span class="ma5">MA5</span><span class="ma10">MA10</span><span class="ma20">MA20</span><span class="ma60">MA60</span></div>
         <div class="level-tip hidden" id="levelTip"></div>
         <div class="loading" id="loading">加载行情数据…</div>
         <div class="zoom-ctrl">
@@ -786,9 +803,6 @@
 
     <!-- 盘中参考（intraday_playbook，字段缺失则隐藏） -->
     <div class="intraday hidden" id="intradayPanel"></div>
-
-    <!-- 历史镜像（historical_mirror.json，fetch 失败整卡隐藏） -->
-    <div class="mirror hidden" id="mirrorCard"></div>
 
     <!-- Scenario cards（与情景区域联动） -->
     <div class="scenarios hidden" id="scenarioCards"></div>
@@ -833,6 +847,9 @@
 
       </div>
     </details>
+
+    <!-- 历史镜像（historical_mirror.json，fetch 失败整卡隐藏） -->
+    <div class="mirror hidden" id="mirrorCard"></div>
 
     <footer>
       <span id="disclaimerText">标注由 miniGG 维护 · 行情数据仅供参考，不构成投资建议</span><br/>
@@ -922,6 +939,38 @@
   });
   // top 0.82→0.86：成交量柱区域收窄，进一步降低与价格轴底部刻度重叠的概率
   chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.86, bottom: 0 }, visible: false });
+
+  // ---------- 均线 MA5/10/20/60（由已加载K线本地计算，不额外请求） ----------
+  var MA_DEFS = [
+    { period: 5,  color: 'rgba(255,255,255,0.9)' },  // MA5 白
+    { period: 10, color: '#f5c842' },                // MA10 黄
+    { period: 20, color: '#0A84FF' },                // MA20 蓝
+    { period: 60, color: '#BF5AF2' }                 // MA60 紫
+  ];
+  var maSeriesList = MA_DEFS.map(function (def) {
+    return chart.addLineSeries({
+      color: def.color, lineWidth: 1,
+      priceScaleId: 'right',
+      priceLineVisible: false, lastValueVisible: false,
+      crosshairMarkerVisible: false
+    });
+  });
+  function computeMA(bars, period) {
+    var out = [];
+    if (!bars || bars.length < period) return out;
+    var sum = 0;
+    for (var i = 0; i < bars.length; i++) {
+      sum += bars[i].close;
+      if (i >= period) sum -= bars[i - period].close;
+      if (i >= period - 1) out.push({ time: bars[i].time, value: round2(sum / period) });
+    }
+    return out;
+  }
+  function updateMALines(bars) {
+    MA_DEFS.forEach(function (def, idx) {
+      maSeriesList[idx].setData(computeMA(bars, def.period));
+    });
+  }
 
   function resizeChart() {
     chart.applyOptions({ width: chartEl.clientWidth, height: chartEl.clientHeight });
@@ -2021,6 +2070,8 @@
         volumeSeries.update({ time: bar.time, value: bar.volume, color: up ? 'rgba(255,69,58,0.5)' : 'rgba(50,215,75,0.5)' });
       }
     } catch (e) { /* 图表更新失败不影响页面其余部分 */ }
+    // 实时K线替换/追加后重算均线（纯计算，开销可忽略）
+    try { updateMALines(currentBars); } catch (e2) {}
     // 实时K线变化可能产生/取消最后一根的形态，重跑检测（纯计算，开销可忽略）
     computePatterns(currentIv, currentBars);
     applyAllMarkers();
@@ -2651,6 +2702,7 @@
       currentBars = result.bars;
       series.setData(currentBars);
       volumeSeries.setData(toVolumeData(currentBars));
+      updateMALines(currentBars);
       updateVolLegend(iv);
       eventChartMarkers = [];
       computePatterns(iv, currentBars);

@@ -273,17 +273,36 @@
     .id-title { font-size: 14px; font-weight: 800; color: #F5F5F7; }
     .id-tag { font-size: 10.5px; font-weight: 600; color: var(--gold); background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); border-radius: 5px; padding: 1px 6px; }
     .id-upd { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-    .id-zone { border: 1px solid var(--border); border-radius: 12px; padding: 9px 11px; margin-bottom: 7px; background: rgba(255,255,255,0.02); }
-    .id-zone:last-child { margin-bottom: 0; }
-    .id-zone.dim { opacity: 0.55; }
-    .id-zone.active { border-color: rgba(10,132,255,0.55); background: rgba(10,132,255,0.07); opacity: 1; box-shadow: 0 0 0 1px rgba(10,132,255,0.25); }
-    .id-zrange { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 700; color: #F5F5F7; }
-    .id-zone.dim .id-zrange { font-weight: 600; }
-    .id-stance { font-size: 10.5px; font-weight: 700; border-radius: 5px; padding: 1px 6px; margin-left: 6px; }
+    /* 横向区间条：低→高，从左到右；移动端可横向滚动 */
+    .id-stripwrap { overflow-x: auto; overflow-y: hidden; padding-top: 17px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+    .id-cells { display: flex; gap: 6px; min-width: max-content; }
+    .id-cell {
+      position: relative; flex: 1 0 auto; min-width: 100px;
+      border: 1px solid var(--border); border-radius: 10px; padding: 7px 9px 8px;
+      background: rgba(255,255,255,0.02); text-align: center; cursor: pointer;
+      transition: border-color 0.15s ease; -webkit-tap-highlight-color: transparent;
+    }
+    .id-cell.dim { opacity: 0.6; }
+    .id-cell.dim:hover { opacity: 1; border-color: rgba(255,255,255,0.2); }
+    .id-cell.sel { opacity: 1; border-color: rgba(255,255,255,0.35); }
+    .id-cell.active { opacity: 1; border-color: rgba(10,132,255,0.6); background: rgba(10,132,255,0.08); box-shadow: 0 0 0 1px rgba(10,132,255,0.3); }
+    .id-cur {
+      position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; font-weight: 700; color: var(--accent); white-space: nowrap; line-height: 1;
+    }
+    .id-zrange { display: block; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 700; color: #F5F5F7; white-space: nowrap; }
+    .id-stance { display: inline-block; font-size: 10px; font-weight: 700; border-radius: 5px; padding: 1px 6px; margin-top: 4px; }
     .id-stance.bear { color: #ff6b81; background: rgba(255,69,88,0.12); border: 1px solid rgba(255,69,88,0.35); }
     .id-stance.bull { color: var(--good, #32d74b); background: rgba(50,215,75,0.1); border: 1px solid rgba(50,215,75,0.3); }
     .id-stance.wait { color: var(--gold); background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); }
     .id-here { font-size: 10.5px; font-weight: 700; color: var(--accent); margin-left: 6px; }
+    /* 详情区：只展示当前/选中格的完整指引 */
+    .id-detail { margin-top: 9px; border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px; background: rgba(255,255,255,0.02); }
+    .id-detail.cur { border-color: rgba(10,132,255,0.4); background: rgba(10,132,255,0.05); }
+    .id-dhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+    .id-dhead .id-zrange { display: inline; font-size: 12.5px; }
+    .id-dhead .id-stance { margin-top: 0; }
+    .id-dnote { font-size: 10px; color: var(--muted); }
     .id-zbody { font-size: 12.5px; line-height: 1.65; color: rgba(235,235,245,0.75); margin-top: 5px; }
     .id-zbody b { color: #F5F5F7; }
     .id-row { margin-top: 4px; }
@@ -291,7 +310,6 @@
     .id-k.act { color: var(--accent); }
     .id-k.ent { color: var(--good, #32d74b); }
     .id-k.inv { color: #ff8c42; }
-    .id-dimline { font-size: 11.5px; color: rgba(235,235,245,0.5); line-height: 1.5; margin-top: 3px; }
     .id-foot { font-size: 10.5px; color: var(--muted); margin-top: 9px; line-height: 1.5; }
 
     /* 右下角悬浮刷新按钮 */
@@ -1287,6 +1305,9 @@
     return 'wait';
   }
 
+  var intradaySelIdx = null;     // 用户点选的格（排序后索引）；null = 跟随当前价所在格
+  var intradayLastActive = null; // 上次当前价所在格，仅在变化时自动滚动，避免打架用户手势
+
   function renderIntradayPanel() {
     var box = document.getElementById('intradayPanel');
     if (!box) return;
@@ -1295,6 +1316,20 @@
       box.classList.add('hidden'); box.innerHTML = ''; return;
     }
     var px = intradayRefPrice();
+    // 价格从低到高、从左到右排列（开放下限区间排最左）
+    var zones = ip.zones.filter(function (z) { return z && Array.isArray(z.range); }).slice()
+      .sort(function (a, b) {
+        var la = a.range[0] == null ? -Infinity : a.range[0];
+        var lb = b.range[0] == null ? -Infinity : b.range[0];
+        return la - lb;
+      });
+    if (!zones.length) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+    var activeIdx = -1;
+    if (px != null) {
+      for (var zi = 0; zi < zones.length; zi++) { if (zoneContains(zones[zi], px)) { activeIdx = zi; break; } }
+    }
+    var selIdx = (intradaySelIdx != null && intradaySelIdx >= 0 && intradaySelIdx < zones.length)
+      ? intradaySelIdx : (activeIdx >= 0 ? activeIdx : 0);
     var upd = '';
     var m = String(ip.updatedAt || '').match(/T(\d{2}:\d{2})/);
     if (m) upd = m[1];
@@ -1304,28 +1339,56 @@
       (upd ? '<span class="id-upd">更新于 ' + escapeHtml(upd) + '</span>' : '') +
       (px != null ? '<span class="id-upd">当前价 ' + fmt(Math.round(px)) + '</span>' : '') +
       '</div>';
-    ip.zones.forEach(function (z) {
-      if (!z || !Array.isArray(z.range)) return;
-      var active = (px != null) && zoneContains(z, px);
-      var head = '<span class="id-zrange">' + escapeHtml(zoneRangeText(z)) + '</span>' +
+    // 横向区间条
+    html += '<div class="id-stripwrap"><div class="id-cells">';
+    zones.forEach(function (z, i) {
+      var cls = 'id-cell' + (i === activeIdx ? ' active' : ' dim') + (i === selIdx && i !== activeIdx ? ' sel' : '');
+      html += '<div class="' + cls + '" data-zi="' + i + '">' +
+        (i === activeIdx ? '<span class="id-cur">▼ 当前价</span>' : '') +
+        '<span class="id-zrange">' + escapeHtml(zoneRangeText(z)) + '</span>' +
         '<span class="id-stance ' + stanceClass(z.stance) + '">' + escapeHtml(z.stance || '') + '</span>' +
-        (active ? '<span class="id-here">◀ 当前价在此区间</span>' : '');
-      if (active) {
-        html += '<div class="id-zone active">' + head +
-          '<div class="id-zbody">' +
-          (z.action ? '<div class="id-row"><span class="id-k act">做什么</span>' + escapeHtml(z.action) + '</div>' : '') +
-          (z.entry_hint ? '<div class="id-row"><span class="id-k ent">参与位</span>' + escapeHtml(z.entry_hint) + '</div>' : '') +
-          (z.invalid ? '<div class="id-row"><span class="id-k inv">失效位</span>' + escapeHtml(z.invalid) + '</div>' : '') +
-          '</div></div>';
-      } else {
-        html += '<div class="id-zone dim">' + head +
-          (z.action ? '<div class="id-dimline">' + escapeHtml(z.action) + '</div>' : '') +
-          '</div>';
-      }
+        '</div>';
     });
+    html += '</div></div>';
+    // 详情区：默认跟随当前价所在格，点其他格可切换查看
+    var dz = zones[selIdx];
+    if (dz) {
+      html += '<div class="id-detail' + (selIdx === activeIdx ? ' cur' : '') + '">' +
+        '<div class="id-dhead">' +
+        '<span class="id-zrange">' + escapeHtml(zoneRangeText(dz)) + '</span>' +
+        '<span class="id-stance ' + stanceClass(dz.stance) + '">' + escapeHtml(dz.stance || '') + '</span>' +
+        (selIdx === activeIdx
+          ? '<span class="id-here">◀ 当前价所在区间</span>'
+          : '<span class="id-dnote">非当前区间 · 点当前格或该格可切回</span>') +
+        '</div><div class="id-zbody">' +
+        (dz.action ? '<div class="id-row"><span class="id-k act">做什么</span>' + escapeHtml(dz.action) + '</div>' : '') +
+        (dz.entry_hint ? '<div class="id-row"><span class="id-k ent">参与位</span>' + escapeHtml(dz.entry_hint) + '</div>' : '') +
+        (dz.invalid ? '<div class="id-row"><span class="id-k inv">失效位</span>' + escapeHtml(dz.invalid) + '</div>' : '') +
+        '</div></div>';
+    }
     if (ip.note) html += '<div class="id-foot">⚠︎ ' + escapeHtml(ip.note) + '</div>';
     box.innerHTML = html;
     box.classList.remove('hidden');
+    // 点击格子切换详情；点回当前价所在格 = 恢复跟随模式
+    box.onclick = function (e) {
+      var t = e.target;
+      while (t && t !== box && !(t.getAttribute && t.getAttribute('data-zi') != null)) t = t.parentNode;
+      if (!t || t === box || !t.getAttribute) return;
+      var i = parseInt(t.getAttribute('data-zi'), 10);
+      if (isNaN(i)) return;
+      intradaySelIdx = (i === activeIdx) ? null : i;
+      renderIntradayPanel();
+    };
+    // 当前格默认滚到可视区（仅在 active 格变化时执行一次）
+    if (activeIdx >= 0 && activeIdx !== intradayLastActive) {
+      intradayLastActive = activeIdx;
+      var wrapEl = box.querySelector('.id-stripwrap');
+      var cellEl = box.querySelector('.id-cell.active');
+      if (wrapEl && cellEl && wrapEl.scrollWidth > wrapEl.clientWidth + 2) {
+        var left = cellEl.getBoundingClientRect().left - wrapEl.getBoundingClientRect().left + wrapEl.scrollLeft;
+        wrapEl.scrollLeft = Math.max(0, left - (wrapEl.clientWidth - cellEl.offsetWidth) / 2);
+      }
+    }
   }
 
   // ---------- 未来路径树 pathTree ----------

@@ -267,6 +267,46 @@
     .forecast .kv b { color: var(--text); font-weight: 600; }
     .forecast .kv.warn b { color: var(--bad); }
 
+    /* 盘中参考面板 intraday playbook */
+    .intraday { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 13px 15px; margin-bottom: 14px; }
+    .id-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin-bottom: 10px; }
+    .id-title { font-size: 14px; font-weight: 800; color: #F5F5F7; }
+    .id-tag { font-size: 10.5px; font-weight: 600; color: var(--gold); background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); border-radius: 5px; padding: 1px 6px; }
+    .id-upd { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .id-zone { border: 1px solid var(--border); border-radius: 12px; padding: 9px 11px; margin-bottom: 7px; background: rgba(255,255,255,0.02); }
+    .id-zone:last-child { margin-bottom: 0; }
+    .id-zone.dim { opacity: 0.55; }
+    .id-zone.active { border-color: rgba(10,132,255,0.55); background: rgba(10,132,255,0.07); opacity: 1; box-shadow: 0 0 0 1px rgba(10,132,255,0.25); }
+    .id-zrange { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 700; color: #F5F5F7; }
+    .id-zone.dim .id-zrange { font-weight: 600; }
+    .id-stance { font-size: 10.5px; font-weight: 700; border-radius: 5px; padding: 1px 6px; margin-left: 6px; }
+    .id-stance.bear { color: #ff6b81; background: rgba(255,69,88,0.12); border: 1px solid rgba(255,69,88,0.35); }
+    .id-stance.bull { color: var(--good, #32d74b); background: rgba(50,215,75,0.1); border: 1px solid rgba(50,215,75,0.3); }
+    .id-stance.wait { color: var(--gold); background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); }
+    .id-here { font-size: 10.5px; font-weight: 700; color: var(--accent); margin-left: 6px; }
+    .id-zbody { font-size: 12.5px; line-height: 1.65; color: rgba(235,235,245,0.75); margin-top: 5px; }
+    .id-zbody b { color: #F5F5F7; }
+    .id-row { margin-top: 4px; }
+    .id-k { font-size: 10.5px; font-weight: 700; flex-shrink: 0; margin-right: 5px; }
+    .id-k.act { color: var(--accent); }
+    .id-k.ent { color: var(--good, #32d74b); }
+    .id-k.inv { color: #ff8c42; }
+    .id-dimline { font-size: 11.5px; color: rgba(235,235,245,0.5); line-height: 1.5; margin-top: 3px; }
+    .id-foot { font-size: 10.5px; color: var(--muted); margin-top: 9px; line-height: 1.5; }
+
+    /* 右下角悬浮刷新按钮 */
+    .fab-refresh {
+      position: fixed; right: 16px; bottom: 20px; width: 52px; height: 52px;
+      border-radius: 50%; background: var(--card); border: 1px solid var(--border);
+      color: var(--accent); display: flex; align-items: center; justify-content: center;
+      font-size: 24px; line-height: 1; cursor: pointer; z-index: 80;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.5); user-select: none; -webkit-tap-highlight-color: transparent;
+    }
+    .fab-refresh:active { background: rgba(10,132,255,0.18); border-color: var(--accent); }
+    .fab-refresh .fab-icon { display: inline-block; }
+    .fab-refresh.spinning .fab-icon { animation: fabspin 0.8s linear infinite; }
+    @keyframes fabspin { to { transform: rotate(360deg); } }
+
     /* playbook (条件式交易地图) */
     .playbook { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
     .pb-item {
@@ -692,6 +732,9 @@
     <!-- Marker detail (click) -->
     <div class="detail hidden" id="markerDetail"></div>
 
+    <!-- 盘中参考（intraday_playbook，字段缺失则隐藏） -->
+    <div class="intraday hidden" id="intradayPanel"></div>
+
     <!-- Scenario cards（与情景区域联动） -->
     <div class="scenarios hidden" id="scenarioCards"></div>
     <p class="prob-note hidden" id="probNote">ℹ︎ 置信度为模型主观评估，非历史统计概率，样本积累后将改为统计命中率；图上半透明情景区域只表达方向与可能范围，不表示逐日价格路径；以条件地图为准。</p>
@@ -741,6 +784,9 @@
       <a href="/">minigavin · 投资雷达</a>
     </footer>
   </div>
+
+  <!-- 右下角悬浮刷新按钮 -->
+  <div class="fab-refresh" id="fabRefresh" title="刷新数据（标注/条件清单/K线/实时价）" role="button" aria-label="刷新数据"><span class="fab-icon">↻</span></div>
 
 <script>
 (function () {
@@ -1182,6 +1228,79 @@
     });
     wrap.classList.remove('hidden');
     title.classList.remove('hidden');
+  }
+
+  // ---------- 盘中参考面板（annotations.intraday_playbook，字段缺失则整个隐藏） ----------
+  // 当前价优先级：东财实时（新鲜）> scenario_status.metrics.price > 最新K线收盘
+  function intradayRefPrice() {
+    if (isRealtimeFresh() && typeof realtimeData.price === 'number' && realtimeData.price > 0) return realtimeData.price;
+    if (scenarioStatus && scenarioStatus.metrics && typeof scenarioStatus.metrics.price === 'number') return scenarioStatus.metrics.price;
+    if (currentBars.length) return currentBars[currentBars.length - 1].close;
+    return null;
+  }
+
+  // 区间匹配：lo ≤ px < hi；null 表示开放端，任何跳空价格都能落入某个区间
+  function zoneContains(z, px) {
+    if (!z || !Array.isArray(z.range)) return false;
+    var lo = z.range[0], hi = z.range[1];
+    if (lo != null && px < lo) return false;
+    if (hi != null && px >= hi) return false;
+    return true;
+  }
+
+  function zoneRangeText(z) {
+    var lo = z.range[0], hi = z.range[1];
+    if (lo == null && hi != null) return '< ' + fmt(hi);
+    if (lo != null && hi == null) return '≥ ' + fmt(lo);
+    return fmt(lo) + ' – ' + fmt(hi);
+  }
+
+  function stanceClass(st) {
+    var s = String(st || '');
+    if (s.indexOf('多') >= 0 && s.indexOf('空') < 0) return 'bull';
+    if (s.indexOf('空') >= 0) return 'bear';
+    return 'wait';
+  }
+
+  function renderIntradayPanel() {
+    var box = document.getElementById('intradayPanel');
+    if (!box) return;
+    var ip = latestAnnotations && latestAnnotations.intraday_playbook;
+    if (viewingDate || !ip || !Array.isArray(ip.zones) || !ip.zones.length) {
+      box.classList.add('hidden'); box.innerHTML = ''; return;
+    }
+    var px = intradayRefPrice();
+    var upd = '';
+    var m = String(ip.updatedAt || '').match(/T(\d{2}:\d{2})/);
+    if (m) upd = m[1];
+    var html = '<div class="id-head">' +
+      '<span class="id-title">🧭 盘中参考</span>' +
+      '<span class="id-tag">非收盘确认信号</span>' +
+      (upd ? '<span class="id-upd">更新于 ' + escapeHtml(upd) + '</span>' : '') +
+      (px != null ? '<span class="id-upd">当前价 ' + fmt(Math.round(px)) + '</span>' : '') +
+      '</div>';
+    ip.zones.forEach(function (z) {
+      if (!z || !Array.isArray(z.range)) return;
+      var active = (px != null) && zoneContains(z, px);
+      var head = '<span class="id-zrange">' + escapeHtml(zoneRangeText(z)) + '</span>' +
+        '<span class="id-stance ' + stanceClass(z.stance) + '">' + escapeHtml(z.stance || '') + '</span>' +
+        (active ? '<span class="id-here">◀ 当前价在此区间</span>' : '');
+      if (active) {
+        html += '<div class="id-zone active">' + head +
+          '<div class="id-zbody">' +
+          (z.action ? '<div class="id-row"><span class="id-k act">做什么</span>' + escapeHtml(z.action) + '</div>' : '') +
+          (z.entry_hint ? '<div class="id-row"><span class="id-k ent">参与位</span>' + escapeHtml(z.entry_hint) + '</div>' : '') +
+          (z.invalid ? '<div class="id-row"><span class="id-k inv">失效位</span>' + escapeHtml(z.invalid) + '</div>' : '') +
+          '</div></div>';
+      } else {
+        html += '<div class="id-zone dim">' + head +
+          (z.action ? '<div class="id-dimline">' + escapeHtml(z.action) + '</div>' : '') +
+          '</div>';
+      }
+    });
+    if (ip.note) html += '<div class="id-foot">⚠︎ ' + escapeHtml(ip.note) + '</div>';
+    box.innerHTML = html;
+    box.classList.remove('hidden');
   }
 
   // ---------- 未来路径树 pathTree ----------
@@ -1735,6 +1854,7 @@
     updateHeaderFromRealtime(rt);
     mergeRealtimeIntoChart(rt);
     refreshScenarioLive();
+    renderIntradayPanel(); // 实时价变化 → 重新匹配盘中参考区间
   }
 
   function updateHeaderFromRealtime(rt) {
@@ -2577,6 +2697,7 @@
     renderPathTree(a);
     renderScenarioCards(a);
     renderDisclaimer(a);
+    renderIntradayPanel();
     hideMarkerDetail();
     if (currentBars.length > 0 && a) {
       renderLevels(a, currentIv);
@@ -2759,13 +2880,57 @@
 
   // 情景条件清单：首次拉取 + 每小时自动重新 fetch scenario_status.json 并重渲染
   fetchScenarioStatus().then(function (s) {
-    if (s) { scenarioStatus = s; refreshScenarioChecklists(); }
+    if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
   });
   setInterval(function () {
     fetchScenarioStatus().then(function (s) {
-      if (s) { scenarioStatus = s; refreshScenarioChecklists(); }
+      if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
     });
   }, 60 * 60 * 1000);
+
+  // ---------- 右下角悬浮刷新按钮：重新 fetch 标注/条件清单/实时价/K线并重渲染 ----------
+  function refreshAllData() {
+    var fab = document.getElementById('fabRefresh');
+    if (!fab || fab.classList.contains('spinning')) return;
+    fab.classList.add('spinning');
+    var tasks = [
+      fetchAnnotations().then(function (a) {
+        if (a) { latestAnnotations = a; if (!viewingDate) applyAnnotations(a); }
+      }),
+      fetchScenarioStatus().then(function (s) {
+        if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
+      }),
+      fetchRealtime().then(function (rt) { applyRealtime(rt); })
+    ];
+    Promise.all(tasks.map(function (p) { return p.catch(function () {}); })).then(function () {
+      loadInterval(currentIv); // 重新拉K线（futu json 带 ?t= 防缓存，API 为动态接口）
+      setTimeout(function () { fab.classList.remove('spinning'); }, 700);
+    });
+  }
+  (function () {
+    var fab = document.getElementById('fabRefresh');
+    if (fab) fab.addEventListener('click', refreshAllData);
+  })();
+
+  // ---------- 交易时段自动静默刷新（周一至五 09:30–16:10 HKT，每5分钟） ----------
+  // 只刷标注/条件清单（静默、不重置视图）；实时价已有盘中30s轮询，不重复
+  function isHKSessionWindow() {
+    var now = new Date();
+    var hkt = new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
+    var dow = hkt.getDay();
+    if (dow === 0 || dow === 6) return false;
+    var mi = hkt.getHours() * 60 + hkt.getMinutes();
+    return mi >= 570 && mi <= 970; // 09:30–16:10
+  }
+  setInterval(function () {
+    if (!isHKSessionWindow()) return;
+    fetchAnnotations().then(function (a) {
+      if (a) { latestAnnotations = a; if (!viewingDate) applyAnnotations(a); }
+    });
+    fetchScenarioStatus().then(function (s) {
+      if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
+    });
+  }, 5 * 60 * 1000);
 })();
 </script>
 </body>

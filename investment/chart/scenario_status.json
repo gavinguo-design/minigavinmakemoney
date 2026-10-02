@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-02T15:30:16+08:00",
+ "updated_at": "2026-10-02T16:00:16+08:00",
  "judgment_mode": "intraday_preview",
  "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；此数据不构成操作信号",
  "data_stale": false,
@@ -7,15 +7,15 @@
  "conditions_date": "2026-10-02",
  "conditions_stale": false,
  "metrics": {
-  "price": 23931.73,
+  "price": 23945.02,
   "open": 24099.73,
   "high": 24099.73,
   "low": 23865.33,
   "prev_close": 24613.27,
-  "update_time": "2026-10-02 15:30:16",
-  "volume_ratio": 0.91,
-  "today_turnover_yi": 1237.6,
-  "ref_turnover_yi": 1366.5,
+  "update_time": "2026-10-02 16:00:00",
+  "volume_ratio": 0.85,
+  "today_turnover_yi": 1381.2,
+  "ref_turnover_yi": 1622.0,
   "southbound_net_yi": 68.6
  },
  "scenarios": [
@@ -42,14 +42,14 @@
      "label": "收盘收于缺口上沿 24,648 之上（收盘确认，摸高回落不算触发）",
      "role": "core",
      "met": false,
-     "value_text": "收盘 23,932（盘中近似）· 盘中最高 24,100"
+     "value_text": "收盘 23,945（盘中近似）· 盘中最高 24,100"
     },
     {
      "id": "vol_green",
      "label": "放量收阳（量比 ≥ 1.1 且收盘高于今日开盘）",
      "role": "confirm",
      "met": false,
-     "value_text": "量比 0.91 · 今开 24,100 → 现价 23,932"
+     "value_text": "量比 0.85 · 今开 24,100 → 现价 23,945"
     },
     {
      "id": "southbound",
@@ -65,10 +65,10 @@
    "triggered": true,
    "core_met": 1,
    "core_total": 1,
-   "confirm_met": 0,
+   "confirm_met": 1,
    "confirm_total": 1,
-   "strength": "弱",
-   "met_count": 1,
+   "strength": "强",
+   "met_count": 2,
    "total": 2,
    "conditions": [
     {
@@ -82,8 +82,8 @@
      "id": "low_vol",
      "label": "冲关无量/反抽无量（量比 < 0.9，弱势确认）",
      "role": "confirm",
-     "met": false,
-     "value_text": "量比 0.91"
+     "met": true,
+     "value_text": "量比 0.85"
     }
    ]
   },
@@ -103,21 +103,21 @@
      "label": "收盘跌破 24,276（9/25低点，收盘确认，非盘中一过即算）",
      "role": "core",
      "met": true,
-     "value_text": "收盘 23,932（盘中近似）"
+     "value_text": "收盘 23,945（盘中近似）"
     },
     {
      "id": "break_24000",
      "label": "收盘跌破 24,000 整数关口（收盘确认）",
      "role": "confirm",
      "met": true,
-     "value_text": "收盘 23,932（盘中近似）"
+     "value_text": "收盘 23,945（盘中近似）"
     },
     {
      "id": "vol_down",
      "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收）",
      "role": "confirm",
      "met": false,
-     "value_text": "量比 0.91 · 昨收 24,613 → 现价 23,932"
+     "value_text": "量比 0.85 · 昨收 24,613 → 现价 23,945"
     }
    ]
   }

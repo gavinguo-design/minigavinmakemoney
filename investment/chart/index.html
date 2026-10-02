@@ -507,19 +507,31 @@
     .sc-row.invalid b { color: var(--bad); }
     .sc-tip { font-size: 11px; color: rgba(235,235,245,0.3); margin-top: 7px; }
 
-    /* 结构状态横幅：全局判断常驻图表左上角，字号明显大于图内其他元素 */
+    /* 结构状态横幅：默认折叠为一行紧凑摘要，点击展开完整判断（永远默认折叠，不记忆状态） */
     .struct-banner {
       position: absolute; top: 10px; left: 12px; z-index: 8;
-      font-size: 15px; font-weight: 800; line-height: 1.4;
-      padding: 7px 14px; border-radius: 10px;
-      background: rgba(13,13,15,0.72); border: 1px solid var(--border);
-      pointer-events: none; max-width: 74%; letter-spacing: 0.01em;
+      font-size: 11.5px; font-weight: 700; line-height: 1.45;
+      padding: 4px 10px; border-radius: 8px;
+      background: rgba(13,13,15,0.78); border: 1px solid var(--border);
+      cursor: pointer; user-select: none; max-width: 70%;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      letter-spacing: 0.01em;
     }
+    .struct-banner .sbn-long, .struct-banner .sbn-full { display: none; }
+    .struct-banner .sbn-caret { margin-left: 6px; font-size: 10px; opacity: 0.65; color: var(--muted); }
+    .struct-banner.expanded {
+      white-space: normal; overflow: visible; text-overflow: clip;
+      max-width: 480px; font-size: 12px; line-height: 1.55; padding: 8px 12px;
+    }
+    .struct-banner.expanded .sbn-short { display: none; }
+    .struct-banner.expanded .sbn-long { display: inline; }
+    .struct-banner.expanded .sbn-full { display: block; margin-top: 5px; font-weight: 500; color: rgba(235,235,245,0.78); }
     .struct-banner.weak { color: var(--gold); border-color: rgba(245,200,66,0.5); }
     .struct-banner.bear { color: var(--down); border-color: rgba(50,215,75,0.5); }
     .struct-banner.bull { color: var(--up); border-color: rgba(255,69,58,0.5); }
     @media (max-width: 640px) {
-      .struct-banner { font-size: 13px; max-width: 84%; padding: 6px 11px; }
+      .struct-banner { font-size: 11px; max-width: 82%; }
+      .struct-banner.expanded { max-width: 92%; font-size: 11.5px; }
       .sim-badge { top: 56px; }
     }
 
@@ -2035,18 +2047,30 @@
     }).catch(function () { return null; });
   }
 
-  // ---------- 结构状态横幅（图表左上角常驻，全局信息最高视觉权重） ----------
-  // 内容：stateEmoji + stateLabel + structureLine（新增可选字段，一句结构描述；缺失时只显示 stateLabel）
+  // ---------- 结构状态横幅（图表左上角，默认折叠一行摘要，点击展开完整判断；永远默认折叠不记忆） ----------
+  // 内容：stateEmoji + stateLabel（折叠时多段取首尾段压缩）+ structureLine（仅展开可见）
   function renderStructBanner(a) {
     var box = el('structBanner');
     var f = a && a.forecast;
     var c = f && f.card;
-    if (!c || !(c.stateLabel || f.biasLabel)) { box.classList.add('hidden'); box.textContent = ''; return; }
+    if (!c || !(c.stateLabel || f.biasLabel)) { box.classList.add('hidden'); box.innerHTML = ''; box.onclick = null; return; }
     var toneCls = ({ weak: 'weak', bear: 'bear', bull: 'bull' })[c.stateTone] || 'weak';
-    var text = (c.stateEmoji ? c.stateEmoji + ' ' : '') + (c.stateLabel || f.biasLabel || '');
-    if (c.structureLine) text += ' · ' + c.structureLine;
-    box.className = 'struct-banner ' + toneCls;
-    box.textContent = text;
+    var emoji = c.stateEmoji ? c.stateEmoji + ' ' : '';
+    var label = c.stateLabel || f.biasLabel || '';
+    // 折叠摘要：label 多段时只保留首尾段（如「跳空破位 · C剧本运行」）
+    var parts = label.split(' · ');
+    var shortLabel = parts.length > 2 ? parts[0] + ' · ' + parts[parts.length - 1] : label;
+    box.className = 'struct-banner ' + toneCls; // 每次渲染重置为折叠态
+    box.innerHTML =
+      '<span class="sbn-short">' + escapeHtml(emoji + shortLabel) + '</span>' +
+      '<span class="sbn-long">' + escapeHtml(emoji + label) + '</span>' +
+      '<span class="sbn-caret">▸</span>' +
+      (c.structureLine ? '<span class="sbn-full">' + escapeHtml(c.structureLine) + '</span>' : '');
+    box.onclick = function () {
+      var open = box.classList.toggle('expanded');
+      var caret = box.querySelector('.sbn-caret');
+      if (caret) caret.textContent = open ? '▾' : '▸';
+    };
   }
 
   // ---------- 顶部状态条（极简一行：日期 + 偏向胶囊 + 当前价 + 关键区间；判断依据折叠收纳） ----------

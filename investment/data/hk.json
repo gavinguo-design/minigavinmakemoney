@@ -1,5 +1,28 @@
 [
   {
+    "date": "2026-10-02",
+    "hsi_close": 23945,
+    "hsi_change": -668,
+    "hsi_change_pct": -2.71,
+    "hsi_open": 24100,
+    "hsi_high": 24100,
+    "hsi_low": 23865,
+    "bias": "偏空",
+    "bias_color": "red",
+    "summary": "节后首日重挫668点(-2.71%)，长阴破位24444/24333，平量下跌承接不足，南向+68.6亿逆势抢筹，今晚非农定方向",
+    "rsi": 30,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 23865,
+    "resistance": 24333,
+    "southbound_flow": 68.64,
+    "signals": [
+      "RSI超卖",
+      "跳空低开长阴破位"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-10-01",
     "hsi_close": 24613,
     "hsi_change": 89,

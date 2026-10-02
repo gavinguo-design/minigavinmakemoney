@@ -325,20 +325,8 @@
     .fab-refresh.spinning .fab-icon { animation: fabspin 0.8s linear infinite; }
     @keyframes fabspin { to { transform: rotate(360deg); } }
 
-    /* 次日预案草稿（next_day_draft，非正式留痕） */
-    .nextdraft { background: var(--card); border: 1px solid rgba(255, 159, 10, 0.55); border-radius: 16px; padding: 13px 15px; margin-bottom: 14px; }
-    .nextdraft .nd-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-    .nextdraft .nd-title { font-size: 13px; font-weight: 700; color: #FF9F0A; }
-    .nextdraft .nd-badge { font-size: 10px; font-weight: 700; color: #FF9F0A; border: 1px solid rgba(255, 159, 10, 0.45); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
-    .nextdraft .nd-note { font-size: 11px; color: rgba(235,235,245,0.45); margin: 0 0 10px; line-height: 1.5; }
-    .nextdraft .nd-line { font-size: 12px; color: rgba(235,235,245,0.75); line-height: 1.6; margin: 0 0 6px; }
-    .nextdraft .nd-line b { color: var(--text); font-weight: 600; }
-    .nextdraft .nd-scenarios { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin: 10px 0; }
-    .nextdraft .nd-sc { border: 1px solid var(--border); border-radius: 12px; padding: 10px 11px; background: rgba(255,255,255,0.03); }
-    .nextdraft .nd-sc h4 { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #FF9F0A; }
-    .nextdraft .nd-sc p { margin: 0 0 4px; font-size: 11px; line-height: 1.55; color: rgba(235,235,245,0.7); }
-    .nextdraft .nd-sc p b { color: rgba(235,235,245,0.9); font-weight: 600; }
-    .nextdraft .nd-src { font-size: 10px; color: rgba(235,235,245,0.3); margin: 8px 0 0; line-height: 1.5; }
+    /* 情景剧本适用日标注 */
+    .sc-applicable { font-size: 10.5px; color: rgba(235,235,245,0.4); margin: 3px 0 8px; }
 
     /* playbook (条件式交易地图) */
     .playbook { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
@@ -818,9 +806,6 @@
 
     <!-- 盘中参考（intraday_playbook，字段缺失则隐藏） -->
     <div class="intraday hidden" id="intradayPanel"></div>
-
-    <!-- 次日预案草稿（next_day_draft，字段缺失则隐藏；非正式留痕，08:45盘前冻结后被正式版覆盖） -->
-    <div class="nextdraft hidden" id="nextDraftPanel"></div>
 
     <!-- Scenario cards（与情景区域联动） -->
     <div class="scenarios hidden" id="scenarioCards"></div>
@@ -1755,6 +1740,25 @@
     if (scenarios.length === 0) { wrap.classList.add('hidden'); el('probNote').classList.add('hidden'); return; }
     wrap.classList.remove('hidden');
     el('probNote').classList.remove('hidden');
+    // 适用日标注（盘后更新为次交易日剧本时展示，让用户明确看的是哪天的剧本）
+    var applicableDate = (f && f.applicable_date) || null;
+    var applicableEl = document.getElementById('scenarioApplicable');
+    if (!applicableEl) {
+      applicableEl = document.createElement('p');
+      applicableEl.id = 'scenarioApplicable';
+      applicableEl.className = 'sc-applicable';
+      wrap.parentNode.insertBefore(applicableEl, wrap);
+    }
+    if (applicableDate && !viewingDate) {
+      var ad = new Date(applicableDate + 'T00:00:00Z');
+      var wds = ['周日','周一','周二','周三','周四','周五','周六'][ad.getUTCDay()];
+      var adLabel = (ad.getUTCMonth()+1) + '月' + ad.getUTCDate() + '日';
+      var noteStr = (a && a.meta && a.meta.note) ? a.meta.note : '盘后更新';
+      applicableEl.textContent = '适用：' + adLabel + ' ' + wds + ' · ' + noteStr;
+      applicableEl.classList.remove('hidden');
+    } else {
+      if (applicableEl) applicableEl.classList.add('hidden');
+    }
     var refPx = scenarioRefPrice(f);
     scenarios.forEach(function (sc, idx) {
       var card = document.createElement('div');
@@ -2868,58 +2872,6 @@
     }).catch(function () { return null; });
   }
 
-  // ---------- 次日预案草稿（next_day_draft，字段缺失则隐藏；与正式冻结情景严格隔离） ----------
-  function renderNextDayDraft(a) {
-    var box = el('nextDraftPanel');
-    if (!box) return;
-    var nd = a && a.next_day_draft;
-    if (!nd || viewingDate) { box.classList.add('hidden'); box.innerHTML = ''; return; }
-    var html = '';
-    html += '<div class="nd-head"><span class="nd-title">📋 次日预案草稿</span>';
-    if (nd.draftFor) html += '<span class="nd-badge">面向 ' + escapeHtml(cnDate(nd.draftFor)) + '（' + escapeHtml(weekdayOf(nd.draftFor)) + '）</span>';
-    html += '<span class="nd-badge">非正式留痕 · 08:45盘前冻结后更新</span></div>';
-    if (nd.note) html += '<p class="nd-note">' + escapeHtml(nd.note) + '</p>';
-    var tc = nd.todayClose || {};
-    if (tc.structureNote) {
-      var tcHead = '';
-      if (tc.price != null) {
-        tcHead = '收 <b>' + fmt(tc.price) + '</b>';
-        if (tc.change != null && tc.changePct != null) tcHead += '（' + (tc.change > 0 ? '+' : '') + fmt(tc.change) + '点 / ' + (tc.changePct > 0 ? '+' : '') + tc.changePct + '%）';
-        if (tc.volumeRatio != null) tcHead += ' · 量比 ' + tc.volumeRatio;
-        if (tc.rsi14 != null) tcHead += ' · RSI14 ' + tc.rsi14;
-        tcHead += ' · ';
-      }
-      html += '<p class="nd-line"><b>今日定位：</b>' + tcHead + escapeHtml(tc.structureNote) + '</p>';
-    }
-    var ov = nd.overnight || {};
-    if (ov.nfp || ov.implication) {
-      var parts = [];
-      if (ov.nfp) parts.push(escapeHtml(ov.nfp));
-      if (ov.fedExpectation) parts.push(escapeHtml(ov.fedExpectation));
-      if (ov.usEquities) parts.push(escapeHtml(ov.usEquities));
-      if (ov.bonds) parts.push(escapeHtml(ov.bonds));
-      if (ov.oil) parts.push(escapeHtml(ov.oil));
-      html += '<p class="nd-line"><b>隔夜：</b>' + parts.join('；') + '</p>';
-      if (ov.implication) html += '<p class="nd-line"><b>含义：</b>' + escapeHtml(ov.implication) + '</p>';
-    }
-    var scs = Array.isArray(nd.scenarios) ? nd.scenarios : [];
-    if (scs.length) {
-      html += '<div class="nd-scenarios">';
-      scs.forEach(function (s) {
-        html += '<div class="nd-sc"><h4>' + escapeHtml((s.id ? s.id + ' · ' : '') + (s.label || '')) + '</h4>';
-        if (s.trigger) html += '<p><b>触发：</b>' + escapeHtml(s.trigger) + '</p>';
-        if (s.action) html += '<p><b>动作：</b>' + escapeHtml(s.action) + '</p>';
-        if (s.invalid) html += '<p><b>失效：</b>' + escapeHtml(s.invalid) + '</p>';
-        html += '</div>';
-      });
-      html += '</div>';
-    }
-    if (nd.positionAdvice) html += '<p class="nd-line"><b>仓位：</b>' + escapeHtml(nd.positionAdvice) + '</p>';
-    if (nd.dataSources) html += '<p class="nd-src">数据来源：' + escapeHtml(nd.dataSources) + '</p>';
-    box.innerHTML = html;
-    box.classList.remove('hidden');
-  }
-
   function applyAnnotations(a) {
     annotations = a;
     activeScenario = -1;
@@ -2932,7 +2884,6 @@
     renderScenarioCards(a);
     renderDisclaimer(a);
     renderIntradayPanel();
-    renderNextDayDraft(a);
     hideMarkerDetail();
     if (currentBars.length > 0 && a) {
       renderLevels(a, currentIv);

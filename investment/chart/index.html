@@ -440,6 +440,28 @@
 
     .prob-note { font-size: 11px; color: var(--muted); margin: 6px 4px 12px; }
 
+    /* 历史镜像卡片（historical_mirror.json，cron 每小时更新） */
+    .mirror { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 13px 15px; margin-bottom: 14px; }
+    .mirror-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .mirror-title { font-size: 15px; font-weight: 800; }
+    .mirror-meta { font-size: 10.5px; color: var(--muted); }
+    .mirror-label { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+    .mirror-tag { font-size: 11px; font-weight: 700; color: rgba(235,235,245,0.85); background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 999px; padding: 3px 9px; }
+    .mirror-tag.bucket { color: var(--accent); background: rgba(10,132,255,0.1); border-color: rgba(10,132,255,0.35); }
+    .mirror-warn { margin-top: 8px; font-size: 11.5px; font-weight: 700; color: var(--gold); background: rgba(245,200,66,0.1); border: 1px dashed rgba(245,200,66,0.5); border-radius: 8px; padding: 5px 10px; }
+    .mirror-stats { margin-top: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    @media (max-width: 640px) { .mirror-stats { grid-template-columns: repeat(2, 1fr); } }
+    .mirror-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; padding: 7px 9px; }
+    .mirror-stat .k { font-size: 10px; color: var(--muted); font-weight: 600; }
+    .mirror-stat .v { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; margin-top: 2px; }
+    .mirror-list { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px; }
+    .mirror-row { display: flex; align-items: baseline; gap: 8px; font-size: 11.5px; padding: 3px 0; flex-wrap: wrap; }
+    .mirror-row .md { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: rgba(255,255,255,0.85); min-width: 86px; }
+    .mirror-row .ms { font-size: 10px; color: var(--muted); min-width: 56px; }
+    .mirror-row .mv { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+    .mirror-more { margin-top: 6px; font-size: 11px; font-weight: 700; color: var(--accent); cursor: pointer; user-select: none; display: inline-block; }
+    .mirror-note { margin-top: 8px; font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+
     /* scenario cards */
     .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
     @media (max-width: 720px) { .scenarios { grid-template-columns: 1fr; } }
@@ -734,6 +756,9 @@
 
     <!-- 盘中参考（intraday_playbook，字段缺失则隐藏） -->
     <div class="intraday hidden" id="intradayPanel"></div>
+
+    <!-- 历史镜像（historical_mirror.json，fetch 失败整卡隐藏） -->
+    <div class="mirror hidden" id="mirrorCard"></div>
 
     <!-- Scenario cards（与情景区域联动） -->
     <div class="scenarios hidden" id="scenarioCards"></div>
@@ -2878,6 +2903,87 @@
     scheduleRealtime();
   });
 
+  // ---------- 历史镜像卡片（historical_mirror.json，cron 每小时更新） ----------
+  // 今日盘面特征 vs 历史同状态交易日的后续走势统计；fetch 失败/文件不存在整卡隐藏
+  var mirrorExpanded = false;
+  function fetchMirror() {
+    return fetch('historical_mirror.json?t=' + Date.now()).then(function (r) {
+      if (!r.ok) throw new Error('mirror http ' + r.status);
+      return r.json();
+    }).catch(function () { return null; });
+  }
+  function mirrorPct(v, digits) {
+    if (v === null || v === undefined) return '<span class="flat">--</span>';
+    var cls = v > 0 ? 'up' : (v < 0 ? 'down' : 'flat');
+    return '<span class="' + cls + '">' + (v > 0 ? '+' : '') + v.toFixed(digits === undefined ? 2 : digits) + '%</span>';
+  }
+  function renderMirror(m) {
+    var box = document.getElementById('mirrorCard');
+    if (!box) return;
+    if (!m || typeof m.sample_count !== 'number') { box.classList.add('hidden'); return; }
+    var n = m.sample_count;
+    var tf = m.today_features || {};
+    var stats = m.stats || {};
+    var html = '<div class="mirror-head">' +
+      '<span class="mirror-title">🪞 历史镜像 <small style="font-size:10.5px;font-weight:400;color:rgba(235,235,245,0.5)">共 ' + n + ' 个同类样本 · 概率参考非信号</small></span>' +
+      '<span class="mirror-meta">' + (m.data_range ? '样本区间 ' + m.data_range : '') + (m.updated_at ? ' · 更新 ' + String(m.updated_at).slice(5, 16) : '') + '</span>' +
+      '</div>';
+    var tags = [];
+    if (tf.label) {
+      String(tf.label).split(' + ').forEach(function (t) { tags.push('<span class="mirror-tag">' + t + '</span>'); });
+    }
+    if (tf.bucket) tags.push('<span class="mirror-tag bucket">状态桶：' + tf.bucket + '</span>');
+    if (tags.length) html += '<div class="mirror-label">' + tags.join('') + '</div>';
+    if (n < 10) html += '<div class="mirror-warn">⚠️ 样本量偏少（N=' + n + '），统计参考意义有限</div>';
+    if (n > 0) {
+      var prob = (stats.next_1d_up_prob === null || stats.next_1d_up_prob === undefined) ? null : Math.round(stats.next_1d_up_prob * 100);
+      html += '<div class="mirror-stats">' +
+        '<div class="mirror-stat"><div class="k">次日上涨概率</div><div class="v">' + (prob === null ? '--' : '<span class="' + (prob >= 50 ? 'up' : 'down') + '">' + prob + '%</span>') + '</div></div>' +
+        '<div class="mirror-stat"><div class="k">次日中位</div><div class="v">' + mirrorPct(stats.next_1d_median) + '</div></div>' +
+        '<div class="mirror-stat"><div class="k">3日中位</div><div class="v">' + mirrorPct(stats.next_3d_median) + '</div></div>' +
+        '<div class="mirror-stat"><div class="k">5日中位</div><div class="v">' + mirrorPct(stats.next_5d_median) + '</div></div>' +
+        '<div class="mirror-stat"><div class="k">次日最大反抽中位</div><div class="v">' + mirrorPct(stats.max_rebound_median) + '</div></div>' +
+        '<div class="mirror-stat"><div class="k">次日最大下探中位</div><div class="v">' + mirrorPct(stats.max_drawdown_median) + '</div></div>' +
+        '</div>';
+    }
+    var list = Array.isArray(m.matches) ? m.matches : [];
+    if (list.length) {
+      var shown = mirrorExpanded ? list : list.slice(0, 5);
+      html += '<div class="mirror-list">';
+      shown.forEach(function (it) {
+        html += '<div class="mirror-row">' +
+          '<span class="md">' + it.date + '</span>' +
+          '<span class="ms">相似度 ' + (it.similarity === null || it.similarity === undefined ? '--' : it.similarity) + '</span>' +
+          '<span class="mv">次日 ' + mirrorPct(it.next_1d) + '</span>' +
+          '<span class="mv">3日 ' + mirrorPct(it.next_3d) + '</span>' +
+          '<span class="mv">5日 ' + mirrorPct(it.next_5d) + '</span>' +
+          '<span class="mv">反抽 ' + mirrorPct(it.max_rebound) + '</span>' +
+          '<span class="mv">下探 ' + mirrorPct(it.max_drawdown) + '</span>' +
+          '</div>';
+      });
+      html += '</div>';
+      if (list.length > 5) {
+        html += '<span class="mirror-more" id="mirrorMore">' + (mirrorExpanded ? '收起 ▲' : '展开全部 ' + list.length + ' 条 ▼') + '</span>';
+      }
+    }
+    if (m.honesty_note) html += '<div class="mirror-note">' + m.honesty_note + '</div>';
+    box.innerHTML = html;
+    box.classList.remove('hidden');
+    var more = document.getElementById('mirrorMore');
+    if (more) {
+      more.addEventListener('click', function () {
+        mirrorExpanded = !mirrorExpanded;
+        renderMirror(m);
+      });
+    }
+  }
+  var mirrorData = null;
+  function refreshMirror() {
+    return fetchMirror().then(function (m) { if (m) { mirrorData = m; } renderMirror(mirrorData); });
+  }
+  refreshMirror();
+  setInterval(refreshMirror, 60 * 60 * 1000);
+
   // 情景条件清单：首次拉取 + 每小时自动重新 fetch scenario_status.json 并重渲染
   fetchScenarioStatus().then(function (s) {
     if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
@@ -2900,7 +3006,8 @@
       fetchScenarioStatus().then(function (s) {
         if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
       }),
-      fetchRealtime().then(function (rt) { applyRealtime(rt); })
+      fetchRealtime().then(function (rt) { applyRealtime(rt); }),
+      refreshMirror()
     ];
     Promise.all(tasks.map(function (p) { return p.catch(function () {}); })).then(function () {
       loadInterval(currentIv); // 重新拉K线（futu json 带 ?t= 防缓存，API 为动态接口）

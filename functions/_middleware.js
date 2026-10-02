@@ -9,6 +9,7 @@
 //       /chart/annotations.json
 //       /chart/scenario_status.json  scenario trigger checklist (hourly cron data)
 //       /chart/kline_futu.json       futu-sourced daily K-line static data (cron pushed)
+//       /chart/historical_mirror.json  historical mirror stats (cron pushed)
 //       /chart/archive/*      frozen daily snapshots (read-only history)
 //       /chart/predictions/*  prediction log (public track record data)
 //
@@ -35,6 +36,7 @@ const WHITELIST_EXACT = new Set([
   '/chart/annotations.json',
   '/chart/scenario_status.json',
   '/chart/kline_futu.json',
+  '/chart/historical_mirror.json',
 ]);
 
 const WHITELIST_PREFIX = [

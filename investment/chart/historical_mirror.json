@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-02 19:55:53",
+  "updated_at": "2026-10-03 10:58:45",
   "basis_date": "2026-10-02",
   "source": "futu(HK.800000)",
   "today_features": {
@@ -12,33 +12,43 @@
     "dist_ma20_pct": -3.54,
     "rsi14": 31.8,
     "close_pos": 0.46,
-    "trend_5d": -3.19
+    "trend_5d": -3.19,
+    "seq_5d": [
+      {
+        "date": "2026-09-25",
+        "day_chg_pct": -1.01,
+        "volume_ratio": 0.48
+      },
+      {
+        "date": "2026-09-28",
+        "day_chg_pct": 0.54,
+        "volume_ratio": 0.99
+      },
+      {
+        "date": "2026-09-29",
+        "day_chg_pct": -0.48,
+        "volume_ratio": 1.06
+      },
+      {
+        "date": "2026-09-30",
+        "day_chg_pct": 0.37,
+        "volume_ratio": 1.16
+      },
+      {
+        "date": "2026-10-02",
+        "day_chg_pct": -2.6,
+        "volume_ratio": 0.9
+      }
+    ]
   },
   "sample_count": 15,
   "data_range": "2006-2026",
-  "total_bars": 4935,
+  "total_bars": 4934,
   "matches": [
     {
-      "date": "2022-04-19",
-      "similarity": 57.0,
-      "next_1d": -0.4,
-      "next_3d": -1.85,
-      "next_5d": -5.2,
-      "max_rebound": 0.89,
-      "max_drawdown": -0.66
-    },
-    {
-      "date": "2009-06-23",
-      "similarity": 56.4,
-      "next_1d": 2.02,
-      "next_3d": 6.05,
-      "next_5d": 4.79,
-      "max_rebound": 2.13,
-      "max_drawdown": -0.31
-    },
-    {
       "date": "2009-09-02",
-      "similarity": 54.7,
+      "similarity": 61.4,
+      "seq_corr": 0.65,
       "next_1d": 1.23,
       "next_3d": 5.67,
       "next_5d": 6.81,
@@ -46,17 +56,9 @@
       "max_drawdown": 0.03
     },
     {
-      "date": "2009-02-20",
-      "similarity": 47.4,
-      "next_1d": 3.75,
-      "next_3d": 2.41,
-      "next_5d": 0.89,
-      "max_rebound": 4.01,
-      "max_drawdown": 0.62
-    },
-    {
       "date": "2019-03-25",
-      "similarity": 47.0,
+      "similarity": 60.8,
+      "seq_corr": 0.73,
       "next_1d": 0.15,
       "next_3d": 0.88,
       "next_5d": 3.64,
@@ -64,62 +66,19 @@
       "max_drawdown": -0.31
     },
     {
-      "date": "2023-03-16",
-      "similarity": 46.9,
-      "next_1d": 1.64,
-      "next_3d": 0.29,
-      "next_5d": 4.4,
-      "max_rebound": 2.05,
-      "max_drawdown": 0.52
-    },
-    {
-      "date": "2011-03-17",
-      "similarity": 46.2,
-      "next_1d": 0.07,
-      "next_3d": 2.57,
-      "next_5d": 2.83,
-      "max_rebound": 0.81,
-      "max_drawdown": -0.05
-    },
-    {
-      "date": "2007-11-08",
-      "similarity": 45.6,
-      "next_1d": 0.08,
-      "next_3d": -3.33,
-      "next_5d": -0.03,
-      "max_rebound": 1.7,
-      "max_drawdown": -1.22
-    },
-    {
-      "date": "2022-07-11",
-      "similarity": 44.7,
-      "next_1d": -1.32,
-      "next_3d": -1.77,
-      "next_5d": -1.32,
-      "max_rebound": -0.19,
-      "max_drawdown": -1.63
-    },
-    {
-      "date": "2022-01-27",
-      "similarity": 44.5,
-      "next_1d": -1.08,
-      "next_3d": 3.22,
-      "next_5d": 2.19,
-      "max_rebound": 0.17,
-      "max_drawdown": -1.26
-    },
-    {
-      "date": "2007-08-06",
-      "similarity": 44.0,
-      "next_1d": -0.13,
-      "next_3d": 2.29,
-      "next_5d": -0.21,
-      "max_rebound": 1.1,
-      "max_drawdown": -0.47
+      "date": "2009-06-23",
+      "similarity": 59.7,
+      "seq_corr": 0.58,
+      "next_1d": 2.02,
+      "next_3d": 6.05,
+      "next_5d": 4.79,
+      "max_rebound": 2.13,
+      "max_drawdown": -0.31
     },
     {
       "date": "2010-05-19",
-      "similarity": 42.8,
+      "similarity": 57.7,
+      "seq_corr": 0.3,
       "next_1d": -0.17,
       "next_3d": -3.03,
       "next_5d": -0.75,
@@ -127,8 +86,59 @@
       "max_drawdown": -1.55
     },
     {
+      "date": "2020-04-01",
+      "similarity": 57.7,
+      "seq_corr": 0.85,
+      "next_1d": 0.84,
+      "next_3d": 2.87,
+      "next_5d": 3.83,
+      "max_rebound": 0.84,
+      "max_drawdown": -1.43
+    },
+    {
+      "date": "2021-11-05",
+      "similarity": 57.3,
+      "seq_corr": 0.86,
+      "next_1d": -0.43,
+      "next_3d": 0.51,
+      "next_5d": 1.84,
+      "max_rebound": -0.13,
+      "max_drawdown": -0.95
+    },
+    {
+      "date": "2022-04-19",
+      "similarity": 57.2,
+      "seq_corr": 0.78,
+      "next_1d": -0.4,
+      "next_3d": -1.85,
+      "next_5d": -5.2,
+      "max_rebound": 0.89,
+      "max_drawdown": -0.66
+    },
+    {
+      "date": "2022-08-02",
+      "similarity": 57.1,
+      "seq_corr": 0.79,
+      "next_1d": 0.4,
+      "next_3d": 2.6,
+      "next_5d": 1.6,
+      "max_rebound": 1.18,
+      "max_drawdown": -0.02
+    },
+    {
+      "date": "2010-05-03",
+      "similarity": 57.0,
+      "seq_corr": 0.46,
+      "next_1d": -0.23,
+      "next_3d": -3.26,
+      "next_5d": -1.85,
+      "max_rebound": 0.96,
+      "max_drawdown": -0.33
+    },
+    {
       "date": "2019-11-13",
-      "similarity": 42.5,
+      "similarity": 57.0,
+      "seq_corr": 0.37,
       "next_1d": -0.93,
       "next_3d": 0.41,
       "next_5d": 1.2,
@@ -136,31 +146,63 @@
       "max_drawdown": -1.38
     },
     {
-      "date": "2018-03-02",
-      "similarity": 42.3,
-      "next_1d": -2.28,
-      "next_3d": -1.26,
-      "next_5d": 1.35,
-      "max_rebound": 0.31,
-      "max_drawdown": -2.39
+      "date": "2021-09-20",
+      "similarity": 57.0,
+      "seq_corr": 0.7,
+      "next_1d": 0.51,
+      "next_3d": 0.39,
+      "next_5d": 1.66,
+      "max_rebound": 0.77,
+      "max_drawdown": -1.36
     },
     {
-      "date": "2023-07-24",
-      "similarity": 42.2,
-      "next_1d": 4.1,
-      "next_3d": 5.2,
-      "next_5d": 7.56,
-      "max_rebound": 4.27,
-      "max_drawdown": 2.38
+      "date": "2019-07-31",
+      "similarity": 56.4,
+      "seq_corr": 0.47,
+      "next_1d": -0.76,
+      "next_3d": -5.86,
+      "next_5d": -6.41,
+      "max_rebound": -0.09,
+      "max_drawdown": -1.01
+    },
+    {
+      "date": "2009-07-06",
+      "similarity": 56.3,
+      "seq_corr": 0.56,
+      "next_1d": -0.65,
+      "next_3d": -1.05,
+      "next_5d": -4.03,
+      "max_rebound": 1.0,
+      "max_drawdown": -0.88
+    },
+    {
+      "date": "2026-02-06",
+      "similarity": 56.0,
+      "seq_corr": 0.66,
+      "next_1d": 1.76,
+      "next_3d": 2.66,
+      "next_5d": 0.03,
+      "max_rebound": 2.08,
+      "max_drawdown": 1.2
+    },
+    {
+      "date": "2009-02-20",
+      "similarity": 55.8,
+      "seq_corr": 0.09,
+      "next_1d": 3.75,
+      "next_3d": 2.41,
+      "next_5d": 0.89,
+      "max_rebound": 4.01,
+      "max_drawdown": 0.62
     }
   ],
   "stats": {
     "next_1d_up_prob": 0.53,
-    "next_1d_median": 0.07,
-    "next_3d_median": 0.88,
-    "next_5d_median": 1.35,
+    "next_1d_median": 0.15,
+    "next_3d_median": 0.51,
+    "next_5d_median": 1.2,
     "max_rebound_median": 0.89,
-    "max_drawdown_median": -0.47
+    "max_drawdown_median": -0.66
   },
-  "honesty_note": "样本N=15，N<10时统计参考意义有限；匹配基于 2006-09-18~2026-10-02 共4935个交易日；概率参考非信号"
+  "honesty_note": "匹配方法：前5日逐日序列（涨跌/量比/收盘位/MA20距离，20维）+ 当日特征（6维），权重60%/40%，5日涨跌形状相关 r≥0 过滤；样本N=15，N<10时统计参考意义有限；匹配基于 2006-09-19~2026-10-02 共4934个交易日；概率参考非信号"
 }

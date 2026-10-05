@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-05T12:00:23+08:00",
+ "updated_at": "2026-10-05T12:30:21+08:00",
  "judgment_mode": "intraday_preview",
  "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；此数据不构成操作信号",
  "data_stale": false,

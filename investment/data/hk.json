@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-10-05",
+    "hsi_close": 23989,
+    "hsi_change": 17,
+    "hsi_change_pct": 0.07,
+    "hsi_open": 23963,
+    "hsi_high": 24005,
+    "hsi_low": 23836,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "低开探底回升，长下影收复昨收微涨17点，但缩量制约反弹力度",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 23836,
+    "resistance": 24005,
+    "southbound_flow": 68.64,
+    "signals": [
+      "RSI超卖",
+      "锤形线+缩量",
+      "南向净买+68.64亿"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-10-02",
     "hsi_close": 23945,
     "hsi_change": -668,

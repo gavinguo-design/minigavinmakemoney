@@ -30,6 +30,11 @@ test('complete close-final input keeps A/B/C and gap fallback coherent but fails
   assert.equal(section(contract, 'trigger_confirmation').data.daily_confirmation, 'completed_daily_bar');
   assert.equal(section(contract, 'risk_controls').data.scenarios[0].disaster_stop_status, 'unavailable');
   assert.equal(contract.action_state, 'no_trade');
+  assert.equal(contract.decision.code, 'TRIGGERED_RISK_INCOMPLETE');
+  assert.equal(contract.decision.scenario_id, 'C');
+  assert.equal(contract.decision.structural_invalidation, 24100);
+  assert.equal(contract.decision.plan.target, 24648);
+  assert.deepEqual(contract.decision.gap_fallback.range, [24100, 24276]);
 });
 
 test('missing or stale status never promotes a raw A/B/C narrative into a trigger', () => {
@@ -39,6 +44,8 @@ test('missing or stale status never promotes a raw A/B/C narrative into a trigge
   const stale = TradingOperation.build(input({ scenarioStatus: Object.assign({}, freshStatus, { updated_at: '2026-10-06T14:00:00+08:00' }) }));
   assert.equal(section(stale, 'trigger_confirmation').provenance.status, 'stale');
   assert.ok(section(stale, 'scenario_paths').data.scenarios.every(s => s.state === 'not_actionable'));
+  assert.equal(stale.decision.code, 'DATA_UNAVAILABLE');
+  assert.equal(stale.decision.scenario_id, null);
 });
 
 test('intraday or unpaired status cannot be labeled daily confirmation', () => {

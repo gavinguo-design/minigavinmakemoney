@@ -110,7 +110,7 @@ test('invalid RR rejected; long and short use the real planned entry',()=>{
   closeTo(MR.rr(24200,23500,24444,'short').ratio,700/244);
 });
 test('rendered badge never claims trigger when data is missing/stale',()=>{
-  const c=render('scenarioBadgeHtml',{viewingDate:null,annotations:{forecast:{}},scenarioStatus:null,statusForScenario:()=>null,escapeHtml:String});
+  const c=render('scenarioBadgeHtml',{viewingDate:null,annotations:{forecast:{}},scenarioStatus:null,statusForScenario:()=>null,currentBars:[],escapeHtml:String,signalStateForScenario:()=>({id:'unavailable',label:'待核对',title:'条件待确认'})});
   const output=c.scenarioBadgeHtml({rr:{entry:24200,direction:'short'}},23000);
   assert.match(output,/条件待确认/);assert.doesNotMatch(output,/✅|条件触发/);
 });
@@ -130,6 +130,36 @@ test('planned RR normalization uses per-scenario entry instead of invalid global
   const f={rr:{refPrice:24040.34,long:{target:24648,stop:24100}},scenarios:[{rr:{direction:'long',entry:24280,target:24648,stop:24100}}]};
   const c=render('normalizeRRDirs',{annotations:{forecast:f}});
   const dirs=c.normalizeRRDirs(f.rr);assert.equal(dirs[0].entry,24280);closeTo(dirs[0].stat.ratio,368/180);
+});
+
+test('forecast zones always originate at the displayed latest candle close',()=>{
+  const c=render('anchoredZoneData');
+  const last={time:{year:2026,month:10,day:6},close:24258.23};
+  const future=[{year:2026,month:10,day:8},{year:2026,month:10,day:9}];
+  const points=[{offset:0,price:24040.34},{offset:1,price:24400},{offset:2,price:24500}];
+  const data=c.anchoredZoneData(points,last,future,2);
+  assert.equal(JSON.stringify(data),JSON.stringify([
+    {time:last.time,value:24258.23},
+    {time:future[0],value:24400},
+    {time:future[1],value:24500}
+  ]));
+});
+
+test('signal state remains candidate/confirming unless existing conditions or a completed stop close support it',()=>{
+  const c=render('signalStateForScenario',{fmt:String});
+  const sc={rr:{direction:'short',stop:24444}};
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:0,triggered:false},[{close:24000,partial:false}]).id,'candidate');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:1,triggered:false},[{close:24000,partial:false}]).id,'confirming');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24000,partial:false}]).id,'triggered');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24450,partial:false}]).id,'invalidated');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24450,partial:true}]).id,'triggered');
+});
+
+test('label-derived level zones only render when the annotated level lies inside the stated range',()=>{
+  const c=render('levelRange');
+  assert.equal(JSON.stringify(c.levelRange({price:24100,label:'向下缺口 24100–24333'})),JSON.stringify({low:24100,high:24333}));
+  assert.equal(c.levelRange({price:24000,label:'整数关 24000'}),null);
+  assert.equal(c.levelRange({price:24000,label:'无关区 24100–24333'}),null);
 });
 
 test('historical weekly analysis excludes a candle completed after the frozen baseline',()=>{

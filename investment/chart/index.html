@@ -143,7 +143,17 @@
     .sc-status { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
     .sc-status.wait { color: rgba(235,235,245,0.5); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.14); }
     .sc-status.fired { color: var(--good); background: rgba(50,215,75,0.12); border-color: rgba(50,215,75,0.45); }
+    .sc-status.invalidated { color: var(--bad); background: rgba(255,69,58,0.12); border-color: rgba(255,69,58,0.45); }
+    .sc-status.confirming { color: var(--gold); background: rgba(245,200,66,0.10); border-color: rgba(245,200,66,0.35); }
     .sc-name { margin-top: 8px; display: block; }
+    /* Candle evidence is deliberately compact: it describes the observed bar, not a made-up forecast. */
+    .sc-evidence { margin-top: 9px; padding: 8px 9px; border-radius: 8px; border: 1px solid rgba(245,200,66,0.24); background: rgba(245,200,66,0.055); }
+    .sc-evidence-head { display: flex; justify-content: space-between; gap: 8px; color: var(--gold); font-size: 10.5px; font-weight: 800; }
+    .sc-evidence-state { color: rgba(235,235,245,0.58); font-weight: 700; white-space: nowrap; }
+    .sc-evidence-row { margin-top: 4px; font-size: 11.5px; line-height: 1.45; color: rgba(235,235,245,0.78); }
+    .sc-evidence-row b { color: rgba(255,255,255,0.92); font-weight: 700; }
+    .sc-evidence.unavailable { border-color: var(--border); background: rgba(255,255,255,0.03); }
+    .sc-evidence.unavailable .sc-evidence-head { color: var(--muted); }
     /* 情景触发条件清单 checklist（scenario_status.json 每小时刷新） */
     .sc-checklist { margin-top: 9px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; }
     .sc-cl-head { display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; font-weight: 800; color: var(--muted); margin-bottom: 5px; gap: 8px; }
@@ -1123,6 +1133,8 @@
   var fcSeriesList = [];    // per-scenario forecast zone series (bands and boundaries)
   var fcBgSeries = null;    // forecast zone background tint (histogram overlay)
   var rrSeriesList = [];    // risk/reward zone series (daily only)
+  var levelZoneSeries = []; // explicit support/resistance range overlays, derived only from annotations
+  var structureLines = [];  // scenario structure invalidation line handles
   var activeScenario = -1;  // -1 = show all scenarios
 
   // ---------- forecast scenario-zone layer ----------
@@ -1150,6 +1162,18 @@
   function clearRRSeries() {
     rrSeriesList.forEach(function (s) { try { chart.removeSeries(s); } catch (e) {} });
     rrSeriesList = [];
+  }
+
+  function clearLevelZones() {
+    levelZoneSeries.forEach(function (s) { try { chart.removeSeries(s); } catch (e) {} });
+    levelZoneSeries = [];
+    clearGutterSource('zone');
+  }
+
+  function clearStructureLines() {
+    structureLines.forEach(function (pl) { try { series.removePriceLine(pl); } catch (e) {} });
+    structureLines = [];
+    clearGutterSource('invalidation');
   }
 
   // ---------- 历史回看：情景/RR 锚点定位 ----------
@@ -1266,6 +1290,17 @@
     return { upper: upper, lower: lower };
   }
 
+  // The visual forecast must always leave from the rendered anchor candle, even
+  // when its source scenario was drafted against the prior session's close.
+  function anchoredZoneData(points, anchorBar, futureTimes, maxOffset) {
+    if (!anchorBar || typeof anchorBar.close !== 'number') return [];
+    return points.filter(function (p) { return p && p.offset >= 0 && p.offset <= maxOffset && typeof p.price === 'number'; })
+      .sort(function (x, y) { return x.offset - y.offset; })
+      .map(function (p) {
+        return { time: p.offset === 0 ? anchorBar.time : futureTimes[p.offset - 1], value: p.offset === 0 ? anchorBar.close : p.price };
+      });
+  }
+
   function renderForecastZones(a, iv, bars) {
     clearForecastSeries();
     var f = a && a.forecast;
@@ -1305,13 +1340,9 @@
     fcBgSeries.setData(tintData);
 
     scenarios.forEach(function (sc, idx) {
-      var points = zonePoints(sc), base = typeof f.basePrice === 'number' ? f.basePrice : lastBar.close;
-      var makeData = function (arr) {
-        return arr.filter(function (p) { return p && p.offset >= 0 && p.offset <= maxOffset && typeof p.price === 'number'; })
-          .sort(function (x, y) { return x.offset - y.offset; })
-          .map(function (p) { return { time: p.offset === 0 ? lastBar.time : futureTimes[p.offset - 1], value: p.price }; });
-      };
-      var upperData = makeData(points.upper), lowerData = makeData(points.lower);
+      var points = zonePoints(sc), base = lastBar.close;
+      var upperData = anchoredZoneData(points.upper, lastBar, futureTimes, maxOffset);
+      var lowerData = anchoredZoneData(points.lower, lastBar, futureTimes, maxOffset);
       if (!upperData.length || !lowerData.length) return;
 
       // Two baseline areas fan out from today's price to the zone bounds. This deliberately
@@ -1658,21 +1689,35 @@
 
   // Price proximity is not a substitute for the scenario's close/volume conditions.
 
+  // Signal state only promotes on the existing scenario-status rules. A stop is invalidation
+  // only after a completed candle closes through it; live ticks never fabricate an invalidation.
+  function signalStateForScenario(sc, st, bars) {
+    var confirmed = (bars || []).filter(function (b) { return b && !b.partial; });
+    var last = confirmed.length ? confirmed[confirmed.length - 1] : null;
+    var rr = sc && sc.rr;
+    if (last && rr && typeof rr.stop === 'number') {
+      var broken = rr.direction === 'short' ? last.close >= rr.stop : last.close <= rr.stop;
+      if (broken) return { id: 'invalidated', label: '已失效', title: '最新完整K线收盘越过结构失效位 ' + fmt(rr.stop) };
+    }
+    if (!st || typeof st.core_total !== 'number' || st.core_total < 1) return { id: 'unavailable', label: '待核对', title: '情景条件或完整K线不足，不能推断状态' };
+    if (st.triggered === true) return { id: 'triggered', label: '已触发', title: '既有核心结构条件已满足' };
+    if (st.core_met > 0) return { id: 'confirming', label: '确认中', title: '部分核心结构条件已满足，尚未触发' };
+    return { id: 'candidate', label: '候选', title: '尚未满足核心触发条件' };
+  }
+
   function scenarioBadgeHtml(sc, refPx) {
     var st = viewingDate ? null : statusForScenario(sc);
-    if (st && typeof st.core_total === 'number' && st.core_total > 0 &&
-        (st.triggered === true || st.triggered === false)) {
+    var state = signalStateForScenario(sc, st, currentBars);
+    if (state.id === 'invalidated') return '<span class="sc-status invalidated" title="' + escapeHtml(state.title) + '">⛔ 已失效</span>';
+    if (state.id === 'triggered') {
       var preview = scenarioStatus && scenarioStatus.judgment_mode === 'intraday_preview';
-      if (st.triggered) {
-        if (preview) {
-          return '<span class="sc-status fired" title="盘中预览：若此刻收盘则触发；最终以收盘为准，不构成盘中操作信号">🔵 若收盘则触发（预览）</span>';
-        }
-        return '<span class="sc-status fired" title="核心结构条件（收盘确认口径）全部满足；量能/资金为确认项，见确认强度">🎯 已触发（收盘确认）</span>';
-      }
-      return '<span class="sc-status wait" title="核心结构条件未全部满足' + (preview ? '（盘中预览，最终以收盘为准）' : '') + '">⏳ 未触发（core ' + st.core_met + '/' + st.core_total + '）</span>';
+      return preview
+        ? '<span class="sc-status fired" title="盘中预览：若此刻收盘则触发；最终以收盘为准，不构成盘中操作信号">🔵 若收盘则触发</span>'
+        : '<span class="sc-status fired" title="核心结构条件（收盘确认口径）全部满足；量能/资金为确认项，见确认强度">🎯 已触发</span>';
     }
-    var reason = viewingDate ? '历史冻结计划，未重放条件结算' : MarketRules.statusIssue(scenarioStatus, annotations) || '情景规则未匹配';
-    return '<span class="sc-status wait" title="' + escapeHtml(reason) + '">⏳ ' + (viewingDate ? '历史条件未回放' : '条件待确认') + '</span>';
+    if (state.id === 'confirming') return '<span class="sc-status confirming" title="' + escapeHtml(state.title) + '">◐ 确认中（core ' + st.core_met + '/' + st.core_total + '）</span>';
+    if (state.id === 'candidate') return '<span class="sc-status wait" title="' + escapeHtml(state.title) + '">○ 候选（待条件）</span>';
+    return '<span class="sc-status wait" title="' + escapeHtml(state.title) + '">⏳ ' + (viewingDate ? '历史条件未回放' : '条件待确认') + '</span>';
   }
 
   // checklist HTML：每条条件 ✅已满足 / ⬜未满足 / ⏳数据待更新；
@@ -1760,6 +1805,28 @@
 
   // 当前有效源报价到计划目标/止损的距离比，不代表可成交价格或入场信号。
   // rr 缺失 / 无现价 / 历史回看模式 → 返回空串不渲染（容错）。rr.interim（中途目标）按需求忽略。
+  // The card evidence layer is strictly derived from the latest detected completed candle.
+  // It intentionally reports unavailable rather than inventing a named pattern.
+  function scenarioEvidenceHtml(sc) {
+    var st = viewingDate ? null : statusForScenario(sc);
+    var state = signalStateForScenario(sc, st, currentBars);
+    var completed = currentBars.filter(function (b) { return b && !b.partial; });
+    var last = completed.length ? completed[completed.length - 1] : null;
+    var hit = last ? patternByTime[timeKey(last.time)] : null;
+    var evidence = hit
+      ? (hit.name + '：' + hit.explain)
+      : '最新完整K线未识别出符合当前规则的强蜡烛形态；不把普通K线解释成信号。';
+    var confirmation = sc && sc.trigger ? sc.trigger : '未提供确认条件';
+    var invalidation = sc && sc.invalidation ? sc.invalidation : (sc && sc.rr && typeof sc.rr.stop === 'number' ? '收盘越过 ' + fmt(sc.rr.stop) : '未提供结构失效条件');
+    var unavailable = !last;
+    return '<div class="sc-evidence' + (unavailable ? ' unavailable' : '') + '">' +
+      '<div class="sc-evidence-head"><span>🕯 价格行为证据</span><span class="sc-evidence-state" title="' + escapeHtml(state.title) + '">' + escapeHtml(state.label) + '</span></div>' +
+      '<div class="sc-evidence-row"><b>证据：</b>' + escapeHtml(unavailable ? '完整K线不足，暂不判断。' : evidence) + '</div>' +
+      '<div class="sc-evidence-row"><b>确认：</b>' + escapeHtml(confirmation) + '</div>' +
+      '<div class="sc-evidence-row"><b>失效：</b>' + escapeHtml(invalidation) + '</div>' +
+    '</div>';
+  }
+
   function scenarioLiveRRHtml(sc) {
     if (viewingDate || !sc || !sc.rr) return '';
     var rr = sc.rr;
@@ -1785,6 +1852,8 @@
       var idx = parseInt(card.getAttribute('data-idx'), 10);
       var sc = scenarios[idx];
       if (!sc) return;
+      var evidenceHolder = card.querySelector('.sc-evidence-holder');
+      if (evidenceHolder) evidenceHolder.innerHTML = scenarioEvidenceHtml(sc);
       var holder = card.querySelector('.sc-checklist-holder');
       if (holder) holder.innerHTML = scenarioChecklistHtml(sc);
       var liveHolder = card.querySelector('.sc-live-rr-holder');
@@ -2491,6 +2560,57 @@
     return name + ' ' + fmt(lv.price);
   }
 
+  function levelRange(lv) {
+    if (!lv) return null;
+    var nums = String(lv.label || '').match(/\d[\d,]*(?:\.\d+)?/g) || [];
+    var vals = nums.map(function (n) { return Number(String(n).replace(/,/g, '')); }).filter(function (n) { return isFinite(n); });
+    if (vals.length < 2) return null;
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    if (lo === hi) return null;
+    // Only label-derived ranges that actually include the annotated level are trusted as zones.
+    return lv.price >= lo && lv.price <= hi ? { low: lo, high: hi } : null;
+  }
+
+  function renderLevelZones(a, iv) {
+    clearLevelZones();
+    if (iv !== '1d' || !currentBars.length) return;
+    var times = [currentBars[0].time, currentBars[currentBars.length - 1].time];
+    (a && Array.isArray(a.levels) ? a.levels : []).forEach(function (lv) {
+      if (!lv || !appliesTo(lv, iv)) return;
+      var range = levelRange(lv);
+      if (!range) return;
+      var color = lv.type === 'support' ? SUPPORT : RESIST;
+      var zone = chart.addBaselineSeries({
+        baseValue: { type: 'price', price: range.low },
+        topFillColor1: hexToRgba(color, 0.11), topFillColor2: hexToRgba(color, 0.11),
+        bottomFillColor1: 'rgba(0,0,0,0)', bottomFillColor2: 'rgba(0,0,0,0)',
+        topLineColor: 'rgba(0,0,0,0)', bottomLineColor: 'rgba(0,0,0,0)',
+        lineWidth: 1, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false
+      });
+      zone.setData(times.map(function (t) { return { time: t, value: range.high }; }));
+      levelZoneSeries.push(zone);
+      gutterItems.push({ price: range.high, text: (lv.type === 'support' ? '支撑区' : '阻力区') + ' ' + fmt(range.low) + '–' + fmt(range.high), color: hexToRgba(color, 0.82), source: 'zone' });
+    });
+  }
+
+  function renderStructureInvalidations(a, iv, bars) {
+    clearStructureLines();
+    if (iv !== '1d') return;
+    var scenarios = a && a.forecast && Array.isArray(a.forecast.scenarios) ? a.forecast.scenarios : [];
+    scenarios.forEach(function (sc) {
+      var rr = sc && sc.rr;
+      if (!rr || typeof rr.stop !== 'number') return;
+      var state = signalStateForScenario(sc, viewingDate ? null : statusForScenario(sc), bars);
+      var invalid = state.id === 'invalidated';
+      var color = invalid ? '#FF453A' : hexToRgba(sc.color || '#f5c842', 0.75);
+      structureLines.push(series.createPriceLine({
+        price: rr.stop, color: color, lineWidth: invalid ? 2 : 1,
+        lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: false, title: ''
+      }));
+      gutterItems.push({ price: rr.stop, text: shortName(sc.name) + ' · 结构失效 ' + fmt(rr.stop), color: color, source: 'invalidation' });
+    });
+  }
+
   function renderLevels(a, iv) {
     clearPriceLines();
     levelHitList = [];
@@ -2561,6 +2681,8 @@
       visible.push({ lv: lv, current: isCurrent });
     });
 
+    renderLevelZones(a, iv);
+    renderStructureInvalidations(a, iv, currentBars);
     scheduleGutterRefresh();
 
     var section = el('levelSection');

@@ -38,12 +38,13 @@
     return wd !== 0 && wd !== 6 && !holidays.has(date);
   }
   function closeMinute(date) { return halfDays.has(date) ? 730 : 970; }
+  function lastTradeMinute(date) { return halfDays.has(date) ? 720 : 960; }
   function session(now) {
     var h = hk(now), open = tradingDay(h.date), m = h.minute;
     if (open == null) return { date:h.date, phase:'unknown', active:false, close:null };
     if (!open) return { date:h.date, phase:'closed', active:false, close:null };
-    var close = closeMinute(h.date);
-    var phase = m < 570 ? 'preopen' : m >= close ? 'closed' :
+    var close = closeMinute(h.date), lastTrade = lastTradeMinute(h.date);
+    var phase = m < 570 ? 'preopen' : m >= close ? 'closed' : m >= lastTrade ? 'closing' :
       (!halfDays.has(h.date) && m >= 720 && m < 780) ? 'lunch' : 'open';
     return { date:h.date, phase:phase, active:phase==='open', close:close };
   }
@@ -78,9 +79,10 @@
     if(age < -60000 || s.phase==='unknown' || q.date!==latestDay(now,false)) return 'stale';
     if(s.active) return age<=300000 ? 'live' : 'stale';
     if(s.phase==='lunch') return q.minute>=715 ? 'paused' : 'stale';
-    return q.minute>=closeMinute(q.date)-10 ? 'last-close' : 'stale';
+    if(s.phase==='closing') return age<=300000 ? 'closing-preview' : 'stale';
+    return q.minute>=lastTradeMinute(q.date) ? 'last-close' : 'stale';
   }
-  function validQuote(rt,now) { return ['live','paused','last-close'].indexOf(quoteState(rt,now))>=0; }
+  function validQuote(rt,now) { return ['live','paused','closing-preview','last-close'].indexOf(quoteState(rt,now))>=0; }
   function partial(bar,iv,now) {
     var date=dayString(bar.time), h=hk(now);
     if (bar.partial===true) return true;
@@ -160,7 +162,7 @@
       emoji:grade==='good'?'🟢':grade==='mid'?'🟡':'🔴',verdict:grade==='good'?'距离比≥2':grade==='mid'?'距离比≥1':'距离比<1'};
   }
   return {hk:hk,dayString:dayString,shift:shift,known:known,tradingDay:tradingDay,
-    closeMinute:closeMinute,session:session,latestDay:latestDay,nextDays:nextDays,timestamp:timestamp,
+    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,timestamp:timestamp,
     quoteState:quoteState,validQuote:validQuote,markBars:markBars,statusIssue:statusIssue,
     sanitizeStatus:sanitizeStatus,rr:rr};
 });

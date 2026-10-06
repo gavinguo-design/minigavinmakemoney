@@ -29,6 +29,12 @@ test('last-close quote valid overnight/weekend, intraday quote not substituted f
   assert.equal(MR.quoteState(quote,at('2026-10-04T14:35:00')),'last-close');
   assert.equal(MR.quoteState({...quote,ts:at('2026-10-02T14:00:00')/1000},at('2026-10-04T14:35:00')),'stale');
 });
+test('16:00-16:10 is a closing preview, never mislabeled as a confirmed close',()=>{
+  const preview={price:24280,ts:at('2026-10-06T16:08:00')/1000};
+  assert.equal(MR.session(at('2026-10-06T16:08:00')).phase,'closing');
+  assert.equal(MR.quoteState(preview,at('2026-10-06T16:08:30')),'closing-preview');
+  assert.equal(MR.quoteState(preview,at('2026-10-06T16:10:00')),'last-close');
+});
 test('HKEX holidays, half days, lunch, year transition and unsupported calendar',()=>{
   assert.equal(MR.tradingDay('2026-10-01'),false);
   assert.equal(MR.session(at('2026-12-24T13:00:00')).phase,'closed');

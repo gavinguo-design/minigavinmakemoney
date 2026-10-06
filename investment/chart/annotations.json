@@ -1,5 +1,5 @@
 {
-  "$schema_note": "miniGG 恒指分析标注数据 v3。字段说明：meta=元信息；disclaimer=页面底部免责声明；forecast=观点摘要+多情景预测（scenarios[].path 保留为兼容原始情景数据；页面仅渲染 scenarios[].zone 上下边界形成的情景区域，不渲染逐根预测蜡烛，其他周期显示提示；forecast.reasoning=推理链数组，每条一段「证据→结论」推理句；forecast.rr=盈亏比标尺数据，双向新结构 {refPrice参考价, long:{target,stop}, short:{target,stop}}，页面渲染做多/做空两行标尺；向后兼容旧单向结构 {refPrice, target, stop, direction: long|short}（历史存档仍用此格式，按 direction 渲染单行），字段缺失则标尺隐藏；scenarios[].rr=触发后参与的盈亏比 {entryHint入场提示, entry触发参与价, target目标, stop防守, direction}，页面自动换算比例）；playbook=条件式交易地图（每条 {state,condition,then,level}：发生 condition 后状态如何变化、下一步看哪里）；pathTree=未来路径树（{price,label,children:[{condition,label,targetZone,children}]}）；levels=水平价格线（支撑/阻力，reason=划线理由）；markers=K线事件标记。所有字段页面均做缺失容错，可只更新部分。",
+  "$schema_note": "miniGG 恒指分析标注数据 v3。字段说明：meta=元信息；disclaimer=页面底部免责声明；forecast=观点摘要+多情景预测（scenarios[].path 保留为兼容原始情景数据；页面仅渲染 scenarios[].zone 上下边界形成的情景区域，不渲染逐根预测蜡烛，其他周期显示提示；forecast.reasoning=推理链数组，每条一段「证据→结论」推理句；forecast.rr=盈亏比标尺数据，双向新结构 {refPrice参考价, long:{target,stop}, short:{target,stop}}，页面渲染做多/做空两行标尺；向后兼容旧单向结构 {refPrice, target, stop, direction: long|short}（历史存档仍用此格式，按 direction 渲染单行），字段缺失则标尺隐藏；scenarios[].rr=触发后参与的盈亏比 {entryHint入场提示, entry触发参与价, target目标, stop防守, direction}，页面自动换算比例）；playbook=条件式交易地图（每条 {state,condition,then,level}：发生 condition 后状态如何变化、下一步看哪里）；pathTree=未来路径树（{price,label,children:[{condition,label,targetZone,children}]}）；levels=水平价格线（支撑/阻力，reason=划线理由）；markers=K线事件标记。所有字段页面均做缺失容错，可只更新部分。 forecast.scenario_evidence=由冻结OHLCV生成的逐情景价格行为证据契约；risk.structural_invalidation与risk.disaster_stop语义独立。 forecast.scenario_evidence=由冻结OHLCV生成的逐情景价格行为证据契约；risk.structural_invalidation与risk.disaster_stop语义独立。",
   "meta": {
     "symbol": "^HSI",
     "updatedAt": "2026-10-06T08:45:00+08:00",
@@ -7,7 +7,8 @@
     "note": "盘前冻结（10-06）。隔夜美股集体收涨（纳指+1.05%创收盘新高）+恒指夜盘期货+0.97%报24,266（贴近24,276多空分界下方）→ 今日大概率高开直接进入24,100–24,276缺口区检验，A空点窗口与C降级确认同场竞技；概率微调 A45/B20/C35（原A45/B30/C25，隔夜risk-on+夜盘期货位置上调C下调B）。价位骨架 23,865/24,000/24,100/24,276/24,444 维持不变。",
     "dataSources": "K线/量能：富途 OpenD HK.800000（Yahoo ^HSI 交叉校验），截至 2026-10-05 收盘 O23,963.41/H24,040.34/L23,835.68/C24,040.34，成交额 981.0 亿、量比 0.62（A股休市薄市）；南向资金：10/1–10/7 通道关闭无数据（10/8 恢复）；隔夜美股/夜盘期货：公开财经媒体检索（每经/财联社/FX168/南方财经，2026-10-06晨）",
     "latestClose": 24040.34,
-    "latestCloseDate": "2026-10-05"
+    "latestCloseDate": "2026-10-05",
+    "analysis_id": "HSI-20261006-price-action-v1"
   },
   "disclaimer": "预测为技术面推演，非投资建议。置信度为模型主观评估（技术结构+量能+资金面+消息面主观加权），非历史统计概率，样本积累后将改为统计命中率。注：2026-09-25 当日成交量数据源缺失、南向资金当日数据未获取，相关结论均已标注待验证。",
   "intraday_playbook": {
@@ -300,6 +301,20 @@
             }
           ],
           "note": "模拟路径区间，仅示意节奏，非精确预测"
+        },
+        "id": "A",
+        "direction": "short",
+        "risk": {
+          "structural_invalidation": {
+            "price": 24444,
+            "confirmation": "completed_daily_close",
+            "note": "收盘收复 24,444（9/29低点，收盘确认）剧本作废；空单止损同价 24,444"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured",
+            "note": "未配置独立灾难止损；不得将结构失效自动称为灾难止损。"
+          }
         }
       },
       {
@@ -425,6 +440,20 @@
             }
           ],
           "note": "模拟路径区间，仅示意节奏，非精确预测"
+        },
+        "id": "B",
+        "direction": "short",
+        "risk": {
+          "structural_invalidation": {
+            "price": 24100,
+            "confirmation": "completed_daily_close",
+            "note": "收盘收复 24,100（缺口下沿，收盘口径）剧本作废；空单止损同价 24,100"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured",
+            "note": "未配置独立灾难止损；不得将结构失效自动称为灾难止损。"
+          }
         }
       },
       {
@@ -551,10 +580,124 @@
             }
           ],
           "note": "模拟路径区间，仅示意节奏，非精确预测"
+        },
+        "id": "C",
+        "direction": "long",
+        "risk": {
+          "structural_invalidation": {
+            "price": 24100,
+            "confirmation": "completed_daily_close",
+            "note": "收盘跌回 24,100 之下（缺口下沿，收盘口径）剧本作废；多单止损同价 24,100。24,276 得而复失为假收复预警、先减仓"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured",
+            "note": "未配置独立灾难止损；不得将结构失效自动称为灾难止损。"
+          }
         }
       }
     ],
-    "applicable_date": "2026-10-06"
+    "applicable_date": "2026-10-06",
+    "scenario_evidence": {
+      "schema_version": "1.0",
+      "analysis_id": "HSI-20261006-price-action-v1",
+      "generated_at": "2026-10-06T16:32:23+08:00",
+      "timeframe": "1d",
+      "source": "futu-opend",
+      "last_bar": {
+        "date": "2026-10-06",
+        "open": 24279.63,
+        "high": 24354.11,
+        "low": 24179.38,
+        "close": 24280.56,
+        "completed": true
+      },
+      "observation": {
+        "id": "gapUp",
+        "name": "向上跳空缺口",
+        "direction": "bull",
+        "strength": "weak",
+        "explanation": "今日最低价高于昨日最高价、全天未回补：多方跳空主动进攻，缺口常成后续支撑。",
+        "basis": "跳空139点（=0.6倍均幅），全天未回补"
+      },
+      "scenarios": {
+        "A": {
+          "scenario_id": "A",
+          "scenario_direction": "short",
+          "state": "observed",
+          "direction_alignment": "conflicts",
+          "observation": {
+            "id": "gapUp",
+            "name": "向上跳空缺口",
+            "direction": "bull",
+            "strength": "weak",
+            "explanation": "今日最低价高于昨日最高价、全天未回补：多方跳空主动进攻，缺口常成后续支撑。",
+            "basis": "跳空139点（=0.6倍均幅），全天未回补"
+          },
+          "confirmation": "收盘收于 23,865–24,276 区间（未收复多空分界、未收盘跌破10/2低点，收盘确认）＝弱反抽/弱整理延续；其中反抽进 24,100–24,276 缺口区受阻为最优空参与窗口",
+          "structural_invalidation": {
+            "price": 24444,
+            "confirmation": "completed_daily_close",
+            "note": "收盘收复 24,444（9/29低点，收盘确认）剧本作废；空单止损同价 24,444"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured",
+            "note": "未配置独立灾难止损；不得将结构失效自动称为灾难止损。"
+          }
+        },
+        "B": {
+          "scenario_id": "B",
+          "scenario_direction": "short",
+          "state": "observed",
+          "direction_alignment": "conflicts",
+          "observation": {
+            "id": "gapUp",
+            "name": "向上跳空缺口",
+            "direction": "bull",
+            "strength": "weak",
+            "explanation": "今日最低价高于昨日最高价、全天未回补：多方跳空主动进攻，缺口常成后续支撑。",
+            "basis": "跳空139点（=0.6倍均幅），全天未回补"
+          },
+          "confirmation": "收盘跌破 23,865（10/2低点，收盘确认；10/5盘中23,835.68一过不算）；放量（量比≥1.1）为加速确认",
+          "structural_invalidation": {
+            "price": 24100,
+            "confirmation": "completed_daily_close",
+            "note": "收盘收复 24,100（缺口下沿，收盘口径）剧本作废；空单止损同价 24,100"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured",
+            "note": "未配置独立灾难止损；不得将结构失效自动称为灾难止损。"
+          }
+        },
+        "C": {
+          "scenario_id": "C",
+          "scenario_direction": "long",
+          "state": "observed",
+          "direction_alignment": "conflicts",
+          "observation": {
+            "id": "gapUp",
+            "name": "向上跳空缺口",
+            "direction": "bull",
+            "strength": "weak",
+            "explanation": "今日最低价高于昨日最高价、全天未回补：多方跳空主动进攻，缺口常成后续支撑。",
+            "basis": "跳空139点（=0.6倍均幅），全天未回补"
+          },
+          "confirmation": "收盘收复 24,276（多空分界，收盘确认，纯价格结构触发；量比≥1.3放量收阳为强确认、平量收复为弱确认，量能不拦触发）",
+          "structural_invalidation": {
+            "price": 24100,
+            "confirmation": "completed_daily_close",
+            "note": "收盘跌回 24,100 之下（缺口下沿，收盘口径）剧本作废；多单止损同价 24,100。24,276 得而复失为假收复预警、先减仓"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured",
+            "note": "未配置独立灾难止损；不得将结构失效自动称为灾难止损。"
+          }
+        }
+      }
+    }
   },
   "playbook": [
     {

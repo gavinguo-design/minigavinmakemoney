@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const MR = require('../investment/chart/market-rules.js');
 const TA = require('../investment/chart/technical-analysis.js');
+const CandlePatterns = require('../investment/chart/patterns.js');
 const html = fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/index.html'),'utf8');
 const now = Date.parse('2026-10-06T14:35:00+08:00');
 const at = s => Date.parse(s+'+08:00');
@@ -110,7 +111,7 @@ test('invalid RR rejected; long and short use the real planned entry',()=>{
   closeTo(MR.rr(24200,23500,24444,'short').ratio,700/244);
 });
 test('rendered badge never claims trigger when data is missing/stale',()=>{
-  const c=render('scenarioBadgeHtml',{viewingDate:null,annotations:{forecast:{}},scenarioStatus:null,statusForScenario:()=>null,currentBars:[],escapeHtml:String,signalStateForScenario:()=>({id:'unavailable',label:'待核对',title:'条件待确认'})});
+  const c=render('scenarioBadgeHtml',{viewingDate:null,annotations:{forecast:{}},scenarioStatus:null,statusForScenario:()=>null,currentBars:[],currentIv:'1d',escapeHtml:String,signalStateForScenario:()=>({id:'unavailable',label:'待核对',title:'条件待确认'})});
   const output=c.scenarioBadgeHtml({rr:{entry:24200,direction:'short'}},23000);
   assert.match(output,/条件待确认/);assert.doesNotMatch(output,/✅|条件触发/);
 });
@@ -147,12 +148,15 @@ test('forecast zones always originate at the displayed latest candle close',()=>
 
 test('signal state remains candidate/confirming unless existing conditions or a completed stop close support it',()=>{
   const c=render('signalStateForScenario',{fmt:String});
-  const sc={rr:{direction:'short',stop:24444}};
-  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:0,triggered:false},[{close:24000,partial:false}]).id,'candidate');
-  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:1,triggered:false},[{close:24000,partial:false}]).id,'confirming');
-  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24000,partial:false}]).id,'triggered');
-  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24450,partial:false}]).id,'invalidated');
-  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24450,partial:true}]).id,'triggered');
+  const sc={direction:'short',risk:{structural_invalidation:{price:24444}},rr:{direction:'short',stop:25000}};
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:0,triggered:false},[{close:24000,partial:false}],'1d').id,'candidate');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:1,triggered:false},[{close:24000,partial:false}],'1d').id,'confirming');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24000,partial:false}],'1d').id,'triggered');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24450,partial:false}],'1d').id,'invalidated');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24450,partial:false}],'60m').id,'triggered');
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24450,partial:true}],'1d').id,'triggered');
+  // A different rr.stop must not drive daily invalidation; only the explicit structure level can.
+  assert.equal(c.signalStateForScenario(sc,{core_total:2,core_met:2,triggered:true},[{close:24600,partial:false}],'1d').id,'invalidated');
 });
 
 test('label-derived level zones only render when the annotated level lies inside the stated range',()=>{
@@ -191,4 +195,36 @@ test('intraday fallback zones cover every price and retain open-ended gap guards
   for(let i=0;i<zones.length-1;i++) assert.equal(zones[i].range[0],zones[i+1].range[1]);
   assert.deepEqual(zones[0].range,[24444,null]);
   assert.deepEqual(zones.at(-1).range,[null,23250]);
+});
+
+
+test('generated evidence contract is populated from OHLCV, direction-aware, and referenced by status',()=>{
+  const annotations=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/annotations.json'),'utf8'));
+  const status=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/scenario_status.json'),'utf8'));
+  const e=annotations.forecast.scenario_evidence;
+  assert.equal(e.schema_version,'1.0'); assert.equal(e.timeframe,'1d');
+  assert.equal(e.last_bar.completed,true); assert.ok(e.last_bar.date);
+  assert.ok(e.observation && e.observation.id);
+  const feed=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/kline_futu.json'),'utf8'));
+  const bars=feed.candles.map(x=>({time:x.date,open:x.open,high:x.high,low:x.low,close:x.close}));
+  const detected=CandlePatterns.detect(bars,{intraday:false}).find(x=>x.index===bars.length-1);
+  assert.equal(e.observation.id,detected ? detected.id : 'no_valid_pattern');
+  const scenarios=annotations.forecast.scenarios;
+  scenarios.forEach(sc=>{
+    assert.ok(sc.id); assert.ok(['long','short','neutral'].includes(sc.direction));
+    assert.ok(e.scenarios[sc.id]);
+    assert.ok(['aligned','conflicts','no_directional_evidence'].includes(e.scenarios[sc.id].direction_alignment));
+    assert.ok(sc.risk && sc.risk.structural_invalidation);
+    assert.ok(Object.hasOwn(sc.risk,'disaster_stop'));
+  });
+  assert.equal(status.evidence_ref.analysis_id,annotations.meta.analysis_id);
+  assert.deepEqual(status.scenarios.map(x=>x.evidence_ref.scenario_id),scenarios.map(x=>x.id));
+});
+
+test('evidence card consumes generated scenario contract and never falls back to chart marker prose',()=>{
+  const evidence={scenario_id:'A',direction_alignment:'conflicts',observation:{name:'向上跳空缺口',explanation:'OHLCV evidence'},confirmation:'daily close condition',structural_invalidation:{price:24444},disaster_stop:{price:null}};
+  const c=render('scenarioEvidenceHtml',{viewingDate:null,currentIv:'1d',currentBars:[],annotations:{forecast:{scenario_evidence:{timeframe:'1d',scenarios:{A:evidence}}}},statusForScenario:()=>null,scenarioEvidenceFor:()=>evidence,signalStateForScenario:()=>({label:'待核对',title:'missing'}),escapeHtml:String,fmt:String});
+  const out=c.scenarioEvidenceHtml({id:'A'});
+  assert.match(out,/OHLCV evidence/); assert.match(out,/与该情景方向冲突/); assert.match(out,/未配置独立灾难止损/);
+  assert.doesNotMatch(out,/patternByTime|最新完整K线未识别/);
 });

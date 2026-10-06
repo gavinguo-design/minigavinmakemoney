@@ -1691,13 +1691,17 @@
 
   // Signal state only promotes on the existing scenario-status rules. A stop is invalidation
   // only after a completed candle closes through it; live ticks never fabricate an invalidation.
-  function signalStateForScenario(sc, st, bars) {
-    var confirmed = (bars || []).filter(function (b) { return b && !b.partial; });
+  function signalStateForScenario(sc, st, bars, iv) {
+    // Only completed daily bars may change a daily scenario's validity.
+    // Intraday/minute views are display-only and never invalidate the daily map.
+    var confirmed = iv === '1d' ? (bars || []).filter(function (b) { return b && !b.partial; }) : [];
     var last = confirmed.length ? confirmed[confirmed.length - 1] : null;
-    var rr = sc && sc.rr;
-    if (last && rr && typeof rr.stop === 'number') {
-      var broken = rr.direction === 'short' ? last.close >= rr.stop : last.close <= rr.stop;
-      if (broken) return { id: 'invalidated', label: '已失效', title: '最新完整K线收盘越过结构失效位 ' + fmt(rr.stop) };
+    var risk = sc && sc.risk;
+    var structural = risk && risk.structural_invalidation;
+    if (last && structural && typeof structural.price === 'number') {
+      var direction = sc.direction || (sc.rr && sc.rr.direction);
+      var broken = direction === 'short' ? last.close >= structural.price : last.close <= structural.price;
+      if (broken) return { id: 'invalidated', label: '已失效', title: '最新完整日K收盘越过结构失效位 ' + fmt(structural.price) };
     }
     if (!st || typeof st.core_total !== 'number' || st.core_total < 1) return { id: 'unavailable', label: '待核对', title: '情景条件或完整K线不足，不能推断状态' };
     if (st.triggered === true) return { id: 'triggered', label: '已触发', title: '既有核心结构条件已满足' };
@@ -1707,7 +1711,7 @@
 
   function scenarioBadgeHtml(sc, refPx) {
     var st = viewingDate ? null : statusForScenario(sc);
-    var state = signalStateForScenario(sc, st, currentBars);
+    var state = signalStateForScenario(sc, st, currentBars, currentIv);
     if (state.id === 'invalidated') return '<span class="sc-status invalidated" title="' + escapeHtml(state.title) + '">⛔ 已失效</span>';
     if (state.id === 'triggered') {
       var preview = scenarioStatus && scenarioStatus.judgment_mode === 'intraday_preview';
@@ -1805,25 +1809,43 @@
 
   // 当前有效源报价到计划目标/止损的距离比，不代表可成交价格或入场信号。
   // rr 缺失 / 无现价 / 历史回看模式 → 返回空串不渲染（容错）。rr.interim（中途目标）按需求忽略。
-  // The card evidence layer is strictly derived from the latest detected completed candle.
-  // It intentionally reports unavailable rather than inventing a named pattern.
+  // Evidence is generated into annotations.json from frozen daily OHLCV. The UI never
+  // promotes a chart marker or invents a per-scenario pattern at render time.
+  function scenarioEvidenceFor(sc) {
+    var f = annotations && annotations.forecast;
+    var contract = f && f.scenario_evidence;
+    var id = sc && sc.id;
+    if (!contract || contract.timeframe !== '1d' || !id || !contract.scenarios || !contract.scenarios[id]) return null;
+    return contract.scenarios[id];
+  }
+
   function scenarioEvidenceHtml(sc) {
     var st = viewingDate ? null : statusForScenario(sc);
-    var state = signalStateForScenario(sc, st, currentBars);
-    var completed = currentBars.filter(function (b) { return b && !b.partial; });
-    var last = completed.length ? completed[completed.length - 1] : null;
-    var hit = last ? patternByTime[timeKey(last.time)] : null;
-    var evidence = hit
-      ? (hit.name + '：' + hit.explain)
-      : '最新完整K线未识别出符合当前规则的强蜡烛形态；不把普通K线解释成信号。';
-    var confirmation = sc && sc.trigger ? sc.trigger : '未提供确认条件';
-    var invalidation = sc && sc.invalidation ? sc.invalidation : (sc && sc.rr && typeof sc.rr.stop === 'number' ? '收盘越过 ' + fmt(sc.rr.stop) : '未提供结构失效条件');
-    var unavailable = !last;
+    var state = signalStateForScenario(sc, st, currentBars, currentIv);
+    var evidence = scenarioEvidenceFor(sc);
+    var unavailable = !evidence;
+    var observation = evidence && evidence.observation;
+    var observedText = observation
+      ? observation.name + '：' + observation.explanation
+      : '暂无与当前情景绑定的冻结日线证据；不从页面标记推断。';
+    var alignment = evidence && evidence.direction_alignment;
+    var alignmentText = alignment === 'aligned' ? '与该情景方向一致' :
+      alignment === 'conflicts' ? '与该情景方向冲突，只作反证' : '无方向性形态证据';
+    var structural = evidence && evidence.structural_invalidation;
+    var disaster = evidence && evidence.disaster_stop;
+    var structuralText = structural && typeof structural.price === 'number'
+      ? '日线收盘越过 ' + fmt(structural.price) + '（结构失效）'
+      : '未提供独立结构失效位';
+    var disasterText = disaster && typeof disaster.price === 'number'
+      ? fmt(disaster.price) + '（独立灾难止损）'
+      : '未配置独立灾难止损';
     return '<div class="sc-evidence' + (unavailable ? ' unavailable' : '') + '">' +
       '<div class="sc-evidence-head"><span>🕯 价格行为证据</span><span class="sc-evidence-state" title="' + escapeHtml(state.title) + '">' + escapeHtml(state.label) + '</span></div>' +
-      '<div class="sc-evidence-row"><b>证据：</b>' + escapeHtml(unavailable ? '完整K线不足，暂不判断。' : evidence) + '</div>' +
-      '<div class="sc-evidence-row"><b>确认：</b>' + escapeHtml(confirmation) + '</div>' +
-      '<div class="sc-evidence-row"><b>失效：</b>' + escapeHtml(invalidation) + '</div>' +
+      '<div class="sc-evidence-row"><b>观察：</b>' + escapeHtml(observedText) + '</div>' +
+      '<div class="sc-evidence-row"><b>匹配：</b>' + escapeHtml(alignmentText) + '</div>' +
+      '<div class="sc-evidence-row"><b>确认：</b>' + escapeHtml(evidence ? evidence.confirmation : '暂无可验证确认条件') + '</div>' +
+      '<div class="sc-evidence-row"><b>结构失效：</b>' + escapeHtml(structuralText) + '</div>' +
+      '<div class="sc-evidence-row"><b>灾难止损：</b>' + escapeHtml(disasterText) + '</div>' +
     '</div>';
   }
 
@@ -1979,14 +2001,15 @@
       card.setAttribute('data-idx', String(idx));
       card.style.setProperty('--sc-color', sc.color || 'rgba(235,235,245,0.5)');
       var rr = sc.rr || {};
-      var hasRR = typeof rr.entry === 'number' && typeof rr.target === 'number' && typeof rr.stop === 'number';
+      var structural = sc.risk && sc.risk.structural_invalidation;
+      var hasRR = typeof rr.entry === 'number' && typeof rr.target === 'number' && structural && typeof structural.price === 'number';
       var badgeHtml = scenarioBadgeHtml(sc, refPx);
       var dir = rr.direction === 'short' ? 'short' : 'long';
       var dirTxt = dir === 'short' ? '做空' : '做多';
       var numsHtml = hasRR
         ? '<div class="sc-nums">' +
             '<div class="sc-num"><span>入场<span class="sc-dir ' + dir + '">·' + dirTxt + '</span></span><b>' + fmt(rr.entry) + '</b></div>' +
-            '<div class="sc-num st"><span>止损</span><b>' + fmt(rr.stop) + '</b></div>' +
+            '<div class="sc-num st"><span>结构失效</span><b>' + fmt(structural.price) + '</b></div>' +
             '<div class="sc-num tg"><span>第一目标</span><b>' + fmt(typeof rr.interim === 'number' ? rr.interim : rr.target) + '</b></div>' +
             '<div class="sc-num tg"><span>最终目标</span><b>' + fmt(rr.target) + '</b></div>' +
           '</div>'
@@ -2004,6 +2027,7 @@
         numsHtml +
         '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' +
         '<div class="sc-live-rr-holder">' + scenarioLiveRRHtml(sc) + '</div>' +
+        '<div class="sc-evidence-holder">' + scenarioEvidenceHtml(sc) + '</div>' +
         '<details class="sc-condition-details"><summary>触发条件与判断依据</summary>' +
           (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
           '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>' + moreRows +
@@ -2601,16 +2625,16 @@
     if (iv !== '1d') return;
     var scenarios = a && a.forecast && Array.isArray(a.forecast.scenarios) ? a.forecast.scenarios : [];
     scenarios.forEach(function (sc) {
-      var rr = sc && sc.rr;
-      if (!rr || typeof rr.stop !== 'number') return;
-      var state = signalStateForScenario(sc, viewingDate ? null : statusForScenario(sc), bars);
+      var structural = sc && sc.risk && sc.risk.structural_invalidation;
+      if (!structural || typeof structural.price !== 'number') return;
+      var state = signalStateForScenario(sc, viewingDate ? null : statusForScenario(sc), bars, iv);
       var invalid = state.id === 'invalidated';
       var color = invalid ? '#FF453A' : hexToRgba(sc.color || '#f5c842', 0.75);
       structureLines.push(series.createPriceLine({
-        price: rr.stop, color: color, lineWidth: invalid ? 2 : 1,
+        price: structural.price, color: color, lineWidth: invalid ? 2 : 1,
         lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: false, title: ''
       }));
-      gutterItems.push({ price: rr.stop, text: shortName(sc.name) + ' · 结构失效 ' + fmt(rr.stop), color: color, source: 'invalidation' });
+      gutterItems.push({ price: structural.price, text: shortName(sc.name) + ' · 结构失效 ' + fmt(structural.price), color: color, source: 'invalidation' });
     });
   }
 

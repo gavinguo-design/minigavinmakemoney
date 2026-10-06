@@ -191,13 +191,26 @@ test('historical weekly analysis excludes a candle completed after the frozen ba
  assert.equal(MR.markBars([week],'1wk',at('2026-09-25T16:10:00'))[0].partial,false);
 });
 
-test('latest forecast remains anchored to the map base date after a newer candle arrives',()=>{
+test('latest forecast starts at the newest confirmed candle and skips an intraday partial candle',()=>{
   const bars=[
-    {time:{year:2026,month:10,day:5}},
-    {time:{year:2026,month:10,day:6}}
+    {time:{year:2026,month:10,day:5},partial:false},
+    {time:{year:2026,month:10,day:6},partial:false},
+    {time:{year:2026,month:10,day:7},partial:true}
   ];
   const c=render('anchorIndex',{
     viewingDate:null,
+    findBarTime:()=>({year:2026,month:10,day:5})
+  });
+  assert.equal(c.anchorIndex({forecast:{baseDate:'2026-10-05'}},bars),1);
+});
+
+test('historical replay keeps the frozen map base-date anchor',()=>{
+  const bars=[
+    {time:{year:2026,month:10,day:5},partial:false},
+    {time:{year:2026,month:10,day:6},partial:false}
+  ];
+  const c=render('anchorIndex',{
+    viewingDate:'2026-10-05',
     findBarTime:()=>({year:2026,month:10,day:5})
   });
   assert.equal(c.anchorIndex({forecast:{baseDate:'2026-10-05'}},bars),0);

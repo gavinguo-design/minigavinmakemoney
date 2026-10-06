@@ -127,6 +127,22 @@ test('real-time merges preserve partial flag and update turnover on successive t
   c.mergeRealtimeIntoChart(tick);c.mergeRealtimeIntoChart({...tick,amount:740e8});
   assert.equal(c.currentBars[1].partial,true);assert.equal(c.currentBars[1].volume,740);
 });
+test('a closing-preview quote never downgrades a confirmed daily bar',()=>{
+  let updates=0;
+  const confirmed={...bar(24280),time:{year:2026,month:10,day:6},volume:982.6,partial:false};
+  const c=render('mergeRealtimeIntoChart',{
+    currentIv:'1d',klineSource:'futu',currentBars:[confirmed],
+    hktDateOf:ts=>{const p=MR.hk(ts*1000).date.split('-');return {year:+p[0],month:+p[1],day:+p[2]};},
+    sameDay:(a,b)=>MR.dayString(a)===MR.dayString(b),round2:x=>x,
+    estimateTodayVolume:()=>900,series:{update(){updates++;}},volumeSeries:{update(){updates++;}},updateMALines(){},computePatterns(){},applyAllMarkers(){},
+    el:()=>({classList:{toggle(){}}}),hasRecentVolumeGap:()=>false
+  });
+  c.mergeRealtimeIntoChart({ts:at('2026-10-06T16:08:26')/1000,price:24280.56,open:24279.63,high:24354.11,low:24179.38,amount:982.6e8,final:false});
+  assert.equal(c.currentBars[0].partial,false);
+  assert.equal(c.currentBars[0].close,24280);
+  assert.equal(c.currentBars[0].volume,982.6);
+  assert.equal(updates,0);
+});
 test('planned RR normalization uses per-scenario entry instead of invalid global reference',()=>{
   const f={rr:{refPrice:24040.34,long:{target:24648,stop:24100}},scenarios:[{rr:{direction:'long',entry:24280,target:24648,stop:24100}}]};
   const c=render('normalizeRRDirs',{annotations:{forecast:f}});

@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-10-06",
+    "hsi_close": 24258,
+    "hsi_change": 218,
+    "hsi_change_pct": 0.91,
+    "hsi_open": 24280,
+    "hsi_high": 24354,
+    "hsi_low": 24179,
+    "bias": "中性",
+    "bias_color": "yellow",
+    "summary": "恒指收涨218点，但缩量且技术分析源异常，明日等确认",
+    "rsi": 0,
+    "macd_signal": "",
+    "ma20": 0,
+    "support": 24179,
+    "resistance": 24354,
+    "southbound_flow": 0,
+    "signals": [
+      "RSI超卖",
+      "缩量反弹",
+      "数据降级"
+    ],
+    "chart_url": null
+  },
+  {
     "date": "2026-10-05",
     "hsi_close": 23989,
     "hsi_change": 17,

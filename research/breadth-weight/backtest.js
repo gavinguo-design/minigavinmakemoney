@@ -2,6 +2,13 @@
 
 const HSI_WEIGHT_TYPE = 'hsi_free_float_adjusted_capped';
 const HONG_KONG_OFFSET = '+08:00';
+const DAY_MS = 24 * 60 * 60 * 1000;
+const SHA256_RE = /^[a-f0-9]{64}$/;
+const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+const TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
+const RECONCILIATION_METHODS = Object.freeze({
+  hsi_weighted_adjusted_return_proxy_v1: Object.freeze({ version: '1.0.0', max_tolerance: 0.0001 }),
+});
 const REQUIRED_MEMBERSHIP_FIELDS = [
   'index_id', 'security_id', 'effective_from', 'effective_to', 'constituent_status',
   'source', 'source_updated_at', 'as_of',
@@ -12,14 +19,13 @@ const REQUIRED_WEIGHT_FIELDS = [
 ];
 const REQUIRED_PRICE_FIELDS = [
   'security_id', 'session_date', 'adjusted_close', 'previous_adjusted_close', 'close_status',
-  'corporate_action_version', 'source', 'source_updated_at', 'as_of',
+  'corporate_action_version', 'corporate_action_manifest_id', 'corporate_action_manifest_version',
+  'corporate_action_manifest_sha256', 'corporate_action_sha256', 'source', 'source_updated_at', 'as_of',
 ];
 const REQUIRED_INDEX_CLOSE_FIELDS = [
   'index_id', 'session_date', 'close', 'previous_close', 'session_status',
   'source', 'source_updated_at', 'as_of',
 ];
-const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
-const TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
 
 function missingRequiredFields(row, fields) {
   return fields.filter((field) => row[field] === undefined || row[field] === null || row[field] === '');
@@ -40,12 +46,17 @@ function isIsoTimestampWithTimezone(value) {
   return typeof value === 'string' && TIMESTAMP_RE.test(value) && Number.isFinite(Date.parse(value));
 }
 
+function sessionWindow(sessionDate) {
+  const start = Date.parse(`${sessionDate}T00:00:00${HONG_KONG_OFFSET}`);
+  return { start, end: start + (2 * DAY_MS) };
+}
+
 function sourceIsValidForSession(source, sourceUpdatedAt, asOf, sessionDate) {
-  // Observation dates use the declared Hong Kong trading session; no freshness window is assumed.
-  return typeof source === 'string' && source.trim() !== ''
-    && asOf === sessionDate
-    && isIsoTimestampWithTimezone(sourceUpdatedAt)
-    && Date.parse(sourceUpdatedAt) >= Date.parse(`${sessionDate}T00:00:00${HONG_KONG_OFFSET}`);
+  if (typeof source !== 'string' || source.trim() === '' || asOf !== sessionDate || !isIsoTimestampWithTimezone(sourceUpdatedAt)) return false;
+  const timestamp = Date.parse(sourceUpdatedAt);
+  const { start, end } = sessionWindow(sessionDate);
+  // A daily source may publish after close or correct on the following HKT date, but never later.
+  return timestamp >= start && timestamp < end;
 }
 
 function dateIsWithin(sessionDate, from, to) {
@@ -72,17 +83,6 @@ function isPointInTimeWeight(row, indexId, sessionDate) {
     && sourceIsValidForSession(row.source, row.source_updated_at, row.as_of, sessionDate);
 }
 
-function isValidPrice(row, sessionDate) {
-  return missingRequiredFields(row, REQUIRED_PRICE_FIELDS).length === 0
-    && typeof row.security_id === 'string' && row.security_id !== ''
-    && row.session_date === sessionDate && isIsoDate(row.session_date)
-    && row.close_status === 'completed'
-    && typeof row.corporate_action_version === 'string' && row.corporate_action_version !== ''
-    && Number.isFinite(row.adjusted_close) && row.adjusted_close > 0
-    && Number.isFinite(row.previous_adjusted_close) && row.previous_adjusted_close > 0
-    && sourceIsValidForSession(row.source, row.source_updated_at, row.as_of, sessionDate);
-}
-
 function isValidIndexClose(row, indexId, sessionDate) {
   return row && missingRequiredFields(row, REQUIRED_INDEX_CLOSE_FIELDS).length === 0
     && row.index_id === indexId
@@ -93,13 +93,71 @@ function isValidIndexClose(row, indexId, sessionDate) {
     && sourceIsValidForSession(row.source, row.source_updated_at, row.as_of, sessionDate);
 }
 
+function isValidCorporateActionManifest(manifest, sessionDate) {
+  if (!manifest || typeof manifest !== 'object'
+      || typeof manifest.id !== 'string' || manifest.id === ''
+      || typeof manifest.version !== 'string' || manifest.version === ''
+      || !SHA256_RE.test(manifest.sha256)
+      || !sourceIsValidForSession(manifest.source, manifest.source_updated_at, manifest.as_of, sessionDate)
+      || !Array.isArray(manifest.versions)) return false;
+  const ids = new Set();
+  return manifest.versions.every((entry) => {
+    if (!entry || typeof entry !== 'object' || typeof entry.id !== 'string' || entry.id === '' || ids.has(entry.id)) return false;
+    ids.add(entry.id);
+    return typeof entry.version === 'string' && entry.version !== '' && SHA256_RE.test(entry.sha256)
+      && entry.as_of === sessionDate && entry.source === manifest.source;
+  });
+}
+
+function priceMatchesCorporateActionManifest(price, manifest, sessionDate) {
+  if (!isValidCorporateActionManifest(manifest, sessionDate)) return false;
+  if (price.corporate_action_manifest_id !== manifest.id
+      || price.corporate_action_manifest_version !== manifest.version
+      || price.corporate_action_manifest_sha256 !== manifest.sha256) return false;
+  const version = manifest.versions.find((entry) => entry.id === price.corporate_action_version);
+  return Boolean(version) && price.corporate_action_sha256 === version.sha256
+    && price.source === version.source && price.as_of === version.as_of;
+}
+
+function isValidPrice(row, sessionDate, corporateActionManifest) {
+  return missingRequiredFields(row, REQUIRED_PRICE_FIELDS).length === 0
+    && typeof row.security_id === 'string' && row.security_id !== ''
+    && row.session_date === sessionDate && isIsoDate(row.session_date)
+    && row.close_status === 'completed'
+    && Number.isFinite(row.adjusted_close) && row.adjusted_close > 0
+    && Number.isFinite(row.previous_adjusted_close) && row.previous_adjusted_close > 0
+    && sourceIsValidForSession(row.source, row.source_updated_at, row.as_of, sessionDate)
+    && priceMatchesCorporateActionManifest(row, corporateActionManifest, sessionDate);
+}
+
+function isValidReconciliation(reconciliation, indexClose, indexId, sessionDate, aggregateReturn) {
+  if (!reconciliation || typeof reconciliation !== 'object') return false;
+  const method = RECONCILIATION_METHODS[reconciliation.method_id];
+  if (!method || reconciliation.method_version !== method.version
+      || !Number.isFinite(reconciliation.tolerance) || reconciliation.tolerance < 0 || reconciliation.tolerance > method.max_tolerance
+      || reconciliation.index_id !== indexId || reconciliation.session_date !== sessionDate || reconciliation.as_of !== sessionDate
+      || !Number.isFinite(reconciliation.official_close) || reconciliation.official_close <= 0
+      || !Number.isFinite(reconciliation.official_previous_close) || reconciliation.official_previous_close <= 0
+      || !Number.isFinite(reconciliation.official_return)
+      || !sourceIsValidForSession(reconciliation.source, reconciliation.source_updated_at, reconciliation.as_of, sessionDate)) return false;
+  const officialReturn = reconciliation.official_close / reconciliation.official_previous_close - 1;
+  return Math.abs(reconciliation.official_return - officialReturn) <= Number.EPSILON
+    && reconciliation.official_close === indexClose.close
+    && reconciliation.official_previous_close === indexClose.previous_close
+    && reconciliation.source === indexClose.source
+    && Math.abs(aggregateReturn - officialReturn) <= reconciliation.tolerance;
+}
+
 function unavailable(reason, details = {}) {
   return { status: 'missing', reason, ...details };
 }
 
 // Refuse partial/current-only constituent data before any breadth metric is calculated.
 function calculateSession(input) {
-  const { indexId, sessionDate, memberships, weights, prices, indexClose, roundingTolerance = 1e-6 } = input;
+  const {
+    indexId, sessionDate, memberships, weights, prices, indexClose, corporateActionManifest,
+    reconciliation, roundingTolerance = 1e-6,
+  } = input;
   if (typeof indexId !== 'string' || indexId === '' || !isIsoDate(sessionDate)
       || !Array.isArray(memberships) || !Array.isArray(weights) || !Array.isArray(prices)
       || !Number.isFinite(roundingTolerance) || roundingTolerance < 0) {
@@ -124,6 +182,9 @@ function calculateSession(input) {
   if (!isValidIndexClose(indexClose, indexId, sessionDate)) {
     return unavailable('missing completed index close, source, or point-in-time provenance');
   }
+  if (!isValidCorporateActionManifest(corporateActionManifest, sessionDate)) {
+    return unavailable('missing or invalid controlled corporate-action manifest');
+  }
 
   const priceById = new Map();
   for (const price of prices) {
@@ -137,8 +198,8 @@ function calculateSession(input) {
   const validPrices = [];
   for (const securityId of activeIds) {
     const price = priceById.get(securityId);
-    if (!isValidPrice(price, sessionDate)) {
-      return unavailable('missing completed adjusted price or point-in-time provenance', { security_id: securityId });
+    if (!isValidPrice(price, sessionDate, corporateActionManifest)) {
+      return unavailable('missing completed adjusted price or controlled corporate-action provenance', { security_id: securityId });
     }
     validPrices.push(price);
   }
@@ -148,6 +209,11 @@ function calculateSession(input) {
     const returnPct = price.adjusted_close / price.previous_adjusted_close - 1;
     return { security_id: price.security_id, return: returnPct, approximate_weighted_return_contribution: weightsById.get(price.security_id) * returnPct };
   });
+  const aggregateReturn = contributions.reduce((total, row) => total + row.approximate_weighted_return_contribution, 0);
+  if (!isValidReconciliation(reconciliation, indexClose, indexId, sessionDate, aggregateReturn)) {
+    return unavailable('missing, invalid, or failed official index return reconciliation');
+  }
+
   const advances = contributions.filter((row) => row.return > 0).length;
   const unchanged = contributions.filter((row) => row.return === 0).length;
   const denominator = contributions.reduce((total, row) => total + Math.abs(row.approximate_weighted_return_contribution), 0);
@@ -158,11 +224,16 @@ function calculateSession(input) {
     equal_name_breadth: advances / contributions.length,
     weighted_breadth: contributions.filter((row) => row.return > 0).reduce((total, row) => total + weightsById.get(row.security_id), 0),
     advances, unchanged, declines: contributions.length - advances - unchanged, weight_coverage: coverage,
+    approximate_weighted_return: aggregateReturn,
     approximate_weighted_return_contributions: contributions,
     concentration_hhi: denominator ? contributions.reduce((total, row) => total + (Math.abs(row.approximate_weighted_return_contribution) / denominator) ** 2, 0) : null,
     top_five_absolute_contribution_share: denominator ? topFive.reduce((total, row) => total + Math.abs(row.approximate_weighted_return_contribution), 0) / denominator : null,
-    error_flags: ['NOT_OFFICIAL_INDEX_POINT_ATTRIBUTION'],
+    backtest_admission: 'blocked',
+    error_flags: ['NOT_OFFICIAL_INDEX_POINT_ATTRIBUTION', 'OFFICIAL_DIVISOR_CAPPING_RECONCILIATION_REQUIRED_FOR_BACKTEST_ADMISSION'],
   };
 }
 
-module.exports = { HSI_WEIGHT_TYPE, calculateSession, isIsoDate, isIsoTimestampWithTimezone, isPointInTimeMembership, isPointInTimeWeight };
+module.exports = {
+  HSI_WEIGHT_TYPE, RECONCILIATION_METHODS, calculateSession, isIsoDate, isIsoTimestampWithTimezone,
+  isPointInTimeMembership, isPointInTimeWeight,
+};

@@ -10,7 +10,7 @@ All records use `Asia/Hong_Kong` timestamps. `as_of` is the market observation s
 | --- | --- | --- |
 | `constituent_universe` | constituent, effective interval | `index_id`, `security_id`, `effective_from`, `effective_to`, `constituent_status`, `source`, `source_updated_at`, `as_of` |
 | `constituent_weights` | constituent, effective interval | `index_id`, `security_id`, `weight`, `effective_from`, `effective_to`, `weight_type`, `source`, `source_updated_at`, `as_of` |
-| `constituent_prices` | constituent, completed session | `security_id`, `session_date`, `adjusted_close`, `previous_adjusted_close`, `close_status`, `corporate_action_version`, `source`, `source_updated_at`, `as_of` |
+| `constituent_prices` | constituent, completed session | `security_id`, `session_date`, `adjusted_close`, `previous_adjusted_close`, `close_status`, `corporate_action_version`, `corporate_action_manifest_id`, `corporate_action_manifest_version`, `corporate_action_manifest_sha256`, `corporate_action_sha256`, `source`, `source_updated_at`, `as_of` |
 | `index_close` | index, completed session | `index_id`, `session_date`, `close`, `previous_close`, `session_status`, `source`, `source_updated_at`, `as_of` |
 | `corporate_actions` | security, effective interval | `security_id`, `action_type`, `ex_date`, `adjustment_factor`, `source`, `source_updated_at`, `as_of` |
 
@@ -20,9 +20,11 @@ Keys must be stable across ticker changes. A session is usable only where every 
 
 The calculation gate accepts only one declared study session. `session_date`, every `as_of`, `effective_from`, and `effective_to` value must be a real ISO calendar date in `YYYY-MM-DD` form. `source_updated_at` must be a valid ISO-8601 timestamp with an explicit `Z` or numeric timezone offset. A source identifier must be a nonempty string.
 
-For a completed session `t`, every membership, weight, constituent-price, and index-close record must declare `as_of = t`; price and index-close `session_date` must equal `t`; and membership/weight effective intervals must contain `t`. Each record's `source_updated_at` must not precede the beginning of its claimed Hong Kong observation date. This validates chronology without inventing a freshness-SLA: freshness remains a separately preregistered policy. The input collection must contain exactly one membership, weight, and price record for each active security, and the index close must have the requested `index_id` and `session_date`.
+For a completed session `t`, every membership, weight, constituent-price, and index-close record must declare `as_of = t`; price and index-close `session_date` must equal `t`; and membership/weight effective intervals must contain `t`. A daily record's `source_updated_at` must fall in `[t 00:00:00+08:00, t+2 days 00:00:00+08:00)`: this permits a source's normal next-Hong-Kong-day correction cycle, but rejects timestamps before the claimed observation or from any later day. This is a provenance window, not an invented seconds-level freshness SLA. The input collection must contain exactly one membership, weight, and price record for each active security, and the index close must have the requested `index_id` and `session_date`.
 
 The only accepted `weight_type` is `hsi_free_float_adjusted_capped`, meaning the source explicitly identifies the weights as HSI free-float-adjusted and capped weights. Weights must be finite and in `(0, 1]`, be one-to-one with active constituents, and sum to one within the declared rounding tolerance. Other labels (including generic `free_float_capped`) are rejected because they do not identify the required HSI-specific methodology.
+
+`corporate_action_version` is not trusted as a free string. The input must include a controlled corporate-action manifest with nonempty `id` and `version`, a SHA-256 `sha256`, source, source timestamp, and `as_of = t`, plus one unique version entry per ID. Each entry must carry `id`, `version`, SHA-256, identical source, and `as_of = t`. Every price must bind exactly to the manifest ID/version/checksum and to a listed action-version ID/checksum. The manifest is an externally controlled, checksummed artifact; this in-memory gate validates its declared identity and bindings, not the artifact's bytes.
 
 ## Calculations (descriptive, not predictive)
 
@@ -35,7 +37,8 @@ For each usable completed session `t` and active universe `U_t`:
 - Weighted breadth: `B_w,t = sum(weight_i,t * 1[r_i,t > 0])`.
 - Approximate weighted return contribution: `c_i,t = weight_i,t * r_i,t`. This is not official index-point attribution unless divisor/capping methodology validates it.
 - Concentration: `H_t = sum((c_i,t / sum(abs(c_j,t)))^2)` when denominator is positive. Also report top-5 absolute contribution share: `sum(top5 abs(c_i,t)) / sum(abs(c_j,t))`.
-- Optional official point contribution: only compute after obtaining a versioned official divisor/capping methodology. Preserve the formula/version used and do not label `c_i,t` as index points.
+- Required aggregate reconciliation: input must include a sourced, session-aligned `index_reconciliation` record containing official close, prior close, return, source, source timestamp, `as_of`, a method ID/version, and a tolerance. The gate currently accepts only `hsi_weighted_adjusted_return_proxy_v1@1.0.0`, with tolerance at most `0.0001`; it checks the declared official return against official closes, requires those closes/source to equal `index_close`, and checks `abs(sum(c_i,t) - official_return) <= tolerance`.
+- The proxy reconciliation validates only the aggregate adjusted-return approximation. It cannot validate official HSI points, divisor changes, intraday capping, free-float changes, or corporate-action treatment beyond the controlled manifest. Therefore it must not be represented as official point attribution or a valid backtest admission. Official point reconciliation may be added only after a versioned official divisor/capping methodology and its own contract are supplied.
 
 All thresholds, z-score lookbacks, horizons, and any relation to next-session outcomes must be preregistered before the test dataset is examined. Current registry intentionally leaves them unset.
 
@@ -48,7 +51,7 @@ All thresholds, z-score lookbacks, horizons, and any relation to next-session ou
 
 ## Validation and failure states
 
-- `available`: all required records are present, internally consistent, and satisfy the strict completed-session provenance rules and reconciliation checks.
+- `available`: all required records are present, internally consistent, and satisfy the strict completed-session provenance rules, controlled corporate-action binding, and aggregate proxy-reconciliation checks. It remains research-only and has `backtest_admission: blocked` until official divisor/capping point reconciliation is separately implemented.
 - `stale`: records exist but source timestamps exceed a separately preregistered freshness limit. No carry-forward. The calculation gate does not infer a freshness SLA.
 - `missing`: any required record, malformed date/timestamp, source/provenance field, corporate-action mapping, history effective date, coverage, or reconciliation field is absent or invalid. Emit no metric.
 

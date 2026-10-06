@@ -67,7 +67,7 @@ annotations.forecast.scenario_evidence = {
   observation: observed, scenarios: perScenario
 };
 const note = ' forecast.scenario_evidence=由冻结OHLCV生成的逐情景价格行为证据契约；risk.structural_invalidation与risk.disaster_stop语义独立。';
-if (!annotations.$schema_note.includes('forecast.scenario_evidence=')) annotations.$schema_note += note;
+annotations.$schema_note = annotations.$schema_note.split(note).join('') + note;
 status.analysis_id = analysisId;
 status.evidence_ref = {
   analysis_id: analysisId, schema_version: '1.0', timeframe: '1d', last_bar_date: last.time,

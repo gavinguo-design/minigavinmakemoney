@@ -177,12 +177,17 @@
     .sc-dir { font-weight: 800; }
     .sc-dir.long { color: var(--up); }
     .sc-dir.short { color: var(--down); }
-    .sc-nums { display: flex; gap: 6px; margin-top: 9px; }
+    .sc-nums { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px; margin-top: 11px; }
     .sc-num { flex: 1 1 0; min-width: 0; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 5px 4px; text-align: center; }
     .sc-num span { display: block; font-size: 10px; color: var(--muted); font-weight: 700; }
-    .sc-num b { display: block; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; color: #F5F5F7; margin-top: 1px; }
-    .sc-num.tg b { color: #FF8D85; }
-    .sc-num.st b { color: #7CE596; }
+    .sc-num b { display: block; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 800; color: #F5F5F7; margin-top: 2px; }
+    .sc-num.tg b { color: #5AC8FA; }
+    .sc-num.st b { color: #FF9F0A; }
+    .sc-condition-details { margin-top:9px; border-top:1px solid var(--border); padding-top:7px; }
+    .sc-condition-details>summary { cursor:pointer; color:var(--muted); font-size:11px; font-weight:700; list-style:none; }
+    .sc-condition-details>summary::-webkit-details-marker { display:none; }
+    .sc-condition-details>summary::before { content:'▸'; color:var(--accent); margin-right:5px; }
+    .sc-condition-details[open]>summary::before { content:'▾'; }
     .sc-ruler { margin-top: 10px; }
     .sc-ruler-head { display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; color: var(--muted); font-weight: 700; margin-bottom: 6px; gap: 8px; }
     .sc-ratio { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 800; white-space: nowrap; }
@@ -272,23 +277,6 @@
     .forecast .kv.warn b { color: var(--bad); }
 
     /* 盘中参考面板 intraday playbook */
-    .decision-desk { margin: 14px 0; }
-    .dd-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 2px 9px; }
-    .dd-head b { font-size:16px; color:#F5F5F7; }
-    .dd-head span { font-size:10.5px; color:var(--muted); }
-    .dd-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
-    .dd-card { background:var(--card); border:1px solid var(--border); border-radius:15px; padding:12px 13px; min-width:0; }
-    .dd-card.active { border-color:rgba(10,132,255,.62); box-shadow:0 0 0 1px rgba(10,132,255,.18); background:rgba(10,132,255,.06); }
-    .dd-card.missing { border-color:rgba(255,159,10,.42); }
-    .dd-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
-    .dd-title { font-size:13px; font-weight:800; color:#F5F5F7; }
-    .dd-state { font-size:9.5px; font-weight:700; border-radius:999px; padding:2px 7px; color:var(--muted); border:1px solid var(--border); white-space:nowrap; }
-    .dd-card.active .dd-state { color:var(--accent); border-color:rgba(10,132,255,.4); background:rgba(10,132,255,.1); }
-    .dd-main { font-size:13px; font-weight:700; line-height:1.5; color:rgba(255,255,255,.9); margin-bottom:7px; }
-    .dd-line { font-size:11.5px; line-height:1.55; color:rgba(235,235,245,.66); margin-top:4px; }
-    .dd-line b { color:rgba(245,245,247,.9); font-weight:700; }
-    .dd-time { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--muted); margin-top:8px; }
-    @media(max-width:760px){ .dd-grid{grid-template-columns:1fr}.dd-card:not(.active){opacity:.78} }
     .intraday { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 13px 15px; margin-bottom: 14px; }
     .id-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin-bottom: 10px; }
     .id-title { font-size: 14px; font-weight: 800; color: #F5F5F7; }
@@ -561,6 +549,11 @@
     .sc-row b { color: rgba(255,255,255,0.85); font-weight: 600; }
     .sc-row.invalid b { color: var(--bad); }
     .sc-tip { font-size: 11px; color: rgba(235,235,245,0.3); margin-top: 7px; }
+    .technical-fold { cursor:pointer; font-size:12px; font-weight:700; color:var(--muted); list-style:none; }
+    .technical-fold::-webkit-details-marker { display:none; }
+    .technical-fold::before { content:'▸'; color:var(--accent); margin-right:7px; }
+    .technical-panel[open]>.technical-fold::before { content:'▾'; }
+    .technical-body { margin-top:10px; }
 
     /* 结构状态横幅：默认折叠为一行紧凑摘要，点击展开完整判断（永远默认折叠，不记忆状态） */
     .struct-banner {
@@ -769,7 +762,7 @@
       .sb-state { font-size: 12.5px; }
       .sc-name { font-size: 14px; }
       .sc-prob { font-size: 15px; }
-      .sc-num b { font-size: 14px; }
+      .sc-num b { font-size: 15px; }
       .pb-state { font-size: 13.5px; }
       .pt-root { font-size: 14px; }
       .forecast .summary { font-size: 13.5px; }
@@ -815,8 +808,9 @@
     <!-- 顶部状态条：日期 + 偏向胶囊 + 当前价 + 关键区间，判断依据折叠收纳 -->
     <div class="status-bar hidden" id="statusBar"></div>
 
-    <!-- 三时段决策台：页面第一屏先回答盘前、盘中、盘后分别看什么 -->
-    <section class="decision-desk hidden" id="decisionDesk" aria-live="polite"></section>
+    <!-- A/B/C 情景卡：核心决策区，关键数字优先 -->
+    <div class="scenarios hidden" id="scenarioCards"></div>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 情景权重为主观评估，不是胜率；触发以卡片条件为准。</p>
 
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
@@ -857,8 +851,9 @@
       <div id="levelGutter"></div>
     </div>
 
-    <section class="technical-panel" aria-label="技术指标与结构验证">
-      <div class="technical-head"><h2>技术验证</h2><span class="technical-tag">已收盘数据为准</span></div>
+    <details class="technical-panel" aria-label="技术指标与结构验证">
+      <summary class="technical-fold">技术指标验证（辅助核对，默认收起）</summary>
+      <div class="technical-body">
       <p class="technical-note" id="technicalBasis">等待K线…</p>
       <div class="technical-grid" id="technicalSummary"></div>
       <details id="indicatorDetails"><summary>展开 RSI / MACD / ATR 副图（跟随主图时间范围）</summary>
@@ -876,7 +871,8 @@
         <p class="technical-note">基于已加载的已收盘日线。触碰容差为0.1 ATR，相邻触碰合并计一次；形成日期缺失时只列窗口观察，不能据此判定原计划失效。缺口回补按已收盘日线的高低价范围统计，未收盘日线不确认。</p>
         <ul class="technical-levels" id="levelLifecycle"></ul><h3 class="indicator-title">最近5个高低价跳空缺口</h3><ul class="technical-levels" id="gapLifecycle"></ul>
       </details>
-    </section>
+      </div>
+    </details>
     <!-- Marker detail (click) -->
     <div class="detail hidden" id="markerDetail"></div>
 
@@ -885,10 +881,6 @@
 
     <!-- 次日预案草稿（next_day_draft，字段缺失则隐藏；非正式留痕，08:45盘前冻结后被正式版覆盖） -->
     <div class="nextdraft hidden" id="nextDraftPanel"></div>
-
-    <!-- Scenario cards（与情景区域联动） -->
-    <div class="scenarios hidden" id="scenarioCards"></div>
-    <p class="prob-note hidden" id="probNote">ℹ︎ 情景权重为主观评估，不是胜率；未来统计另按已结算样本展示。图上半透明情景区域只表达方向与可能范围，不表示逐日价格路径；以条件地图为准。</p>
 
     <!-- 详细分析（默认折叠，降低视觉优先级） -->
     <details class="more" id="moreDetails">
@@ -1448,65 +1440,6 @@
     return ['live','paused','closing-preview'].indexOf(MarketRules.quoteState(realtimeData)) >= 0 ? realtimeData.price : null;
   }
 
-  function compactText(value, limit) {
-    var s = String(value || '').replace(/\s+/g, ' ').trim();
-    return s.length > limit ? s.slice(0, limit - 1) + '…' : s;
-  }
-
-  function activeIntradayZone(ip, px) {
-    if (px == null || !ip || !Array.isArray(ip.zones)) return null;
-    for (var i = 0; i < ip.zones.length; i++) if (zoneContains(ip.zones[i], px)) return ip.zones[i];
-    return null;
-  }
-
-  // 第一屏三时段决策台：只提炼现阶段动作，不把长篇分析复制到这里。
-  function renderDecisionDesk() {
-    var box = el('decisionDesk');
-    if (!box || viewingDate || !latestAnnotations) { if (box) box.classList.add('hidden'); return; }
-    var a = latestAnnotations, f = a.forecast || {}, ip = a.intraday_playbook || {};
-    var s = MarketRules.session(), phase = s.phase, px = intradayRefPrice(), zone = activeIntradayZone(ip, px);
-    var preActive = phase === 'preopen', inActive = phase === 'open' || phase === 'lunch' || phase === 'closing';
-    var postActive = phase === 'closed';
-    var scenarios = Array.isArray(f.scenarios) ? f.scenarios : [], base = scenarios[0] || {};
-    var preMain = f.biasLabel || f.bias || '盘前地图待生成';
-    var preTrigger = base.trigger || f.invalidation || '等待盘前冻结条件';
-    var preAction = base.target ? '目标观察：' + base.target : '按情景条件行动，不以开盘涨跌代替确认';
-    var inMain = zone ? ((zone.stance || '观察') + ' · ' + zoneRangeText(zone)) : (px == null ? '没有可核实的盘中现价，不判定所在区间' : '现价未匹配到有效区间');
-    var inAction = zone ? (zone.action || '等待该区间条件') : '等待有效报价后再匹配盘中规则';
-    var inInvalid = zone ? (zone.invalid || '最终以收盘确认') : '禁止默认套用最低区间';
-    var nd = a.next_day_draft, issue = MarketRules.statusIssue(scenarioStatus, a);
-    var postMain, postAction, postInvalid, postMissing = false;
-    if (phase === 'closing') {
-      postMain = '16:00–16:10 收市竞价中，尚未形成收盘结论';
-      postAction = '只看预览，16:10 后等待 close_final 再定案';
-      postInvalid = '当前价格不能当作正式收盘触发';
-    } else if (nd) {
-      postMain = nd.note || '次日预案草稿已生成';
-      postAction = nd.positionAdvice || '08:45 盘前冻结后转为正式地图';
-      postInvalid = issue || '核对收盘价、量能与分析版本';
-    } else {
-      postMain = postActive ? '盘后复盘尚未生成' : '等待 16:10 后收盘确认';
-      postAction = postActive ? '需要 close_final 与次日预案，生成前不沿用盘中预览' : '盘中不提前确认当日情景';
-      postInvalid = issue || '次日预案缺失'; postMissing = postActive;
-    }
-    function card(cls, icon, title, state, main, label1, line1, label2, line2, stamp) {
-      return '<article class="dd-card '+cls+'"><div class="dd-top"><span class="dd-title">'+icon+' '+title+'</span><span class="dd-state">'+escapeHtml(state)+'</span></div>'+
-        '<div class="dd-main">'+escapeHtml(compactText(main, 150))+'</div>'+
-        '<div class="dd-line"><b>'+label1+'：</b>'+escapeHtml(compactText(line1, 220))+'</div>'+
-        '<div class="dd-line"><b>'+label2+'：</b>'+escapeHtml(compactText(line2, 180))+'</div>'+
-        '<div class="dd-time">'+escapeHtml(stamp || '更新时间待核实')+'</div></article>';
-    }
-    var preStamp = '冻结于 ' + String(f.updatedAt || a.meta && a.meta.updatedAt || '').replace('T',' ').slice(0,16) + ' HKT';
-    var inStamp = ip.updatedAt ? '规则制定于 ' + String(ip.updatedAt).replace('T',' ').slice(0,16) + ' HKT' : '盘中规则时间待核实';
-    var postStamp = nd && nd.updatedAt ? '草稿更新于 ' + String(nd.updatedAt).replace('T',' ').slice(0,16) + ' HKT' : '正式确认点：16:10 HKT 后';
-    box.innerHTML = '<div class="dd-head"><b>今日三时段指导</b><span>先看动作与失效，再展开图表验证</span></div><div class="dd-grid">'+
-      card(preActive?'active':'','🌅','盘前计划',preActive?'当前阶段':'已冻结',preMain,'触发',preTrigger,'计划',preAction,preStamp)+
-      card(inActive?'active':'','🧭','盘中应对',phase==='lunch'?'午休暂停':phase==='closing'?'竞价预览':inActive?'当前阶段':'仅供回看',inMain,'现在',inAction,'切换/失效',inInvalid,inStamp)+
-      card((postActive?'active ':'')+(postMissing?'missing':''),'🌙','盘后确认',postActive?'当前阶段':'等待收盘',postMain,'下一步',postAction,'核对',postInvalid,postStamp)+
-      '</div>';
-    box.classList.remove('hidden');
-  }
-
   // 区间匹配：lo ≤ px < hi；null 表示开放端，任何跳空价格都能落入某个区间
   function zoneContains(z, px) {
     if (!z || !Array.isArray(z.range)) return false;
@@ -1594,7 +1527,6 @@
     if (ip.note) html += '<div class="id-foot">⚠︎ ' + escapeHtml(ip.note) + '</div>';
     box.innerHTML = html;
     box.classList.remove('hidden');
-    renderDecisionDesk();
     // 点击格子切换详情；点回当前价所在格 = 恢复跟随模式
     box.onclick = function (e) {
       var t = e.target;
@@ -1989,8 +1921,9 @@
       var numsHtml = hasRR
         ? '<div class="sc-nums">' +
             '<div class="sc-num"><span>入场<span class="sc-dir ' + dir + '">·' + dirTxt + '</span></span><b>' + fmt(rr.entry) + '</b></div>' +
-            '<div class="sc-num tg"><span>目标</span><b>' + fmt(rr.target) + '</b></div>' +
             '<div class="sc-num st"><span>止损</span><b>' + fmt(rr.stop) + '</b></div>' +
+            '<div class="sc-num tg"><span>第一目标</span><b>' + fmt(typeof rr.interim === 'number' ? rr.interim : rr.target) + '</b></div>' +
+            '<div class="sc-num tg"><span>最终目标</span><b>' + fmt(rr.target) + '</b></div>' +
           '</div>'
         : '';
       var moreRows =
@@ -2003,18 +1936,19 @@
         '<div class="sc-topline">' + badgeHtml +
           '<span class="sc-prob" title="主观情景权重，不是历史命中率">' + Math.round((sc.probability || 0) * 100) + '% 权重</span></div>' +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + holdingHtml + '</span>' +
-        (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
-        '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>' +
         numsHtml +
         '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' +
         '<div class="sc-live-rr-holder">' + scenarioLiveRRHtml(sc) + '</div>' +
-        (moreRows ? '<details class="sc-more"><summary>详情与备注</summary>' + moreRows + '</details>' : '') +
-        '<div class="sc-tip">点击卡片单独查看该情景区域</div>';
+        '<details class="sc-condition-details"><summary>触发条件与判断依据</summary>' +
+          (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
+          '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>' + moreRows +
+        '</details>' +
+        '<div class="sc-tip">点击卡片可单独查看该情景区域</div>';
       card.addEventListener('click', function () {
         activeScenario = (activeScenario === idx) ? -1 : idx;
         applyScenarioVisibility();
       });
-      var more = card.querySelector('details.sc-more');
+      var more = card.querySelector('details.sc-condition-details');
       if (more) more.addEventListener('click', function (e) { e.stopPropagation(); });
       wrap.appendChild(card);
     });
@@ -3159,7 +3093,6 @@
     annotations = a;
     renderStructBanner(a);
     renderStatusBar(a);
-    renderDecisionDesk();
     renderForecast(a);
     renderReasoning(a);
     renderPlaybook(a);

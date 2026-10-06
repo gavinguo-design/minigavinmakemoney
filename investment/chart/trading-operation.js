@@ -5,7 +5,7 @@
   else root.TradingOperation = factory(root.MarketRules);
 })(typeof self !== 'undefined' ? self : this, function (MarketRules) {
   'use strict';
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var SECTION_IDS = ['market_regime','key_price_zones','scenario_paths','trigger_confirmation','no_trade_conditions','risk_controls','position_management','post_market_review'];
   var SOURCE = { annotations: 'annotations.json', status: 'scenario_status.json', quote: '/api/realtime', bars: 'loaded daily OHLCV' };
 
@@ -58,6 +58,8 @@
         state: rowStatus !== 'available' ? 'not_actionable' : (ss.triggered ? 'triggered' : (ss.core_met > 0 ? 'confirming' : 'candidate')),
         trigger: sc.trigger || null,
         confirmation: ss ? clone(ss.conditions || []) : [],
+        strength: ss && ss.strength || null,
+        progress: ss ? { core_met: ss.core_met, core_total: ss.core_total, confirm_met: ss.confirm_met, confirm_total: ss.confirm_total } : null,
         rr: clone(sc.rr || null),
         structural_invalidation: clone(risk.structural_invalidation || null),
         disaster_stop: clone(risk.disaster_stop || null),
@@ -67,9 +69,34 @@
   }
   function gapFallback(a) {
     var zones = a && a.intraday_playbook && a.intraday_playbook.zones || [];
-    var gap = zones.filter(function (z) { return z && Array.isArray(z.range) && z.range[0] === 24100 && z.range[1] === 24276; })[0];
+    var candidates = zones.filter(function (z) {
+      return z && Array.isArray(z.range) && Number.isFinite(z.range[0]) && Number.isFinite(z.range[1])
+        && /缺口/.test([z.action, z.entry_hint].filter(Boolean).join(' '));
+    }).map(function (z) {
+      var action = String(z.action || '').replace(/,/g, '');
+      var ownsRange = action.indexOf(String(z.range[0])) >= 0 && action.indexOf(String(z.range[1])) >= 0;
+      return { zone: z, score: (ownsRange ? 10 : 0) + (/缺口区/.test(z.action || '') ? 3 : 0) + (/反抽进入/.test(z.action || '') ? 2 : 0) };
+    }).sort(function (a, b) { return b.score - a.score || (a.zone.range[1] - a.zone.range[0]) - (b.zone.range[1] - b.zone.range[0]); });
+    var gap = candidates.length ? candidates[0].zone : null;
     if (!gap) return { status: 'missing', data: { label: '缺口回退路径未提供；不以价格触及替代确认。' } };
     return { status: 'available', data: { range: gap.range, stance: gap.stance || null, condition: gap.action || null, note: '盘中区间仅为回退观察；日线情景仍需收盘确认。' } };
+  }
+  function activeZone(a, price) {
+    if (!Number.isFinite(price)) return null;
+    var zones = a && a.intraday_playbook && a.intraday_playbook.zones || [];
+    var zone = zones.filter(function (z) {
+      if (!z || !Array.isArray(z.range)) return false;
+      var low = z.range[0], high = z.range[1];
+      return (low == null || price >= low) && (high == null || price < high);
+    })[0];
+    if (!zone) return null;
+    return { range: clone(zone.range), stance: zone.stance || null, action: zone.action || null, invalidation: zone.invalid || null };
+  }
+  function rangeText(range) {
+    if (!Array.isArray(range)) return '未匹配';
+    if (range[0] == null) return '< ' + fmt(range[1]);
+    if (range[1] == null) return '\u2265 ' + fmt(range[0]);
+    return fmt(range[0]) + '\u2013' + fmt(range[1]);
   }
   function build(input) {
     input = input || {};
@@ -88,17 +115,61 @@
     var scenarioStatus = mapStatus === 'available' ? statusInfo.status : 'missing';
     var scenarios = scenarioRows(annotations, status, scenarioStatus, closeConfirmed);
     var gap = gapFallback(annotations);
+    var zone = quoteStatus === 'available' ? activeZone(annotations, quote && quote.price) : null;
     var levels = f.card && f.card.keyLines || [];
     var riskUnsupported = scenarios.some(function (s) { return !s.disaster_stop || s.disaster_stop.status === 'not_configured' || s.disaster_stop.price == null; });
-    var positionUnsupported = true; // No production position-size/risk-budget input exists.
+    var riskBudget = input.riskBudget || null;
+    var positionUnsupported = !riskBudget || !Number.isFinite(riskBudget.max_loss) || riskBudget.max_loss <= 0;
     var triggerBlocked = scenarioStatus !== 'available' || !closeConfirmed;
-    var actionState = riskUnsupported || positionUnsupported || triggerBlocked ? 'no_trade' : 'observe_only';
+    var triggered = scenarios.filter(function (s) { return s.status === 'available' && s.state === 'triggered'; });
+    var confirming = scenarios.filter(function (s) { return s.status === 'available' && s.state === 'confirming'; });
+    var primary = triggered[0] || confirming[0] || scenarios.filter(function (s) { return s.status === 'available'; })[0] || null;
+    var decisionCode = scenarioStatus !== 'available' ? 'DATA_UNAVAILABLE'
+      : !closeConfirmed ? 'WAIT_CLOSE'
+      : !triggered.length ? 'WAIT_TRIGGER'
+      : riskUnsupported ? 'TRIGGERED_RISK_INCOMPLETE'
+      : positionUnsupported ? 'PLAN_WITHOUT_SIZE'
+      : 'PLAN_READY';
+    var decisionLabels = {
+      DATA_UNAVAILABLE: '数据待核对', WAIT_CLOSE: '等待收盘', WAIT_TRIGGER: '等待触发',
+      TRIGGERED_RISK_INCOMPLETE: '已触发\u00b7风控未齐', PLAN_WITHOUT_SIZE: '计划成立\u00b7仓位未定', PLAN_READY: '计划要素齐全'
+    };
+    var actionState = decisionCode === 'PLAN_READY' ? 'observe_only' : 'no_trade';
     var noTrade = [];
     if (scenarioStatus !== 'available') noTrade.push(statusInfo.issue || '情景条件状态不可用。');
     if (!closeConfirmed) noTrade.push('未验证同日完整日K；盘中或孤立状态文件不能视为日线确认。');
     if (quoteStatus !== 'available') noTrade.push('当前报价' + (quoteState === 'missing' ? '缺失' : '已过期') + '，只观察，不以价格触及触发。');
     if (riskUnsupported) noTrade.push('独立灾难止损未配置；结构失效位不能替代灾难止损。');
     if (positionUnsupported) noTrade.push('未提供风险预算/仓位规模，不能给出或暗示仓位。');
+    var nextAction = decisionCode === 'DATA_UNAVAILABLE' ? '先恢复同日情景状态与数据版本。'
+      : decisionCode === 'WAIT_CLOSE' ? '等待同日完整日K与 close_final，盘中触及不算。'
+      : decisionCode === 'WAIT_TRIGGER' ? '等待A/B/C核心条件按规则完成，不提前押方向。'
+      : decisionCode === 'TRIGGERED_RISK_INCOMPLETE' ? '情景已触发；补齐独立灾难止损前不执行。'
+      : decisionCode === 'PLAN_WITHOUT_SIZE' ? '计划条件已齐；补充风险预算后再确定仓位。'
+      : '按已触发情景的入场确认执行，结构失效立即退出。';
+    var primaryInvalidation = primary && primary.structural_invalidation && Number.isFinite(primary.structural_invalidation.price)
+      ? primary.structural_invalidation.price : null;
+    var decision = {
+      code: decisionCode,
+      label: decisionLabels[decisionCode],
+      headline: primary ? (primary.id + '情景' + (primary.state === 'triggered' ? '已触发' : primary.state === 'confirming' ? '确认中' : '候选')) : '情景不可用',
+      scenario_id: primary && primary.id || null,
+      scenario_strength: primary && primary.strength || null,
+      current_price: quoteStatus === 'available' && quote && Number.isFinite(quote.price) ? quote.price : null,
+      reference_price: Number.isFinite(f.basePrice) ? f.basePrice : null,
+      current_zone: zone ? { range: zone.range, range_text: rangeText(zone.range), stance: zone.stance, action: zone.action, invalidation: zone.invalidation } : null,
+      gap_fallback: gap.status === 'available' ? clone(gap.data) : null,
+      plan: primary && primary.rr ? clone(primary.rr) : null,
+      next_action: nextAction,
+      structural_invalidation: primaryInvalidation,
+      blockers: clone(noTrade),
+      steps: {
+        data: scenarioStatus === 'available' ? 'complete' : 'blocked',
+        close: closeConfirmed ? 'complete' : 'waiting',
+        scenario: triggered.length ? 'complete' : confirming.length ? 'waiting' : 'waiting',
+        risk: riskUnsupported ? 'blocked' : positionUnsupported ? 'waiting' : 'complete'
+      }
+    };
     var sections = [
       section('market_regime', '1. 市场状态', source(mapStatus, SOURCE.annotations, date, f.updatedAt || annotations && annotations.meta && annotations.meta.updatedAt, mapStatus === 'missing' ? '缺少当前地图。' : null), actionState, {
         bias: f.bias || null, label: f.biasLabel || null, completed_daily_confirmation: closeConfirmed,
@@ -112,7 +183,7 @@
       section('position_management', '7. 仓位/减仓/退出', source('unavailable', SOURCE.annotations, date, f.updatedAt, '现有数据仅有部分目标/结构位，没有风险预算、账户规模或具体仓位。'), 'no_trade', { position_sizing: null, status: 'unavailable', scenario_levels: scenarios.map(function (s) { return { id:s.id, rr:s.rr }; }), rule: '不得把 RR、目标或 interim 位转译为具体仓位建议。' }),
       section('post_market_review', '8. 盘后复盘', source('unavailable', SOURCE.annotations + ' + ' + SOURCE.status, date, status && status.updated_at, '无实际成交、MFE/MAE 或执行记录，不能虚构复盘结果。'), 'observe_only', { review_status: 'unavailable', checklist: ['核对同日完整日K与 close_final 是否一致', '记录已观察情景与结构失效，不记录虚构成交', 'MFE/MAE、成交和滑点等待真实交易数据'] })
     ];
-    return { contract: 'trading_operation', schema_version: VERSION, generated_at: iso(now), as_of: date, action_state: actionState, disclaimer: '研究与观察界面，不是执行建议；no_trade 不等于正常或可忽略。', sections: sections };
+    return { contract: 'trading_operation', schema_version: VERSION, generated_at: iso(now), as_of: date, action_state: actionState, decision: decision, disclaimer: '研究与观察界面，不是执行建议；no_trade 不等于正常或可忽略。', sections: sections };
   }
   function validate(contract) {
     if (!contract || contract.contract !== 'trading_operation' || !contract.schema_version) return false;

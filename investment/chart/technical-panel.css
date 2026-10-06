@@ -1,0 +1,10 @@
+.quality-bar,.technical-panel{margin:12px 0;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:#1c1c1e}
+.quality-bar{font-size:12px;line-height:1.8;color:#aab0bc}.quality-bar.warning{border-color:#b58236;color:#ffc469}
+.technical-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.technical-head h2{font-size:16px;margin:0;color:#f2f2f7}
+.technical-note{font-size:11px;color:#aab0bc;line-height:1.7;margin:7px 0}.technical-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.technical-metric{padding:12px;border:1px solid #33343a;border-radius:10px;min-width:0}.technical-metric b{display:block;font:600 22px 'JetBrains Mono',monospace;color:#f2f2f7;margin:5px 0}.technical-metric span{font-size:12px;color:#aab0bc}
+.technical-panel details>summary{cursor:pointer;font-size:12px;color:#b5caff;padding:8px 0}.indicator-pane{height:145px;width:100%;min-width:0}.indicator-title{font-size:12px;color:#bec6d3;margin:12px 0 3px}
+.technical-table-wrap{overflow-x:auto}.technical-table{width:100%;border-collapse:collapse;font-size:12px;line-height:1.7;min-width:520px}.technical-table th,.technical-table td{padding:9px 8px;text-align:left;border-bottom:1px solid #303139;vertical-align:top}.technical-table th{color:#aab0bc;font-weight:500}.technical-table td{color:#e0e3e9}.technical-table td small{display:block;color:#9299a7}
+.technical-conflict{font-size:12px;line-height:1.8;color:#ffd080;padding:8px 0}.technical-levels{list-style:none;padding:0;font-size:12px;line-height:1.9;color:#bbc2d0}.technical-levels li{padding:8px 0;border-bottom:1px solid #303139}
+.quote-time{font-size:10px;color:#aab0bc;text-align:right;line-height:1.6;max-width:300px}.technical-tag{font-size:10px;color:#ffca72;border:1px solid #755629;border-radius:5px;padding:2px 5px}
+@media(max-width:600px){.technical-head{display:block}.technical-grid{gap:6px}.technical-metric{padding:9px}.technical-metric b{font-size:18px}.technical-metric span{font-size:10px}.technical-panel,.quality-bar{padding:12px}.quote-time{max-width:190px}.indicator-pane{height:130px}}

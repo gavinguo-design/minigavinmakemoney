@@ -11,6 +11,10 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
+  <script src="market-rules.js?v=1"></script>
+  <script src="technical-analysis.js?v=1"></script>
+  <script src="technical-panel.js?v=1"></script>
+  <link rel="stylesheet" href="technical-panel.css?v=1">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     :root {
@@ -766,18 +770,18 @@
     </div>
     <div class="price-line">
       <div class="px mono" id="livePrice">--</div>
-      <div class="chg mono" id="liveChg">恒生指数</div>
+      <div class="chg mono" id="liveChg">恒生指数</div><div class="quote-time" id="quoteTime">报价时间待核实</div>
     </div>
   </header>
 
   <div class="wrap">
     <h1>恒指交易地图 · miniGG</h1>
-    <p class="sub">^HSI · 历史K线：Yahoo Finance · 实时价与最新K线：东财/新浪/腾讯多源容灾（盘中实时）· 红涨绿跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
+    <p class="sub">^HSI · 日线优先富途，其他周期 Yahoo · 最新报价：东财/新浪/腾讯（以源时间为准）· 红涨绿跌 · 少算命，多地图：不预测「会怎么走」，只回答「发生什么之后，大概率怎么走」</p>
     <a class="track-link" href="track/">📊 预测战绩 · 历史预测留痕可查 →</a>
     <a class="track-link" href="trades.html">📒 交易战绩 · 真实交易逐笔留痕 →</a>
 
     <!-- 波段节奏说明条 -->
-    <div class="swing-rhythm-banner">⏱ <b>波段节奏</b>：本地图为波段（持仓 1–5 个交易日）行动指引 · <b>决策点=盘前 09:15 前 + 收盘 16:10 后</b>（每日两次，无需盯盘）· 盘中波动不构成操作信号，仅侜预览。</div>
+    <div class="swing-rhythm-banner">⏱ <b>波段节奏</b>：本地图为波段（持仓 1–5 个交易日）行动指引 · <b>决策点=盘前 09:15 前 + 收盘 16:10 后</b>（每日两次，无需盯盘）· 盘中波动不构成操作信号，仅供预览。</div>
 
     <!-- 历史模式提示条 -->
     <div class="hist-banner hidden" id="histBanner"></div>
@@ -809,8 +813,9 @@
     </div>
 
     <!-- 盘中周期延迟提示 -->
-    <div class="delay-note hidden" id="delayNote">⚠️ 分钟K线历史数据约 15 分钟延迟（Yahoo），顶部最新价为东财实时；分钟结构仅用于分析，不适合作为实时入场信号</div>
+    <div class="delay-note hidden" id="delayNote">⚠️ 分钟K线历史数据约 15 分钟延迟（Yahoo），顶部报价另行校验源时间；分钟结构仅用于分析，不适合作为实时入场信号</div>
 
+    <div class="quality-bar" id="dataQuality" role="status" aria-live="polite">正在核对行情与分析版本…</div>
     <!-- Chart -->
     <div class="chart-row">
       <div class="chart-card">
@@ -832,6 +837,26 @@
       <div id="levelGutter"></div>
     </div>
 
+    <section class="technical-panel" aria-label="技术指标与结构验证">
+      <div class="technical-head"><h2>技术验证</h2><span class="technical-tag">已收盘数据为准</span></div>
+      <p class="technical-note" id="technicalBasis">等待K线…</p>
+      <div class="technical-grid" id="technicalSummary"></div>
+      <details id="indicatorDetails"><summary>展开 RSI / MACD / ATR 副图（跟随主图时间范围）</summary>
+        <p class="technical-note">RSI14、ATR14 用 Wilder 平滑；MACD 用 EMA(12,26,9)，柱体=DIF−DEA。末根未收盘值为预览，不参与结构确认。历史模式只计算冻结基准日及以前的数据。</p>
+        <div class="indicator-title">RSI14 · 紫线 · 30 / 70 参考线</div><div class="indicator-pane" id="pane-rsi"></div>
+        <div class="indicator-title">MACD · DIF 黄线 / DEA 蓝线 / 红正绿负柱</div><div class="indicator-pane" id="pane-macd"></div>
+        <div class="indicator-title">ATR14 · 点数 · 波动尺度，不判断方向</div><div class="indicator-pane" id="pane-atr"></div>
+      </details>
+      <details open><summary>多周期结构对照</summary>
+        <p class="technical-note">摆动点须左右各2根已收盘K线确认，最新候选点不确认。各周期独立计算；分钟行情可能延迟。均线与动量仅供核对，不自动生成入场信号。</p>
+        <div class="technical-table-wrap"><table class="technical-table"><thead><tr><th>周期 / 来源 / 基准</th><th>摆动结构</th><th>最近边界</th><th>指标核对</th></tr></thead><tbody id="timeframeRows"></tbody></table></div>
+        <div class="technical-conflict" id="timeframeConflict"></div>
+      </details>
+      <details><summary>关键位观察与近期缺口</summary>
+        <p class="technical-note">基于已加载的已收盘日线。触碰容差为0.1 ATR，相邻触碰合并计一次；形成日期缺失时只列窗口观察，不能据此判定原计划失效。缺口回补按已收盘日线的高低价范围统计，未收盘日线不确认。</p>
+        <ul class="technical-levels" id="levelLifecycle"></ul><h3 class="indicator-title">最近5个高低价跳空缺口</h3><ul class="technical-levels" id="gapLifecycle"></ul>
+      </details>
+    </section>
     <!-- Marker detail (click) -->
     <div class="detail hidden" id="markerDetail"></div>
 
@@ -843,7 +868,7 @@
 
     <!-- Scenario cards（与情景区域联动） -->
     <div class="scenarios hidden" id="scenarioCards"></div>
-    <p class="prob-note hidden" id="probNote">ℹ︎ 置信度为模型主观评估，非历史统计概率，样本积累后将改为统计命中率；图上半透明情景区域只表达方向与可能范围，不表示逐日价格路径；以条件地图为准。</p>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 情景权重为主观评估，不是胜率；未来统计另按已结算样本展示。图上半透明情景区域只表达方向与可能范围，不表示逐日价格路径；以条件地图为准。</p>
 
     <!-- 详细分析（默认折叠，降低视觉优先级） -->
     <details class="more" id="moreDetails">
@@ -1024,6 +1049,38 @@
   var annotations = null;        // 当前渲染用的标注（最新 或 某天历史存档）
   var latestAnnotations = null;  // 最新 annotations.json 内容
   var viewingDate = null;        // null=最新；'YYYY-MM-DD'=正在回看该日冻结存档
+  var klineUpdatedAt = null, rejectedQuoteAt = null, yahooQuote = null;
+  var technicalPanel = new TechnicalPanel(chart, function(iv) {
+    return fetchBars(iv, IV_CONFIG[iv].intraday).then(function(r) {
+      return { bars:r.bars, source:r.source === 'futu' ? '富途 · 成交额' : 'Yahoo · 延迟行情' };
+    });
+  });
+  function updateTechnical() {
+    if (!currentBars || !currentBars.length) return;
+    technicalPanel.update({ bars:currentBars, iv:currentIv, source:klineSource === 'futu' ? '富途 · 成交额' : 'Yahoo · 延迟行情', annotations:annotations, date:viewingDate });
+  }
+  function updateDataQuality() {
+    var box=el('dataQuality'); if (!box) return;
+    var warnings=[], h=MarketRules.hk(), q=realtimeData || yahooQuote;
+    var qs=MarketRules.quoteState(q), qt=el('quoteTime');
+    qt.textContent=q ? ({live:'报价有效',paused:'午休报价', 'last-close':'最近收盘报价',stale:'报价已过期',missing:'报价待核对'})[qs]+' · '+new Date(q.ts*1000+28800000).toISOString().slice(0,19).replace('T',' ')+' HKT'+(q.source?' · '+q.source:'') : '有效报价未获取';
+    if (!MarketRules.known(h.date)) warnings.push('交易日历覆盖2026–2027年，请更新后再确认情景');
+    if (!isRealtimeFresh() && !MarketRules.validQuote(yahooQuote)) {
+      warnings.push('无有效源时间报价，当前价与触发判断待更新');
+      el('livePrice').textContent='--'; el('liveChg').textContent='报价待更新';
+      var jd=el('jdPrice'); if(jd) jd.textContent='--';
+    }
+    var issue=viewingDate?null:MarketRules.statusIssue(scenarioStatus,annotations);
+    if(issue)warnings.push(issue);
+    if (annotations && annotations.forecast) {
+      var date=annotations.forecast.applicable_date || (annotations.forecast.updatedAt||'').slice(0,10);
+      if (!viewingDate && date!==MarketRules.latestDay(Date.now(),false)) warnings.push('地图不是最近适用交易日，先核对分析日期');
+    }
+    if (rejectedQuoteAt) warnings.push('已拒绝过期上游报价（不会覆盖有效报价）');
+    var prefix=viewingDate?'历史模式：指标截至冻结基准；顶部行情单独显示最新报价。':'行情与判断分别校验；价格触及不代表收盘确认。';
+    box.textContent=prefix+(klineUpdatedAt?' K线源更新 '+klineUpdatedAt+'。':'')+(warnings.length?' ⚠ '+warnings.join('；'):' 数据校验通过。');
+    box.classList.toggle('warning',warnings.length>0);
+  }
   var priceLines = [];      // active price line handles
   var levelHitList = [];    // 供十字线悬停提示用的价位信息
   var levelGutterEl = el('levelGutter'); // 价位线文字标签栏（图内 priceLine title 迁出后的载体，在价格轴右侧）
@@ -1059,17 +1116,7 @@
   }
 
   // next N business days (skip Sat/Sun) after a business-day time object
-  function futureBusinessDays(lastTime, n) {
-    var out = [];
-    var d = new Date(Date.UTC(lastTime.year, lastTime.month - 1, lastTime.day));
-    while (out.length < n) {
-      d.setUTCDate(d.getUTCDate() + 1);
-      var dow = d.getUTCDay();
-      if (dow === 0 || dow === 6) continue;
-      out.push({ year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() });
-    }
-    return out;
-  }
+  function futureBusinessDays(lastTime, n) { return MarketRules.nextDays(lastTime, n); }
 
   function clearForecastSeries() {
     fcSeriesList.forEach(function (fs) {
@@ -1117,18 +1164,8 @@
   // ---------- 盈亏比（R/R）通用计算 ----------
   // 返回 null 表示数据不全/不合法，调用方应隐藏相应 UI（容错）
   function computeRR(rr) {
-    if (!rr || typeof rr.refPrice !== 'number' || typeof rr.target !== 'number' || typeof rr.stop !== 'number') return null;
-    var dir = rr.direction === 'short' ? 'short' : 'long';
-    var reward = dir === 'long' ? rr.target - rr.refPrice : rr.refPrice - rr.target;
-    var risk = dir === 'long' ? rr.refPrice - rr.stop : rr.stop - rr.refPrice;
-    if (reward <= 0 || risk <= 0) return null;
-    var ratio = reward / risk;
-    var grade = ratio >= 2 ? 'good' : (ratio >= 1 ? 'mid' : 'bad');
-    return {
-      dir: dir, reward: reward, risk: risk, ratio: ratio, grade: grade,
-      emoji: grade === 'good' ? '🟢' : grade === 'mid' ? '🟡' : '🔴',
-      verdict: grade === 'good' ? '划算' : grade === 'mid' ? '一般' : '不划算'
-    };
+    if (!rr) return null;
+    return MarketRules.rr(rr.entry == null ? rr.refPrice : rr.entry, rr.target, rr.stop, rr.direction);
   }
 
   function fmtRatio(r) {
@@ -1140,32 +1177,37 @@
   // 旧结构 {refPrice, target, stop, direction} → 按 direction 一条（向后兼容历史存档）。
   // 返回 [{dir, target, stop, stat}]，无合法数据返回空数组（调用方隐藏 UI）。
   function normalizeRRDirs(rr) {
-    if (!rr || typeof rr.refPrice !== 'number') return [];
+    if (!rr) return [];
     var out = [];
-    var push = function (dir, spec) {
-      if (!spec || typeof spec.target !== 'number' || typeof spec.stop !== 'number') return;
-      var stat = computeRR({ refPrice: rr.refPrice, target: spec.target, stop: spec.stop, direction: dir });
-      if (stat) out.push({ dir: dir, target: spec.target, stop: spec.stop, stat: stat });
-    };
-    if (rr.long || rr.short) {
-      push('long', rr.long);
-      push('short', rr.short);
-    } else if (typeof rr.target === 'number' && typeof rr.stop === 'number') {
-      push(rr.direction === 'short' ? 'short' : 'long', rr);
+    function push(dir, spec) {
+      if (!spec) return;
+      var entry = spec.entry == null ? rr.refPrice : spec.entry;
+      var stat = MarketRules.rr(entry, spec.target, spec.stop, dir);
+      if (stat) out.push({ dir: dir, entry: entry, target: spec.target, stop: spec.stop, stat: stat });
+    }
+    // Planned scenario entries take precedence; never silently move a stop or target.
+    var f = annotations && annotations.forecast;
+    if (f && rr === f.rr && Array.isArray(f.scenarios)) {
+      f.scenarios.forEach(function(sc) { if (sc.rr) push(sc.rr.direction === 'short' ? 'short' : 'long', sc.rr); });
+    }
+    if (!out.length) {
+      if (rr.long || rr.short) { push('long', rr.long); push('short', rr.short); }
+      else push(rr.direction === 'short' ? 'short' : 'long', rr);
     }
     return out;
   }
 
-  // 风险/回报区色块（仅日线，与情景区域一致）
-  // 双向数据时只画赔率更优的那一侧（另一侧在判断卡双向标尺里展示，图上双向叠画会互相遮盖）
   function renderRRZones(a, iv, bars) {
     clearRRSeries();
     var f = a && a.forecast;
     var dirs = f ? normalizeRRDirs(f.rr) : [];
     if (!dirs.length || iv !== '1d' || !bars.length) return;
-    var best = dirs.reduce(function (x, y) { return y.stat.ratio > x.stat.ratio ? y : x; });
+    var selected = activeScenario >= 0 && f.scenarios && f.scenarios[activeScenario];
+    var selectedRR = selected && selected.rr;
+    var selectedStat = selectedRR && computeRR(selectedRR);
+    var best = selectedStat ? { dir: selectedStat.dir, entry: selectedRR.entry, target: selectedRR.target, stop: selectedRR.stop, stat: selectedStat } : dirs[0];
     var stat = best.stat;
-    var refPrice = f.rr.refPrice;
+    var refPrice = best.entry;
     var rrAnchorIdx = anchorIndex(a, bars);
     var anchorBar = bars[rrAnchorIdx];
     var times = [anchorBar.time].concat(timesAfterAnchor(bars, rrAnchorIdx, 5));
@@ -1308,6 +1350,7 @@
   }
 
   function applyScenarioVisibility() {
+    if (annotations && currentBars.length) renderRRZones(annotations, currentIv, currentBars);
     // 切换前后保持时间轴视野不变：先记下当前 logical range，切换后原样恢复（安全网，
     // 配合颜色透明化方案，确保情景卡切换时用户的缩放/平移位置不被重置）
     var savedRange = null;
@@ -1380,12 +1423,7 @@
 
   // ---------- 盘中参考面板（annotations.intraday_playbook，字段缺失则整个隐藏） ----------
   // 当前价优先级：东财实时（新鲜）> scenario_status.metrics.price > 最新K线收盘
-  function intradayRefPrice() {
-    if (isRealtimeFresh() && typeof realtimeData.price === 'number' && realtimeData.price > 0) return realtimeData.price;
-    if (scenarioStatus && scenarioStatus.metrics && typeof scenarioStatus.metrics.price === 'number') return scenarioStatus.metrics.price;
-    if (currentBars.length) return currentBars[currentBars.length - 1].close;
-    return null;
-  }
+  function intradayRefPrice() { return isRealtimeFresh() && MarketRules.quoteState(realtimeData) === 'live' ? realtimeData.price : null; }
 
   // 区间匹配：lo ≤ px < hi；null 表示开放端，任何跳空价格都能落入某个区间
   function zoneContains(z, px) {
@@ -1528,18 +1566,10 @@
   // 当前参考价：东财实时价新鲜且非历史回看时用实时价；否则用标注里的 refPrice/basePrice（历史存档=当日冻结价）。
   function scenarioRefPrice(f) {
     if (!viewingDate && isRealtimeFresh() && typeof realtimeData.price === 'number') return realtimeData.price;
+    if (!viewingDate) return null;
     if (f && f.rr && typeof f.rr.refPrice === 'number') return f.rr.refPrice;
     if (f && typeof f.basePrice === 'number') return f.basePrice;
     return null;
-  }
-
-  // 触发状态判定：用当前价 vs 情景入场价（rr.entry）方向比较；无可判定字段 → 默认等待态（容错）。
-  // 注：价格触及仅为必要条件近似（真实触发还要求量能/收盘确认），文案用「价格触及」避免误导。
-  function scenarioTriggerState(sc, refPx) {
-    var rr = sc && sc.rr;
-    if (!rr || typeof rr.entry !== 'number' || typeof refPx !== 'number') return 'wait';
-    var dir = rr.direction === 'short' ? 'short' : 'long';
-    return (dir === 'long' ? refPx >= rr.entry : refPx <= rr.entry) ? 'fired' : 'wait';
   }
 
   // 横向价格标尺条：止损—入场—目标三刻度 + 红/绿盈亏分段 + 当前价游标 + 赔率。
@@ -1564,7 +1594,8 @@
     var segHtml =
       '<div class="sc-seg loss" style="left:' + Math.min(pStop, pEntry).toFixed(1) + '%;width:' + Math.abs(pEntry - pStop).toFixed(1) + '%"></div>' +
       '<div class="sc-seg gain" style="left:' + Math.min(pEntry, pTarget).toFixed(1) + '%;width:' + Math.abs(pTarget - pEntry).toFixed(1) + '%"></div>';
-    var cursorHtml = hasCur ? '<div class="sc-cursor" style="left:' + pos(refPx).toFixed(1) + '%" title="当前价 ' + fmt(Math.round(refPx)) + '"></div>' : '';
+    var cursorLabel = viewingDate ? '冻结基准' : '当前价';
+    var cursorHtml = hasCur ? '<div class="sc-cursor" style="left:' + pos(refPx).toFixed(1) + '%" title="' + cursorLabel + ' ' + fmt(Math.round(refPx)) + '"></div>' : '';
     // 标签按标尺实际左中右顺序排列（做空时 target 在左、stop 在右）
     var pts = [
       { p: pStop, label: '止损', px: rr.stop },
@@ -1584,7 +1615,7 @@
         cursorHtml +
       '</div>' +
       '<div class="sc-ruler-labels">' + labelHtml + '</div>' +
-      (hasCur ? '<div class="sc-cursor-note">▼ 当前价 ' + fmt(Math.round(refPx)) + '</div>' : '') +
+      (hasCur ? '<div class="sc-cursor-note">▼ ' + cursorLabel + ' ' + fmt(Math.round(refPx)) + '</div>' : '') +
     '</div>';
   }
 
@@ -1595,11 +1626,12 @@
     return fetch('scenario_status.json?t=' + Date.now()).then(function (r) {
       if (!r.ok) throw new Error('status ' + r.status);
       return r.json();
-    }).catch(function () { return null; });
+    }).then(function(d) { return MarketRules.sanitizeStatus(d); }).catch(function () { return null; });
   }
 
   // judgment_mode 胶囊：收盘定案 / 盘中预览（波段口径：最终打勾以收盘为准）
   function jmBadgeHtml() {
+    if (MarketRules.statusIssue(scenarioStatus, annotations)) return '<span class="jm-badge preview">待核对</span>';
     var jm = scenarioStatus && scenarioStatus.judgment_mode;
     if (jm === 'close_final') return '<span class="jm-badge final" title="收盘定案：收盘确认类条件已用收盘价判定">收盘定</span>';
     if (jm === 'intraday_preview') return '<span class="jm-badge preview" title="盘中预览：现价近似收盘价，若此刻收盘则如图；最终打勾以收盘为准，不构成操作信号">盘中预览</span>';
@@ -1608,17 +1640,13 @@
 
   // 按情景名首字母（A/B/C…）匹配 scenario_status.scenarios[].name_prefix
   function statusForScenario(sc) {
-    if (!scenarioStatus || !Array.isArray(scenarioStatus.scenarios) || !sc || !sc.name) return null;
-    var name = String(sc.name).trim();
-    for (var i = 0; i < scenarioStatus.scenarios.length; i++) {
-      var s = scenarioStatus.scenarios[i];
-      if (s && s.name_prefix && name.indexOf(s.name_prefix) === 0) return s;
-    }
-    return null;
+    if (MarketRules.statusIssue(scenarioStatus, annotations) || !Array.isArray(scenarioStatus.scenarios) || !sc) return null;
+    var id = sc.id || String(sc.name || '').split(' ')[0];
+    return scenarioStatus.scenarios.find(function(s) { return s && (s.id || s.name_prefix) === id; }) || null;
   }
 
-  // 触发 badge：优先用 scenario_status.json 的 core 触发判定（core 全满足=已触发）；
-  // 无清单数据/历史回看时回退旧的价格近似判定（现价 vs rr.entry）。
+  // Price proximity is not a substitute for the scenario's close/volume conditions.
+
   function scenarioBadgeHtml(sc, refPx) {
     var st = viewingDate ? null : statusForScenario(sc);
     if (st && typeof st.core_total === 'number' && st.core_total > 0 &&
@@ -1632,9 +1660,8 @@
       }
       return '<span class="sc-status wait" title="核心结构条件未全部满足' + (preview ? '（盘中预览，最终以收盘为准）' : '') + '">⏳ 未触发（core ' + st.core_met + '/' + st.core_total + '）</span>';
     }
-    return scenarioTriggerState(sc, refPx) === 'fired'
-      ? '<span class="sc-status fired" title="当前价已触及入场价位（价格条件近似判定，量能/收盘确认仍需人工核实）">✅ 条件触发</span>'
-      : '<span class="sc-status wait" title="当前价未触及入场价位，或无可判定字段">⏳ 等待触发</span>';
+    var reason = viewingDate ? '历史冻结计划，未重放条件结算' : MarketRules.statusIssue(scenarioStatus, annotations) || '情景规则未匹配';
+    return '<span class="sc-status wait" title="' + escapeHtml(reason) + '">⏳ ' + (viewingDate ? '历史条件未回放' : '条件待确认') + '</span>';
   }
 
   // checklist HTML：每条条件 ✅已满足 / ⬜未满足 / ⏳数据待更新；
@@ -1642,7 +1669,7 @@
   function scenarioChecklistHtml(sc) {
     if (viewingDate) return '';   // 历史回看模式不显示实时条件清单
     var st = statusForScenario(sc);
-    if (!st || !Array.isArray(st.conditions) || st.conditions.length === 0) return '';
+    if (!st || !Array.isArray(st.conditions) || st.conditions.length === 0) return '<div class="sc-checklist">' + escapeHtml(MarketRules.statusIssue(scenarioStatus, annotations) || '情景条件未匹配') + '；不使用价格触及代替确认。</div>';
     var stale = !!(scenarioStatus && scenarioStatus.data_stale);
     var upd = '';
     if (scenarioStatus && scenarioStatus.updated_at) {
@@ -1696,8 +1723,7 @@
     if (!stale && st.triggered === true && typeof st.confirm_total === 'number' && st.confirm_total > 0) {
       var s = st.strength || (st.confirm_met === st.confirm_total ? '强' : (st.confirm_met === 0 ? '弱' : '中'));
       var scls = s === '强' ? 'strong' : (s === '中' ? 'mid' : 'weak');
-      var tip = s === '强' ? '结构+量资共振，高置信度'
-        : (s === '弱' ? '结构成立·量资未确认，轻仓试探级别' : '结构成立·量资部分确认，中等置信度');
+      var tip = s === '待验证' ? '部分确认数据缺失，不推断强度' : s === '强' ? '已提供的确认条件均满足，不等于预测胜率' : '仅部分确认条件满足';
       strengthHtml = '<div class="sc-strength ' + scls + '">确认强度：<b>' + s + '</b>（确认条件 ' + st.confirm_met + '/' + st.confirm_total + '）' +
         '<span class="sc-strength-tip">' + tip + '</span></div>';
     }
@@ -1721,39 +1747,24 @@
     '</div>';
   }
 
-  // 实时赔率补充行：用 scenario_status.json 的 metrics.price 作为「此刻进场」的实际入场价重算 RR。
-  // 固定标尺是计划赔率（按 rr.entry 参与）；此行回答「现在这个价追进去还划不划算」。
+  // 当前有效源报价到计划目标/止损的距离比，不代表可成交价格或入场信号。
   // rr 缺失 / 无现价 / 历史回看模式 → 返回空串不渲染（容错）。rr.interim（中途目标）按需求忽略。
   function scenarioLiveRRHtml(sc) {
-    if (viewingDate) return '';
-    var rr = sc && sc.rr;
-    if (!rr || typeof rr.entry !== 'number' || typeof rr.target !== 'number' || typeof rr.stop !== 'number') return '';
-    var px = (scenarioStatus && scenarioStatus.metrics && typeof scenarioStatus.metrics.price === 'number')
-      ? scenarioStatus.metrics.price : null;
-    if (px === null) return '';
-    var dir = rr.direction === 'short' ? 'short' : 'long';
-    var body;
-    if ((dir === 'short' && px - rr.entry > 200) || (dir === 'long' && rr.entry - px > 200)) {
-      // 方向与当前价格位置矛盾（偏离入场价 >200 点、且在未入场一侧）→ 情景未触发
-      body = '<span class="sc-live-flag">未触发</span>';
-    } else if (dir === 'long' ? px >= rr.target : px <= rr.target) {
-      body = '<span class="sc-live-flag">已达标</span>';
-    } else if (dir === 'long' ? px <= rr.stop : px >= rr.stop) {
-      body = '<span class="sc-live-flag">已失效</span>';
-    } else {
-      var reward = Math.abs(rr.target - px);
-      var risk = Math.abs(px - rr.stop);
-      if (!(risk > 0)) return '';
-      var ratio = reward / risk;
-      var grade = ratio >= 2 ? 'good' : (ratio >= 1 ? 'mid' : 'bad');
-      body = '<b class="sc-live-num ' + grade + '">' + fmtRatio(ratio) + '</b>' +
-        (risk < 30 ? '<span class="sc-live-warn">⚠️贴近止损</span>' : '');
-    }
-    return '<div class="sc-live-rr" title="用最近一次数据更新的现价作为实际入场价重算的盈亏比（|目标-现价| ÷ |现价-止损|）；上方标尺为按计划入场价的固定赔率">' +
-      '<span>实时赔率（按当前价 ' + fmt(Math.round(px)) + ' 参与）</span>' + body + '</div>';
+    if (viewingDate || !sc || !sc.rr) return '';
+    var rr = sc.rr;
+    if (!computeRR(rr)) return '<div class="sc-live-rr">计划入场、止损与目标方向不合法，待核对</div>';
+    if (!isRealtimeFresh()) return '<div class="sc-live-rr">当前报价不可验证，不计算现价距离比</div>';
+    var px = realtimeData.price;
+    var stat = MarketRules.rr(px, rr.target, rr.stop, rr.direction);
+    var body = stat ? '<b class="sc-live-num ' + stat.grade + '">' + fmtRatio(stat.ratio) + '</b>' : '<span class="sc-live-flag">现价已在计划止损—目标范围外</span>';
+    var d = TechnicalAnalysis.summary(currentBars);
+    var atr = currentIv === '1d' && d && d.atr;
+    if (stat && atr > 0) body += '<span class="sc-live-warn">止损距离 ' + (stat.risk / atr).toFixed(2) + ' ATR</span>';
+    return '<div class="sc-live-rr"><span>现价距离比（' + fmt(px) + '，未含费用/滑点）</span>' + body + '</div>';
   }
 
-  // 只重渲染各卡片内的 checklist / 实时赔率区块，不重建整卡 DOM（保留用户展开的折叠区/选中态）
+  // Refresh dependent displays together so badges, cursors and ratios use one quote.
+
   function refreshScenarioChecklists() {
     if (viewingDate || !annotations) return;
     var f = annotations.forecast;
@@ -1777,17 +1788,10 @@
   // 盘中（周一至五 09:30–16:10 北京时间）维持正式冻结 ABC 展示；其余时段（收盘后/盘前/周末）
   // 若 next_day_draft 存在 → 判定「当日正式 ABC 已结算过期」，主卡区域切至草稿。
   function isScenarioSettled(a) {
-    if (!a || !a.next_day_draft) return false;
-    if (viewingDate) return false;   // 历史回看不切换，保留当日原始留痕
-    var meta = a.meta || {};
-    if (String(meta.note || '').indexOf('盘后更新') !== -1) return true;
-    var now = new Date();
-    // 用 getTimezoneOffset 把本地时区折算到北京时间（+480 分钟）
-    var bj = new Date(now.getTime() + (480 + now.getTimezoneOffset()) * 60000);
-    var dow = bj.getDay();
-    if (dow === 0 || dow === 6) return true;
-    var mi = bj.getHours() * 60 + bj.getMinutes();
-    return mi < 570 || mi >= 970;    // < 09:30 或 ≥ 16:10
+    if (!a || !a.next_day_draft || viewingDate) return false;
+    var f = a.forecast || {}, applicable = f.applicable_date || (f.updatedAt || a.meta && a.meta.updatedAt || '').slice(0,10);
+    var h = MarketRules.hk(), t = MarketRules.tradingDay(applicable);
+    return t === true && (h.date > applicable || (h.date === applicable && h.minute >= MarketRules.closeMinute(applicable)));
   }
 
   function renderScenarioCards(a) {
@@ -1809,8 +1813,8 @@
       if (scenarios.length) {
         var bar = document.createElement('div');
         bar.className = 'sc-settled-bar';
-        var lbl = '今日情景已结算';
-        if (scenarioStatus && Array.isArray(scenarioStatus.scenarios)) {
+        var lbl = '当日地图已到期（结算结果另查预测战绩）';
+        if (!MarketRules.statusIssue(scenarioStatus, a) && Array.isArray(scenarioStatus.scenarios)) {
           var fired = scenarioStatus.scenarios.filter(function (s) { return s && s.triggered; });
           if (fired.length) lbl += '（已触发 ' + fired.map(function (s) { return s.name_prefix; }).join('/') + '）';
           else lbl += '（未触发/已失效）';
@@ -1830,7 +1834,7 @@
             '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + '</span>' +
             (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
             (moreRows ? '<details class="sc-more"><summary>触发条件与失效线</summary>' + moreRows + '</details>' : '') +
-            '<div class="sc-row" style="font-size:11px;opacity:0.6">⏸ 已结算，仅留痕参考</div>';
+            '<div class="sc-row" style="font-size:11px;opacity:0.6">⏸ 已到期，仅留痕参考</div>';
           oldGrid.appendChild(card);
         });
         bar.addEventListener('click', function () {
@@ -1914,12 +1918,12 @@
       var holdingHtml = sc.holding_period ? '<span class="sc-holding" title="预期持仓周期">⏱ 持仓 ' + escapeHtml(sc.holding_period) + '</span>' : '';
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
-          '<span class="sc-prob" title="置信度为模型主观评估，非历史统计概率">' + Math.round((sc.probability || 0) * 100) + '%</span></div>' +
+          '<span class="sc-prob" title="主观情景权重，不是历史命中率">' + Math.round((sc.probability || 0) * 100) + '% 权重</span></div>' +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + holdingHtml + '</span>' +
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>' +
         numsHtml +
-        scenarioRulerHtml(sc, refPx) +
+        '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' +
         '<div class="sc-live-rr-holder">' + scenarioLiveRRHtml(sc) + '</div>' +
         (moreRows ? '<details class="sc-more"><summary>详情与备注</summary>' + moreRows + '</details>' : '') +
         '<div class="sc-tip">点击卡片单独查看该情景区域</div>';
@@ -1947,6 +1951,8 @@
       if (!sc) return;
       var badge = card.querySelector('.sc-status');
       if (badge) badge.outerHTML = scenarioBadgeHtml(sc, refPx);
+      var ruler = card.querySelector('.sc-ruler-holder');
+      if (ruler) ruler.innerHTML = scenarioRulerHtml(sc, refPx);
       var track = card.querySelector('.sc-track');
       var cursor = card.querySelector('.sc-cursor');
       if (track && cursor) {
@@ -1971,6 +1977,9 @@
     return fetch(url).then(function (r) {
       if (!r.ok) throw new Error('API ' + r.status);
       return r.json();
+    }).then(function(data) {
+      if (!data.timestamp || !data.timestamp.length || !toBars(data, IV_CONFIG[iv].intraday).length) throw new Error('行情为空');
+      return data;
     });
   }
 
@@ -2010,18 +2019,19 @@
         .then(function (fj) {
           var bars = futuToBars(fj);
           if (!bars.length) throw new Error('futu json empty');
-          klineSource = 'futu';
-          return { bars: bars, raw: null };
+          var expected = MarketRules.latestDay(Date.now(), false);
+          if (!expected || MarketRules.dayString(bars[bars.length-1].time) !== expected) throw new Error('futu date stale');
+          if (MarketRules.session().active && Date.now() - MarketRules.timestamp(fj.updated_at) > 15*60000) throw new Error('futu update stale');
+          return { bars: MarketRules.markBars(bars, iv), raw: null, source: 'futu', updatedAt: fj.updated_at };
         })
         .catch(function () {
           return fetchKline(iv).then(function (data) {
-            klineSource = 'yahoo';
-            return { bars: toBars(data, intraday), raw: data };
+            return { bars: MarketRules.markBars(toBars(data, intraday), iv), raw: data, source: 'yahoo', updatedAt: data.regularMarketTime ? new Date(data.regularMarketTime*1000).toISOString() : null };
           });
         });
     }
     return fetchKline(iv).then(function (data) {
-      return { bars: toBars(data, intraday), raw: data };
+      return { bars: MarketRules.markBars(toBars(data, intraday), iv), raw: data, source: 'yahoo', updatedAt: data.regularMarketTime ? new Date(data.regularMarketTime*1000).toISOString() : null };
     });
   }
 
@@ -2046,7 +2056,7 @@
       }
       var vArr = data.volume || [];
       bars.push({
-        time: t,
+        time: t, marketTime: ts[i],
         open: round2(o[i]), high: round2(h[i]),
         low: round2(l[i]), close: round2(c[i]),
         volume: vArr[i] != null ? vArr[i] : null
@@ -2090,6 +2100,9 @@
     // 东财实时数据有效时，Yahoo 的延迟现价不再覆盖头部（避免tab切换时价格"跳回"延迟值）
     if (isRealtimeFresh()) return;
     var px = data.regularMarketPrice;
+    var quote = { price: px, ts: data.regularMarketTime };
+    if (!MarketRules.validQuote(quote)) { rejectedQuoteAt = quote.ts; updateDataQuality(); return; }
+    yahooQuote = quote;
     var prev = data.previousClose;
     if (px == null) return;
     el('livePrice').textContent = px.toLocaleString('en-US', { maximumFractionDigits: 2 });
@@ -2113,22 +2126,10 @@
   var realtimeAt = 0;         // 本地拿到该数据的时间戳(ms)
   var realtimeTimer = null;
 
-  function isRealtimeFresh() {
-    return realtimeData && (Date.now() - realtimeAt) < 10 * 60 * 1000;
-  }
+  function isRealtimeFresh() { return MarketRules.validQuote(realtimeData); }
 
-  // 港股交易时段判断（HKT 09:30-12:00 / 13:00-16:00，周一至周五）
-  function isHKTradingTime() {
-    var now = new Date();
-    var hktMs = now.getTime() + (now.getTimezoneOffset() + 480) * 60000;
-    var hkt = new Date(hktMs);
-    var dow = hkt.getDay();
-    if (dow === 0 || dow === 6) return false;
-    var m = hkt.getHours() * 60 + hkt.getMinutes();
-    return (m >= 570 && m <= 725) || (m >= 780 && m <= 965); // 收盘后留5分钟缓冲拿收盘值
-  }
+  function isHKTradingTime() { return MarketRules.session().active; }
 
-  // 东财 ts(unix秒) → HKT 日期对象（与日线 bar.time 同构）
   function hktDateOf(ts) {
     var d = new Date((ts + 28800) * 1000);
     return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
@@ -2145,12 +2146,17 @@
   function applyRealtime(rt) {
     if (!rt || rt.error || typeof rt.price !== 'number' || rt.price <= 0 || typeof rt.ts !== 'number') return;
     // 时间戳必须是最近的（7天内），防止上游返回陈旧数据污染图表
-    if (Math.abs(Date.now() / 1000 - rt.ts) > 7 * 86400) return;
+    if (!MarketRules.validQuote(rt)) { rejectedQuoteAt = rt.ts; updateDataQuality(); return; }
+    if (realtimeData && rt.ts < realtimeData.ts) return;
+    rejectedQuoteAt = null;
     realtimeData = rt;
-    realtimeAt = Date.now();
+    realtimeAt = rt.ts * 1000;
     updateHeaderFromRealtime(rt);
     mergeRealtimeIntoChart(rt);
     refreshScenarioLive();
+    refreshScenarioChecklists();
+    updateTechnical();
+    updateDataQuality();
     renderIntradayPanel(); // 实时价变化 → 重新匹配盘中参考区间
   }
 
@@ -2196,13 +2202,18 @@
       high: round2(rt.high),
       low: round2(rt.low),
       close: round2(rt.price),
-      volume: estimateTodayVolume(rt, prevBar)
+      volume: estimateTodayVolume(rt, prevBar),
+      partial: !(rt.final === true && MarketRules.hk(rt.ts*1000).minute >= MarketRules.closeMinute(MarketRules.hk(rt.ts*1000).date)),
+      volumeEstimated: klineSource === 'yahoo'
     };
     var lastTs = Date.UTC(last.time.year, last.time.month - 1, last.time.day);
     var rtTs = Date.UTC(rtDate.year, rtDate.month - 1, rtDate.day);
     if (rtTs < lastTs) return; // 实时数据比Yahoo最后一根还旧，不动
     // 当日K线已收盘定型（非 partial）且有真实量能时，保留原值不用实时换算值；
     // 富途盘中 partial K线的成交额允许被更实时的东财 amount 覆盖
+    if (!isNewBar && !last.partial && rtTs <= lastTs && MarketRules.hk(rt.ts*1000).minute >= MarketRules.closeMinute(MarketRules.dayString(last.time))) {
+      return; // A provisional quote cannot rewrite a confirmed daily bar.
+    }
     if (!isNewBar && !last.partial && typeof last.volume === 'number' && last.volume > 0) {
       bar.volume = last.volume;
     }
@@ -2228,6 +2239,7 @@
 
   function scheduleRealtime() {
     if (realtimeTimer) clearTimeout(realtimeTimer);
+    updateDataQuality(); refreshScenarioChecklists();
     var delay = isHKTradingTime() ? 30000 : 300000; // 盘中30秒 / 盘外5分钟
     realtimeTimer = setTimeout(function () {
       fetchRealtime().then(function (rt) {
@@ -2273,12 +2285,16 @@
   }
 
   // ---------- 顶部状态条（极简一行：日期 + 偏向胶囊 + 当前价 + 关键区间；判断依据折叠收纳） ----------
-  // 关键区间：优先取 keyLines 里的最低支撑与最近修复/压力位；缺失时回退 targetLower/targetUpper；再缺失则不显示。
+  // 展示包围参考价的相邻关键位；避免将最远的两条支撑误标为当前区间。
   function statusRange(f, c) {
     var lines = (c && Array.isArray(c.keyLines)) ? c.keyLines.filter(function (kl) { return kl && typeof kl.price === 'number'; }) : [];
     if (lines.length >= 2) {
       var ps = lines.map(function (kl) { return kl.price; }).sort(function (x, y) { return x - y; });
-      return [ps[0], ps[1]]; // 最低支撑 → 第一个上方关键位（如 24,276–24,650）
+      var px = f && f.basePrice;
+      if (!Number.isFinite(px)) return null;
+      var lower = ps.filter(function(p) { return p <= px; }).pop();
+      var upper = ps.find(function(p) { return p > px; });
+      return lower != null && upper != null ? [lower, upper] : null;
     }
     if (f && typeof f.targetLower === 'number' && typeof f.targetUpper === 'number') return [f.targetLower, f.targetUpper];
     return null;
@@ -2292,17 +2308,17 @@
     if (!f || !c) { box.classList.add('hidden'); box.innerHTML = ''; return; }
     var toneCls = ({ weak: 'weak', bear: 'bear', bull: 'bull' })[c.stateTone] || 'weak';
     var basePx = typeof f.basePrice === 'number' ? Math.round(f.basePrice) : null;
-    var dateStr = viewingDate || f.baseDate || '';
+    var dateStr = viewingDate || f.applicable_date || f.baseDate || '';
     var dateHtml = dateStr
       ? '<span class="sb-date">' + escapeHtml(cnDate(dateStr)) + (weekdayOf(dateStr) ? '（' + weekdayOf(dateStr) + '）' : '') +
         (viewingDate ? ' <span class="sb-frozen-tag">冻结</span>' : '') + '</span>'
       : '';
     var range = statusRange(f, c);
     var pxHtml = basePx != null
-      ? '<span class="sb-kv">' + (viewingDate ? '当日基准' : '现价') + ' <b' + (viewingDate ? '' : ' id="jdPrice"') + '>' + fmt(basePx) + '</b></span>'
+      ? '<span class="sb-kv">' + (viewingDate ? '当日基准' : '当前参考') + ' <b' + (viewingDate ? '' : ' id="jdPrice"') + '>' + fmt(basePx) + '</b></span>'
       : '';
     var rangeHtml = range
-      ? '<span class="sb-kv">关键区间 <b>' + fmt(range[0]) + '–' + fmt(range[1]) + '</b></span>'
+      ? '<span class="sb-kv">分析基准邻近区间 <b>' + fmt(range[0]) + '–' + fmt(range[1]) + '</b></span>'
       : '';
 
     // 折叠区：原判断卡的全部依据（关键价位 / 主情景一句话 / 改变与失效条件）
@@ -2359,7 +2375,7 @@
 
   function renderDisclaimer(a) {
     if (a && a.disclaimer) {
-      el('disclaimerText').textContent = '标注由 miniGG 维护 · ' + a.disclaimer;
+      el('disclaimerText').textContent = '标注由 miniGG 维护 · ' + a.disclaimer.replace('样本积累后将改为统计命中率', '情景权重与未来历史命中率分别展示');
     }
   }
 
@@ -2692,6 +2708,7 @@
     patternByTime = {};
     if (typeof CandlePatterns === 'undefined' || !bars.length) return;
     var hits;
+    bars = bars.filter(function(b) { return !b.partial; });
     try { hits = CandlePatterns.detect(bars, { intraday: IV_CONFIG[iv].intraday }); }
     catch (e) { return; }
     hits.forEach(function (hit) {
@@ -2848,6 +2865,8 @@
     fetchBars(iv, intraday).then(function (result) {
       if (currentIv !== iv) return; // stale response
       currentBars = result.bars;
+      klineSource = result.source;
+      klineUpdatedAt = result.updatedAt;
       series.setData(currentBars);
       volumeSeries.setData(toVolumeData(currentBars));
       updateMALines(currentBars);
@@ -2868,6 +2887,7 @@
         renderForecastZones(annotations, iv, currentBars);
         renderRRZones(annotations, iv, currentBars);
       }
+      updateTechnical(); updateDataQuality();
       if (viewingDate && iv === '1d') setHistView(); else setDefaultView(iv);
       loadingEl.classList.add('hidden');
     }).catch(function (err) {
@@ -3052,8 +3072,8 @@
   }
 
   function applyAnnotations(a) {
+    if (!annotations || viewingDate || (annotations.meta && annotations.meta.analysis_id) !== (a && a.meta && a.meta.analysis_id)) activeScenario = -1;
     annotations = a;
-    activeScenario = -1;
     renderStructBanner(a);
     renderStatusBar(a);
     renderForecast(a);
@@ -3064,6 +3084,7 @@
     renderDisclaimer(a);
     renderIntradayPanel();
     renderNextDayDraft(a);
+    updateTechnical(); updateDataQuality();
     hideMarkerDetail();
     if (currentBars.length > 0 && a) {
       renderLevels(a, currentIv);
@@ -3327,11 +3348,11 @@
 
   // 情景条件清单：首次拉取 + 每小时自动重新 fetch scenario_status.json 并重渲染
   fetchScenarioStatus().then(function (s) {
-    if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
+    if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
   });
   setInterval(function () {
     fetchScenarioStatus().then(function (s) {
-      if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
+      if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
     });
   }, 60 * 60 * 1000);
 
@@ -3340,12 +3361,13 @@
     var fab = document.getElementById('fabRefresh');
     if (!fab || fab.classList.contains('spinning')) return;
     fab.classList.add('spinning');
+    technicalPanel.refresh();
     var tasks = [
       fetchAnnotations().then(function (a) {
         if (a) { latestAnnotations = a; if (!viewingDate) applyAnnotations(a); }
       }),
       fetchScenarioStatus().then(function (s) {
-        if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
+        if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
       }),
       fetchRealtime().then(function (rt) { applyRealtime(rt); }),
       refreshMirror()
@@ -3376,7 +3398,7 @@
       if (a) { latestAnnotations = a; if (!viewingDate) applyAnnotations(a); }
     });
     fetchScenarioStatus().then(function (s) {
-      if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); }
+      if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
     });
   }, 5 * 60 * 1000);
 })();

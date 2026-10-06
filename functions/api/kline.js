@@ -81,6 +81,7 @@ export async function onRequest(context) {
           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(8000),
     });
   } catch (e) {
     return json({ error: 'upstream fetch failed', detail: String(e) }, 502, corsHeaders);
@@ -111,7 +112,9 @@ export async function onRequest(context) {
     range,
     gmtoffset: meta.gmtoffset || 28800,
     regularMarketPrice: meta.regularMarketPrice ?? null,
-    previousClose: meta.chartPreviousClose ?? null,
+    // chartPreviousClose is the beginning of the requested range, not yesterday.
+    regularMarketTime: meta.regularMarketTime ?? null,
+    previousClose: meta.previousClose ?? (interval === '1wk' ? null : previousSessionClose(result.timestamp, q.close || [], meta.regularMarketTime)),
     fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh ?? null,
     fiftyTwoWeekLow: meta.fiftyTwoWeekLow ?? null,
     timestamp: result.timestamp,
@@ -130,6 +133,16 @@ export async function onRequest(context) {
 
   context.waitUntil(cache.put(cacheKey, response.clone()));
   return response;
+}
+
+function previousSessionClose(timestamps, closes, quoteTime) {
+  if (!Number.isFinite(quoteTime)) return null;
+  const quoteDay = new Date((quoteTime + 28800) * 1000).toISOString().slice(0, 10);
+  for (let i = timestamps.length - 1; i >= 0; i--) {
+    const day = new Date((timestamps[i] + 28800) * 1000).toISOString().slice(0, 10);
+    if (day < quoteDay && Number.isFinite(closes[i])) return closes[i];
+  }
+  return null;
 }
 
 function json(obj, status = 200, extraHeaders = {}) {

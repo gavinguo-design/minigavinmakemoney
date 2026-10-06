@@ -1,0 +1,3269 @@
+{
+  "document": {
+    "title": "Option Volatility & Pricing: Advanced Trading Strategies and Techniques",
+    "author": "Sheldon Natenberg",
+    "edition": "Second edition / revised edition; copyright page 1994",
+    "pdf_page_count": 475,
+    "source_file": "Option Volatility Pricing Advanced Trading Strategies and Techniques (Sheldon Natenberg) (z-library.sk, 1lib.sk, z-lib.sk).pdf",
+    "source_sha256": "4c5b39195314948d805ef49a3daba5625a26b8b1493a84bc65a2713b94992ada"
+  },
+  "coverage": {
+    "pages_rendered": 475,
+    "pages_ocr_reviewed": 475,
+    "pages_visual_inventory_reviewed": 475,
+    "unreadable_pages": [],
+    "coverage_complete": true
+  },
+  "pages": {
+    "4": {
+      "tags": [
+        "front_matter",
+        "table"
+      ],
+      "ocr_chars": 588
+    },
+    "3": {
+      "tags": [
+        "front_matter"
+      ],
+      "ocr_chars": 216
+    },
+    "7": {
+      "tags": [
+        "front_matter",
+        "table"
+      ],
+      "ocr_chars": 803
+    },
+    "2": {
+      "tags": [
+        "front_matter"
+      ],
+      "ocr_chars": 487
+    },
+    "6": {
+      "tags": [
+        "front_matter",
+        "table"
+      ],
+      "ocr_chars": 879
+    },
+    "5": {
+      "tags": [
+        "front_matter",
+        "table",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 870
+    },
+    "1": {
+      "tags": [
+        "front_matter"
+      ],
+      "ocr_chars": 262
+    },
+    "9": {
+      "tags": [
+        "front_matter",
+        "table"
+      ],
+      "ocr_chars": 285
+    },
+    "10": {
+      "tags": [
+        "front_matter",
+        "table"
+      ],
+      "ocr_chars": 2936
+    },
+    "8": {
+      "tags": [
+        "front_matter",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 853
+    },
+    "20": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3642
+    },
+    "14": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 2409
+    },
+    "17": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1434
+    },
+    "16": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 413
+    },
+    "18": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 847
+    },
+    "15": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3358
+    },
+    "11": {
+      "tags": [
+        "front_matter",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2387
+    },
+    "13": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 2982
+    },
+    "12": {
+      "tags": [
+        "front_matter"
+      ],
+      "ocr_chars": 2730
+    },
+    "19": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1738
+    },
+    "22": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1944
+    },
+    "27": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3650
+    },
+    "30": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 360
+    },
+    "25": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 869
+    },
+    "29": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1505
+    },
+    "24": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3687
+    },
+    "26": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2474
+    },
+    "21": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 2581
+    },
+    "28": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1856
+    },
+    "23": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3521
+    },
+    "36": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1341
+    },
+    "39": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 275
+    },
+    "37": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1215
+    },
+    "35": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1689
+    },
+    "31": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1920
+    },
+    "38": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 607
+    },
+    "40": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1691
+    },
+    "34": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1850
+    },
+    "33": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1794
+    },
+    "32": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1770
+    },
+    "47": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 342
+    },
+    "45": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1141
+    },
+    "48": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2711
+    },
+    "44": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 2623
+    },
+    "46": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 568
+    },
+    "43": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 337
+    },
+    "49": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2852
+    },
+    "41": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 421
+    },
+    "50": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3344
+    },
+    "42": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1519
+    },
+    "57": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3385
+    },
+    "60": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3073
+    },
+    "55": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2878
+    },
+    "58": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 2398
+    },
+    "54": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3242
+    },
+    "56": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3156
+    },
+    "51": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3533
+    },
+    "53": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2619
+    },
+    "59": {
+      "tags": [
+        "table",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3111
+    },
+    "52": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3320
+    },
+    "67": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1553
+    },
+    "68": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1632
+    },
+    "65": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1228
+    },
+    "61": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3335
+    },
+    "69": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3138
+    },
+    "62": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 1097
+    },
+    "64": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1326
+    },
+    "63": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2391
+    },
+    "66": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1443
+    },
+    "70": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3431
+    },
+    "74": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2022
+    },
+    "76": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2911
+    },
+    "73": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3350
+    },
+    "78": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2791
+    },
+    "79": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3211
+    },
+    "80": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3224
+    },
+    "75": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1636
+    },
+    "72": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3211
+    },
+    "71": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 276
+    },
+    "77": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3290
+    },
+    "84": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3454
+    },
+    "81": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3061
+    },
+    "85": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2668
+    },
+    "88": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1881
+    },
+    "90": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 131
+    },
+    "82": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3533
+    },
+    "89": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2232
+    },
+    "87": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3755
+    },
+    "83": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 190
+    },
+    "86": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3781
+    },
+    "92": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2085
+    },
+    "94": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2903
+    },
+    "96": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2194
+    },
+    "95": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2951
+    },
+    "91": {
+      "tags": [
+        "table"
+      ],
+      "ocr_chars": 924
+    },
+    "98": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3090
+    },
+    "99": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3772
+    },
+    "93": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3001
+    },
+    "97": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3166
+    },
+    "100": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3720
+    },
+    "109": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 986
+    },
+    "102": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2559
+    },
+    "108": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 3462
+    },
+    "105": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 318
+    },
+    "104": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3506
+    },
+    "106": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 2519
+    },
+    "101": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3355
+    },
+    "110": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 3010
+    },
+    "103": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2931
+    },
+    "107": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2927
+    },
+    "118": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 379
+    },
+    "114": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3406
+    },
+    "113": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3695
+    },
+    "112": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3467
+    },
+    "116": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3635
+    },
+    "115": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 372
+    },
+    "120": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 410
+    },
+    "111": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 349
+    },
+    "119": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 363
+    },
+    "117": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3659
+    },
+    "129": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 772
+    },
+    "126": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1943
+    },
+    "128": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2009
+    },
+    "123": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 389
+    },
+    "124": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1779
+    },
+    "127": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1716
+    },
+    "130": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1407
+    },
+    "122": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 3537
+    },
+    "121": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1974
+    },
+    "125": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1776
+    },
+    "133": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1068
+    },
+    "137": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1169
+    },
+    "132": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 688
+    },
+    "135": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1653
+    },
+    "136": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 555
+    },
+    "134": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3354
+    },
+    "138": {
+      "tags": [
+        "table"
+      ],
+      "ocr_chars": 2470
+    },
+    "139": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3361
+    },
+    "140": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3473
+    },
+    "131": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3485
+    },
+    "142": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3405
+    },
+    "144": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3336
+    },
+    "145": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3498
+    },
+    "148": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1341
+    },
+    "147": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2042
+    },
+    "149": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1667
+    },
+    "141": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1323
+    },
+    "146": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 524
+    },
+    "143": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3464
+    },
+    "150": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 280
+    },
+    "160": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1905
+    },
+    "157": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3704
+    },
+    "153": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 1503
+    },
+    "158": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3290
+    },
+    "152": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1701
+    },
+    "159": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1921
+    },
+    "154": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1836
+    },
+    "156": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 508
+    },
+    "155": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3238
+    },
+    "151": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 1651
+    },
+    "170": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3155
+    },
+    "165": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3350
+    },
+    "161": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2717
+    },
+    "163": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3157
+    },
+    "166": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2327
+    },
+    "167": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3134
+    },
+    "164": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3034
+    },
+    "169": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 2502
+    },
+    "168": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3034
+    },
+    "162": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3050
+    },
+    "171": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 2271
+    },
+    "176": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2664
+    },
+    "180": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2746
+    },
+    "178": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 2958
+    },
+    "174": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1866
+    },
+    "173": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1829
+    },
+    "172": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 935
+    },
+    "177": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1356
+    },
+    "175": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1689
+    },
+    "179": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3237
+    },
+    "190": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1705
+    },
+    "181": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 534
+    },
+    "189": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3391
+    },
+    "184": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1023
+    },
+    "188": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 316
+    },
+    "185": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 2640
+    },
+    "183": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2013
+    },
+    "186": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 604
+    },
+    "182": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 393
+    },
+    "187": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3688
+    },
+    "198": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3148
+    },
+    "193": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 542
+    },
+    "194": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 373
+    },
+    "195": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1850
+    },
+    "200": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 720
+    },
+    "197": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3197
+    },
+    "191": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3460
+    },
+    "199": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 755
+    },
+    "192": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 3703
+    },
+    "196": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3014
+    },
+    "203": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2626
+    },
+    "208": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 607
+    },
+    "202": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1604
+    },
+    "210": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2959
+    },
+    "204": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3148
+    },
+    "205": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3287
+    },
+    "206": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3411
+    },
+    "209": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2359
+    },
+    "207": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1979
+    },
+    "201": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1575
+    },
+    "216": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 919
+    },
+    "213": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 191
+    },
+    "215": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3114
+    },
+    "214": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3024
+    },
+    "217": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2714
+    },
+    "220": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2956
+    },
+    "212": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2782
+    },
+    "211": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3331
+    },
+    "219": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3058
+    },
+    "218": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3367
+    },
+    "226": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2946
+    },
+    "224": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2000
+    },
+    "225": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2395
+    },
+    "230": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2044
+    },
+    "229": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2828
+    },
+    "227": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1468
+    },
+    "223": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2944
+    },
+    "228": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1723
+    },
+    "222": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1959
+    },
+    "221": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 2851
+    },
+    "233": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3302
+    },
+    "235": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3368
+    },
+    "232": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2287
+    },
+    "234": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3442
+    },
+    "238": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2379
+    },
+    "231": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2873
+    },
+    "236": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3141
+    },
+    "240": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2050
+    },
+    "239": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3431
+    },
+    "237": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2569
+    },
+    "248": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1051
+    },
+    "249": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 666
+    },
+    "247": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 485
+    },
+    "246": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2721
+    },
+    "242": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2270
+    },
+    "250": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1965
+    },
+    "244": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2100
+    },
+    "243": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2388
+    },
+    "245": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2714
+    },
+    "241": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2517
+    },
+    "251": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2959
+    },
+    "257": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3093
+    },
+    "258": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3514
+    },
+    "260": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1667
+    },
+    "255": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3150
+    },
+    "254": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2402
+    },
+    "252": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3182
+    },
+    "259": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3391
+    },
+    "253": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3254
+    },
+    "256": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3387
+    },
+    "261": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3286
+    },
+    "264": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2040
+    },
+    "263": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3102
+    },
+    "270": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3329
+    },
+    "268": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1749
+    },
+    "269": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1467
+    },
+    "266": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2814
+    },
+    "265": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 614
+    },
+    "262": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1764
+    },
+    "267": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3406
+    },
+    "272": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3286
+    },
+    "273": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1559
+    },
+    "277": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2700
+    },
+    "278": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1747
+    },
+    "280": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2814
+    },
+    "279": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3452
+    },
+    "271": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 197
+    },
+    "276": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3734
+    },
+    "274": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1658
+    },
+    "275": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3302
+    },
+    "282": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 2695
+    },
+    "290": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3474
+    },
+    "288": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2297
+    },
+    "285": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 95
+    },
+    "281": {
+      "tags": [
+        "table"
+      ],
+      "ocr_chars": 1489
+    },
+    "284": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 3451
+    },
+    "287": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 146
+    },
+    "286": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 198
+    },
+    "289": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3416
+    },
+    "283": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 104
+    },
+    "296": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 138
+    },
+    "300": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 170
+    },
+    "298": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 149
+    },
+    "295": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 133
+    },
+    "299": {
+      "tags": [
+        "figure_or_diagram",
+        "table"
+      ],
+      "ocr_chars": 3322
+    },
+    "293": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3807
+    },
+    "297": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 155
+    },
+    "291": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2844
+    },
+    "292": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 138
+    },
+    "294": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 141
+    },
+    "304": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3490
+    },
+    "301": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3740
+    },
+    "306": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 199
+    },
+    "309": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2165
+    },
+    "303": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2493
+    },
+    "308": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2181
+    },
+    "307": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 148
+    },
+    "305": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 166
+    },
+    "310": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 2195
+    },
+    "302": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 202
+    },
+    "315": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3107
+    },
+    "319": {
+      "tags": [
+        "table",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3403
+    },
+    "317": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1808
+    },
+    "318": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1566
+    },
+    "311": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1528
+    },
+    "320": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3428
+    },
+    "316": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2627
+    },
+    "314": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2759
+    },
+    "312": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2691
+    },
+    "313": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2683
+    },
+    "322": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3375
+    },
+    "323": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3568
+    },
+    "321": {
+      "tags": [
+        "table",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3239
+    },
+    "325": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2599
+    },
+    "329": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3246
+    },
+    "330": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3500
+    },
+    "326": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2721
+    },
+    "327": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2576
+    },
+    "328": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3451
+    },
+    "324": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3639
+    },
+    "339": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2526
+    },
+    "331": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3506
+    },
+    "337": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 207
+    },
+    "340": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2439
+    },
+    "335": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3363
+    },
+    "338": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1982
+    },
+    "333": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3312
+    },
+    "334": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 166
+    },
+    "332": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3712
+    },
+    "336": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3514
+    },
+    "345": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1749
+    },
+    "347": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1610
+    },
+    "343": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3236
+    },
+    "349": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2444
+    },
+    "348": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1569
+    },
+    "346": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1982
+    },
+    "341": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1938
+    },
+    "344": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3451
+    },
+    "342": {
+      "tags": [
+        "table",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3669
+    },
+    "350": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1662
+    },
+    "358": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2472
+    },
+    "355": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 963
+    },
+    "352": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 137
+    },
+    "359": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3158
+    },
+    "354": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2811
+    },
+    "353": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 190
+    },
+    "357": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2460
+    },
+    "356": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1780
+    },
+    "351": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1733
+    },
+    "360": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 735
+    },
+    "363": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1843
+    },
+    "366": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1650
+    },
+    "362": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1522
+    },
+    "364": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1196
+    },
+    "368": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1743
+    },
+    "367": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1621
+    },
+    "370": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 388
+    },
+    "365": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1324
+    },
+    "361": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2129
+    },
+    "369": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1343
+    },
+    "372": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1998
+    },
+    "373": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1712
+    },
+    "371": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2529
+    },
+    "377": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 352
+    },
+    "375": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2212
+    },
+    "379": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 316
+    },
+    "378": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1952
+    },
+    "376": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1899
+    },
+    "374": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1744
+    },
+    "380": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3101
+    },
+    "381": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 295
+    },
+    "385": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 276
+    },
+    "390": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 305
+    },
+    "384": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3358
+    },
+    "388": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2960
+    },
+    "387": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 316
+    },
+    "382": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 379
+    },
+    "389": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1677
+    },
+    "386": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 319
+    },
+    "383": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1245
+    },
+    "396": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3299
+    },
+    "399": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 58
+    },
+    "398": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3392
+    },
+    "391": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 206
+    },
+    "395": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 3317
+    },
+    "392": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1999
+    },
+    "397": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 628
+    },
+    "400": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 20
+    },
+    "394": {
+      "tags": [
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3402
+    },
+    "393": {
+      "tags": [
+        "text_or_visual_reviewed"
+      ],
+      "ocr_chars": 2085
+    },
+    "406": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3538
+    },
+    "401": {
+      "tags": [
+        "figure_or_diagram",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3503
+    },
+    "408": {
+      "tags": [
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3230
+    },
+    "407": {
+      "tags": [
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3217
+    },
+    "403": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 50
+    },
+    "404": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3001
+    },
+    "410": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1736
+    },
+    "409": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1972
+    },
+    "402": {
+      "tags": [
+        "figure_or_diagram",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3349
+    },
+    "405": {
+      "tags": [
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 3685
+    },
+    "413": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3525
+    },
+    "417": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1776
+    },
+    "420": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1585
+    },
+    "412": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1574
+    },
+    "411": {
+      "tags": [
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 323
+    },
+    "419": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1514
+    },
+    "414": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2427
+    },
+    "415": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 3678
+    },
+    "416": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1891
+    },
+    "418": {
+      "tags": [
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1554
+    },
+    "429": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 2270
+    },
+    "422": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1956
+    },
+    "428": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 2293
+    },
+    "421": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1823
+    },
+    "424": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 2996
+    },
+    "427": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1510
+    },
+    "430": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1493
+    },
+    "423": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 273
+    },
+    "426": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 907
+    },
+    "425": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 470
+    },
+    "432": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 2002
+    },
+    "440": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1022
+    },
+    "431": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 2093
+    },
+    "434": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1714
+    },
+    "438": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 763
+    },
+    "439": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 921
+    },
+    "436": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 2242
+    },
+    "437": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1825
+    },
+    "435": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 2156
+    },
+    "433": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1943
+    },
+    "442": {
+      "tags": [
+        "appendix_or_index",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2369
+    },
+    "444": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2211
+    },
+    "448": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1501
+    },
+    "445": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 1191
+    },
+    "449": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 556
+    },
+    "443": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1004
+    },
+    "450": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 448
+    },
+    "447": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 850
+    },
+    "441": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1252
+    },
+    "446": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1547
+    },
+    "454": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1785
+    },
+    "453": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 809
+    },
+    "458": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 52
+    },
+    "452": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1706
+    },
+    "459": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram"
+      ],
+      "ocr_chars": 863
+    },
+    "456": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2188
+    },
+    "460": {
+      "tags": [
+        "appendix_or_index",
+        "table"
+      ],
+      "ocr_chars": 2014
+    },
+    "455": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 1416
+    },
+    "457": {
+      "tags": [
+        "appendix_or_index",
+        "table",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 2185
+    },
+    "451": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation",
+        "worked_example_or_case"
+      ],
+      "ocr_chars": 762
+    },
+    "462": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 52
+    },
+    "469": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1139
+    },
+    "468": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1177
+    },
+    "470": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 710
+    },
+    "467": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1091
+    },
+    "461": {
+      "tags": [
+        "appendix_or_index",
+        "figure_or_diagram",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1085
+    },
+    "466": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 795
+    },
+    "463": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 782
+    },
+    "465": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 693
+    },
+    "464": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 480
+    },
+    "474": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 778
+    },
+    "472": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1775
+    },
+    "475": {
+      "tags": [
+        "appendix_or_index",
+        "formula_or_calculation"
+      ],
+      "ocr_chars": 1206
+    },
+    "471": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1411
+    },
+    "473": {
+      "tags": [
+        "appendix_or_index"
+      ],
+      "ocr_chars": 1147
+    }
+  }
+}

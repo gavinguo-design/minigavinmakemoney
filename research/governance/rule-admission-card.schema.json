@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minigavin.local/schemas/hsi-rule-admission-card-1.0.0.json",
+  "title": "HSI Research Rule Admission Card",
+  "description": "Versioned evidence contract. A card is research-only until independently promoted outside this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "rule_id", "title", "research_only", "lifecycle", "hypothesis",
+    "module", "placement", "source_inputs", "data_status", "missing_data_handling",
+    "regimes", "definitions", "backtest", "evidence", "conflict_priority", "provenance"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "rule_id": { "type": "string", "pattern": "^HSI-R-[A-Z0-9-]+-v[0-9]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "research_only": { "const": true },
+    "lifecycle": { "enum": ["draft", "data_pending", "backtest_pending", "holdout_pending", "rejected", "research_complete"] },
+    "hypothesis": { "type": "string", "minLength": 1 },
+    "module": { "enum": ["breadth_weight", "futures_basis", "liquidity", "options_volatility", "event_calendar"] },
+    "placement": { "enum": ["premarket", "intraday", "postmarket", "no-trade"] },
+    "source_inputs": {
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "#/$defs/sourceInput" }
+    },
+    "data_status": { "$ref": "#/$defs/dataStatus" },
+    "missing_data_handling": { "type": "string", "minLength": 1 },
+    "regimes": {
+      "type": "object", "additionalProperties": false,
+      "required": ["applicable", "disabled"],
+      "properties": {
+        "applicable": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "disabled": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "definitions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trigger", "confirmation", "invalidation", "exit"],
+      "properties": {
+        "trigger": { "type": "string", "minLength": 1 },
+        "confirmation": { "type": "string", "minLength": 1 },
+        "invalidation": { "type": "string", "minLength": 1 },
+        "exit": { "type": "string", "minLength": 1 }
+      }
+    },
+    "backtest": { "$ref": "#/$defs/backtest" },
+    "evidence": { "$ref": "#/$defs/evidence" },
+    "conflict_priority": { "type": "string", "minLength": 1 },
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["created_at", "last_updated_at", "owner", "change_log"],
+      "properties": {
+        "created_at": { "type": "string", "format": "date-time" },
+        "last_updated_at": { "type": "string", "format": "date-time" },
+        "owner": { "type": "string", "minLength": 1 },
+        "change_log": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    }
+  },
+  "$defs": {
+    "sourceInput": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "source", "source_updated_at", "as_of", "status"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "source_updated_at": { "type": ["string", "null"], "format": "date-time" },
+        "as_of": { "type": ["string", "null"], "format": "date-time" },
+        "status": { "enum": ["available", "stale", "missing"] },
+        "vendor_requirement": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "dataStatus": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "as_of", "source_updated_at"],
+      "properties": {
+        "status": { "enum": ["available", "stale", "missing"] },
+        "as_of": { "type": ["string", "null"], "format": "date-time" },
+        "source_updated_at": { "type": ["string", "null"], "format": "date-time" },
+        "reason": { "type": "string" }
+      }
+    },
+    "backtest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["interval", "sample_definition", "cost_model", "slippage_model", "walk_forward", "holdout"],
+      "properties": {
+        "interval": { "type": "string", "minLength": 1 },
+        "sample_definition": { "type": "string", "minLength": 1 },
+        "cost_model": { "type": "string", "minLength": 1 },
+        "slippage_model": { "type": "string", "minLength": 1 },
+        "walk_forward": { "type": "string", "minLength": 1 },
+        "holdout": { "type": "string", "minLength": 1 }
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["is", "oos", "holdout"],
+      "properties": {
+        "is": { "$ref": "#/$defs/result" },
+        "oos": { "$ref": "#/$defs/result" },
+        "holdout": { "$ref": "#/$defs/result" }
+      }
+    },
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "sample_size", "win_rate", "average_rr", "expectancy", "max_drawdown"],
+      "properties": {
+        "status": { "enum": ["not_run", "pass", "fail"] },
+        "sample_size": { "type": ["integer", "null"], "minimum": 0 },
+        "win_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "average_rr": { "type": ["number", "null"] },
+        "expectancy": { "type": ["number", "null"] },
+        "max_drawdown": { "type": ["number", "null"], "maximum": 0 }
+      }
+    }
+  }
+}

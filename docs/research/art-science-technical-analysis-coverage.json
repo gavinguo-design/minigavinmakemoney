@@ -1,0 +1,3424 @@
+{
+  "source": {
+    "filename": "The_Art_and_Science_of_Technical_Analysis_Market_Structure_P---7e997645-d6d2-4d6f-8c67-1a57fcd18b87.pdf",
+    "sha256": "3d59b8dbeb4311c698b78db43ca6948395986153f86da07b759814578a934649",
+    "metadata": {
+      "format": "PDF 1.4",
+      "title": "The Art and Science of Technical Analysis: Market Structure, Price Action, and Trading Strategies - PDFDrive.com",
+      "author": "Adam Grimes",
+      "subject": "",
+      "keywords": "",
+      "creator": "calibre 3.42.0 [https://calibre-ebook.com]",
+      "producer": "calibre 3.42.0 [https://calibre-ebook.com]",
+      "creationDate": "D:20190623130843+00'00'",
+      "modDate": "",
+      "trapped": "",
+      "encryption": null
+    },
+    "pdf_page_count": 234
+  },
+  "audit_method": {
+    "text": "PyMuPDF text extraction in PDF page order for every page.",
+    "visual": "Every rendered page included in 12 contact sheets (20 pages per sheet, final sheet 14) and visually inspected; detailed visual-elements review applied to pages with figures/tables/drawings/images or sparse rendering.",
+    "scope_note": "Coverage confirms pages in this supplied file, not that the file contains every chapter listed in its table of contents."
+  },
+  "coverage": {
+    "reviewed_pages": 234,
+    "pdf_page_count": 234,
+    "counts_match": true,
+    "unreadable_pages": []
+  },
+  "content_completeness_warning": "The table of contents lists Chapters 1-12, but this PDF moves from Part I material (through PDF p.85) to Part/Chapter 11 at PDF p.89. Chapters 3-10 are not present as readable chapter bodies in the supplied file. This audit cannot attribute their contents to the source.",
+  "pages": [
+    {
+      "pdf_page": 1,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 0,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "bce03b4a47e3279bd0224998f03705c54c4e290f2cce12f82d0eddd43b380da3",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 2,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 424,
+      "embedded_images": 0,
+      "vector_drawings": 18,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "7cd8fb61943db5a9b120fadcff7cd0f989e95b1131b0e0b815dbe67203d01693",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 3,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 600,
+      "embedded_images": 0,
+      "vector_drawings": 24,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "87c457ff995885c88ccb07207e04ce4a507db865454d3ab063f3d89053f9a577",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 4,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 666,
+      "embedded_images": 0,
+      "vector_drawings": 28,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "780e08e83725a64d916ebabb1c671060531fb8432635b544fc1312bb5cc4bcec",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 5,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 542,
+      "embedded_images": 0,
+      "vector_drawings": 26,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "30e8209159dc8150197a720b670ad8281501ad49d5ebb794372307d221ab79e7",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 6,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 222,
+      "embedded_images": 0,
+      "vector_drawings": 13,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "0719c10da18af1bafaed65a7f8aaf15ed37b72689ccc77442ca51092d7122358",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 7,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 783,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c318ad608d66fd9127fe1b844e247748e28ff7f891f53fe4c7ee08647512cead",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 8,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 0,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2600f4e13e1feec792f2b13dade7f9a730fec9af17ace4f911ce37db824eb13a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 9,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2354,
+      "embedded_images": 0,
+      "vector_drawings": 3,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "6385c4266b04179b8893f3e0ae9893fc8470c4f735a33e8016b67e7cd247feec",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 10,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 470,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "23f1902a8987552f2bdbc3a23d240b9b31e23102d6c1163383a9cef71285711b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 11,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 91,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2b0db5e2b3595d2ffff375160a3a8e359856e9f74e86b9d524d9626b62ac94b9",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 12,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2468,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "9b99e360d21e56528054749b902e0b77bbd790ecd25afb4f693c391d32cef3fe",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 13,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2640,
+      "embedded_images": 0,
+      "vector_drawings": 4,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "39e755e6cf8f1601e30a2526d98126ca88870bbc76bc7fa5fb6bfc82f8b387b8",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 14,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2713,
+      "embedded_images": 0,
+      "vector_drawings": 2,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e72aae352523514aec6d927eec579db75c1035d8e2a01ab4896ae52e4de2161b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 15,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2192,
+      "embedded_images": 0,
+      "vector_drawings": 2,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "fb4b4f9e19be45cbe0c18ea272a0e2fdfd4aaa8db266c27e7e41bbc70453ad00",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 16,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2423,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "806c08dff1535587919e50c6f68f012d64f1a618c4e48e4fd4f11019342b02f2",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 17,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 277,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "8c4cc088593c47fbf8f7c725f5bd867b180ea963f06f68816c26739c371b0804",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 18,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 43,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "02ef21f932b9c927cb0aae4e0e679094696ff30b048e83930a0bba1a32b3c566",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 19,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2235,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "75388c925c204c0fcbf1c6c750aac6eea54ea1d22a5d2771025aa8fa360033c4",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 20,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 128,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "cfeb0eaa3ef5b2b90ef771f9c37d4b1fb9d5aa809e870ae983627de463e02926",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 21,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2660,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "3f055b341ade2d818cd2ae8277d3b02e72efe1d713baea24e2beb731408175c5",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 22,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 317,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "31216767e58841e78b96aef42aa5033bfc798ec083e8eab36518be612c4a0f57",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 23,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1149,
+      "embedded_images": 0,
+      "vector_drawings": 3,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "67359e0e5289f0ba13991d354cc28ef62f2881a7c1a79bb84cea7dc979368773",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 24,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2158,
+      "embedded_images": 2,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "042ce041ac03a66db0c2ef7247d4844354aa5850b47121b3db5fc34274d4e5c1",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 25,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2629,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "b9d2dabfc8f612d57bc8e59011f812793a4b21256a625f960d8b72e87ad1dccd",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 26,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 955,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "7ebc86464d000e5d3c2c83f1b6f51e92b765a55f9ac7b05dd1286f29f45ba338",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 27,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2465,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c4ef0a25e5b9d0a2eb7a3c719da08ef94ef977f9f3991b58dfd3b70d7e5c093f",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 28,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1418,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "07f7ff13e21c25c64b41d56bfb5e0cffb8fbe1c93b8ea3c6bc49aefc9733f2a6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 29,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2514,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "f070feffde07dbb29b72a13a062780333914153e3117eade923f1517f08154ab",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 30,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2229,
+      "embedded_images": 0,
+      "vector_drawings": 6,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.1",
+          "caption": "and"
+        },
+        {
+          "id": "1.1",
+          "caption": "Nothing Seems to Matter Before 1985: DJIA on a Linear Scale"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "89098d20fcafd9e328808e028cf7c7ed65a8bbaa00e5e181b3d4f995060066ed",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 31,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 61,
+      "embedded_images": 2,
+      "vector_drawings": 4,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.2",
+          "caption": "Investors’ Actual Experiences: DJIA on a Log Scale"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "b0638f0eb4ea738386738a3cd83b44230a7f4a03fba63e9c10aff7232ec139b1",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 32,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 539,
+      "embedded_images": 0,
+      "vector_drawings": 3,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "32e0cbcbe16f007b6d084952a6cedabe551711cdec6676dc5e6db83fbb41e5c6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 33,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2652,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2536e5d3880b424865b2db640044bd25dab82edd8437ae04dfcec8fa8d3295b6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 34,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2624,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "9b3c16168a3fde78ee1e65ff3143419fbdff6fe9a65470eb41898dced1c6d548",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 35,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 546,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "239917de1c8785a151c0a4a6c994ea259413ccca44d7998fbe031554a09bdff9",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 36,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2232,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "d542a6f5acee8f335cd6ef1d6a1bc97f5d1a01dd0a268b65e14038f572e3064a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 37,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2847,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "18e57fca3e759e5ed5a43f4ccc67115e855152f0fd368aa76f0fa8697dc9b7e7",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 38,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2579,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "7d20a7cb14f026b39ef17933bcd345cef81dbf3c09d9ecacfe428e3fc989b343",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 39,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1482,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4e5e91cfa7a92a8decb8edc5997c139528aa3c8c889e143ff7ddfcfc4d6243b6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 40,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1194,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.3",
+          "caption": "shows a"
+        },
+        {
+          "id": "1.3",
+          "caption": "Every Pivot High and Low"
+        },
+        {
+          "id": "1.3",
+          "caption": "is a first-order pivot. Though"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "684b44c765d004bad1b37389e685bb58e6d388840574fa7f4f16c650cdb5920b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 41,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1516,
+      "embedded_images": 0,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.4",
+          "caption": "Second-Order Pivots (Marked with Arrows) Define More"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "9d7fa9fed7cfe9cdbe2a37424e26b32e82cfb4a05b98b8546be5e750b732628b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 42,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1143,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.5",
+          "caption": "Third-Order Pivots Usually Define the Most Important Market"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "ded6c1ac3958281959367e8032b2355df07442e0f15f219807ca647773317b21",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 43,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 811,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "9ede8c8963fa7dd0b49133b40bdffb518408aaf92ff9588494c272e99129de7a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 44,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2421,
+      "embedded_images": 0,
+      "vector_drawings": 5,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.6",
+          "caption": "shows the basic uptrend template: upswings are longer than the"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "632d7028427668a900f0729628db404965e0cde609171c233402ac48aa62026f",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 45,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 333,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.6",
+          "caption": "An Uptrend"
+        },
+        {
+          "id": "1.7",
+          "caption": "shows a market in a trading range. This is a random environment in"
+        },
+        {
+          "id": "1.7",
+          "caption": "A Trading Range"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "10a62c1c30aa1c3a173624200f63a65ed860bd2758f07fb34cdd6a3ed88310cd",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 46,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 449,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.8",
+          "caption": "shows a pattern that gives a warning of a break in an uptrend’s"
+        },
+        {
+          "id": "1.8",
+          "caption": "A Break in the Uptrend Pattern"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "c58e27d2f08a02968d508f2adb40ab260468c60c771ff13995308fdbfc7723fa",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 47,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 522,
+      "embedded_images": 1,
+      "vector_drawings": 4,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.9",
+          "caption": "shows an example of a classic breakout above resistance. This"
+        },
+        {
+          "id": "1.9",
+          "caption": "A Breakout of the Trading Range"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "ac329bb26feec54c6db93fb784e3c8e9535a2b00cc3990fb31151027ce6e7559",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 48,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 376,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.10",
+          "caption": "shows a particular pattern that often precedes the best breakouts. If"
+        },
+        {
+          "id": "1.10",
+          "caption": "A Breakout Preceded by Higher Lows into Resistance"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "341d1ea3ce8765dc6fb0398d53ac7e82e33d934f2ce954d22faa50a950750e78",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 49,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2223,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "7378aa274a94f664375b99024faf438aaf592340f138d3cb64fb911c1db1404a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 50,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 131,
+      "embedded_images": 0,
+      "vector_drawings": 3,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "5dc56981ae859196b8acde02c17df229d30253f8fd582354ee170948f5099908",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 51,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1114,
+      "embedded_images": 0,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.11",
+          "caption": "with an empty body (meaning that the close was"
+        },
+        {
+          "id": "1.11",
+          "caption": "A Candle Is a Snapshot in Time—How Was This Candle"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "b7c0d81b2ad3663f5ab062f277904b593e844c92f0420e7912977efd2df6bdee",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 52,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 701,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.12",
+          "caption": "Some of the Many Possibilities of Lower Time Frame Action"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "abb75455863f64c069a3679a868a51c222ce918121cf06e63e4ae71805a9a12d",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 53,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1136,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "1a04c5edcda2b2dcff6312cdc8fbf40e4f0f9ff81a2b53859401333b2101c532",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 54,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1051,
+      "embedded_images": 0,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.13",
+          "caption": "shows lower time frame"
+        },
+        {
+          "id": "1.13",
+          "caption": "One-and 15-Minute S&P Bars, Showing Lower Time Frame"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "1adf8aed4e6be942b64696cb2daeab2c23fb199200f23c55cd5faab61de19908",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 55,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1097,
+      "embedded_images": 1,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.14",
+          "caption": "shows a daily chart of the E-mini S&P 500"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "6034ec91c68e9b7561d1c859dae91b043b04eb9b5bb8e86549dc355dc59098d5",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 56,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1230,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.14",
+          "caption": "Three-Hour (Left Pane) and Daily S&P 500 Futures Charts"
+        },
+        {
+          "id": "1.15.",
+          "caption": "This is a"
+        },
+        {
+          "id": "1.15",
+          "caption": "The Small Bars on the 15-Minute EURUSD Chart (Right Pane)"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "fb4d4fd8601fc5d74dfc928bf32c5f26c09149f2abc8b8fe86afc96f3602d8bf",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 57,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1080,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.16",
+          "caption": "shows an example of a"
+        },
+        {
+          "id": "1.16",
+          "caption": "The Daily Chart of X (Left Pane) Shows a Clear Two-Legged"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "6e049d350639109b7fd9a35c9e5cf9058f26c22bca8087060118a7c578cce05a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 58,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1311,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.17",
+          "caption": "Multiple Inside Bars on the Hourly Chart of the E-mini S&P 500"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "92cac19cfd99725a6b6ff2c17a9296337e9a6fb60d23817a94aa8f6b4580fd43",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 59,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 828,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "28dd910c037bfb1b03ab0f270d8df909e447eb86767f1073d252d6e12f2b7935",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 60,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2737,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "1bbd3732c91997b973a432e7323bab1202841e99754c13468e41297f97579348",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 61,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1522,
+      "embedded_images": 1,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.18",
+          "caption": "Example of Swing Charting (Kagi) by Hand"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "60a37a97903abf8f098eaf30ae9320d8b164c5058e9e1978374fb2eb526cf031",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 62,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 442,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "1.18",
+          "caption": "shows an example of this type of chart, drawn by hand. Do not underestimate the"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "d061a91782b08a304ecad089b2e5b6aed7c1c4856c5583b3e86688a7ab8210e9",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 63,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2100,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "43583e6fb3d930c4cd3afada235244eabe2186cac5ce0c8053b3f55aee2215c1",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 64,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1160,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "2.1",
+          "caption": "presents this cycle in a simple, idealized format. The four phases"
+        },
+        {
+          "id": "2.1",
+          "caption": "The Classic Wyckoff Cycle"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "4af95aec3b2155c38cfbebf6538a1fb658ab989d7c87a274875265e8f832a636",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 65,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2456,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "113628ea652282276596beb03de4511716e849e3b2eed53e0e21cb59babe5746",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 66,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2865,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "6ede35ebeb3e32a6065c27c95e80988b29c61d9ec16123579fc4ae23064babe3",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 67,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2127,
+      "embedded_images": 0,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "2.2",
+          "caption": "shows an accumulation area"
+        },
+        {
+          "id": "2.2",
+          "caption": "Accumulation in Daily Platinum Futures with a Classic Spring at"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "186ad643d7d9cc55e8ff6ee5e05db4b91547a9ec9b8430642d619e688074d41b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 68,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1472,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "bf88f75bbc24647c45780d50f71c605d47dfa98c50eaa5dc2430402ea30bfff9",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 69,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2719,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "d72da1b9d81cd45132883504a0407a1dab46672cf7c0fec592d8c7e02332ee68",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 70,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2767,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "22f30539a372e14f83383b051724211d47277a4b07d22b507deb7f34a601e270",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 71,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2606,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "db7e267a90ac933f315b536fc9c04b4ee6eb095e2071697175f9b33bff4de6c2",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 72,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2586,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "56d1a73a4f14902136a2a076186c50db81ed6361ba09dfa1f745499fd7c61ddb",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 73,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1493,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c2595a9a1b3317793e0cebf36613f3597fe470cc36f566e4b4d18ae825a7ab68",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 74,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2499,
+      "embedded_images": 0,
+      "vector_drawings": 2,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "0cce419511876a451783573adf800bfa750d52ea05a0ebf24fdd900c39b0d096",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 75,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1000,
+      "embedded_images": 0,
+      "vector_drawings": 3,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c3ce5971f1cee25729550705138297999d6ae49eb40092a6fc4347c0472d4dfe",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 76,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2690,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "5182af9239d54914fd84028e81dd329c35d7df156017982478127f7888ad9b69",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 77,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 813,
+      "embedded_images": 0,
+      "vector_drawings": 3,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "7a2c86212562adaa0a60bb4f9d701085504a3ef4fd1f9a6b437442e17a456a10",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 78,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2645,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "d9106aee01cf7ab7fff84103af5dde5c5d0c103365b07b3a7213d0a2082603b2",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 79,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 542,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e5051768d2ae2d18705ee170a0ae7bfea01a740742c3561faaaea7fed16ffefc",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 80,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2654,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "f9fcd91f420c92ce8dc288208706e296b39e3c07439e0abe18c916af5036db71",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 81,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1052,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "5b11af8a0a30c121d244916e6fb104962ce0901b49985f8b9a3d048714b4baf9",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 82,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2699,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "7fccb91e8cfa11ce63e43b815d2f789bde2c226d865a650320514c5aad674f9d",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 83,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2606,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4b12deec0b1ac3c0df36f7ddc209db896055c2718d1b5a0008559488c5db2523",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 84,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 355,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "920c7de727897c5a6fd0acaee29221312fb7f31b55800d5f43d62d243a8881a0",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 85,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1490,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "6104a930b8da21326c5bf4e04eccecce19e003bfad1cfdbdbf31b5a71337994d",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 86,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 24,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "679a1e5525cf297a4fe27ee08d4d2f12e68c7debd356e5b0b074d5861380e841",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 87,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 27,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "bc3b9e6dd9d6ce06e3c9887e019d92a3847035bb0880259e053acc8f51925eed",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 88,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 44,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2a1a7e6f6ef13b0b9736b24240a54b50d5292920a396dc05f844ec96a0c1368b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 89,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2168,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "b194519d402f611a8ceaae01551738223a648c1d749856650c1b60b6cb2faaad",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 90,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1661,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e3e42784c0b3a56afd06eb804f1682afdc2cbce3c662ccb32d5dda4696006ccd",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 91,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1836,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "d90bb4608362aa77607a93f2daa589bf4473f1f64d083d558bf103163c96eb0b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 92,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1035,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c76b274bfe9b137823d8e9d504f3c5b403c799ce7bedd00dc8441e2eed40c47a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 93,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1601,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "eac98ae3f3954cea93a45b5d8d87d27697a196c71e710415857d56494bf29132",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 94,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1588,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e874fe22775e13d0ccff7cdd92c90e24956e3d049d0a581514d59dd53e8a10f3",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 95,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1768,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "27b5a6d14e0219fff1d080e58ea48b17615cb5ec6a9ecf89203190b53a50b256",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 96,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2588,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4a05d0a4969866b142516b22cb217de815309b1f4b7274babb071b777e99aa8a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 97,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2607,
+      "embedded_images": 0,
+      "vector_drawings": 8,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "54a9024e1bcaacad8ae9bbba56216b5f74e61a68695926b2864c3d56c00abf50",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 98,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 533,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "5ac8ff6da109d6fcc4701bd9d265ee883ed6642e900daaab917a13bf05d0f7c0",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 99,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2449,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "f8ae20451e6427a06940f24e0fbd0ae521740184be78b47863251d3b2c1b1068",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 100,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 29,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e9607bfce298dfb8a93963a98741c7b52844e9ff9009d7bdc7bc9d1152ceb9d9",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 101,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2575,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "b479cf82699a797a965e51faf577f428e5778f13b8ca4b866a5d88f9c4462a11",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 102,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 58,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "434c1fae8198f74d74426f4665907d00ee8bc9ed95f7de180f70e8fb8ad001d1",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 103,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1585,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "23ac8ce19f2221910743357f004a0e736eadb2c04535ef92cd3319985e4bd42b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 104,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 932,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2ebb4299bbc57a57b540441670bd98b2ce10079988ad44cab0d481905b8429a8",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 105,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 929,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "bd3938cfc89a7db1a99b9c92373f4ff2ad4500fc94091d89eb3152334b8858bb",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 106,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1126,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "a381a257d1f407a5894852fb6ecbdedc16221d18c1207a448ca47db35d1c5948",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 107,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 631,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "a215f751fb2afb08404140158c2bf53ada80b246beefa5614f20e1c1a191af07",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 108,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2007,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2af419b5fd25d0ec8ff7ed5818d4cc2f29737c865f848728bdd8e9b7febfac8b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 109,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2443,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "d1f396b1b7a0cb343ebbf08c60f7c72284101b06dff24fe320828221391261f3",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 110,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1899,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4b333bf4001e77dd81281a82124b7223470c47aa6cd0d0358ea16893f15b2ee7",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 111,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2475,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "29e3c6deec60ab60079ece45520c43c1e05a9c7d48afeedcd708951915620cbd",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 112,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2489,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "fbbb8f0b5070fe028f285c7a22bbd13d3197eec35a79a4ad83c2357e4038d7e4",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 113,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 533,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "401c65793a93f928c14ca1514b2287a379e19109ac3b5526261c69b5414630d3",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 114,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1623,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c37ea71e53563f8e9a36b2d34b84f0e423d5b07f859fafde7db575bd6ba980b1",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 115,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2749,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "37e198b42da8096341e5c0bada02b8053037fe0be475192acdfee94bcdfbf059",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 116,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2837,
+      "embedded_images": 0,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c737928f3bacf6a34b526d9c59f4042c0d9378ee4f38184d0089b07962019b0a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 117,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2245,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "0a33e0f29c0dd937a3dc895b04a808061c5c0ee9c571e6f4a307365f9ac7d1ad",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 118,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2622,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "89ff9131374d36f1b30fd0b55f822e47ef59bf37bf8d8b09725ae2cb15d37b84",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 119,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1340,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "06cdf2ff99e81e95491bb170dd5871f4964ab5a1ae85eb193d96cd74ab38578e",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 120,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2362,
+      "embedded_images": 0,
+      "vector_drawings": 7,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "762f81553e9cd5a94d32f8ade135fc61af031edb9bd2d4baac128dde316c92e2",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 121,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 245,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "9fdbe45bd4c37e245ec80ec33e4f58b8c349a583004e8502695b76b1c075eb0e",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 122,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2421,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "11.1",
+          "caption": "shows a chart adapted from Csíkszentmihályi’s"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "2f7095003fcc5982d37a407c2fade750d3c5d96282b97958765fc868c2c0efcb",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 123,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1064,
+      "embedded_images": 1,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "11.1",
+          "caption": "Csíkszentmihályi’s Performer State as a Function of Challenges"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "3cb8f3c8342f6d78a716fd344ca774ac7cd62d5588ff3c5326f502bc3a060df2",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 124,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2645,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "11.1",
+          "caption": "also shows why the flow experience can act as a powerful guide"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "bd9b9948a4870cb7ecd886e85219ff8bdf693af1b5bdf13391e1456c25fea95a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 125,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1754,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "cafaa57cdea46b7ec81ca519510742d353c25e9942e1b87568926bddbaaa696c",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 126,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2504,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4437eb4cca5b7d551ef31fdc5cd86d9e50a2814e18f029832ae12d3f02ed4dd1",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 127,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1407,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4d07737133cce8d8463bff8db9f7553116931809812f836a4973976a6182c167",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 128,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1393,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "64b9a3b796e602ad5654bbf22c8bb0fc1cbcac8e099423d05fcd08419875b515",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 129,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2646,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "381489f722ed3ac205a3fef29a2e78d18f84c679b23ccbcc25eaf7124aff98ec",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 130,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2021,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "9a540425a3a2ebf731a8253b385fa17d1cbb6a812bf11e758a99a9335f3c11f0",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 131,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2622,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "63d157b52f591f5564eec744bd70d63cb09ec0910049763dde4db5f320c53cb8",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 132,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2783,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2c0c13c25ce705dfffaa99415bc408d8f228600ac0689f8f730d95ef429bbc96",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 133,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1272,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e8cee7f548d6bb4cd3b3a81c03251c82d1ce93faaaf5dc82789908193fe71800",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 134,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2456,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4ab9a9c26ab1c617576a740ecb43b514092ffc111fcf92f8dda75d59f163f527",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 135,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2150,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c69b37c752a7f929c101d796c135adbcffa9e787fb98cd0e2fa148877e09e2ba",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 136,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2888,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "ea0b41ae471f9bd0d2ce66aa8bc58157ee482bdfe0b831cd2d92019cbc881413",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 137,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2808,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "0a628d6298625b6e13398e80c4002fc5432f2c2f2d6cdcfb9d7a118d7b848abd",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 138,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2594,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "62227d4db8e3fcdf13d0487bacf7db27617ceba53389fbc2e0ba90b8eaa8d1a8",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 139,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2919,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "1b7dc6725f4cec2ea5e35704eb31db68e19d3a8ad146be15659ad9970ef4ca67",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 140,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2590,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4b4f290a74f1ec2f45863da2dfb5c99a261f4939eecd0239cc53eedfdcb780d5",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 141,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1898,
+      "embedded_images": 0,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "A.1",
+          "caption": "is a single-tick chart of the market’s opening for Apple, Inc."
+        },
+        {
+          "id": "A.1",
+          "caption": "A Single-Tick Chart of AAPL"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "366b71040ec844ceff25a229967cc249076b50c4a32e0cabed7cb068b1b90904",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 142,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 771,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "A.2",
+          "caption": "A 25-Tick Chart of AAPL"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "dfb6e261c508baf04c5acfd0aaed2e5ff20ac448876c75f69a1d6eeefd1f971c",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 143,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1339,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "fe1b1c774a5c9ac612753981793393507784ce1843cfa29ec20c3f7e348727d4",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 144,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1320,
+      "embedded_images": 1,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "A.3",
+          "caption": "Comparison of Bar and Candlestick Charts"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "b985f335a4942eee8de75b051b82da6cd4b21c7596a2d0df7f90bd9db049d937",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 145,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1014,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "A.4",
+          "caption": "Market Profile Chart of AAPL"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "a373c2a90af069530eb244467d46976887e7894db1d7c07f9798d659cb7c102b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 146,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2157,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "cf3b49124c8534dbaed52182619a5b1225ec620a865637f57da79af44f354122",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 147,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2551,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.1",
+          "caption": "shows an artificial data series that is flat, then suddenly breaks into a"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "77053569f8a79c6a0078cb8f1f64a0124504a02539a315426f793978d887628b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 148,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1155,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.1",
+          "caption": "Twenty-Period Simple (Dotted Line) and Exponential Moving"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "48de7b1e318827f587604ad205ac2dc157dbfdc2252ef643ca47cb2a46715959",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 149,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1371,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.2",
+          "caption": "illustrates this effect in an"
+        },
+        {
+          "id": "B.2",
+          "caption": "Are the Moving Averages Supporting Prices?"
+        },
+        {
+          "id": "B.3",
+          "caption": "shows a trend with two inflection points and a"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "e2ad28e706f768fec7d49f473acb9e9cfa0b0e426861ec261c54097f9975b980",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 150,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1300,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.3",
+          "caption": "Notice the Different Behavior of the EMA and the SMA at"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "55d2f754fc32f36129668c649a143142d9db20b10984006eebf0bdeb8ac86175",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 151,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1326,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.4",
+          "caption": "Notice the Different Behavior of the EMA and SMA in Response"
+        },
+        {
+          "id": "B.5",
+          "caption": "shows a situation that will probably not be encountered in actual"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "573457246dab1b0827b173c015f3cdb23671b275a4c249797008bdf9c6b49ea6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 152,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1419,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.5",
+          "caption": "Twenty-Period EMA and SMA Applied to a Theoretical 20-"
+        },
+        {
+          "id": "B.6",
+          "caption": "shows a market that is growing at a"
+        },
+        {
+          "id": "B.6",
+          "caption": "Moving Averages Applied to a Market Growing at 5 Percent"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "92fdda11a405b638eebf64601087eb326db6e0e08f2e1428770cefa23c26c170",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 153,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1206,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.7",
+          "caption": "is exactly the same as the previous chart; the only difference is that"
+        },
+        {
+          "id": "B.7",
+          "caption": "Moving Averages Applied to a Market Growing at a Constant 5"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "18d610d39ea69cbf211b7f5d1d3384e737f27eb47310ef1483e880cb77e6b49d",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 154,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1305,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "9769256500f4baa48fddb98ef9779ec6adf41206d524bf9fced4cfeceb3b9095",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 155,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1272,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.8",
+          "caption": "shows 3-period and 10-period simple moving averages"
+        },
+        {
+          "id": "B.8",
+          "caption": "The Fast Line of the MACD Measures the Distance Between Two"
+        },
+        {
+          "id": "B.9",
+          "caption": "marks spots where the fast line"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "9d4c31fe879bc0dd73eb04d59492748aabdb92fa918a79ae981f13bf00702766",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 156,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 805,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.9",
+          "caption": "The Fast Line of the MACD Crosses Zero When the Moving"
+        },
+        {
+          "id": "B.10",
+          "caption": "shows the slow line (sometimes called the signal line) of the"
+        },
+        {
+          "id": "B.10",
+          "caption": "The Slow Line of the MACD Is a Smoothed Version of the Fast"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "210f97ca94dd27d394b18beb6ce74d3a90c909f09b810ec03c0221363b8ad10b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 157,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1133,
+      "embedded_images": 1,
+      "vector_drawings": 6,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.11",
+          "caption": "compares the modified"
+        },
+        {
+          "id": "B.11",
+          "caption": "Modified and Standard MACDs (Both 3, 10, 16) Compared"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "971cb29e2c3cb1c392b250eeec3277a34286b42d5fa96e67ab27e59c3d2dc15b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 158,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 867,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.12",
+          "caption": "shows a modified"
+        },
+        {
+          "id": "B.12",
+          "caption": "Note That Inflections in the Fast Line of the MACD Include"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "994f22bed20257ee983ce4ab38701a9a4500e89aff85552e0851250a7e0013c1",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 159,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1414,
+      "embedded_images": 1,
+      "vector_drawings": 6,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.12",
+          "caption": "and thinking that this could never be relevant"
+        },
+        {
+          "id": "B.13.",
+          "caption": "After a"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "7fd1adf764fbb1cb18c13d68c6c5c81278f18cef2f76fa147371c3e99cf3f8fa",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 160,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1309,
+      "embedded_images": 1,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.13",
+          "caption": "is due to this 10-bar artifact."
+        },
+        {
+          "id": "B.13",
+          "caption": "Consider the Inflections of the MACD Applied to an Actual"
+        },
+        {
+          "id": "B.14",
+          "caption": "shows a situation that would"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "cee4d8e1a1204a786d8c71b987a45f7894fd479b2cb5f20ac698c61880b7c0d7",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 161,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1319,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.14",
+          "caption": "Multiple Inflections on the MACD Following a Single Price"
+        },
+        {
+          "id": "B.15.",
+          "caption": "This data set"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "56dcdd378b1ed18fb3439c2b42d627375ebd56fbb131805ad54d365fc5438225",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 162,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1241,
+      "embedded_images": 1,
+      "vector_drawings": 2,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.15",
+          "caption": "Momentum Divergence Due to Lower Rate of Change on the"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "50dc89580db886bf3ea315e45ef6e64b5e085556451b38d708a9a5fc3f739ca0",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 163,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 293,
+      "embedded_images": 1,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [
+        {
+          "id": "B.16",
+          "caption": "Momentum Divergence Due to a Shorter Second Leg"
+        }
+      ],
+      "render_sha256_thumbnail_pixels": "12abd16829800898a09b0d03fe1f171a42e1acea449112488989680f66d0f4dc",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 164,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 294,
+      "embedded_images": 1,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "fde3094598a0269c3544268f9116b957a1fdbedcc78f725c5ea1a4aef5d78696",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 165,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 0,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "726f79bfaaed48c9ae3d6b5653069faba8d20041f7cc35ec4a41a0f0d62c5e95",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 166,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1547,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "0e93b16dc376726eb97c519efea279d1c9f0f18bc87835ab217c5790fe83b126",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 167,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1551,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "82769fd5ba3eacb19ab4d76247e556ac0e3ac3ab2acb29166b23ec44e572f75b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 168,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1896,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "a7196edc261bcc3dce5b624b80eef4d8a4e3376bd450d2fdeb0848b2aeae028e",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 169,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1900,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "421176f2065001acdcdcc89e84ff763f5110f2c776036c0ee344cb1cc41ab100",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 170,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1794,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "bd0691c05fdf187bce3355bb0359bb2e78163468ac0179e295b6a2d5f5c6406b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 171,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1942,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "32515ef8ee4460f8823ad833c048bfe40a72b2717a81ca632b2e44bf58f96748",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 172,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1785,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "19f9b350c597cd1f712fb3ec8cb811904bf5767879118999389f13b354660243",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 173,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1741,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "169bd4d6e3578dc2da11f1236875972ae15a912ee97a40a310b31882835b9639",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 174,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1841,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "6220d41edf97d1254ab0d6523bfbe54e74715719e3fb4a2a4697ce05f40bb8c2",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 175,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1847,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "15fa26e5d570c235c5fe9e3ff97c162c898e256f89475d34b981dde828e4862e",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 176,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1898,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "b71eadda7fe25b0cbd2bdddd1313018807e460eff781358729a9e2ebae80b065",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 177,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1850,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "6a0638e8a90763c7a53eb4d84e122e9f17c8d0c06c371681e9e702a4dbbfce0b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 178,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1775,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "abf93eb15a6179139de86728237eb4e31d2d91b3e9f2615aad358c8e686d2986",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 179,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1789,
+      "embedded_images": 1,
+      "vector_drawings": 0,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e7560a95d196b8dc37b6d00224a6bc08991785b5d3030fe41e52c750aff0bc29",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 180,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1761,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "f227fa2dac08e18db3729d4f07fe9a2c290e2244d23d937019798a038e15357b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 181,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1811,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e29cc661f65ee43fe8df88eb53814d4e45e242ffb3d7240b0a01c542058ef140",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 182,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1805,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "a965334db35a96802068d107940fc3296a449810c1d5821036aa0bee3f6659d2",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 183,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1847,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2983860f840d87435611c66fde6598b1797ab80a759724ce37dec076abe57a29",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 184,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1670,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "2ac2bf15ed046c188de52c8c24db8d94907d93aba9bf39f2fed7c7bd5cc933a3",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 185,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2011,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "32a001674d11692e081213b8a54a493b482eedbd8762c1c2e3dbc52db7c7ff8e",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 186,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1726,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c0099663d67677a3b8da474bcd8bcdc6555f89c0cc465b7eb896daaee3cd658b",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 187,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1869,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "506ab9ded6134b653f9848c321aec3e8fdb72ab8543fccd561039a8b82fb6504",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 188,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1814,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "34fe555204c4a86b9edeb30f3e2801499f51dacbd99651baf9a014c60d8e8948",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 189,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1814,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "3d277d762ddd393d29abdc12310c226fb5f0b7cb7794cb2f9df6d256659849c8",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 190,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1903,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "279fdb96e0a733b5a26f4f23f33e191c5a1ca6ba72a121a81b2f54db1942c2ca",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 191,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1821,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "06380ba1cfa82dba53b0832a01d6387eaadf24ab537e3b0adce3375b0a2d577d",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 192,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 629,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "d5f1ee1b9127dc722cac23f4352cc7d53390439647106cc26880eaa6a0dc6ed9",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 193,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1930,
+      "embedded_images": 0,
+      "vector_drawings": 1,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "b714a59265e996049bd5571b69e05058b2b61bdafbd48d21abbff9ebd98b2b6c",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 194,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 2043,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "f3b3a03b83a063f4f24b19f2a828a05f42b69b98a778130eb9f205581baac815",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 195,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1883,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "0c8e1b3a8da21ed7f911647a12ee85b93aa78607242603014ed7d3b83587b4fe",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 196,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 755,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "682d26cbd20a4c3b89bcd1354bef11fff34cd7a534a467b60acc158e2ad189de",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 197,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 843,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "13e0c58b2de7b9047c219afb5cce293ca6b1d7163d9989ac6cf8c4fd66a32bd6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 198,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 638,
+      "embedded_images": 0,
+      "vector_drawings": 3,
+      "visual_content_flag": true,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "0a16e9ff26682a246c33b261346e841164ef42fed64b092b86347197918ee1c0",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 199,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 671,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "39fb7ac6862a46b3bdad83ddd8e563abb982f10370cf159f37b052afd803b9b6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 200,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 756,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "5e0dfc5bc1457e3131dda6653c4a8afcbc9a43d5c0dba83756a336866efe69e6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 201,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 984,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "a3960ba7c828b81918a78c5489dd705890ba082241a5727903cde680d12af2b4",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 202,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 792,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "f95b31d09014a743a4652a91c90d116e7f10b37061d18322bb2b5bd7ee18bcd2",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 203,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 836,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "6622508232248cded2e187ed7d8681a030e519c5859a01163d28c44a3e3ffcbe",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 204,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 868,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "af227624df5710b21e8094a873bf47da4cd5fe8ef6a7c70cb572d5b0a8882808",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 205,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 733,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "a96637b43133fc58128c76f74939c51af8d032ecdc3818ea6171eef04ed404a0",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 206,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 813,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "1fee4ed80f2b6d3bb6181a7f7aa20b834d115e83930f65f0da2e78e49e594f18",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 207,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 585,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "a2a9f5dc3fc1399aeefde0c473a482d1515d5956658aecdb3eb1a95e0250baf8",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 208,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 723,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "654d1bd304ce8698987a8315ef6ea4d19a9e770399d4cca0c6456b8493844ea4",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 209,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 983,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "97bb9448487773b35c68dbaa8259cc4c4cf9cf2badd1ab6ea9f3f06c079f00fb",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 210,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 733,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "038860855ba1dff67acc4797190a3a7ca1105fa5be77994f4b69d54f762c507e",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 211,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 855,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c3e747794f24df983c7fb07ec8d0de075d3d3e2625cfbf77abf0d8116e5a7179",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 212,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 648,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "a7d4695cfa73d78a9f3133801bb897976cf505f8e5abd591ff7d18e59d793ec3",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 213,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 850,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "501c39224c5567be3d0c0b2ab0d6950963e39b22b67855f235730d5ba1d7f980",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 214,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 685,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "c865610943cee1a332bd7d089a9728e9cfeec63c4ac72e4e36c305ee178b4c72",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 215,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1076,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "113b8944696fe1c017705df6d526baf24c525a4e2ef18921911d923209ceeec9",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 216,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 913,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "26eea737cd670d0d3bbd6cb61628e0d58e94a8d3d86713f38f7c04eb7f35b915",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 217,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1101,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "d5f76caa5db8ed8a22a1337b0f310673d19e7e27d743eea66c61226e39e8920d",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 218,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 742,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "df396ee0baaf94241b18ba275be680a9bf7e237b70c5b159ef3604004c8c15fc",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 219,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 700,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "dd3193b7976b05ddd71342888057cce974394358e103f7be7f110a667fc889c8",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 220,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 734,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "5eadc717213fcb04752ffd7e08a1fa8644357242f111bb37d594ce32000dea26",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 221,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1028,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "8cd08180baf1b419cfe6e171bb7ca52ea2c110c20b892883b5b0eaa8deb57ea0",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 222,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 726,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "1b4c32f7835a5427a1e2973a957ee8b1d7d2eb0309a5ef07028eee7b2b8da2e4",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 223,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 898,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "9722400773217de22cb391b443d937d0bab91ab649e58dfcecd29fdb2790c132",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 224,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 938,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4ff6d7324ca2e2ba70842c2c1b901ddbe90839ad3319d7b67bd90a257f6d1e88",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 225,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 927,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "49e4304bf53b52afe7db334663459249b591a2d4009cbbf9392548827617f298",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 226,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 796,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e7abd1c41da7ba5777b7ffdba4506b143cd76accba5f0b5804222aa87cf49a9a",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 227,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 842,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "6ac9bd465595f4f31d18fee03475ce2525d016c37916c56f5aff425f593dc284",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 228,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1263,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "6161e643a7498caeeda00ee9daee3f39193416a2983a7a512e8e5d8d7eb5bdfd",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 229,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1006,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "e52ee8c3cb19f872864204211af0dc13f776b059cec4cac5067f7c298177e5b6",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 230,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1021,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "9fbc20d42c87381b309e891839e197275e56bcb91461a5fbf7d1545c36029b54",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 231,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 1064,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "4f03b921ae80710a3f0acbb8e91cf6444322a06d48d35a7036a007e2bc64aefe",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 232,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 743,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "ac544ab70f5114acd78cbe9b93624e8c44987d771c382eb6e64e75fc90190714",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 233,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 711,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": false,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "70313e68cdb062bde7c151967e77b1b6676e85cf97adf1ff04073c91d5cd0428",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    },
+    {
+      "pdf_page": 234,
+      "review_status": "reviewed_text_and_visual_render",
+      "text_characters": 227,
+      "embedded_images": 0,
+      "vector_drawings": 0,
+      "visual_content_flag": false,
+      "intentionally_sparse_or_divider": true,
+      "figure_captions_found": [],
+      "render_sha256_thumbnail_pixels": "d2ccc848770a759f45681d75c3fcbf6e8ec9bbc6cba2d07f81740ba0432dc385",
+      "unreadable": false,
+      "notes": "Rendered successfully; text extracted and contact-sheet visual review completed."
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "registry_version": "1.0.0",
+  "purpose": "Research queue only. No entry is permitted to alter A/B/C map decisions, live inputs, or trading actions.",
+  "rules": [
+    {
+      "schema_version": "1.0.0",
+      "rule_id": "HSI-R-BREADTH-WEIGHT-v1",
+      "title": "HSI constituent breadth and constituent-weight contribution",
+      "research_only": true,
+      "lifecycle": "data_pending",
+      "hypothesis": "Cross-sectional participation and index-point contribution may describe whether an HSI move is broad or concentrated; predictive value is unproven.",
+      "module": "breadth_weight",
+      "placement": "premarket",
+      "source_inputs": [
+        { "name": "HSI constituent universe and free-float weights", "source": "HKEX/Hang Seng Indexes official constituent and index factsheet release", "source_updated_at": null, "as_of": null, "status": "missing", "vendor_requirement": "Versioned historical constituent membership and effective free-float weights, including rebalance effective dates." },
+        { "name": "Constituent adjusted close/OHLCV", "source": "Licensed vendor or official exchange-endorsed historical feed", "source_updated_at": null, "as_of": null, "status": "missing", "vendor_requirement": "Survivorship-bias-free constituent prices with corporate-action treatment and session timestamps." },
+        { "name": "Index level and divisor methodology", "source": "Hang Seng Indexes methodology and official index close", "source_updated_at": null, "as_of": null, "status": "missing", "vendor_requirement": "Index divisor/capping history or an approved contribution methodology." }
+      ],
+      "data_status": { "status": "missing", "as_of": null, "source_updated_at": null, "reason": "No constituent history, historical weights, or validated adjusted-price panel is stored in this repository." },
+      "missing_data_handling": "If any universe, weight, price, or corporate-action field is missing for a session, emit unavailable for that session; do not backfill from a later constituent list or substitute current weights.",
+      "regimes": { "applicable": ["regular HSI cash-session close with complete point-in-time universe"], "disabled": ["suspended constituent data", "rebalance-effective sessions without verified effective weights", "half-day or holiday sessions until separately tested", "any missing/stale input"] },
+      "definitions": {
+        "trigger": "Research candidate only: breadth z-score and concentration metric cross preregistered thresholds computed from point-in-time inputs; thresholds remain unset until training protocol is approved.",
+        "confirmation": "A completed HSI cash-session observation and all required constituent inputs pass freshness/completeness checks; no intraday or partial-session confirmation.",
+        "invalidation": "Any source revision, universe/weight mismatch, corporate-action ambiguity, or data-status other than available invalidates the observation.",
+        "exit": "Research label ends at the next defined evaluation horizon; no position instruction or A/B/C decision is produced."
+      },
+      "backtest": { "interval": "Not run; must predeclare a point-in-time historical interval before retrieval.", "sample_definition": "Not run; sample must exclude sessions with incomplete universe/weight/price fields and report exclusions.", "cost_model": "Not applicable until a tradeable execution instrument and entry/exit timing are preregistered.", "slippage_model": "Not applicable until a tradeable execution instrument and entry/exit timing are preregistered.", "walk_forward": "Not run; define rolling train/validate windows before threshold selection.", "holdout": "Not run; reserve an untouched chronological final holdout before model selection." },
+      "evidence": {
+        "is": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null },
+        "oos": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null },
+        "holdout": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }
+      },
+      "conflict_priority": "Informational only; when unavailable, stale, or conflicting with an existing production map, it has no decision priority and cannot modify A/B/C logic.",
+      "provenance": { "created_at": "2026-10-06T20:58:00+08:00", "last_updated_at": "2026-10-06T20:58:00+08:00", "owner": "minigavin research", "change_log": ["v1: preregistered research card; no data or results claimed."] }
+    },
+    {
+      "schema_version": "1.0.0", "rule_id": "HSI-R-FUTURES-BASIS-v1", "title": "HSI futures night session and cash-futures basis", "research_only": true, "lifecycle": "data_pending", "hypothesis": "Overnight futures pricing and basis may describe cash-open context; predictive value is unproven.", "module": "futures_basis", "placement": "premarket",
+      "source_inputs": [{ "name": "HSI futures trade/settlement and contract metadata", "source": "HKEX official derivatives data or licensed historical vendor", "source_updated_at": null, "as_of": null, "status": "missing", "vendor_requirement": "Night-session timestamps, contract rolls, settlement, expiry, and continuous-series methodology." }],
+      "data_status": { "status": "missing", "as_of": null, "source_updated_at": null, "reason": "No validated futures history is stored." }, "missing_data_handling": "Emit unavailable; never infer night-session values from cash-index data.",
+      "regimes": { "applicable": ["verified trading night with active front contract"], "disabled": ["exchange holiday", "roll window without preregistered rule", "missing settlement/cash close"] },
+      "definitions": { "trigger": "Unset pending preregistration.", "confirmation": "Verified futures and cash timestamps under one roll convention.", "invalidation": "Missing or stale futures, cash, contract, or roll data.", "exit": "Research horizon only; no production decision." },
+      "backtest": { "interval": "Not run.", "sample_definition": "Not run.", "cost_model": "Not applicable until instrument is declared.", "slippage_model": "Not applicable until instrument is declared.", "walk_forward": "Not run.", "holdout": "Not run." },
+      "evidence": { "is": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }, "oos": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }, "holdout": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null } },
+      "conflict_priority": "Informational only; no priority over production maps.", "provenance": { "created_at": "2026-10-06T20:58:00+08:00", "last_updated_at": "2026-10-06T20:58:00+08:00", "owner": "minigavin research", "change_log": ["v1: data requirements recorded; no data or results claimed."] }
+    },
+    {
+      "schema_version": "1.0.0", "rule_id": "HSI-R-LIQUIDITY-v1", "title": "HSI liquidity state", "research_only": true, "lifecycle": "data_pending", "hypothesis": "Cash and derivatives liquidity conditions may constrain interpretation and execution; predictive value is unproven.", "module": "liquidity", "placement": "intraday",
+      "source_inputs": [{ "name": "Order-book/trade liquidity measures", "source": "HKEX official market data or licensed vendor", "source_updated_at": null, "as_of": null, "status": "missing", "vendor_requirement": "Timestamped bids/asks, trades, depth, and session flags with documented coverage." }],
+      "data_status": { "status": "missing", "as_of": null, "source_updated_at": null, "reason": "No validated order-book or trade-level data is stored." }, "missing_data_handling": "Emit unavailable; do not use index turnover as a proxy for spread/depth without separate validation.",
+      "regimes": { "applicable": ["normal continuous auction with complete timestamps"], "disabled": ["auction", "lunch break", "halt", "partial feed", "stale data"] },
+      "definitions": { "trigger": "Unset pending preregistration.", "confirmation": "Fresh, synchronized cash/derivatives liquidity panel.", "invalidation": "Feed gap, stale tick, session mismatch, or vendor correction.", "exit": "Research horizon only; no production decision." },
+      "backtest": { "interval": "Not run.", "sample_definition": "Not run.", "cost_model": "Pending chosen execution instrument.", "slippage_model": "Must use observed or conservatively modeled spread/impact.", "walk_forward": "Not run.", "holdout": "Not run." },
+      "evidence": { "is": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }, "oos": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }, "holdout": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null } },
+      "conflict_priority": "Informational only; no priority over production maps.", "provenance": { "created_at": "2026-10-06T20:58:00+08:00", "last_updated_at": "2026-10-06T20:58:00+08:00", "owner": "minigavin research", "change_log": ["v1: data requirements recorded; no data or results claimed."] }
+    },
+    {
+      "schema_version": "1.0.0", "rule_id": "HSI-R-OPTIONS-VOL-v1", "title": "HSI options implied-volatility state", "research_only": true, "lifecycle": "data_pending", "hypothesis": "Option-implied volatility, skew, and term structure may describe priced risk; predictive value is unproven.", "module": "options_volatility", "placement": "premarket",
+      "source_inputs": [{ "name": "HSI options quotes and contract metadata", "source": "HKEX official derivatives data or licensed options vendor", "source_updated_at": null, "as_of": null, "status": "missing", "vendor_requirement": "Timestamped bid/ask, strikes, expiries, rates/dividends convention, settlement, and stale-quote flags." }],
+      "data_status": { "status": "missing", "as_of": null, "source_updated_at": null, "reason": "No validated options surface history is stored." }, "missing_data_handling": "Emit unavailable; do not reconstruct IV from a single last trade or mix expiry conventions.",
+      "regimes": { "applicable": ["liquid strikes with validated bid/ask and time-to-expiry"], "disabled": ["wide/stale quotes", "expiry/roll anomaly", "missing rate/dividend assumptions"] },
+      "definitions": { "trigger": "Unset pending preregistration.", "confirmation": "Surface passes quote-quality filters and fixed interpolation convention.", "invalidation": "Stale quote, invalid arbitrage checks, or convention change.", "exit": "Research horizon only; no production decision." },
+      "backtest": { "interval": "Not run.", "sample_definition": "Not run.", "cost_model": "Pending chosen instrument.", "slippage_model": "Must incorporate bid/ask and contract liquidity.", "walk_forward": "Not run.", "holdout": "Not run." },
+      "evidence": { "is": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }, "oos": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }, "holdout": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null } },
+      "conflict_priority": "Informational only; no priority over production maps.", "provenance": { "created_at": "2026-10-06T20:58:00+08:00", "last_updated_at": "2026-10-06T20:58:00+08:00", "owner": "minigavin research", "change_log": ["v1: data requirements recorded; no data or results claimed."] }
+    },
+    {
+      "schema_version": "1.0.0", "rule_id": "HSI-R-EVENT-CALENDAR-v1", "title": "HSI event calendar classification", "research_only": true, "lifecycle": "data_pending", "hypothesis": "Predefined, timestamped macro and market events may classify event risk; predictive value is unproven.", "module": "event_calendar", "placement": "no-trade",
+      "source_inputs": [{ "name": "Official event timestamps and outcome records", "source": "Primary issuer/central-bank/government/HKEX calendars, with licensed archive if necessary", "source_updated_at": null, "as_of": null, "status": "missing", "vendor_requirement": "Point-in-time scheduled/revised timestamps, timezone, expected/actual fields, and cancellation history." }],
+      "data_status": { "status": "missing", "as_of": null, "source_updated_at": null, "reason": "No point-in-time event archive is stored." }, "missing_data_handling": "Use no-trade/unknown event-risk label; never treat a later-revised calendar as a known historical schedule.",
+      "regimes": { "applicable": ["events with primary-source timestamp and outcome provenance"], "disabled": ["unscheduled headlines", "missing timezone", "revised schedule lacking point-in-time record"] },
+      "definitions": { "trigger": "A preregistered event window begins.", "confirmation": "Primary-source timestamp is verified; outcome data, if used, is timestamped and revision-aware.", "invalidation": "Cancellation, reschedule, missing provenance, or timezone ambiguity.", "exit": "Event window expires; no directional decision is produced." },
+      "backtest": { "interval": "Not run.", "sample_definition": "Not run.", "cost_model": "Not applicable for calendar-only risk label.", "slippage_model": "Not applicable for calendar-only risk label.", "walk_forward": "Not run.", "holdout": "Not run." },
+      "evidence": { "is": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }, "oos": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null }, "holdout": { "status": "not_run", "sample_size": null, "win_rate": null, "average_rr": null, "expectancy": null, "max_drawdown": null } },
+      "conflict_priority": "Risk label only; it may gate research evaluation but cannot modify production maps.", "provenance": { "created_at": "2026-10-06T20:58:00+08:00", "last_updated_at": "2026-10-06T20:58:00+08:00", "owner": "minigavin research", "change_log": ["v1: data requirements recorded; no data or results claimed."] }
+    }
+  ]
+}

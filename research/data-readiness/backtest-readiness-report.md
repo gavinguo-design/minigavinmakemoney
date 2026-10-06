@@ -30,7 +30,7 @@ The repository contains no CSV, Parquet, spreadsheet, or database panel for the 
 
 ## Lawful Official Availability Probes
 
-All timestamps below are source/retrieval evidence only, not market observation timestamps. Files are retained with checksums in `evidence/SHA256SUMS`.
+All timestamps below are source/retrieval evidence only, not market observation timestamps. Files are retained as evidence payloads with checksums in `evidence/SHA256SUMS`; the manifest deliberately excludes itself and `node scripts/verify-evidence-checksums.cjs` verifies every listed payload.
 
 | Source / exact URL | Download / status | Available content and granularity | Coverage discovered | Backtest sufficiency / caveat |
 | --- | --- | --- | --- | --- |
@@ -62,4 +62,4 @@ All timestamps below are source/retrieval evidence only, not market observation 
 
 `research/breadth-weight/backtest.js` is deliberately not a backtest runner. It accepts an in-memory fully specified session only and rejects incomplete panels before calculating. If/when a valid panel is supplied, it emits the contract's equal-name breadth, weighted breadth, approximate weighted return contributions, concentration HHI, and top-five absolute-contribution share. It has no turnover breadth metric because no valid constituent volume/turnover field exists.
 
-It explicitly flags `NOT_OFFICIAL_INDEX_POINT_ATTRIBUTION`. Tests demonstrate that calculation refuses (a) membership missing a PIT `as_of` field and (b) an unknown/null weight. The tiny internally constructed test fixture is a gate test, **not source data, not an input artifact, and not a backtest result**.
+It explicitly flags `NOT_OFFICIAL_INDEX_POINT_ATTRIBUTION`. Before calculation, it requires valid ISO calendar session/as-of/effective dates, ISO-8601 source timestamps with timezones, source identifiers, one exact study session across membership/weights/prices/index close, and the explicit HSI weight type `hsi_free_float_adjusted_capped`. It rejects malformed or mismatched provenance, missing index/price provenance, duplicate or incomplete panels, and invalid weight coverage. The tiny internally constructed test fixture is a gate test, **not source data, not an input artifact, and not a backtest result**.

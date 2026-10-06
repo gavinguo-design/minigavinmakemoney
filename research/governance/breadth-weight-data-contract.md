@@ -4,7 +4,7 @@ Status: research-only; no inputs are connected and no result is a signal.
 
 ## Point-in-time input tables
 
-All records use `Asia/Hong_Kong` timestamps. `as_of` is the market observation time; `source_updated_at` is the source's own update time, not a retrieval time.
+All records use `Asia/Hong_Kong` timestamps. `as_of` is the market observation session date; `source_updated_at` is the source's own update time, not a retrieval time.
 
 | Table | Grain | Required fields |
 | --- | --- | --- |
@@ -15,6 +15,14 @@ All records use `Asia/Hong_Kong` timestamps. `as_of` is the market observation t
 | `corporate_actions` | security, effective interval | `security_id`, `action_type`, `ex_date`, `adjustment_factor`, `source`, `source_updated_at`, `as_of` |
 
 Keys must be stable across ticker changes. A session is usable only where every active constituent has a point-in-time membership record, matching effective weight, valid adjusted prices, and a completed index close. Do not silently drop missing names.
+
+## Strict completed-session provenance rules
+
+The calculation gate accepts only one declared study session. `session_date`, every `as_of`, `effective_from`, and `effective_to` value must be a real ISO calendar date in `YYYY-MM-DD` form. `source_updated_at` must be a valid ISO-8601 timestamp with an explicit `Z` or numeric timezone offset. A source identifier must be a nonempty string.
+
+For a completed session `t`, every membership, weight, constituent-price, and index-close record must declare `as_of = t`; price and index-close `session_date` must equal `t`; and membership/weight effective intervals must contain `t`. Each record's `source_updated_at` must not precede the beginning of its claimed Hong Kong observation date. This validates chronology without inventing a freshness-SLA: freshness remains a separately preregistered policy. The input collection must contain exactly one membership, weight, and price record for each active security, and the index close must have the requested `index_id` and `session_date`.
+
+The only accepted `weight_type` is `hsi_free_float_adjusted_capped`, meaning the source explicitly identifies the weights as HSI free-float-adjusted and capped weights. Weights must be finite and in `(0, 1]`, be one-to-one with active constituents, and sum to one within the declared rounding tolerance. Other labels (including generic `free_float_capped`) are rejected because they do not identify the required HSI-specific methodology.
 
 ## Calculations (descriptive, not predictive)
 
@@ -40,8 +48,8 @@ All thresholds, z-score lookbacks, horizons, and any relation to next-session ou
 
 ## Validation and failure states
 
-- `available`: all required records are present, internally consistent, current for the intended completed session, and reconciliation checks pass.
-- `stale`: records exist but source timestamps exceed the preregistered freshness limit. No carry-forward.
-- `missing`: any required record, corporate-action mapping, history effective date, coverage, or reconciliation field is absent. Emit no metric.
+- `available`: all required records are present, internally consistent, and satisfy the strict completed-session provenance rules and reconciliation checks.
+- `stale`: records exist but source timestamps exceed a separately preregistered freshness limit. No carry-forward. The calculation gate does not infer a freshness SLA.
+- `missing`: any required record, malformed date/timestamp, source/provenance field, corporate-action mapping, history effective date, coverage, or reconciliation field is absent or invalid. Emit no metric.
 
 A rebalance-effective day is `missing` until the exact effective constituent and weight files are verified. A suspension is not a zero return. Half-day and special-session treatment requires a separate preregistered test before inclusion.

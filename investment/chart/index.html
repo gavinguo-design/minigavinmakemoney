@@ -2562,10 +2562,13 @@
 
   function levelRange(lv) {
     if (!lv) return null;
-    var nums = String(lv.label || '').match(/\d[\d,]*(?:\.\d+)?/g) || [];
-    var vals = nums.map(function (n) { return Number(String(n).replace(/,/g, '')); }).filter(function (n) { return isFinite(n); });
-    if (vals.length < 2) return null;
-    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    // Only an explicit "price–price" token is a zone. Other numbers in labels
+    // are often dates (10/2, 9/29) or month references (7月), never price bounds.
+    var match = String(lv.label || '').match(/(\d[\d,]*(?:\.\d+)?)\s*[–—-]\s*(\d[\d,]*(?:\.\d+)?)/);
+    if (!match) return null;
+    var a = Number(match[1].replace(/,/g, '')), b = Number(match[2].replace(/,/g, ''));
+    if (!isFinite(a) || !isFinite(b)) return null;
+    var lo = Math.min(a, b), hi = Math.max(a, b);
     if (lo === hi) return null;
     // Only label-derived ranges that actually include the annotated level are trusted as zones.
     return lv.price >= lo && lv.price <= hi ? { low: lo, high: hi } : null;

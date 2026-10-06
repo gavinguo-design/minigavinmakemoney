@@ -887,7 +887,7 @@
         <div id="chart"></div>
         <div class="struct-banner hidden" id="structBanner"></div>
         <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
-        <div class="sim-badge hidden" id="simBadge">A/B/C 情景带 · 金色为分析起点</div>
+        <div class="sim-badge hidden" id="simBadge">A/B/C 情景带 · 从最新确认K线出发</div>
         <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（数据源尚未回填）</div>
         <div class="vol-legend hidden" id="volLegend"></div>
         <div class="ma-legend" id="maLegend"><span class="ma5">MA5</span><span class="ma10">MA10</span><span class="ma20">MA20</span><span class="ma60">MA60</span></div>
@@ -1215,12 +1215,18 @@
     clearGutterSource('invalidation');
   }
 
-  // ---------- 历史回看：情景/RR 锚点定位 ----------
-  // 始终优先锚定分析的 baseDate。这样盘前地图生成后，即使当天真实K线已经出现，
-  // 情景路径仍从生成时的基准K线出发，真实走势可以与预测区间正确叠加。
+  // ---------- 情景/RR 锚点定位 ----------
+  // 最新模式必须从最后一根已确认日K出发；盘中的临时K线不能成为波段路径锚点。
+  // 历史回看仍锚定冻结地图的 baseDate，保留“当时预测 vs 后来走势”的复盘能力。
   function anchorIndex(a, bars) {
     if (!bars.length) return -1;
     var lastIdx = bars.length - 1;
+    if (!viewingDate) {
+      for (var j = lastIdx; j >= 0; j--) {
+        if (!bars[j].partial) return j;
+      }
+      return lastIdx;
+    }
     var dateStr = (a && a.forecast && a.forecast.baseDate) || viewingDate;
     if (!dateStr) return lastIdx;
     var t = findBarTime(dateStr, bars, false);
@@ -1350,6 +1356,7 @@
       hint.classList.remove('hidden'); simBadge.classList.add('hidden'); scheduleGutterRefresh(); return;
     }
     hint.classList.add('hidden'); simBadge.classList.remove('hidden');
+    simBadge.textContent = viewingDate ? 'A/B/C 情景带 · 金色为冻结分析起点' : 'A/B/C 情景带 · 从最新确认K线出发';
 
     // 结算后：当日正式情景已失效/过期，清空图上情景区域（不画旧的、不乱画草稿价位，避免误导）
     if (isScenarioSettled(a)) {
@@ -1358,7 +1365,7 @@
       return;
     }
 
-    // 情景区域锚点固定在地图的分析基准日，便于把后来真实K线与原预测直接叠加。
+    // 最新地图从最后一根已确认K线展开；历史回看则从冻结分析基准日展开。
     var fcAnchorIdx = anchorIndex(a, bars);
     var lastBar = bars[fcAnchorIdx], maxOffset = 0;
     scenarios.forEach(function (sc) {

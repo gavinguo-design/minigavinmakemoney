@@ -12,6 +12,7 @@
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
   <script src="market-rules.js?v=1"></script>
+  <script src="trading-operation.js?v=1"></script>
   <script src="technical-analysis.js?v=1"></script>
   <script src="technical-panel.js?v=1"></script>
   <link rel="stylesheet" href="technical-panel.css?v=1">
@@ -106,6 +107,14 @@
       .sb-line { gap: 5px 10px; }
       .sb-kv b { font-size: 14px; }
     }
+
+    /* Operational contract: a compact decision gate, not another indicator panel. */
+    .operation-card { margin: 10px 0 14px; padding: 13px 14px; border-radius: 12px; border: 1px solid rgba(245,200,66,0.32); background: linear-gradient(120deg, rgba(245,200,66,0.10), rgba(10,132,255,0.06)); }
+    .operation-card.no-trade { border-color: rgba(255,69,58,0.55); background: linear-gradient(120deg, rgba(255,69,58,0.12), rgba(28,28,30,0.85)); }
+    .op-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap; }
+    .op-title { font-size:14px; font-weight:800; }.op-state { font:800 11px 'JetBrains Mono', monospace; border-radius:999px; padding:3px 8px; color:var(--gold); background:rgba(245,200,66,.14); }.operation-card.no-trade .op-state { color:#ff9c96; background:rgba(255,69,58,.16); }
+    .op-now { margin-top:8px; font-size:13px; line-height:1.55; font-weight:700; }.op-list { margin:8px 0 0; padding-left:18px; color:rgba(235,235,245,.72); font-size:11.5px; line-height:1.55; }.op-list li { margin:2px 0; }
+    .op-details { margin-top:9px; border-top:1px dashed var(--border); padding-top:8px; }.op-details summary { cursor:pointer; color:var(--muted); font-size:11px; font-weight:700; }.op-grid { margin-top:8px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }.op-item { padding:7px 8px; border:1px solid var(--border); border-radius:7px; background:rgba(255,255,255,.025); font-size:10.5px; line-height:1.45; color:rgba(235,235,245,.72); }.op-item b { color:#f5f5f7; display:block; font-size:11px; }.op-meta { margin-top:8px; color:var(--muted); font:10px 'JetBrains Mono', monospace; } @media (max-width:640px) { .op-grid { grid-template-columns:1fr; } }
 
     /* 波段节奏顶部横幅 */
     .swing-rhythm-banner {
@@ -825,6 +834,9 @@
     <!-- 顶部状态条：日期 + 偏向胶囊 + 当前价 + 关键区间，判断依据折叠收纳 -->
     <div class="status-bar hidden" id="statusBar"></div>
 
+    <!-- 当前操作层：只消费 versioned trading_operation contract，不复制静态交易文案。 -->
+    <section class="operation-card hidden" id="operationCard" aria-label="当前操作状态"></section>
+
     <!-- A/B/C 情景卡：核心决策区，关键数字优先 -->
     <div class="scenarios hidden" id="scenarioCards"></div>
     <p class="prob-note hidden" id="probNote">ℹ︎ 情景权重为主观评估，不是胜率；触发以卡片条件为准。</p>
@@ -1109,6 +1121,7 @@
     var prefix=viewingDate?'历史模式：指标截至冻结基准；顶部行情单独显示最新报价。':'行情与判断分别校验；价格触及不代表收盘确认。';
     box.textContent=prefix+(klineUpdatedAt?' K线源更新 '+klineUpdatedAt+'。':'')+(warnings.length?' ⚠ '+warnings.join('；'):' 数据校验通过。');
     box.classList.toggle('warning',warnings.length>0);
+    renderTradingOperation();
   }
   var priceLines = [];      // active price line handles
   var levelHitList = [];    // 供十字线悬停提示用的价位信息
@@ -2370,6 +2383,22 @@
         scheduleRealtime();
       });
     }, delay);
+  }
+
+  // ---------- versioned operating contract ----------
+  var tradingOperation = null;
+  function operationSection(id) { return tradingOperation && (tradingOperation.sections || []).filter(function (s) { return s.id === id; })[0] || null; }
+  function renderTradingOperation() {
+    var box = el('operationCard');
+    if (!box || viewingDate) { if (box) box.classList.add('hidden'); return; }
+    tradingOperation = TradingOperation.build({ annotations: annotations, scenarioStatus: scenarioStatus, dailyBars: currentIv === '1d' ? currentBars : [], quote: realtimeData || yahooQuote });
+    var noTrade = operationSection('no_trade_conditions'), paths = operationSection('scenario_paths'), risks = operationSection('risk_controls'), trigger = operationSection('trigger_confirmation');
+    var blocked = tradingOperation.action_state === 'no_trade', reasons = noTrade && noTrade.data && noTrade.data.conditions || [], scenarios = paths && paths.data && paths.data.scenarios || [], riskRows = risks && risks.data && risks.data.scenarios || [];
+    var scenarioText = scenarios.map(function (s) { return s.id + '：' + (s.state === 'triggered' ? '已触发' : s.state === 'confirming' ? '确认中' : '候选') + ' / ' + s.status; }).join(' · ') || 'A/B/C 状态缺失';
+    var riskText = riskRows.map(function (s) { return s.id + ' 结构失效 ' + (s.structural_invalidation && fmt(s.structural_invalidation.price) || '--') + '；灾难止损 ' + (s.disaster_stop && fmt(s.disaster_stop.price) || '未配置'); }).join('<br>');
+    box.className = 'operation-card' + (blocked ? ' no-trade' : '');
+    box.innerHTML = '<div class="op-head"><span class="op-title">操作状态 · 8段契约 v' + escapeHtml(tradingOperation.schema_version) + '</span><span class="op-state">' + (blocked ? 'NO TRADE' : 'OBSERVE ONLY') + '</span></div><div class="op-now">' + (blocked ? '当前不具备可执行条件：先补齐/核对阻断项；价格触及和盘中变化不替代日线确认。' : '只观察既有地图；本界面不构成执行建议。') + '</div>' + (reasons.length ? '<ul class="op-list">' + reasons.map(function (r) { return '<li>' + escapeHtml(r) + '</li>'; }).join('') + '</ul>' : '') + '<details class="op-details"><summary>查看 8 段状态、来源与缺口</summary><div class="op-grid"><div class="op-item"><b>1 市场状态</b>' + escapeHtml((operationSection('market_regime').data.label || '--')) + '</div><div class="op-item"><b>2 关键区 / 缺口回退</b>' + escapeHtml((operationSection('key_price_zones').data.gap_fallback && operationSection('key_price_zones').data.gap_fallback.range || []).join(' - ') || '缺失') + '</div><div class="op-item"><b>3 A/B/C</b>' + escapeHtml(scenarioText) + '</div><div class="op-item"><b>4 确认</b>' + escapeHtml(trigger && trigger.data.daily_confirmation || '--') + '</div><div class="op-item"><b>5 禁止交易</b>' + escapeHtml((noTrade && noTrade.action_state) || 'no_trade') + '</div><div class="op-item"><b>6 风控</b>' + riskText + '</div><div class="op-item"><b>7 仓位/减仓/退出</b>仓位规模未提供；RR/目标不能变成仓位建议。</div><div class="op-item"><b>8 盘后复盘</b>无成交与 MFE/MAE；仅可核对收盘与记录观察。</div></div><div class="op-meta">as_of ' + escapeHtml(tradingOperation.as_of || '--') + ' · 仅使用 annotations/status/报价/已加载日K · 研究观察，非执行建议</div></details>';
+    box.classList.remove('hidden');
   }
 
   // ---------- annotations ----------

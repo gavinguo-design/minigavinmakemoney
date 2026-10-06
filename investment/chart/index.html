@@ -549,6 +549,13 @@
     .sc-row b { color: rgba(255,255,255,0.85); font-weight: 600; }
     .sc-row.invalid b { color: var(--bad); }
     .sc-tip { font-size: 11px; color: rgba(235,235,245,0.3); margin-top: 7px; }
+    .sc-fallback { grid-column:1/-1; display:grid; grid-template-columns:auto 1fr 1fr; gap:8px; align-items:stretch; margin-top:2px; }
+    .sc-fallback-title,.sc-fallback-item { border:1px solid var(--border); border-radius:10px; padding:8px 10px; }
+    .sc-fallback-title { display:flex; flex-direction:column; justify-content:center; color:var(--gold); font-size:11px; font-weight:800; background:rgba(245,200,66,.06); }
+    .sc-fallback-title small { display:block; margin-top:3px; color:rgba(235,235,245,.52); font-size:9.5px; font-weight:600; font-family:'JetBrains Mono',monospace; }
+    .sc-fallback-item { font-size:11px; line-height:1.45; color:rgba(235,235,245,.68); }
+    .sc-fallback-item b { color:#fff; font-family:'JetBrains Mono',monospace; }
+    @media(max-width:720px){.sc-fallback{grid-template-columns:1fr}.sc-fallback-title{justify-content:center}}
     .technical-fold { cursor:pointer; font-size:12px; font-weight:700; color:var(--muted); list-style:none; }
     .technical-fold::-webkit-details-marker { display:none; }
     .technical-fold::before { content:'▸'; color:var(--accent); margin-right:7px; }
@@ -613,7 +620,7 @@
 
     /* 均线图例（右上角常驻，小字号不挡K线） */
     .ma-legend {
-      position: absolute; right: 68px; top: 10px; z-index: 7;
+      position: absolute; right: 68px; top: 46px; z-index: 7;
       font-size: 11px; line-height: 1.4; pointer-events: none;
       background: rgba(13,13,15,0.55); border-radius: 5px;
       padding: 2px 8px; font-family: 'JetBrains Mono', monospace;
@@ -624,7 +631,7 @@
     .ma-legend .ma20 { color: #0A84FF; }
     .ma-legend .ma60 { color: #BF5AF2; }
     @media (max-width: 640px) {
-      .ma-legend { font-size: 10px; gap: 6px; right: 62px; }
+      .ma-legend { font-size: 10px; gap: 6px; right: 62px; top: 86px; }
     }
 
     /* 成交额/成交量图例（左下角常驻，标注量能柱口径与数据源） */
@@ -692,13 +699,13 @@
 
     /* 价位标签栏：priceLine 文字移出图内，放在价格轴右侧独立列，避免叠在情景区域/轴标签上 */
     #levelGutter {
-      flex: 0 0 128px; width: 128px; position: relative; overflow: hidden;
+      flex: 0 0 176px; width: 176px; position: relative; overflow: hidden;
       border: 1px solid var(--border); border-left: none; border-radius: 0 14px 14px 0;
       background: rgba(28,28,30,0.55);
     }
     .gutter-label {
       position: absolute; left: 8px; right: 6px; transform: translateY(-50%);
-      font-size: 10px; font-weight: 700; line-height: 1.25; white-space: nowrap;
+      font-size: 10.5px; font-weight: 700; line-height: 1.25; white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
       font-family: 'JetBrains Mono', monospace;
       text-shadow: 0 0 4px rgba(0,0,0,0.6);
@@ -836,7 +843,7 @@
         <div id="chart"></div>
         <div class="struct-banner hidden" id="structBanner"></div>
         <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
-        <div class="sim-badge hidden" id="simBadge">Scenario 情景区域 · 非价格预测</div>
+        <div class="sim-badge hidden" id="simBadge">A/B/C 情景带 · 金色为分析起点</div>
         <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（数据源尚未回填）</div>
         <div class="vol-legend hidden" id="volLegend"></div>
         <div class="ma-legend" id="maLegend"><span class="ma5">MA5</span><span class="ma10">MA10</span><span class="ma20">MA20</span><span class="ma60">MA60</span></div>
@@ -1146,13 +1153,13 @@
   }
 
   // ---------- 历史回看：情景/RR 锚点定位 ----------
-  // 最新模式：锚定最后一根K线；历史模式：锚定存档基准日（baseDate/存档日期）对应的K线，
-  // 使情景区域从那天的基准价出发画，预测分界线落在存档日期位置，与后来真实走势直接叠加对比。
+  // 始终优先锚定分析的 baseDate。这样盘前地图生成后，即使当天真实K线已经出现，
+  // 情景路径仍从生成时的基准K线出发，真实走势可以与预测区间正确叠加。
   function anchorIndex(a, bars) {
     if (!bars.length) return -1;
     var lastIdx = bars.length - 1;
-    if (!viewingDate) return lastIdx;
     var dateStr = (a && a.forecast && a.forecast.baseDate) || viewingDate;
+    if (!dateStr) return lastIdx;
     var t = findBarTime(dateStr, bars, false);
     if (!t || typeof t !== 'object') return lastIdx;
     for (var i = bars.length - 1; i >= 0; i--) {
@@ -1277,7 +1284,7 @@
       return;
     }
 
-    // 情景区域锚点：最新模式=最后一根K线；历史回看模式=存档基准日K线（预测分界线画在那天）
+    // 情景区域锚点固定在地图的分析基准日，便于把后来真实K线与原预测直接叠加。
     var fcAnchorIdx = anchorIndex(a, bars);
     var lastBar = bars[fcAnchorIdx], maxOffset = 0;
     scenarios.forEach(function (sc) {
@@ -1292,9 +1299,9 @@
     // 历史|预测分界金色竖带：最新模式画在第一个未来日（原行为不变）；
     // 历史回看模式画在存档基准日 D 本身，直观标出「从这天开始是当日的预测」
     var tintData = futureTimes.map(function (t, i) {
-      return { time: t, value: 1, color: (!viewingDate && i === 0) ? 'rgba(245,200,66,0.22)' : 'rgba(148,163,184,0.06)' };
+      return { time: t, value: 1, color: (!viewingDate && i === 0) ? 'rgba(245,200,66,0.13)' : 'rgba(148,163,184,0.035)' };
     });
-    if (viewingDate) tintData.unshift({ time: lastBar.time, value: 1, color: 'rgba(245,200,66,0.22)' });
+    if (viewingDate) tintData.unshift({ time: lastBar.time, value: 1, color: 'rgba(245,200,66,0.13)' });
     fcBgSeries.setData(tintData);
 
     scenarios.forEach(function (sc, idx) {
@@ -1326,10 +1333,9 @@
       var lowerLine = chart.addLineSeries({ color: hexToRgba(sc.color, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
       upperLine.setData(upperData); lowerLine.setData(lowerData);
 
-      // Only the scenario end gets a target marker (dot, no text — the label
-      // moves to #levelGutter to avoid overlapping the zone area/axis labels).
+      // 情景终点直接写 A/B/C，避免只剩彩色圆点、无法辨认路径归属。
       var end = upperData[upperData.length - 1];
-      var endMarker = [{ time: end.time, position: 'aboveBar', shape: 'circle', color: hexToRgba(sc.color, 0.95), text: '' }];
+      var endMarker = [{ time: end.time, position: 'aboveBar', shape: 'circle', color: hexToRgba(sc.color, 0.95), text: shortName(sc.name) }];
       upperLine.setMarkers(endMarker);
       // 情景显隐用「颜色透明化」而非 series.visible 开关（2026-09-28 修复）：
       // visible:false 会把该系列从价格轴 autoScale 计算中剔除，导致点击情景卡
@@ -1381,18 +1387,8 @@
       card.classList.toggle('active', i === activeScenario);
       card.classList.toggle('dimmed', activeScenario !== -1 && i !== activeScenario);
     });
-    // 情景目标区标签同步迁入 gutter：只显示当前可见（全部或单选中）的情景
+    // A/B/C 已直接标在路径终点；右侧栏只保留真实关键价位，避免与目标价重复堆叠。
     clearGutterSource('scenario');
-    fcSeriesList.forEach(function (fs) {
-      if (activeScenario !== -1 && fs.index !== activeScenario) return;
-      if (typeof fs.endPrice !== 'number') return;
-      gutterItems.push({
-        price: fs.endPrice,
-        text: shortName(fs.scenario.name) + ' · 目标区',
-        color: fs.scenario.color || 'rgba(235,235,245,0.5)',
-        source: 'scenario'
-      });
-    });
     scheduleGutterRefresh();
   }
 
@@ -1952,6 +1948,23 @@
       if (more) more.addEventListener('click', function (e) { e.stopPropagation(); });
       wrap.appendChild(card);
     });
+
+    // ABC 按收盘价覆盖全部结果；盘中若直接跳出主要分析区间，则把原有
+    // intraday_playbook 的上下开口区规则就地展示，避免用户误以为没有预案。
+    var zones = (a && a.intraday_playbook && Array.isArray(a.intraday_playbook.zones))
+      ? a.intraday_playbook.zones : [];
+    var highGap = zones.find(function (z) { return z && Array.isArray(z.range) && z.range[1] == null && typeof z.range[0] === 'number'; });
+    var lowGap = zones.find(function (z) { return z && Array.isArray(z.range) && z.range[0] == null && typeof z.range[1] === 'number'; });
+    if (highGap || lowGap) {
+      var fallback = document.createElement('div');
+      fallback.className = 'sc-fallback';
+      fallback.innerHTML =
+        '<div class="sc-fallback-title">收盘三分区完整覆盖' +
+          '<small>B &lt; 23,865 ｜ A 23,865–24,276 ｜ C ≥ 24,276</small></div>' +
+        (highGap ? '<div class="sc-fallback-item"><b>高开 ≥ ' + fmt(highGap.range[0]) + '</b><br>不追多，空单离场；等待收盘确认，再按 C 或原区间评估。</div>' : '') +
+        (lowGap ? '<div class="sc-fallback-item"><b>低开 &lt; ' + fmt(lowGap.range[1]) + '</b><br>不追空，空单止盈，多头不接飞刀；等待止跌或收复平台。</div>' : '');
+      wrap.appendChild(fallback);
+    }
   }
 
     // 实时价变化时轻量刷新情景卡：只更新触发 badge 与标尺游标，不重建 DOM（保留用户展开的折叠区/选中态）
@@ -2637,6 +2650,9 @@
     var list = (a && Array.isArray(a.markers)) ? a.markers : [];
     var chartMarkers = [];
     var visible = [];
+    // 图上只保留最近4个事件，完整历史仍在下方列表里，避免箭头和长标签盖住K线。
+    var chartList = list.filter(function(m){ return m && m.date && appliesTo(m, iv); })
+      .slice().sort(function(x,y){ return String(y.date).localeCompare(String(x.date)); }).slice(0,4);
     list.forEach(function (m) {
       if (!m || !m.date) return;
       if (!appliesTo(m, iv)) return;
@@ -2644,13 +2660,15 @@
       if (t == null) return;
       var pos = m.position === 'below' ? 'belowBar' : 'aboveBar';
       var shape = ({ arrowUp: 'arrowUp', arrowDown: 'arrowDown', circle: 'circle', square: 'square' })[m.shape] || 'circle';
-      chartMarkers.push({
-        time: t,
-        position: pos,
-        shape: shape,
-        color: markerSemanticColor(m),
-        text: shortMarkerText(m.text)
-      });
+      if (chartList.indexOf(m) !== -1) {
+        chartMarkers.push({
+          time: t,
+          position: pos,
+          shape: shape,
+          color: markerSemanticColor(m),
+          text: shortMarkerText(m.text)
+        });
+      }
       markerByTime[timeKey(t)] = m;
       visible.push(m);
     });

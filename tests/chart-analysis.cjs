@@ -137,3 +137,25 @@ test('historical weekly analysis excludes a candle completed after the frozen ba
  assert.equal(MR.markBars([week],'1wk',at('2026-09-22T16:10:00'))[0].partial,true);
  assert.equal(MR.markBars([week],'1wk',at('2026-09-25T16:10:00'))[0].partial,false);
 });
+
+test('latest forecast remains anchored to the map base date after a newer candle arrives',()=>{
+  const bars=[
+    {time:{year:2026,month:10,day:5}},
+    {time:{year:2026,month:10,day:6}}
+  ];
+  const c=render('anchorIndex',{
+    viewingDate:null,
+    findBarTime:()=>({year:2026,month:10,day:5})
+  });
+  assert.equal(c.anchorIndex({forecast:{baseDate:'2026-10-05'}},bars),0);
+});
+
+test('intraday fallback zones cover every price and retain open-ended gap guards',()=>{
+  const data=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/annotations.json'),'utf8'));
+  const zones=data.intraday_playbook.zones;
+  assert.equal(zones[0].range[1],null);
+  assert.equal(zones.at(-1).range[0],null);
+  for(let i=0;i<zones.length-1;i++) assert.equal(zones[i].range[0],zones[i+1].range[1]);
+  assert.deepEqual(zones[0].range,[24444,null]);
+  assert.deepEqual(zones.at(-1).range,[null,23250]);
+});

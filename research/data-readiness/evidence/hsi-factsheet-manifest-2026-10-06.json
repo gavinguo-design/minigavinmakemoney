@@ -1,0 +1,1904 @@
+{
+  "code" : "0",
+  "message" : "success",
+  "data" : [ {
+    "seriesCode" : "hsi",
+    "seriesName" : "Hang Seng Index and Sub-indexes",
+    "seriesOrder" : 1,
+    "dailyReport" : "hsi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsi.pdf"
+  }, {
+    "seriesCode" : "hscei",
+    "seriesName" : "Hang Seng China Enterprises Index",
+    "seriesOrder" : 2,
+    "dailyReport" : "hscei",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscei.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscei.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscei.pdf"
+  }, {
+    "seriesCode" : "hschk100",
+    "seriesName" : "Hang Seng China (Hong Kong-listed) 100 Index",
+    "seriesOrder" : 3,
+    "dailyReport" : "hsml100",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hschk100.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hschk100.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hschk100.pdf"
+  }, {
+    "seriesCode" : "hschk25",
+    "seriesName" : "Hang Seng China (Hong Kong-listed) 30 Index",
+    "seriesOrder" : 4,
+    "dailyReport" : "hsml25",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hschk25.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hschk25.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hschk25.pdf"
+  }, {
+    "seriesCode" : "china50",
+    "seriesName" : "Hang Seng China 50 Index",
+    "seriesOrder" : 5,
+    "dailyReport" : "hsc50",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/china50.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/china50.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/china50.pdf"
+  }, {
+    "seriesCode" : "redchips",
+    "seriesName" : "Hang Seng China-Affiliated Corporations Index",
+    "seriesOrder" : 6,
+    "dailyReport" : "hscci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/redchips.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/redchips.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/redchips.pdf"
+  }, {
+    "seriesCode" : "hsci",
+    "seriesName" : "Hang Seng Composite Index",
+    "seriesOrder" : 7,
+    "dailyReport" : "hsci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsci.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsci.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsci.pdf"
+  }, {
+    "seriesCode" : "industry",
+    "seriesName" : "Hang Seng Composite Industry Indexes",
+    "seriesOrder" : 8,
+    "dailyReport" : "hsci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/industry.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/industry.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/industry.pdf"
+  }, {
+    "seriesCode" : "sizeindexes",
+    "seriesName" : "Hang Seng Composite Size Indexes",
+    "seriesOrder" : 9,
+    "dailyReport" : "hsci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/sizeindexes.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/sizeindexes.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/sizeindexes.pdf"
+  }, {
+    "seriesCode" : "hsfcci",
+    "seriesName" : "Hang Seng Foreign Companies Composite Index",
+    "seriesOrder" : 10,
+    "dailyReport" : "hsfcci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsfcci.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsfcci.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsfcci.pdf"
+  }, {
+    "seriesCode" : "hsh40",
+    "seriesName" : "Hang Seng H40 Reference Index",
+    "seriesOrder" : 12,
+    "dailyReport" : "hsh40",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsh40.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsh40.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsh40.pdf"
+  }, {
+    "seriesCode" : "hk35",
+    "seriesName" : "Hang Seng HK 35",
+    "seriesOrder" : 13,
+    "dailyReport" : "hshk35",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hk35.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hk35.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hk35.pdf"
+  }, {
+    "seriesCode" : "hsschkc",
+    "seriesName" : "Hang Seng SCHK HK Companies Index",
+    "seriesOrder" : 15,
+    "dailyReport" : "hsschkc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsschkc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsschkc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsschkc.pdf"
+  }, {
+    "seriesCode" : "hsscmlc",
+    "seriesName" : "Hang Seng SCHK Mainland China Companies Index",
+    "seriesOrder" : 16,
+    "dailyReport" : "hsscmlc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscmlc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscmlc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscmlc.pdf"
+  }, {
+    "seriesCode" : "chinaah",
+    "seriesName" : "Hang Seng Stock Connect China AH Index Series",
+    "seriesOrder" : 17,
+    "dailyReport" : "hsahx",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/chinaah.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/chinaah.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/chinaah.pdf"
+  }, {
+    "seriesCode" : "hshkis",
+    "seriesName" : "Hang Seng Stock Connect Hong Kong Index Series",
+    "seriesOrder" : 18,
+    "dailyReport" : "hshkis",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshkis.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshkis.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshkis.pdf"
+  }, {
+    "seriesCode" : "chinaindustrytop",
+    "seriesName" : "Hang Seng China A Industry Top Index",
+    "seriesOrder" : 19,
+    "dailyReport" : "indytop",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/chinaindustrytop.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/chinaindustrytop.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/chinaindustrytop.pdf"
+  }, {
+    "seriesCode" : "hscat100",
+    "seriesName" : "Hang Seng China A Top 100 Index",
+    "seriesOrder" : 20,
+    "dailyReport" : "hscat100",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscat100.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscat100.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscat100.pdf"
+  }, {
+    "seriesCode" : "hsceewi",
+    "seriesName" : "Hang Seng China Enterprises Equal Weighted Index",
+    "seriesOrder" : 21,
+    "dailyReport" : "hsceewi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceewi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceewi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceewi.pdf"
+  }, {
+    "seriesCode" : "hscesi",
+    "seriesName" : "Hang Seng China Enterprises Smart Index",
+    "seriesOrder" : 22,
+    "dailyReport" : "hscesi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscesi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscesi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscesi.pdf"
+  }, {
+    "seriesCode" : "shhksi",
+    "seriesName" : "Hang Seng CSI Shanghai-Hong Kong AH Smart Index",
+    "seriesOrder" : 23,
+    "dailyReport" : "shhksi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/shhksi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/shhksi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/shhksi.pdf"
+  }, {
+    "seriesCode" : "dividendpoint",
+    "seriesName" : "Dividend Point Index Series",
+    "seriesOrder" : 24,
+    "dailyReport" : "hsdvp"
+  }, {
+    "seriesCode" : "hsewi",
+    "seriesName" : "Hang Seng Equal Weighted Index",
+    "seriesOrder" : 25,
+    "dailyReport" : "hsewi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsewi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsewi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsewi.pdf"
+  }, {
+    "seriesCode" : "hsfis",
+    "seriesName" : "Hang Seng Futures Index Series",
+    "seriesOrder" : 26,
+    "dailyReport" : "futures",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsfis.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsfis.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsfis.pdf"
+  }, {
+    "seriesCode" : "fsl",
+    "seriesName" : "Hang Seng Futures Short & Leveraged Index Series",
+    "seriesOrder" : 27,
+    "dailyReport" : "fsl",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/fsl.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/fsl.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/fsl.pdf"
+  }, {
+    "seriesCode" : "hshbi",
+    "seriesName" : "Hang Seng High Beta Index",
+    "seriesOrder" : 28,
+    "dailyReport" : "hshbi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshbi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshbi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshbi.pdf"
+  }, {
+    "seriesCode" : "hshdyi",
+    "seriesName" : "Hang Seng High Dividend Yield Index",
+    "seriesOrder" : 29,
+    "dailyReport" : "hshdyi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshdyi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshdyi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshdyi.pdf"
+  }, {
+    "seriesCode" : "hslvi",
+    "seriesName" : "Hang Seng Low Volatility Index",
+    "seriesOrder" : 30,
+    "dailyReport" : "hslvi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hslvi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hslvi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hslvi.pdf"
+  }, {
+    "seriesCode" : "riskadjusted",
+    "seriesName" : "Hang Seng Risk Adjusted Index Series",
+    "seriesOrder" : 31,
+    "dailyReport" : "rai",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/riskadjusted.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/riskadjusted.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/riskadjusted.pdf"
+  }, {
+    "seriesCode" : "hshylv",
+    "seriesName" : "Hang Seng SCHK High Dividend Low Volatility Index",
+    "seriesOrder" : 32,
+    "dailyReport" : "hshylv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshylv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshylv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshylv.pdf"
+  }, {
+    "seriesCode" : "hsqglv",
+    "seriesName" : "Hang Seng SCHK Quality Growth Low Volatility Index",
+    "seriesOrder" : 33,
+    "dailyReport" : "hsqglv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsqglv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsqglv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsqglv.pdf"
+  }, {
+    "seriesCode" : "ahpremium",
+    "seriesName" : "Hang Seng Stock Connect China AH Premium Index",
+    "seriesOrder" : 35,
+    "dailyReport" : "hsahp",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/ahpremium.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/ahpremium.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/ahpremium.pdf"
+  }, {
+    "seriesCode" : "hscahsi",
+    "seriesName" : "Hang Seng Stock Connect China AH Smart Index",
+    "seriesOrder" : 36,
+    "dailyReport" : "hscahsi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscahsi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscahsi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscahsi.pdf"
+  }, {
+    "seriesCode" : "volatilityindex",
+    "seriesName" : "HSI Volatility Index",
+    "seriesOrder" : 37,
+    "dailyReport" : "vhsi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/volatilityindex.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/volatilityindex.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/volatilityindex.pdf"
+  }, {
+    "seriesCode" : "hfinancials",
+    "seriesName" : "Hang Seng SCHK China Financials Index",
+    "seriesOrder" : 38,
+    "dailyReport" : "hfin",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hfinancials.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hfinancials.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hfinancials.pdf"
+  }, {
+    "seriesCode" : "hscgsi",
+    "seriesName" : "Hang Seng Consumption Index",
+    "seriesOrder" : 39,
+    "dailyReport" : "hscgsi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscgsi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscgsi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscgsi.pdf"
+  }, {
+    "seriesCode" : "hshci",
+    "seriesName" : "Hang Seng Healthcare Index",
+    "seriesOrder" : 40,
+    "dailyReport" : "hshci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshci.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshci.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshci.pdf"
+  }, {
+    "seriesCode" : "hsiii",
+    "seriesName" : "Hang Seng Internet & Information Technology Index",
+    "seriesOrder" : 41,
+    "dailyReport" : "hsiii",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsiii.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsiii.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsiii.pdf"
+  }, {
+    "seriesCode" : "reit",
+    "seriesName" : "Hang Seng REIT Index",
+    "seriesOrder" : 42,
+    "dailyReport" : "reit",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/reit.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/reit.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/reit.pdf"
+  }, {
+    "seriesCode" : "hsscbi",
+    "seriesName" : "Hang Seng SCHK Mainland China Banks Index",
+    "seriesOrder" : 43,
+    "dailyReport" : "hsscbi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscbi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscbi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscbi.pdf"
+  }, {
+    "seriesCode" : "hsscne",
+    "seriesName" : "Hang Seng SCHK New Economy Index",
+    "seriesOrder" : 44,
+    "dailyReport" : "hsscne",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscne.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscne.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscne.pdf"
+  }, {
+    "seriesCode" : "hssis",
+    "seriesName" : "Hang Seng Sector Index Series",
+    "seriesOrder" : 45,
+    "dailyReport" : "hssis",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssis.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssis.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssis.pdf"
+  }, {
+    "seriesCode" : "corporatesustainability",
+    "seriesName" : "Hang Seng Corporate Sustainability Index Series",
+    "seriesOrder" : 47,
+    "dailyReport" : "hssus",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/corporatesustainability.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/corporatesustainability.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/corporatesustainability.pdf"
+  }, {
+    "seriesCode" : "totalreturn",
+    "seriesName" : "Total Return Index Series",
+    "seriesOrder" : 50,
+    "dailyReport" : "hstri"
+  }, {
+    "seriesCode" : "hschis",
+    "seriesName" : "Hang Seng Currency Hedged Index Series",
+    "seriesOrder" : 54,
+    "dailyReport" : "hschis",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hschis.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hschis.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hschis.pdf"
+  }, {
+    "seriesCode" : "hscne",
+    "seriesName" : "Hang Seng China New Economy Index",
+    "seriesOrder" : 55,
+    "dailyReport" : "hscne",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscne.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscne.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscne.pdf"
+  }, {
+    "seriesCode" : "vhscei",
+    "seriesName" : "HSCEI Volatility Index",
+    "seriesOrder" : 57,
+    "dailyReport" : "vhscei",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/vhscei.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/vhscei.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/vhscei.pdf"
+  }, {
+    "seriesCode" : "hsschi",
+    "seriesName" : "Hang Seng SCHK Innovative Drug and Healthcare Index",
+    "seriesOrder" : 58,
+    "dailyReport" : "hsschi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsschi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsschi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsschi.pdf"
+  }, {
+    "seriesCode" : "hsiqhk",
+    "seriesName" : "HSI Quanto HKDKRW Adjusted Index",
+    "seriesOrder" : 59,
+    "dailyReport" : "hsiqhk",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsiqhk.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsiqhk.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsiqhk.pdf"
+  }, {
+    "seriesCode" : "hsceiqhk",
+    "seriesName" : "HSCEI Quanto HKDKRW Adjusted Index",
+    "seriesOrder" : 60,
+    "dailyReport" : "hsceiqhk",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceiqhk.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceiqhk.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceiqhk.pdf"
+  }, {
+    "seriesCode" : "hscnethn",
+    "seriesName" : "Hang Seng China New Economy Index (HKD) (Net Total Return Index)",
+    "seriesOrder" : 61,
+    "dailyReport" : "hscne"
+  }, {
+    "seriesCode" : "hsbbac",
+    "seriesName" : "Hang Seng Stock Connect Greater Bay Area Composite Index",
+    "seriesOrder" : 62,
+    "dailyReport" : "hsbbac",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsbbac.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsbbac.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsbbac.pdf"
+  }, {
+    "seriesCode" : "hsiesg",
+    "seriesName" : "HSI ESG Index",
+    "seriesOrder" : 68,
+    "dailyReport" : "hsiesg",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsiesg.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsiesg.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsiesg.pdf"
+  }, {
+    "seriesCode" : "hsceesg",
+    "seriesName" : "HSCEI ESG Index",
+    "seriesOrder" : 69,
+    "dailyReport" : "hsceesg",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceesg.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceesg.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceesg.pdf"
+  }, {
+    "seriesCode" : "hsicci",
+    "seriesName" : "HSI Covered Call Indexes",
+    "seriesOrder" : 70,
+    "dailyReport" : "hsicci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsicci.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsicci.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsicci.pdf"
+  }, {
+    "seriesCode" : "hsceicci",
+    "seriesName" : "HSCEI Covered Call Indexes",
+    "seriesOrder" : 71,
+    "dailyReport" : "hsceicci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceicci.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceicci.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceicci.pdf"
+  }, {
+    "seriesCode" : "hstcci",
+    "seriesName" : "HSTECH Covered Call Indexes",
+    "seriesOrder" : 72,
+    "dailyReport" : "hstcci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hstcci.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hstcci.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hstcci.pdf"
+  }, {
+    "seriesCode" : "hscaie",
+    "seriesName" : "Hang Seng China A Innovative Enterprises Index",
+    "seriesOrder" : 73,
+    "dailyReport" : "hscaie",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaie.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaie.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaie.pdf"
+  }, {
+    "seriesCode" : "hscshei",
+    "seriesName" : "Hang Seng China State-holding Enterprises Index",
+    "seriesOrder" : 74,
+    "dailyReport" : "hscshei",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscshei.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscshei.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscshei.pdf"
+  }, {
+    "seriesCode" : "hslker",
+    "seriesName" : "HSI 1.2x Leveraged KRW-converted Monthly Reset ER Index",
+    "seriesOrder" : 75,
+    "dailyReport" : "hslker",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hslker.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hslker.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hslker.pdf"
+  }, {
+    "seriesCode" : "hscelker",
+    "seriesName" : "HSCEI 1.2x Leveraged KRW-converted Monthly Reset ER Index",
+    "seriesOrder" : 76,
+    "dailyReport" : "hscelker",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscelker.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscelker.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscelker.pdf"
+  }, {
+    "seriesCode" : "hsceer",
+    "seriesName" : "HSCEI Daily Reset ER Index",
+    "seriesOrder" : 77,
+    "dailyReport" : "hsceer",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceer.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceer.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceer.pdf"
+  }, {
+    "seriesCode" : "hsmchyi",
+    "seriesName" : "Hang Seng SCHK Chinese Mainland Companies High Dividend Yield Index",
+    "seriesOrder" : 78,
+    "dailyReport" : "hsmchyi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsmchyi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsmchyi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsmchyi.pdf"
+  }, {
+    "seriesCode" : "hsceker",
+    "seriesName" : "HSCEI KRW-converted Daily Reset ER Index",
+    "seriesOrder" : 79,
+    "dailyReport" : "hsceker",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceker.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceker.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceker.pdf"
+  }, {
+    "seriesCode" : "hsschky",
+    "seriesName" : "Hang Seng SCHK High Dividend Yield Index",
+    "seriesOrder" : 81,
+    "dailyReport" : "hsschky",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsschky.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsschky.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsschky.pdf"
+  }, {
+    "seriesCode" : "hsbio",
+    "seriesName" : "Hang Seng Biotech Index",
+    "seriesOrder" : 85,
+    "dailyReport" : "hsbio",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsbio.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsbio.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsbio.pdf"
+  }, {
+    "seriesCode" : "hschdy",
+    "seriesName" : "Hang Seng China High Dividend Yield Index",
+    "seriesOrder" : 86,
+    "dailyReport" : "hschdy",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hschdy.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hschdy.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hschdy.pdf"
+  }, {
+    "seriesCode" : "hssct",
+    "seriesName" : "Hang Seng SCHK China Technology Index",
+    "seriesOrder" : 87,
+    "dailyReport" : "hssct",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssct.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssct.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssct.pdf"
+  }, {
+    "seriesCode" : "hsscb50",
+    "seriesName" : "Hang Seng Stock Connect Biotech 50 Index",
+    "seriesOrder" : 88,
+    "dailyReport" : "hsscb50",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscb50.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscb50.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscb50.pdf"
+  }, {
+    "seriesCode" : "hssshid",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong Innovative Drug Select 50 Index",
+    "seriesOrder" : 89,
+    "dailyReport" : "hssshid",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssshid.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssshid.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssshid.pdf"
+  }, {
+    "seriesCode" : "hsc500",
+    "seriesName" : "Hang Seng Stock Connect China 500 Index",
+    "seriesOrder" : 94,
+    "dailyReport" : "hsc500",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsc500.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsc500.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsc500.pdf"
+  }, {
+    "seriesCode" : "hsca300",
+    "seriesName" : "Hang Seng Stock Connect China A 300 Index",
+    "seriesOrder" : 96,
+    "dailyReport" : "hsca300",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsca300.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsca300.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsca300.pdf"
+  }, {
+    "seriesCode" : "hsesg50",
+    "seriesName" : "Hang Seng ESG 50 Index",
+    "seriesOrder" : 97,
+    "dailyReport" : "hsesg50",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsesg50.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsesg50.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsesg50.pdf"
+  }, {
+    "seriesCode" : "hstech",
+    "seriesName" : "Hang Seng TECH Index",
+    "seriesOrder" : 98,
+    "dailyReport" : "hstech",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hstech.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hstech.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hstech.pdf"
+  }, {
+    "seriesCode" : "hssshsc",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong (Selected Corporations) 300 Index",
+    "seriesOrder" : 99,
+    "dailyReport" : "hssshsc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssshsc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssshsc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssshsc.pdf"
+  }, {
+    "seriesCode" : "hslmiv",
+    "seriesName" : "Hang Seng Large-Mid Cap (Investable) Index",
+    "seriesOrder" : 100,
+    "dailyReport" : "hslmiv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hslmiv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hslmiv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hslmiv.pdf"
+  }, {
+    "seriesCode" : "hssiv",
+    "seriesName" : "Hang Seng Small Cap (Investable) Index",
+    "seriesOrder" : 101,
+    "dailyReport" : "hssiv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssiv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssiv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssiv.pdf"
+  }, {
+    "seriesCode" : "hssshts",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong Technology Select 50 Index",
+    "seriesOrder" : 104,
+    "dailyReport" : "hssshts",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssshts.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssshts.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssshts.pdf"
+  }, {
+    "seriesCode" : "hssbis",
+    "seriesName" : "Hang Seng Smart Beta Index Series (Value Indexes)",
+    "seriesOrder" : 105,
+    "dailyReport" : "hssbis",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssbis.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssbis.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssbis.pdf"
+  }, {
+    "seriesCode" : "hssbism",
+    "seriesName" : "Hang Seng Smart Beta Index Series (Momentum Indexes)",
+    "seriesOrder" : 106,
+    "dailyReport" : "hssbism",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssbism.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssbism.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssbism.pdf"
+  }, {
+    "seriesCode" : "hssbisq",
+    "seriesName" : "Hang Seng Smart Beta Index Series (Quality Indexes)",
+    "seriesOrder" : 107,
+    "dailyReport" : "hssbisq",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssbisq.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssbisq.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssbisq.pdf"
+  }, {
+    "seriesCode" : "hssbisy",
+    "seriesName" : "Hang Seng Smart Beta Index Series (Yield Indexes)",
+    "seriesOrder" : 108,
+    "dailyReport" : "hssbisy",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssbisy.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssbisy.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssbisy.pdf"
+  }, {
+    "seriesCode" : "hssbisv",
+    "seriesName" : "Hang Seng Smart Beta Index Series (Low Volatility Indexes)",
+    "seriesOrder" : 109,
+    "dailyReport" : "hssbisv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssbisv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssbisv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssbisv.pdf"
+  }, {
+    "seriesCode" : "hssbiss",
+    "seriesName" : "Hang Seng Smart Beta Index Series (Low Size Indexes)",
+    "seriesOrder" : 110,
+    "dailyReport" : "hssbiss",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssbiss.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssbiss.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssbiss.pdf"
+  }, {
+    "seriesCode" : "hscaii",
+    "seriesName" : "Hang Seng China A (Investable) Index",
+    "seriesOrder" : 111,
+    "dailyReport" : "hscaii",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaii.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaii.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaii.pdf"
+  }, {
+    "seriesCode" : "hscefkh",
+    "seriesName" : "HSCEI Futures KRW Hedged 3.4% Decrement Index (TR)",
+    "seriesOrder" : 112,
+    "dailyReport" : "hscefkh",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscefkh.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscefkh.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscefkh.pdf"
+  }, {
+    "seriesCode" : "hssshce",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong Clean Energy Index",
+    "seriesOrder" : 113,
+    "dailyReport" : "hssshce",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssshce.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssshce.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssshce.pdf"
+  }, {
+    "seriesCode" : "hssshae",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong Autonomous and Electric Vehicles Index",
+    "seriesOrder" : 114,
+    "dailyReport" : "hssshae",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssshae.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssshae.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssshae.pdf"
+  }, {
+    "seriesCode" : "hshks50",
+    "seriesName" : "Hang Seng Stock Connect Hong Kong Top Shareholding 50 Index",
+    "seriesOrder" : 116,
+    "dailyReport" : "hshks50",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshks50.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshks50.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshks50.pdf"
+  }, {
+    "seriesCode" : "hsceiek",
+    "seriesName" : "HSCEI ESG KRW-converted Daily Reset Index",
+    "seriesOrder" : 117,
+    "dailyReport" : "hsceiek",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceiek.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceiek.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceiek.pdf"
+  }, {
+    "seriesCode" : "hspsm",
+    "seriesName" : "Hang Seng Property Service and Management Index",
+    "seriesOrder" : 118,
+    "dailyReport" : "hspsm",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hspsm.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hspsm.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hspsm.pdf"
+  }, {
+    "seriesCode" : "hsc80",
+    "seriesName" : "Hang Seng Stock Connect China 80 Index",
+    "seriesOrder" : 119,
+    "dailyReport" : "hsc80",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsc80.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsc80.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsc80.pdf"
+  }, {
+    "seriesCode" : "hscekhd",
+    "seriesName" : "HSCEI NTR KRW Hedged 400 Points Decrement Index",
+    "seriesOrder" : 120,
+    "dailyReport" : "hscekhd",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscekhd.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscekhd.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscekhd.pdf"
+  }, {
+    "seriesCode" : "hsceenkh",
+    "seriesName" : "HSCEI ESG NTR KRW Hedged 40 Points Decrement Index",
+    "seriesOrder" : 121,
+    "dailyReport" : "hsceenkh",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceenkh.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceenkh.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceenkh.pdf"
+  }, {
+    "seriesCode" : "hssschd",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong (Selected Corporations) High Dividend Yield Index",
+    "seriesOrder" : 124,
+    "dailyReport" : "hssschd",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssschd.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssschd.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssschd.pdf"
+  }, {
+    "seriesCode" : "hssshgz",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong Generation Z Index",
+    "seriesOrder" : 125,
+    "dailyReport" : "hssshgz",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssshgz.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssshgz.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssshgz.pdf"
+  }, {
+    "seriesCode" : "hsiesgs",
+    "seriesName" : "HSI ESG Enhanced Index",
+    "seriesOrder" : 126,
+    "dailyReport" : "hsiesgs",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsiesgs.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsiesgs.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsiesgs.pdf"
+  }, {
+    "seriesCode" : "hsisui",
+    "seriesName" : "HSI ESG Enhanced Select Index",
+    "seriesOrder" : 127,
+    "dailyReport" : "hsisui",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsisui.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsisui.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsisui.pdf"
+  }, {
+    "seriesCode" : "hsilowc",
+    "seriesName" : "HSI Low Carbon Index",
+    "seriesOrder" : 128,
+    "dailyReport" : "hsilowc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsilowc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsilowc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsilowc.pdf"
+  }, {
+    "seriesCode" : "hssbmfew",
+    "seriesName" : "Hang Seng Smart Beta Index Series (Equal-weighted Factor Mix Indexes)",
+    "seriesOrder" : 129,
+    "dailyReport" : "hssbmfew",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssbmfew.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssbmfew.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssbmfew.pdf"
+  }, {
+    "seriesCode" : "hssbmfrp",
+    "seriesName" : "Hang Seng Smart Beta Index Series (Risk Parity Factor Mix Indexes)",
+    "seriesOrder" : 130,
+    "dailyReport" : "hssbmfrp",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssbmfrp.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssbmfrp.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssbmfrp.pdf"
+  }, {
+    "seriesCode" : "hscaupg",
+    "seriesName" : "Hang Seng China A Power Grid Equipment Index",
+    "seriesOrder" : 131,
+    "dailyReport" : "hscaupg",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaupg.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaupg.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaupg.pdf"
+  }, {
+    "seriesCode" : "hsisnl",
+    "seriesName" : "Hang Seng Short and Leveraged Index Series (HSI)",
+    "seriesOrder" : 132,
+    "dailyReport" : "shtlev"
+  }, {
+    "seriesCode" : "hsceisnl",
+    "seriesName" : "Hang Seng Short and Leveraged Index Series (HSCEI)",
+    "seriesOrder" : 133,
+    "dailyReport" : "shtlev"
+  }, {
+    "seriesCode" : "hstechsnl",
+    "seriesName" : "Hang Seng Short and Leveraged Index Series (HSTECH)",
+    "seriesOrder" : 134,
+    "dailyReport" : "shtlev"
+  }, {
+    "seriesCode" : "hscesge",
+    "seriesName" : "HSCEI ESG Enhanced Index",
+    "seriesOrder" : 139,
+    "dailyReport" : "hscesge",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscesge.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscesge.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscesge.pdf"
+  }, {
+    "seriesCode" : "sccea",
+    "seriesName" : "Hang Seng HKEX Stock Connect China Enterprises Index",
+    "seriesOrder" : 140,
+    "dailyReport" : "sccea",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/sccea.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/sccea.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/sccea.pdf"
+  }, {
+    "seriesCode" : "hssh",
+    "seriesName" : "Hang Seng Shipping Index",
+    "seriesOrder" : 141,
+    "dailyReport" : "hssh",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssh.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssh.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssh.pdf"
+  }, {
+    "seriesCode" : "hscalcs",
+    "seriesName" : "Hang Seng Stock Connect China A Low Carbon Select Index",
+    "seriesOrder" : 142,
+    "dailyReport" : "hscalcs",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscalcs.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscalcs.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscalcs.pdf"
+  }, {
+    "seriesCode" : "hshe",
+    "seriesName" : "Hang Seng Stock Connect Hydrogen Energy Index",
+    "seriesOrder" : 143,
+    "dailyReport" : "hshe",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshe.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshe.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshe.pdf"
+  }, {
+    "seriesCode" : "hscae",
+    "seriesName" : "Hang Seng China A Energy Index",
+    "seriesOrder" : 144,
+    "dailyReport" : "hscae",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscae.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscae.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscae.pdf"
+  }, {
+    "seriesCode" : "hscadmm",
+    "seriesName" : "Hang Seng China A Diversified Metals & Minerals Index",
+    "seriesOrder" : 145,
+    "dailyReport" : "hscadmm",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscadmm.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscadmm.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscadmm.pdf"
+  }, {
+    "seriesCode" : "hscati",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong Shipping Index",
+    "seriesOrder" : 146,
+    "dailyReport" : "hscati",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscati.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscati.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscati.pdf"
+  }, {
+    "seriesCode" : "hscaai",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong Automobile Index",
+    "seriesOrder" : 147,
+    "dailyReport" : "hscaai",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaai.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaai.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaai.pdf"
+  }, {
+    "seriesCode" : "hscahe",
+    "seriesName" : "Hang Seng China A Household Goods & Electronics Index",
+    "seriesOrder" : 148,
+    "dailyReport" : "hscahe",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscahe.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscahe.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscahe.pdf"
+  }, {
+    "seriesCode" : "hscaap",
+    "seriesName" : "Hang Seng China A Agricultural Products Index",
+    "seriesOrder" : 149,
+    "dailyReport" : "hscaap",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaap.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaap.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaap.pdf"
+  }, {
+    "seriesCode" : "hscapb",
+    "seriesName" : "Hang Seng China A Pharmaceuticals & Biotechnology Index",
+    "seriesOrder" : 150,
+    "dailyReport" : "hscapb",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscapb.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscapb.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscapb.pdf"
+  }, {
+    "seriesCode" : "hscahes",
+    "seriesName" : "Hang Seng China A Healthcare Equipment & Services Index",
+    "seriesOrder" : 151,
+    "dailyReport" : "hscahes",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscahes.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscahes.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscahes.pdf"
+  }, {
+    "seriesCode" : "hscaui",
+    "seriesName" : "Hang Seng China A Utilities Index",
+    "seriesOrder" : 152,
+    "dailyReport" : "hscaui",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaui.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaui.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaui.pdf"
+  }, {
+    "seriesCode" : "hscaof",
+    "seriesName" : "Hang Seng China A Other Financials Index",
+    "seriesOrder" : 153,
+    "dailyReport" : "hscaof",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaof.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaof.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaof.pdf"
+  }, {
+    "seriesCode" : "hscap",
+    "seriesName" : "Hang Seng China A Properties Index",
+    "seriesOrder" : 154,
+    "dailyReport" : "hscap",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscap.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscap.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscap.pdf"
+  }, {
+    "seriesCode" : "hscac",
+    "seriesName" : "Hang Seng China A Construction Index",
+    "seriesOrder" : 155,
+    "dailyReport" : "hscac",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscac.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscac.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscac.pdf"
+  }, {
+    "seriesCode" : "hscaith",
+    "seriesName" : "Hang Seng China A IT Hardware Index",
+    "seriesOrder" : 156,
+    "dailyReport" : "hscaith",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaith.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaith.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaith.pdf"
+  }, {
+    "seriesCode" : "hscass",
+    "seriesName" : "Hang Seng China A Software & Services Index",
+    "seriesOrder" : 157,
+    "dailyReport" : "hscass",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscass.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscass.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscass.pdf"
+  }, {
+    "seriesCode" : "hscaomm",
+    "seriesName" : "Hang Seng China A Other Metals & Minerals Index",
+    "seriesOrder" : 158,
+    "dailyReport" : "hscaomm",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaomm.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaomm.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaomm.pdf"
+  }, {
+    "seriesCode" : "hscasc",
+    "seriesName" : "Hang Seng China A Specialty Chemicals Index",
+    "seriesOrder" : 159,
+    "dailyReport" : "hscasc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscasc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscasc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscasc.pdf"
+  }, {
+    "seriesCode" : "hscaice",
+    "seriesName" : "Hang Seng China A Industrial Components & Equipment Index",
+    "seriesOrder" : 160,
+    "dailyReport" : "hscaice",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaice.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaice.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaice.pdf"
+  }, {
+    "seriesCode" : "hscaec",
+    "seriesName" : "Hang Seng China A Electrical & Electronic Components Index",
+    "seriesOrder" : 161,
+    "dailyReport" : "hscaec",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaec.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaec.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaec.pdf"
+  }, {
+    "seriesCode" : "hscanem",
+    "seriesName" : "Hang Seng China A New Energy Materials Index",
+    "seriesOrder" : 162,
+    "dailyReport" : "hscanem",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscanem.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscanem.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscanem.pdf"
+  }, {
+    "seriesCode" : "hscaad",
+    "seriesName" : "Hang Seng China A Aerospace & Defence Index",
+    "seriesOrder" : 163,
+    "dailyReport" : "hscaad",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaad.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaad.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaad.pdf"
+  }, {
+    "seriesCode" : "hscaa",
+    "seriesName" : "Hang Seng China A Alcohols Index",
+    "seriesOrder" : 164,
+    "dailyReport" : "hscaa",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaa.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaa.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaa.pdf"
+  }, {
+    "seriesCode" : "hscapi",
+    "seriesName" : "Hang Seng China A Pharmaceuticals Index",
+    "seriesOrder" : 165,
+    "dailyReport" : "hscapi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscapi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscapi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscapi.pdf"
+  }, {
+    "seriesCode" : "hscabio",
+    "seriesName" : "Hang Seng China A Biotechnology Index",
+    "seriesOrder" : 166,
+    "dailyReport" : "hscabio",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscabio.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscabio.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscabio.pdf"
+  }, {
+    "seriesCode" : "hscamd",
+    "seriesName" : "Hang Seng China A Medical Devices & Supplies Index",
+    "seriesOrder" : 167,
+    "dailyReport" : "hscamd",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscamd.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscamd.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscamd.pdf"
+  }, {
+    "seriesCode" : "hscab",
+    "seriesName" : "Hang Seng China A Banks Index",
+    "seriesOrder" : 168,
+    "dailyReport" : "hscab",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscab.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscab.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscab.pdf"
+  }, {
+    "seriesCode" : "hscasi",
+    "seriesName" : "Hang Seng China A Software Index",
+    "seriesOrder" : 169,
+    "dailyReport" : "hscasi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscasi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscasi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscasi.pdf"
+  }, {
+    "seriesCode" : "hscasemi",
+    "seriesName" : "Hang Seng China Semiconductor Chips Index",
+    "seriesOrder" : 170,
+    "dailyReport" : "hscasemi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscasemi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscasemi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscasemi.pdf"
+  }, {
+    "seriesCode" : "hscsse",
+    "seriesName" : "Hang Seng China A Specialised & Sophisticated Enterprises Index",
+    "seriesOrder" : 171,
+    "dailyReport" : "hscsse",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscsse.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscsse.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscsse.pdf"
+  }, {
+    "seriesCode" : "hscsoe",
+    "seriesName" : "Hang Seng China Central SOEs Index",
+    "seriesOrder" : 172,
+    "dailyReport" : "hscsoe",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscsoe.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscsoe.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscsoe.pdf"
+  }, {
+    "seriesCode" : "hspdm",
+    "seriesName" : "Hang Seng Property Development and Management Index",
+    "seriesOrder" : 173,
+    "dailyReport" : "hspdm",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hspdm.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hspdm.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hspdm.pdf"
+  }, {
+    "seriesCode" : "hsami",
+    "seriesName" : "Hang Seng SCHK Auto Driving Theme Index",
+    "seriesOrder" : 174,
+    "dailyReport" : "hsami",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsami.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsami.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsami.pdf"
+  }, {
+    "seriesCode" : "hsidi",
+    "seriesName" : "Hang Seng Innovative Drug Index",
+    "seriesOrder" : 175,
+    "dailyReport" : "hsidi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsidi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsidi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsidi.pdf"
+  }, {
+    "seriesCode" : "hsscsoe",
+    "seriesName" : "Hang Seng SCHK China Central State-owned Enterprises Index",
+    "seriesOrder" : 176,
+    "dailyReport" : "hsscsoe",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsoe.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsoe.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsoe.pdf"
+  }, {
+    "seriesCode" : "hsscsoy",
+    "seriesName" : "Hang Seng SCHK China Central SOEs High Dividend Yield Index",
+    "seriesOrder" : 177,
+    "dailyReport" : "hsscsoy",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsoy.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsoy.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsoy.pdf"
+  }, {
+    "seriesCode" : "hsschys",
+    "seriesName" : "Hang Seng SCHK High Dividend Yield Screened Index",
+    "seriesOrder" : 178,
+    "dailyReport" : "hsschys",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsschys.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsschys.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsschys.pdf"
+  }, {
+    "seriesCode" : "hsscsel",
+    "seriesName" : "Hang Seng SCHK China Central SOEs ESG Leaders Index",
+    "seriesOrder" : 179,
+    "dailyReport" : "hsscsel",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsel.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsel.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsel.pdf"
+  }, {
+    "seriesCode" : "hsscid",
+    "seriesName" : "Hang Seng SCHK Innovative Drug Index",
+    "seriesOrder" : 180,
+    "dailyReport" : "hsscid",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscid.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscid.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscid.pdf"
+  }, {
+    "seriesCode" : "hsscf",
+    "seriesName" : "Hang Seng SCHK China Financials Select Index",
+    "seriesOrder" : 181,
+    "dailyReport" : "hsscf",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscf.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscf.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscf.pdf"
+  }, {
+    "seriesCode" : "hsscc",
+    "seriesName" : "Hang Seng SCHK Consumption Select Index",
+    "seriesOrder" : 183,
+    "dailyReport" : "hsscc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscc.pdf"
+  }, {
+    "seriesCode" : "hssccd",
+    "seriesName" : "Hang Seng SCHK Consumer Discretionary Index",
+    "seriesOrder" : 184,
+    "dailyReport" : "hssccd",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssccd.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssccd.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssccd.pdf"
+  }, {
+    "seriesCode" : "hssccs",
+    "seriesName" : "Hang Seng SCHK Food and Drink Index",
+    "seriesOrder" : 185,
+    "dailyReport" : "hssccs",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssccs.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssccs.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssccs.pdf"
+  }, {
+    "seriesCode" : "hssctu",
+    "seriesName" : "Hang Seng SCHK Telecommunications & Utilities Index",
+    "seriesOrder" : 186,
+    "dailyReport" : "hssctu",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssctu.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssctu.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssctu.pdf"
+  }, {
+    "seriesCode" : "hsscmi",
+    "seriesName" : "Hang Seng SCHK Materials & Industrials Index",
+    "seriesOrder" : 187,
+    "dailyReport" : "hsscmi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscmi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscmi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscmi.pdf"
+  }, {
+    "seriesCode" : "hsscpc",
+    "seriesName" : "Hang Seng SCHK Properties & Construction Index",
+    "seriesOrder" : 188,
+    "dailyReport" : "hsscpc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscpc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscpc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscpc.pdf"
+  }, {
+    "seriesCode" : "hsscbsi",
+    "seriesName" : "Hang Seng SCHK Insurance Theme Index",
+    "seriesOrder" : 189,
+    "dailyReport" : "hsscbsi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscbsi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscbsi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscbsi.pdf"
+  }, {
+    "seriesCode" : "hsscss",
+    "seriesName" : "Hang Seng SCHK Software & Semiconductors Index",
+    "seriesOrder" : 190,
+    "dailyReport" : "hsscss",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscss.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscss.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscss.pdf"
+  }, {
+    "seriesCode" : "hsscpb",
+    "seriesName" : "Hang Seng SCHK Innovative Drug Select Index",
+    "seriesOrder" : 191,
+    "dailyReport" : "hsscpb",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscpb.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscpb.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscpb.pdf"
+  }, {
+    "seriesCode" : "hssches",
+    "seriesName" : "Hang Seng SCHK Healthcare Equipment & Services Index",
+    "seriesOrder" : 192,
+    "dailyReport" : "hssches",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssches.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssches.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssches.pdf"
+  }, {
+    "seriesCode" : "hsscte",
+    "seriesName" : "Hang Seng SCHK Culture & Entertainment Index",
+    "seriesOrder" : 193,
+    "dailyReport" : "hsscte",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscte.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscte.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscte.pdf"
+  }, {
+    "seriesCode" : "hsit",
+    "seriesName" : "Hang Seng SCHK Semiconductors Industry Index",
+    "seriesOrder" : 194,
+    "dailyReport" : "hsit",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsit.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsit.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsit.pdf"
+  }, {
+    "seriesCode" : "hsscfi",
+    "seriesName" : "Hang Seng SCHK Financials (Investable) Index",
+    "seriesOrder" : 195,
+    "dailyReport" : "hsscfi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscfi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscfi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscfi.pdf"
+  }, {
+    "seriesCode" : "hssciti",
+    "seriesName" : "Hang Seng SCHK Technology Index",
+    "seriesOrder" : 196,
+    "dailyReport" : "hssciti",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssciti.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssciti.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssciti.pdf"
+  }, {
+    "seriesCode" : "hsscci",
+    "seriesName" : "Hang Seng SCHK Consumption (Investable) Index",
+    "seriesOrder" : 197,
+    "dailyReport" : "hsscci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscci.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscci.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscci.pdf"
+  }, {
+    "seriesCode" : "hssccdi",
+    "seriesName" : "Hang Seng SCHK Consumer Discretionary (Investable) Index",
+    "seriesOrder" : 198,
+    "dailyReport" : "hssccdi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssccdi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssccdi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssccdi.pdf"
+  }, {
+    "seriesCode" : "hssccsi",
+    "seriesName" : "Hang Seng SCHK Consumer Staples (Investable) Index",
+    "seriesOrder" : 199,
+    "dailyReport" : "hssccsi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssccsi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssccsi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssccsi.pdf"
+  }, {
+    "seriesCode" : "hssctui",
+    "seriesName" : "Hang Seng SCHK Telecommunications & Utilities (Investable) Index",
+    "seriesOrder" : 200,
+    "dailyReport" : "hssctui",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssctui.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssctui.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssctui.pdf"
+  }, {
+    "seriesCode" : "hsscmii",
+    "seriesName" : "Hang Seng SCHK Materials & Industrials (Investable) Index",
+    "seriesOrder" : 201,
+    "dailyReport" : "hsscmii",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscmii.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscmii.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscmii.pdf"
+  }, {
+    "seriesCode" : "hsscpci",
+    "seriesName" : "Hang Seng SCHK Properties & Construction (Investable) Index",
+    "seriesOrder" : 202,
+    "dailyReport" : "hsscpci",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscpci.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscpci.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscpci.pdf"
+  }, {
+    "seriesCode" : "hsscbii",
+    "seriesName" : "Hang Seng SCHK Banks & Insurance Index",
+    "seriesOrder" : 203,
+    "dailyReport" : "hsscbii",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscbii.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscbii.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscbii.pdf"
+  }, {
+    "seriesCode" : "hsscsi",
+    "seriesName" : "Hang Seng SCHK Software Theme Index",
+    "seriesOrder" : 204,
+    "dailyReport" : "hsscsi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsi.pdf"
+  }, {
+    "seriesCode" : "hsscpbi",
+    "seriesName" : "Hang Seng SCHK Pharmaceuticals & Biotechnology (Investable) Index",
+    "seriesOrder" : 205,
+    "dailyReport" : "hsscpbi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscpbi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscpbi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscpbi.pdf"
+  }, {
+    "seriesCode" : "hsscesi",
+    "seriesName" : "Hang Seng SCHK Medical Services Theme Index",
+    "seriesOrder" : 206,
+    "dailyReport" : "hsscesi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscesi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscesi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscesi.pdf"
+  }, {
+    "seriesCode" : "hssctei",
+    "seriesName" : "Hang Seng SCHK Tourism Index",
+    "seriesOrder" : 207,
+    "dailyReport" : "hssctei",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssctei.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssctei.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssctei.pdf"
+  }, {
+    "seriesCode" : "hsiti",
+    "seriesName" : "Hang Seng Pioneer Technology Index",
+    "seriesOrder" : 208,
+    "dailyReport" : "hsiti",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsiti.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsiti.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsiti.pdf"
+  }, {
+    "seriesCode" : "hspoe",
+    "seriesName" : "Hang Seng China Private-owned Enterprises Index",
+    "seriesOrder" : 209,
+    "dailyReport" : "hspoe",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hspoe.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hspoe.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hspoe.pdf"
+  }, {
+    "seriesCode" : "hsscpoe",
+    "seriesName" : "Hang Seng SCHK China Private-owned Enterprises Index",
+    "seriesOrder" : 210,
+    "dailyReport" : "hsscpoe",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscpoe.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscpoe.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscpoe.pdf"
+  }, {
+    "seriesCode" : "hscaesu",
+    "seriesName" : "Hang Seng China A Energy Storage Units Index",
+    "seriesOrder" : 211,
+    "dailyReport" : "hscaesu",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaesu.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaesu.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaesu.pdf"
+  }, {
+    "seriesCode" : "hscacsi",
+    "seriesName" : "Hang Seng China A Charging Station Infrastructure Index",
+    "seriesOrder" : 212,
+    "dailyReport" : "hscacsi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscacsi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscacsi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscacsi.pdf"
+  }, {
+    "seriesCode" : "hsait",
+    "seriesName" : "Hang Seng Artificial Intelligence Theme Index",
+    "seriesOrder" : 213,
+    "dailyReport" : "hsait",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsait.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsait.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsait.pdf"
+  }, {
+    "seriesCode" : "hsme",
+    "seriesName" : "Hang Seng Media Index",
+    "seriesOrder" : 214,
+    "dailyReport" : "hsme",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsme.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsme.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsme.pdf"
+  }, {
+    "seriesCode" : "hssccsv",
+    "seriesName" : "Hang Seng SCHK Central SOEs Value Index",
+    "seriesOrder" : 215,
+    "dailyReport" : "hssccsv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssccsv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssccsv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssccsv.pdf"
+  }, {
+    "seriesCode" : "hssccsq",
+    "seriesName" : "Hang Seng SCHK Central SOEs Quality Index",
+    "seriesOrder" : 216,
+    "dailyReport" : "hssccsq",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssccsq.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssccsq.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssccsq.pdf"
+  }, {
+    "seriesCode" : "hsscclv",
+    "seriesName" : "Hang Seng SCHK Central SOEs Low Volatility Index",
+    "seriesOrder" : 217,
+    "dailyReport" : "hsscclv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscclv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscclv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscclv.pdf"
+  }, {
+    "seriesCode" : "hssccsm",
+    "seriesName" : "Hang Seng SCHK Central SOEs Momentum Index",
+    "seriesOrder" : 218,
+    "dailyReport" : "hssccsm",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssccsm.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssccsm.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssccsm.pdf"
+  }, {
+    "seriesCode" : "hssccss",
+    "seriesName" : "Hang Seng SCHK Central SOEs Select Index",
+    "seriesOrder" : 219,
+    "dailyReport" : "hssccss",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssccss.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssccss.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssccss.pdf"
+  }, {
+    "seriesCode" : "hsscsv",
+    "seriesName" : "Hang Seng SCHK SOEs Value Index",
+    "seriesOrder" : 220,
+    "dailyReport" : "hsscsv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsv.pdf"
+  }, {
+    "seriesCode" : "hsscsq",
+    "seriesName" : "Hang Seng SCHK SOEs Quality Index",
+    "seriesOrder" : 221,
+    "dailyReport" : "hsscsq",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsq.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsq.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsq.pdf"
+  }, {
+    "seriesCode" : "hsscslv",
+    "seriesName" : "Hang Seng SCHK SOEs Low Volatility Index",
+    "seriesOrder" : 222,
+    "dailyReport" : "hsscslv",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscslv.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscslv.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscslv.pdf"
+  }, {
+    "seriesCode" : "hsscsm",
+    "seriesName" : "Hang Seng SCHK SOEs Momentum Index",
+    "seriesOrder" : 223,
+    "dailyReport" : "hsscsm",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsm.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsm.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsm.pdf"
+  }, {
+    "seriesCode" : "hsscsos",
+    "seriesName" : "Hang Seng SCHK SOEs Select Index",
+    "seriesOrder" : 224,
+    "dailyReport" : "hsscsos",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsos.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsos.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsos.pdf"
+  }, {
+    "seriesCode" : "hsschdy",
+    "seriesName" : "Hang Seng SCHK SOEs High Dividend Yield Index",
+    "seriesOrder" : 225,
+    "dailyReport" : "hsschdy",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsschdy.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsschdy.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsschdy.pdf"
+  }, {
+    "seriesCode" : "hscari",
+    "seriesName" : "Hang Seng China A Robotics Index",
+    "seriesOrder" : 226,
+    "dailyReport" : "hscari",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscari.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscari.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscari.pdf"
+  }, {
+    "seriesCode" : "hscss50",
+    "seriesName" : "Hang Seng China A Specialised & Sophisticated 50 Index",
+    "seriesOrder" : 227,
+    "dailyReport" : "hscss50",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscss50.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscss50.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscss50.pdf"
+  }, {
+    "seriesCode" : "hscaesl",
+    "seriesName" : "Hang Seng Stock Connect China A ESG Leaders Index",
+    "seriesOrder" : 228,
+    "dailyReport" : "hscaesl",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaesl.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaesl.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaesl.pdf"
+  }, {
+    "seriesCode" : "hscaese",
+    "seriesName" : "Hang Seng Stock Connect China A 300 ESG Enhanced Index",
+    "seriesOrder" : 229,
+    "dailyReport" : "hscaese",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaese.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaese.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaese.pdf"
+  }, {
+    "seriesCode" : "hscae50",
+    "seriesName" : "Hang Seng Stock Connect China A ESG 50 Index",
+    "seriesOrder" : 230,
+    "dailyReport" : "hscae50",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscae50.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscae50.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscae50.pdf"
+  }, {
+    "seriesCode" : "hscaesg",
+    "seriesName" : "Hang Seng Stock Connect China A 300 ESG Index",
+    "seriesOrder" : 231,
+    "dailyReport" : "hscaesg",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscaesg.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscaesg.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscaesg.pdf"
+  }, {
+    "seriesCode" : "hsscs40",
+    "seriesName" : "Hang Seng SCHK China Central SOEs ESG 40 Index",
+    "seriesOrder" : 232,
+    "dailyReport" : "hsscs40",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscs40.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscs40.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscs40.pdf"
+  }, {
+    "seriesCode" : "hssehde",
+    "seriesName" : "Hang Seng SCHK SOEs High Dividend Yield ESG Index",
+    "seriesOrder" : 233,
+    "dailyReport" : "hssehde",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssehde.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssehde.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssehde.pdf"
+  }, {
+    "seriesCode" : "hsscsee",
+    "seriesName" : "Hang Seng SCHK China Central State-owned Enterprises ESG Enhanced Index",
+    "seriesOrder" : 234,
+    "dailyReport" : "hsscsee",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscsee.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscsee.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscsee.pdf"
+  }, {
+    "seriesCode" : "hsscse",
+    "seriesName" : "Hang Seng SCHK China Central State-owned Enterprises ESG Index",
+    "seriesOrder" : 235,
+    "dailyReport" : "hsscse",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscse.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscse.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscse.pdf"
+  }, {
+    "seriesCode" : "hshklb",
+    "seriesName" : "Hang Seng Hong Kong-Listed Banks Index",
+    "seriesOrder" : 236,
+    "dailyReport" : "hshklb",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshklb.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshklb.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshklb.pdf"
+  }, {
+    "seriesCode" : "hsisc",
+    "seriesName" : "HSI SCHK Index",
+    "seriesOrder" : 237,
+    "dailyReport" : "hsisc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsisc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsisc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsisc.pdf"
+  }, {
+    "seriesCode" : "hsscai",
+    "seriesName" : "Hang Seng SCHK Artificial Intelligence Theme Index",
+    "seriesOrder" : 238,
+    "dailyReport" : "hsscai",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscai.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscai.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscai.pdf"
+  }, {
+    "seriesCode" : "hsscam",
+    "seriesName" : "Hang Seng SCHK Automobile Index",
+    "seriesOrder" : 239,
+    "dailyReport" : "hsscam",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscam.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscam.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscam.pdf"
+  }, {
+    "seriesCode" : "hsust",
+    "seriesName" : "Hang Seng HK-US TECH Index",
+    "seriesOrder" : 240,
+    "dailyReport" : "hsust",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsust.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsust.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsust.pdf"
+  }, {
+    "seriesCode" : "hsusb",
+    "seriesName" : "Hang Seng HK-US Biotech Index",
+    "seriesOrder" : 241,
+    "dailyReport" : "hsusb",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsusb.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsusb.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsusb.pdf"
+  }, {
+    "seriesCode" : "hssc50",
+    "seriesName" : "Hang Seng SCHK 50 Index",
+    "seriesOrder" : 242,
+    "dailyReport" : "hssc50",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssc50.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssc50.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssc50.pdf"
+  }, {
+    "seriesCode" : "hsscfcf",
+    "seriesName" : "Hang Seng SCHK Free Cash Flow Index",
+    "seriesOrder" : 243,
+    "dailyReport" : "hsscfcf",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscfcf.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscfcf.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscfcf.pdf"
+  }, {
+    "seriesCode" : "hshd30",
+    "seriesName" : "Hang Seng High Dividend 30 Index",
+    "seriesOrder" : 245,
+    "dailyReport" : "hshd30",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hshd30.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hshd30.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hshd30.pdf"
+  }, {
+    "seriesCode" : "htech10",
+    "seriesName" : "HSTECH Top 10 Index",
+    "seriesOrder" : 246,
+    "dailyReport" : "htech10",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/htech10.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/htech10.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/htech10.pdf"
+  }, {
+    "seriesCode" : "hsctt10",
+    "seriesName" : "Hang Seng China Tech Top 10 Select Index",
+    "seriesOrder" : 247,
+    "dailyReport" : "hsctt10",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsctt10.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsctt10.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsctt10.pdf"
+  }, {
+    "seriesCode" : "szhkde",
+    "seriesName" : "Hang Seng CNI GBA Digital Economy Index",
+    "seriesOrder" : 248,
+    "dailyReport" : "szhkde",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/szhkde.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/szhkde.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/szhkde.pdf"
+  }, {
+    "seriesCode" : "szhkcon",
+    "seriesName" : "Hang Seng CNI GBA Consumption Index",
+    "seriesOrder" : 249,
+    "dailyReport" : "szhkcon",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/szhkcon.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/szhkcon.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/szhkcon.pdf"
+  }, {
+    "seriesCode" : "hsscr",
+    "seriesName" : "Hang Seng SCHK Resources Index",
+    "seriesOrder" : 250,
+    "dailyReport" : "hsscr",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscr.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscr.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscr.pdf"
+  }, {
+    "seriesCode" : "hssceti",
+    "seriesName" : "Hang Seng SCHK Electronics Theme Index",
+    "seriesOrder" : 251,
+    "dailyReport" : "hssceti",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssceti.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssceti.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssceti.pdf"
+  }, {
+    "seriesCode" : "hsdti",
+    "seriesName" : "Hang Seng Dual Tech Index",
+    "seriesOrder" : 252,
+    "dailyReport" : "hsdti",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsdti.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsdti.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsdti.pdf"
+  }, {
+    "seriesCode" : "hssciii",
+    "seriesName" : "Hang Seng SCHK Internet & Information Technology Index",
+    "seriesOrder" : 253,
+    "dailyReport" : "hssciii",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssciii.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssciii.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssciii.pdf"
+  }, {
+    "seriesCode" : "hsscfeb",
+    "seriesName" : "Hang Seng SCHK Financials ex Banks Index",
+    "seriesOrder" : 254,
+    "dailyReport" : "hsscfeb",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscfeb.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscfeb.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscfeb.pdf"
+  }, {
+    "seriesCode" : "hssshgi",
+    "seriesName" : "Hang Seng Shanghai-Shenzhen-Hong Kong Gas Industry Index",
+    "seriesOrder" : 255,
+    "dailyReport" : "hssshgi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssshgi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssshgi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssshgi.pdf"
+  }, {
+    "seriesCode" : "hsusrt",
+    "seriesName" : "Hang Seng HK-US Robotics Theme Index",
+    "seriesOrder" : 256,
+    "dailyReport" : "hsusrt",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsusrt.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsusrt.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsusrt.pdf"
+  }, {
+    "seriesCode" : "hsusmc",
+    "seriesName" : "Hang Seng HK-US MegaCap Index",
+    "seriesOrder" : 257,
+    "dailyReport" : "hsusmc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsusmc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsusmc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsusmc.pdf"
+  }, {
+    "seriesCode" : "hsuslc",
+    "seriesName" : "Hang Seng HK-US LargeCap Index",
+    "seriesOrder" : 258,
+    "dailyReport" : "hsuslc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsuslc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsuslc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsuslc.pdf"
+  }, {
+    "seriesCode" : "hstusai",
+    "seriesName" : "Hang Seng TECH & US AI Index",
+    "seriesOrder" : 259,
+    "dailyReport" : "hstusai",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hstusai.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hstusai.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hstusai.pdf"
+  }, {
+    "seriesCode" : "hstusa",
+    "seriesName" : "Hang Seng TECH & US Automobile Index",
+    "seriesOrder" : 260,
+    "dailyReport" : "hstusa",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hstusa.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hstusa.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hstusa.pdf"
+  }, {
+    "seriesCode" : "hsasne",
+    "seriesName" : "Hang Seng Asia Select New Economy Index",
+    "seriesOrder" : 261,
+    "dailyReport" : "hsasne",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsasne.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsasne.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsasne.pdf"
+  }, {
+    "seriesCode" : "hstuss",
+    "seriesName" : "Hang Seng TECH & US Semiconductors Index",
+    "seriesOrder" : 262,
+    "dailyReport" : "hstuss",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hstuss.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hstuss.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hstuss.pdf"
+  }, {
+    "seriesCode" : "hssclvs",
+    "seriesName" : "Hang Seng SCHK Low Volatility Select Index",
+    "seriesOrder" : 263,
+    "dailyReport" : "hssclvs",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hssclvs.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hssclvs.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hssclvs.pdf"
+  }, {
+    "seriesCode" : "hkkrlc",
+    "seriesName" : "Hang Seng KRX HK-Korea LargeCap Index",
+    "seriesOrder" : 264,
+    "dailyReport" : "hkkrlc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hkkrlc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hkkrlc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hkkrlc.pdf"
+  }, {
+    "seriesCode" : "hkkrts",
+    "seriesName" : "Hang Seng KRX HK-Korea TECH & Semiconductors Index",
+    "seriesOrder" : 265,
+    "dailyReport" : "hkkrts",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hkkrts.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hkkrts.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hkkrts.pdf"
+  }, {
+    "seriesCode" : "hkkrt",
+    "seriesName" : "Hang Seng KRX HK-Korea TECH Index",
+    "seriesOrder" : 266,
+    "dailyReport" : "hkkrt",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hkkrt.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hkkrt.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hkkrt.pdf"
+  }, {
+    "seriesCode" : "hkkrbh",
+    "seriesName" : "Hang Seng KRX HK-Korea Biotech & Healthcare Index",
+    "seriesOrder" : 267,
+    "dailyReport" : "hkkrbh",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hkkrbh.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hkkrbh.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hkkrbh.pdf"
+  }, {
+    "seriesCode" : "hsbiosnl",
+    "seriesName" : "Hang Seng Short and Leveraged Index Series (HSBIO)",
+    "seriesOrder" : 268,
+    "dailyReport" : "shtlev"
+  }, {
+    "seriesCode" : "hsceisc",
+    "seriesName" : "HSCEI SCHK Index",
+    "seriesOrder" : 269,
+    "dailyReport" : "hsceisc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsceisc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsceisc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsceisc.pdf"
+  }, {
+    "seriesCode" : "hstechsc",
+    "seriesName" : "HSTECH SCHK Index",
+    "seriesOrder" : 270,
+    "dailyReport" : "hstechsc",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hstechsc.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hstechsc.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hstechsc.pdf"
+  }, {
+    "seriesCode" : "hsscnmi",
+    "seriesName" : "Hang Seng SCHK Nonferrous Metal Industry Index",
+    "seriesOrder" : 271,
+    "dailyReport" : "hsscnmi",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscnmi.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscnmi.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscnmi.pdf"
+  }, {
+    "seriesCode" : "hscasii",
+    "seriesName" : "Hang Seng China A Shipbuilding Industry Index",
+    "seriesOrder" : 272,
+    "dailyReport" : "hscasii",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscasii.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscasii.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscasii.pdf"
+  }, {
+    "seriesCode" : "hsschts",
+    "seriesName" : "Hang Seng SCHK Hardware Technology Select Index",
+    "seriesOrder" : 273,
+    "dailyReport" : "hsschts",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsschts.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsschts.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsschts.pdf"
+  }, {
+    "seriesCode" : "hsscaii",
+    "seriesName" : "Hang Seng SCHK AI Infrastructure Index",
+    "seriesOrder" : 274,
+    "dailyReport" : "hsscaii",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hsscaii.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hsscaii.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hsscaii.pdf"
+  }, {
+    "seriesCode" : "hscacii",
+    "seriesName" : "Hang Seng China A Copper Industry Index",
+    "seriesOrder" : 275,
+    "dailyReport" : "hscacii",
+    "fileEng" : "/public-website/webapp/factsheets/en-hk/hscacii.pdf",
+    "fileChi" : "/public-website/webapp/factsheets/zh-hk/hscacii.pdf",
+    "fileSchi" : "/public-website/webapp/factsheets/zh-cn/hscacii.pdf"
+  } ]
+}

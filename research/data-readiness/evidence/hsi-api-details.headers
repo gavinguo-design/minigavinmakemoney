@@ -1,0 +1,23 @@
+HTTP/1.1 200 Connection established
+
+HTTP/2 404 
+content-type: application/problem+json
+server: nginx
+date: Tue, 06 Oct 2026 13:15:20 GMT
+ratelimit-limit: 500
+ratelimit-remaining: 499
+ratelimit-reset: 1
+x-ratelimit-limit-second: 500
+x-ratelimit-remaining-second: 499
+x-trace-id: 01a941c4658c4da29d4519981b8e17fd
+x-correlation-id: 01a941c4658c4da29d4519981b8e17fd
+x-request-id: 01a941c4658c4da29d4519981b8e17fd
+cache-status: prd-hk-ifp-mig-0caa-3lz1;detail=mismatch
+x-content-type-options: nosniff
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+via: 1.1 google, 1.1 0dbcc495a701485fbc7336487c48d6c2.cloudfront.net (CloudFront)
+x-cache: Error from cloudfront
+x-amz-cf-pop: ICN57-P1
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: VdxB4zYptq9LOg5r-uIAjFEnndL4Sn6PjarqRiZ3-vgF97RVEP0_1A==
+

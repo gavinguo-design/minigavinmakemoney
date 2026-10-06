@@ -1,0 +1,1 @@
+{"type":"hiip:index360:aim:error:common_0404","title":"Not Found","status":404,"detail":"POST /hiip/productdata/pub/constituent/metadata/v2 is not an allowed Cloud Run PAPI public route","instance":"/wsit-hsi-ddoc-ea-public-website/v1.0.3/product-data/pub/constituent/metadata/v2","errorDateTime":"2026-10-06T13:15:05.806930586Z","code":"COMMON_0404"}

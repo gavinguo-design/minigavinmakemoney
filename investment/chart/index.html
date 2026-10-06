@@ -2373,7 +2373,7 @@
     if (rtTs < lastTs) return; // 实时数据比Yahoo最后一根还旧，不动
     // 当日K线已收盘定型（非 partial）且有真实量能时，保留原值不用实时换算值；
     // 富途盘中 partial K线的成交额允许被更实时的东财 amount 覆盖
-    if (!isNewBar && !last.partial && rtTs <= lastTs && MarketRules.hk(rt.ts*1000).minute >= MarketRules.closeMinute(MarketRules.dayString(last.time))) {
+    if (!isNewBar && !last.partial && bar.partial) {
       return; // A provisional quote cannot rewrite a confirmed daily bar.
     }
     if (!isNewBar && !last.partial && typeof last.volume === 'number' && last.volume > 0) {

@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-06T09:30:50+08:00",
+ "updated_at": "2026-10-06T10:00:53+08:00",
  "judgment_mode": "intraday_preview",
  "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；此数据不构成操作信号",
  "data_stale": false,
@@ -7,34 +7,34 @@
  "conditions_date": "2026-10-06",
  "conditions_stale": false,
  "metrics": {
-  "price": 24345.91,
+  "price": 24213.87,
   "open": 24279.63,
   "high": 24354.11,
-  "low": 24230.29,
+  "low": 24210.16,
   "prev_close": 24040.34,
-  "update_time": "2026-10-06 09:30:50",
-  "volume_ratio": 0.76,
-  "today_turnover_yi": 21.5,
-  "ref_turnover_yi": 28.2,
+  "update_time": "2026-10-06 10:00:52",
+  "volume_ratio": 0.7,
+  "today_turnover_yi": 263.9,
+  "ref_turnover_yi": 379.6,
   "southbound_net_yi": 68.6
  },
  "scenarios": [
   {
    "name_prefix": "A",
-   "triggered": false,
-   "core_met": 1,
+   "triggered": true,
+   "core_met": 2,
    "core_total": 2,
    "confirm_met": 1,
    "confirm_total": 1,
-   "strength": null,
-   "met_count": 2,
+   "strength": "强",
+   "met_count": 3,
    "total": 3,
    "conditions": [
     {
      "id": "no_reclaim_24276",
      "label": "收盘未收复多空分界（收盘收于 24,276 之下，收盘确认）",
      "role": "core",
-     "met": false,
+     "met": true,
      "value_text": ""
     },
     {
@@ -76,26 +76,26 @@
      "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收，加速确认）",
      "role": "confirm",
      "met": false,
-     "value_text": "量比 0.76 · 昨收 24,040 → 现价 24,346"
+     "value_text": "量比 0.70 · 昨收 24,040 → 现价 24,214"
     }
    ]
   },
   {
    "name_prefix": "C",
-   "triggered": true,
-   "core_met": 1,
+   "triggered": false,
+   "core_met": 0,
    "core_total": 1,
    "confirm_met": 1,
    "confirm_total": 2,
-   "strength": "中",
-   "met_count": 2,
+   "strength": null,
+   "met_count": 1,
    "total": 3,
    "conditions": [
     {
      "id": "reclaim_24276",
      "label": "收盘收复 24,276 多空分界（收盘确认，破位剧本降级）",
      "role": "core",
-     "met": true,
+     "met": false,
      "value_text": ""
     },
     {

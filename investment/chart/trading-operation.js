@@ -272,7 +272,7 @@
     var decision = {
       code: decisionCode,
       label: decisionLabels[decisionCode],
-      observation_label: (decisionCode === 'INTRADAY_GUIDANCE' || decisionCode === 'WAIT_CLOSE') ? (currentSession.phase === 'closed' && quoteState === 'last-close' ? '已收盘·确认数据待同步·不开仓' : '等收盘确认·不开仓')
+      observation_label: (decisionCode === 'INTRADAY_GUIDANCE' || decisionCode === 'WAIT_CLOSE') ? (['closed','preopen'].indexOf(currentSession.phase) >= 0 && quoteState === 'last-close' ? '已收盘·确认数据待同步·不开仓' : '等收盘确认·不开仓')
         : decisionCode === 'WAIT_TRIGGER' ? '条件未触发·不开仓'
         : decisionCode === 'TRIGGERED_RISK_INCOMPLETE' ? '已触发·风控待补·不开仓'
         : decisionCode === 'PLAN_WITHOUT_SIZE' ? '已触发·仓位待定·不开仓'

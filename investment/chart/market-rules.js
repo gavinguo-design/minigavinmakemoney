@@ -65,6 +65,23 @@
     }
     return out;
   }
+  function horizon(date, count) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date)) || !Number.isInteger(count) || count < 1 || count > 100 || !known(date)) return null;
+    var parsed=new Date(date+'T00:00:00Z');
+    if(!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0,10)!==date) return null;
+    var days=nextDays(date,count);
+    if(days.length!==count) return null;
+    return { start:date, count:count, end:dayString(days[days.length-1]), description:'未来'+count+'个交易日（按港股日历至 '+dayString(days[days.length-1])+'，不含发布当日）' };
+  }
+  function auditHorizon(record) {
+    var r=record||{}, start=String(r.createdAt||'').slice(0,10);
+    var match=String(r.horizon||'').match(/(\d+)\s*个交易日/);
+    var result=match?horizon(start,Number(match[1])):null;
+    if(!result) return {status:'unavailable',issue:'发布日、交易日数量或支持范围不足'};
+    var declared=String(r.horizonDesc||'').match(/至\s*(\d{4}-\d{2}-\d{2})/);
+    var wrongHoliday=/10\/7\s*中秋翌日休市/.test(String(r.horizonDesc||''));
+    return {status:declared && declared[1]===result.end && !wrongHoliday?'valid':'mismatch',expected:result,declared_end:declared?declared[1]:null};
+  }
   function timestamp(text) {
     if (typeof text==='number') return text;
     if (!text) return NaN;
@@ -174,7 +191,7 @@
       lower_inclusive:short,upper_inclusive:!short};
   }
   return {hk:hk,dayString:dayString,shift:shift,known:known,tradingDay:tradingDay,
-    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,timestamp:timestamp,
+    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,timestamp:timestamp,
     quoteState:quoteState,validQuote:validQuote,markBars:markBars,statusIssue:statusIssue,
     sanitizeStatus:sanitizeStatus,rr:rr,chaseBoundary:chaseBoundary};
 });

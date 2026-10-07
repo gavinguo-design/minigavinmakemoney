@@ -1097,7 +1097,14 @@
     upColor: UP, downColor: DOWN,
     borderUpColor: UP, borderDownColor: DOWN,
     wickUpColor: UP, wickDownColor: DOWN,
-    priceScaleId: 'right'
+    priceScaleId: 'right',
+    // Bound marker padding in pixels so stacked arrows cannot inflate the price
+    // range and leave a large empty lower half. Native visible OHLC stays intact.
+    autoscaleInfoProvider: function(original) {
+      var info=original();
+      if(info) info.margins={above:16,below:20};
+      return info;
+    }
   });
   // 价格内容尽量占满画布：只保留刻度与成交量所需的安全边距。
   // 过大的底部边距会把关键支撑阻力挤在中间，产生大片无效空白。
@@ -1362,8 +1369,8 @@
         priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false
       });
       s.setData(times.map(function (t) { return { time: t, value: toPrice }; }));
-      var mid = times[Math.min(2, times.length - 1)];
-      s.setMarkers([{ time: mid, position: isUp ? 'aboveBar' : 'belowBar', shape: 'square', color: hexToRgba(colorHex, 0.9), size: 0, text: '' }]);
+      // No invisible markers: even size-zero markers reserve vertical padding
+      // in Lightweight Charts and push price content away from the chart edges.
       rrSeriesList.push(s);
     };
     var rewardPts = Math.round(stat.reward), riskPts = Math.round(stat.risk);
@@ -1822,7 +1829,7 @@
     if (last && structural && typeof structural.price === 'number') {
       var direction = sc.direction || (sc.rr && sc.rr.direction);
       var broken = direction === 'short' ? last.close >= structural.price : last.close <= structural.price;
-      if (broken) return { id: 'invalidated', label: '已失效', title: '最新完整日K收盘越过结构失效位 ' + fmt(structural.price) };
+      if (broken) return { id: 'invalidated', label: '当前结构不符合', title: '最新完整日K已越过本情景结构边界 ' + fmt(structural.price) + '；不代表该情景此前曾触发或已发生交易止损。' };
     }
     if (!st || typeof st.core_total !== 'number' || st.core_total < 1) return { id: 'unavailable', label: '待核对', title: '情景条件或完整K线不足，不能推断状态' };
     if (st.triggered === true) return { id: 'triggered', label: '已触发', title: '既有核心结构条件已满足' };
@@ -1833,7 +1840,7 @@
   function scenarioBadgeHtml(sc, refPx) {
     var st = viewingDate ? null : statusForScenario(sc);
     var state = signalStateForScenario(sc, st, currentBars, currentIv);
-    if (state.id === 'invalidated') return '<span class="sc-status invalidated" title="' + escapeHtml(state.title) + '">⛔ 已失效</span>';
+    if (state.id === 'invalidated') return '<span class="sc-status invalidated" title="' + escapeHtml(state.title) + '">⛔ ' + escapeHtml(state.label) + '</span>';
     if (state.id === 'triggered') {
       var preview = scenarioStatus && scenarioStatus.judgment_mode === 'intraday_preview';
       return preview
@@ -1962,7 +1969,7 @@
       : '未配置独立灾难止损';
     return '<div class="sc-evidence' + (unavailable ? ' unavailable' : '') + '">' +
       '<div class="sc-evidence-head"><span>🕯 价格行为证据</span><span class="sc-evidence-state" title="' + escapeHtml(state.title) + '">' + escapeHtml(state.label) + '</span></div>' +
-      '<div class="sc-evidence-row"><b>观察：</b>' + escapeHtml(observedText) + '</div>' +
+      '<div class="sc-evidence-row"><b>冻结观察（' + escapeHtml(annotations && annotations.forecast && annotations.forecast.scenario_evidence && annotations.forecast.scenario_evidence.last_bar && annotations.forecast.scenario_evidence.last_bar.date || '--') + '）：</b>' + escapeHtml(observedText) + '</div>' +
       '<div class="sc-evidence-row"><b>匹配：</b>' + escapeHtml(alignmentText) + '</div>' +
       '<div class="sc-evidence-row"><b>确认：</b>' + escapeHtml(evidence ? evidence.confirmation : '暂无可验证确认条件') + '</div>' +
       '<div class="sc-evidence-row"><b>结构失效：</b>' + escapeHtml(structuralText) + '</div>' +
@@ -2628,7 +2635,7 @@
     var pointer = decision.scenario_pointer || {};
     var nearestPointer = pointer.nearest ? ('<span style="color:' + scenarioColor({id:pointer.nearest.id}) + '">' + escapeHtml(pointer.nearest.id) + '</span> · 距' + escapeHtml(pointer.nearest.id) + '入场 ' + signed(pointer.nearest.distance_points) + '点') : '情景分歧区·仅观察';
     var topPointer = pointer.top_weight ? ('<span style="color:' + scenarioColor({id:pointer.top_weight.id}) + '">' + escapeHtml(pointer.top_weight.id) + '</span> ' + Math.round(pointer.top_weight.weight*100) + '%') : '待数据';
-    var executionPointer = decision.close_confirmed ? (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '已确认') : '收盘未确认情景') : decision.market_session === 'closed' ? '已收盘·确认数据待同步' : '等待收盘确认';
+    var executionPointer = decision.close_confirmed ? (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '已确认') : '收盘未确认情景') : (decision.market_session === 'closed' || decision.market_session === 'preopen') ? '最近收盘·确认数据待同步' : '等待收盘确认';
     var stripDistances = decision.close_confirmed ? '' : distances.map(function (d) {
       var near = Math.abs(d.distance_points) <= 30;
       return '<span class="op-kv' + (near ? ' near' : '') + '">' + escapeHtml(d.label) + ' <b>' + signed(d.distance_points) + '点</b>' + (near ? ' · 接近关键位' : '') + '</span>';
@@ -2958,7 +2965,7 @@
         price: structural.price, color: color, lineWidth: invalid ? 2 : 1,
         lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: false, title: ''
       }));
-      gutterItems.push({ price: structural.price, text: shortName(sc.name) + ' · 结构失效 ' + fmt(structural.price) + (invalid ? '（已失效）' : ''), color: color, source: 'invalidation' });
+      gutterItems.push({ price: structural.price, text: shortName(sc.name) + ' · 结构失效 ' + fmt(structural.price) + (invalid ? '（当前结构不符合）' : ''), color: color, source: 'invalidation' });
     });
   }
 

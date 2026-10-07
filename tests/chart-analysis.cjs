@@ -52,6 +52,36 @@ test('track display corrects the frozen 10/7 holiday wording without rewriting t
   assert.match(source,/10\/7港股正常交易（仅沪深港通关闭）/);
   assert.match(source,/displayCorrection\(v\)/);
 });
+test('forecast horizons use actual trading days, include October 7, and reject unsupported or malformed input',()=>{
+  assert.equal(MR.horizon('2026-09-25',8).end,'2026-10-08');
+  assert.equal(MR.horizon('2026-10-06',5).end,'2026-10-13');
+  assert.equal(MR.horizon('2026-09-30',3).end,'2026-10-06');
+  assert.equal(MR.horizon('2026-10-16',1).end,'2026-10-20');
+  assert.equal(MR.horizon('2026-12-31',1).end,'2027-01-04');
+  for(const [date,count] of [['2026-02-30',5],['2026-13-01',5],['2028-01-03',1],['2027-12-31',1],['2026-10-06',0],['2026-10-06',1.5]]) {
+    assert.equal(MR.horizon(date,count),null);
+  }
+});
+test('horizon validation flags false holiday text and date mismatches without mutating frozen records',()=>{
+  const record={createdAt:'2026-10-06T08:45:00+08:00',horizon:'未来约5个交易日',horizonDesc:'未来约5个交易日（至 2026-10-13，中间隔 10/7 中秋翌日休市）'};
+  const frozen=JSON.stringify(record);
+  assert.equal(MR.auditHorizon(record).status,'mismatch');
+  assert.equal(JSON.stringify(record),frozen);
+  assert.equal(MR.auditHorizon({...record,horizonDesc:MR.horizon('2026-10-06',5).description}).status,'valid');
+  assert.equal(MR.auditHorizon({...record,horizonDesc:'至 2026-10-14'}).status,'mismatch');
+  assert.equal(MR.auditHorizon({}).status,'unavailable');
+});
+test('B and C share a short direction but have different structural boundaries; untriggered C is not called a stopped trade',()=>{
+  const c=render('signalStateForScenario',{fmt:String});
+  const scenario=stop=>({direction:'short',risk:{structural_invalidation:{price:stop}}});
+  const status={core_total:1,core_met:0,triggered:false};
+  const bars=[{close:24130.5,partial:false}];
+  assert.equal(c.signalStateForScenario(scenario(24444),status,bars,'1d').id,'candidate');
+  const state=c.signalStateForScenario(scenario(24100),status,bars,'1d');
+  assert.equal(state.label,'当前结构不符合');
+  assert.match(state.title,/不代表该情景此前曾触发/);
+  assert.equal(c.signalStateForScenario(scenario(24100),status,[{close:24130.5,partial:true}],'1d').id,'candidate');
+});
 test('partial candles: daily, weekly before Friday, minute session boundary and HKT shift',()=>{
   assert.equal(MR.markBars([{...bar(100),time:'2026-10-06'}],'1d',now)[0].partial,true);
   assert.equal(MR.markBars([{...bar(100),time:'2026-10-05'}],'1wk',now)[0].partial,true);

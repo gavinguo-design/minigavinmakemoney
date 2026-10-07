@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-07T13:30:06+08:00",
+ "updated_at": "2026-10-07T14:00:06+08:00",
  "judgment_mode": "intraday_preview",
  "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；此数据不构成操作信号",
  "data_stale": false,
@@ -7,15 +7,15 @@
  "conditions_date": "2026-10-06",
  "conditions_stale": false,
  "metrics": {
-  "price": 24145.79,
+  "price": 24157.14,
   "open": 24172.29,
   "high": 24266.92,
   "low": 24071.41,
   "prev_close": 24280.56,
-  "update_time": "2026-10-07 13:30:06",
+  "update_time": "2026-10-07 14:00:06",
   "volume_ratio": 0.68,
-  "today_turnover_yi": 574.8,
-  "ref_turnover_yi": 840.3,
+  "today_turnover_yi": 629.4,
+  "ref_turnover_yi": 926.7,
   "southbound_net_yi": 68.6
  },
  "scenarios": [
@@ -76,7 +76,7 @@
      "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收，加速确认）",
      "role": "confirm",
      "met": false,
-     "value_text": "量比 0.68 · 昨收 24,281 → 现价 24,146"
+     "value_text": "量比 0.68 · 昨收 24,281 → 现价 24,157"
     }
    ]
   },

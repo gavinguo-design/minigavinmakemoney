@@ -1,11 +1,11 @@
 /* Versioned, display-only HSI operating contract. It consumes existing production
  * annotations, scenario-status, bars, and quote state; it never creates signals. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./market-rules.js'));
-  else root.TradingOperation = factory(root.MarketRules);
-})(typeof self !== 'undefined' ? self : this, function (MarketRules) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./market-rules.js'), require('./market-participation.js'));
+  else root.TradingOperation = factory(root.MarketRules, root.MarketParticipation);
+})(typeof self !== 'undefined' ? self : this, function (MarketRules, MarketParticipation) {
   'use strict';
-  var VERSION = '1.3.0';
+  var VERSION = '1.4.0';
   var SECTION_IDS = ['market_regime','key_price_zones','scenario_paths','trigger_confirmation','no_trade_conditions','risk_controls','position_management','post_market_review'];
   var SOURCE = { annotations: 'annotations.json', status: 'scenario_status.json', quote: '/api/realtime', bars: 'loaded daily OHLCV' };
 
@@ -27,7 +27,15 @@
     var daily = (bars || []).filter(function (b) { return b && !b.partial; });
     return daily.length ? daily[daily.length - 1] : null;
   }
-  function barDate(bar) { return bar && MarketRules.dayString(bar.time); }
+  function barDate(bar) {
+    var time = bar && bar.time;
+    if (typeof time === 'string') return time.slice(0, 10);
+    if (typeof time === 'number') return new Date((time > 1e12 ? time : time * 1000)).toISOString().slice(0, 10);
+    if (time && typeof time === 'object' && Number.isFinite(time.year) && Number.isFinite(time.month) && Number.isFinite(time.day)) {
+      return time.year + '-' + String(time.month).padStart(2, '0') + '-' + String(time.day).padStart(2, '0');
+    }
+    return MarketRules && MarketRules.dayString ? MarketRules.dayString(time) : '';
+  }
   function statusState(status, annotations, now) {
     if (!status) return { status: 'missing', issue: '情景状态数据未加载' };
     var issue = MarketRules.statusIssue(status, annotations, now);
@@ -114,6 +122,15 @@
     var mapStatus = annotations && f && date ? 'available' : 'missing';
     var scenarioStatus = mapStatus === 'available' ? statusInfo.status : 'missing';
     var scenarios = scenarioRows(annotations, status, scenarioStatus, closeConfirmed);
+    var participation = MarketParticipation && MarketParticipation.evaluate
+      ? MarketParticipation.evaluate(input.participation || null, f.scenarios || [], status && status.conditions_date || date)
+      : { status:'unavailable', issue:'参与度模块未加载', weights:{}, adjustments:{} };
+    scenarios.forEach(function (row) {
+      row.base_probability = (f.scenarios || []).filter(function (sc) { return scenarioId(sc) === row.id; })[0];
+      row.base_probability = row.base_probability && row.base_probability.probability || null;
+      row.effective_probability = participation.status === 'available' && Number.isFinite(participation.weights[row.id]) ? participation.weights[row.id] : row.base_probability;
+      row.participation_adjustment = participation.status === 'available' && Number.isFinite(participation.adjustments[row.id]) ? participation.adjustments[row.id] : null;
+    });
     var gap = gapFallback(annotations);
     var zone = quoteStatus === 'available' ? activeZone(annotations, quote && quote.price) : null;
     var intradayGuidance = mapStatus === 'available' && quoteStatus === 'available' && !!zone && (scenarioStatus !== 'available' || !closeConfirmed);
@@ -178,6 +195,7 @@
     var sections = [
       section('market_regime', '1. 市场状态', source(mapStatus, SOURCE.annotations, date, f.updatedAt || annotations && annotations.meta && annotations.meta.updatedAt, mapStatus === 'missing' ? '缺少当前地图。' : null), actionState, {
         bias: f.bias || null, label: f.biasLabel || null, completed_daily_confirmation: closeConfirmed,
+        market_participation: clone(participation),
         current_quote: { value: quote && quote.price || null, quote_state: quoteState, provenance: source(quoteStatus, SOURCE.quote, quote && MarketRules.dayString(quote.ts), quote && new Date(quote.ts * 1000).toISOString(), null) }
       }),
       section('key_price_zones', '2. 关键价格区', source(levels.length ? 'available' : 'missing', SOURCE.annotations, date, f.updatedAt, levels.length ? null : '未提供显式关键价位。'), actionState, { levels: clone(levels), gap_fallback: gap.data, gap_fallback_status: gap.status }),

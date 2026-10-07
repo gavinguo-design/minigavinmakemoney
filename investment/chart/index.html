@@ -12,6 +12,8 @@
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
   <script src="market-rules.js?v=1"></script>
+  <script src="market-participation.js?v=1"></script>
+  <script src="market-context.js?v=1"></script>
   <script src="trading-operation.js?v=2"></script>
   <script src="technical-analysis.js?v=1"></script>
   <script src="technical-panel.js?v=1"></script>
@@ -571,6 +573,18 @@
     /* scenario cards */
     .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
     @media (max-width: 720px) { .scenarios { grid-template-columns: 1fr; } }
+    .participation-strip { margin: 0 0 10px; padding: 10px 12px; border: 1px solid rgba(50,215,75,.28); border-radius: 12px; background: rgba(50,215,75,.055); }
+    .participation-strip.unavailable { border-color: rgba(245,166,35,.32); background: rgba(245,166,35,.055); }
+    .ps-head { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px; }
+    .ps-title { font-size:12.5px; font-weight:800; color:#f5f5f7; }
+    .ps-state { font-size:11px; font-weight:800; color:var(--good); }
+    .participation-strip.unavailable .ps-state { color:var(--gold); }
+    .ps-metrics { display:flex; flex-wrap:wrap; gap:6px; }
+    .ps-chip { display:inline-flex; gap:5px; align-items:center; border:1px solid var(--border); background:rgba(255,255,255,.035); border-radius:8px; padding:5px 7px; font-size:10.5px; color:var(--muted); }
+    .ps-chip b { color:#f5f5f7; font-family:'JetBrains Mono',monospace; }
+    .ps-foot { margin-top:6px; color:rgba(235,235,245,.45); font-size:9.5px; line-height:1.45; }
+    .sc-participation { margin:8px 0 0; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,.035); color:rgba(235,235,245,.6); font-size:10.5px; line-height:1.4; }
+    .sc-participation b { color:var(--sc-color); }
     .sc-card {
       background: var(--card); border: 1px solid var(--border); border-radius: 16px;
       padding: 12px 14px; cursor: pointer; user-select: none;
@@ -740,7 +754,7 @@
     /* chart */
     .chart-row { display: flex; align-items: stretch; gap: 6px; }
     .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: visible; position: relative; flex: 1 1 auto; min-width: 0; }
-    #chart { width: 100%; height: 62vh; min-height: 340px; max-height: 640px; border-radius: 14px; overflow: hidden; }
+    #chart { width: 100%; height: 76vh; min-height: 520px; max-height: 820px; border-radius: 14px; overflow: hidden; }
     #fcEndpointLabels { position: absolute; inset: 0; pointer-events: none; z-index: 6; overflow: hidden; border-radius: 14px; }
     .fc-endpoint-label {
       position: absolute; width: 30px; height: 30px; border-radius: 50%;
@@ -752,19 +766,23 @@
 
     /* 价位标签栏：priceLine 文字移出图内，放在价格轴右侧独立列，避免叠在情景区域/轴标签上 */
     #levelGutter {
-      flex: 0 0 176px; width: 176px; position: relative; overflow: hidden;
+      flex: 0 0 264px; width: 264px; position: relative; overflow: hidden;
       border: 1px solid var(--border); border-left: none; border-radius: 0 14px 14px 0;
       background: rgba(28,28,30,0.55);
     }
     .gutter-label {
       position: absolute; left: 8px; right: 6px; transform: translateY(-50%);
-      font-size: 10.5px; font-weight: 700; line-height: 1.25; white-space: nowrap;
+      font-size: 11px; font-weight: 700; line-height: 1.25; white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
       font-family: 'JetBrains Mono', monospace;
       text-shadow: 0 0 4px rgba(0,0,0,0.6);
     }
     @media (max-width: 768px) {
       #levelGutter { display: none; }
+    }
+    @media (max-width: 1100px) and (min-width: 769px) {
+      #chart { height: 68vh; min-height: 460px; max-height: 700px; }
+      #levelGutter { flex-basis: 220px; width: 220px; }
     }
     .loading {
       position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -814,7 +832,7 @@
     @media (max-width: 640px) {
       .price-line .px { font-size: 15px; }
       h1 { font-size: 18px; }
-      #chart { height: 55vh; }
+      #chart { height: 60vh; min-height: 380px; max-height: 600px; }
       .tab { font-size: 12px; padding: 8px 0; }
       /* 移动端字阶整体略降一档，层级比例保持 */
       .block-title, .section-title { font-size: 15px; margin-top: 24px; }
@@ -911,9 +929,13 @@
       <div id="levelGutter"></div>
     </div>
 
+    <!-- 市场参与度只在来源、覆盖与指数对账同时通过后校正A/B/C。 -->
+    <div class="participation-strip unavailable hidden" id="participationStrip"></div>
+    <div class="participation-strip unavailable hidden" id="marketContextStrip"></div>
+
     <!-- A/B/C 情景卡：紧跟主图，作为第二层行动地图。 -->
     <div class="scenarios hidden" id="scenarioCards"></div>
-    <p class="prob-note hidden" id="probNote">ℹ︎ 情景权重为主观评估，不是胜率；触发以卡片条件为准。</p>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 卡片显示盘前基础权重；宽度、权重和贡献通过覆盖与指数对账后才做有限校正。它不是历史胜率，触发仍以卡片条件为准。</p>
 
     <details class="technical-panel" aria-label="技术指标与结构验证">
       <summary class="technical-fold">技术指标验证（辅助核对，默认收起）</summary>
@@ -1962,6 +1984,71 @@
     return t === true && (h.date > applicable || (h.date === applicable && h.minute >= MarketRules.closeMinute(applicable)));
   }
 
+  var participationSnapshot = null;
+  var marketContextSnapshot = null;
+
+  function participationRequiredDate(a) {
+    if (scenarioStatus && scenarioStatus.conditions_date) return String(scenarioStatus.conditions_date);
+    var f = a && a.forecast || {};
+    return f.applicable_date || String(f.updatedAt || a && a.meta && a.meta.updatedAt || '').slice(0, 10) || null;
+  }
+
+  function participationEvaluation(a) {
+    var scenarios = a && a.forecast && a.forecast.scenarios || [];
+    if (typeof MarketParticipation === 'undefined') return { status:'unavailable', issue:'参与度模块未加载', weights:{}, adjustments:{} };
+    return MarketParticipation.evaluate(participationSnapshot, scenarios, participationRequiredDate(a));
+  }
+
+  function contextEvaluation(a, participation) {
+    var scenarios = a && a.forecast && a.forecast.scenarios || [];
+    if (typeof MarketContext === 'undefined') return { status:'unavailable', issue:'夜盘/波动模块未加载', weights:(participation && participation.weights)||{}, adjustments:{} };
+    var start = participation && participation.status === 'available' ? participation.weights : null;
+    return MarketContext.evaluate(marketContextSnapshot, scenarios, start);
+  }
+
+  function pct(v, digits) { return Number.isFinite(v) ? (v * 100).toFixed(digits == null ? 0 : digits) + '%' : '--'; }
+  function signedPoints(v) { return Number.isFinite(v) ? (v > 0 ? '+' : '') + v.toFixed(1) + '点' : '--'; }
+
+  function renderParticipationStrip(a) {
+    var box = el('participationStrip');
+    if (!box) return;
+    var result = participationEvaluation(a), snap = participationSnapshot, m = result.metrics || snap && snap.metrics;
+    if (!snap) { box.className = 'participation-strip unavailable'; box.innerHTML = '<div class="ps-head"><span class="ps-title">恒指市场参与度</span><span class="ps-state">数据未接入</span></div>'; return; }
+    if (result.status !== 'available') {
+      box.className = 'participation-strip unavailable';
+      box.innerHTML = '<div class="ps-head"><span class="ps-title">恒指宽度 · 权重 · 贡献</span><span class="ps-state">未参与校正</span></div>' +
+        '<div class="ps-foot">' + escapeHtml(result.issue || '来源、覆盖或指数对账未通过') + '；A/B/C保留盘前基础权重，不把缺项当中性。</div>';
+      return;
+    }
+    var e = result.evidence || {};
+    box.className = 'participation-strip';
+    box.innerHTML = '<div class="ps-head"><span class="ps-title">恒指宽度 · 权重 · 点数贡献</span><span class="ps-state">已参与A/B/C · ' + escapeHtml(e.label || '') + '</span></div>' +
+      '<div class="ps-metrics">' +
+        '<span class="ps-chip">涨/跌/平 <b>' + m.advances + '/' + m.declines + '/' + m.unchanged + '</b></span>' +
+        '<span class="ps-chip">等权宽度 <b>' + pct(m.equal_name_breadth,1) + '</b></span>' +
+        '<span class="ps-chip">上涨权重 <b>' + pct(m.weighted_breadth,1) + '</b></span>' +
+        '<span class="ps-chip">净贡献 <b>' + signedPoints(m.net_point_contribution) + '</b></span>' +
+        '<span class="ps-chip">前五集中度 <b>' + pct(m.top_five_absolute_contribution_share,1) + '</b></span>' +
+      '</div><div class="ps-foot">' + escapeHtml(snap.mode === 'intraday_preview' ? '盘中估算：以前收盘官方权重配合实时成分报价，指数对账通过后才生效。' : '收盘确认：官方成分日报、权重和点数贡献已完成覆盖与指数对账。') + ' · as_of ' + escapeHtml(result.as_of || '--') + '</div>';
+  }
+
+  function renderMarketContextStrip(a) {
+    var box=el('marketContextStrip'); if(!box) return;
+    var p=participationEvaluation(a), r=contextEvaluation(a,p), s=marketContextSnapshot;
+    if(!s){box.className='participation-strip unavailable';box.innerHTML='<div class="ps-head"><span class="ps-title">夜盘期指 · 流动性 · 期权波动</span><span class="ps-state">数据未接入</span></div>';return;}
+    var f=s.futures||{},l=s.liquidity||{},o=s.options_risk||{};
+    box.className='participation-strip'+(r.status==='available'?'':' unavailable');
+    box.innerHTML='<div class="ps-head"><span class="ps-title">夜盘期指 · 流动性 · 期权波动</span><span class="ps-state">'+(r.status==='available'?'已参与A/B/C · '+escapeHtml(r.evidence.label):'只展示·未校正')+'</span></div>'+
+      '<div class="ps-metrics"><span class="ps-chip">期指 <b>'+ (Number.isFinite(f.price)?fmt(f.price):'--') +'</b></span><span class="ps-chip">较昨结 <b>'+pct(f.return_from_previous_close,2)+'</b></span><span class="ps-chip">期现基差 <b>'+signedPoints(f.basis_points)+'</b></span><span class="ps-chip">买卖差 <b>'+(Number.isFinite(l.spread_points)?l.spread_points.toFixed(1)+'点':'--')+'</b></span><span class="ps-chip">VHSI <b>'+(Number.isFinite(o.price)?o.price.toFixed(2):'--')+'</b></span><span class="ps-chip">隐含日波幅 <b>'+(Number.isFinite(o.expected_one_day_move_points)?'±'+o.expected_one_day_move_points.toFixed(0)+'点':'--')+'</b></span></div>'+
+      '<div class="ps-foot">期指只做方向校正；价差与VHSI只降低可靠度，不把波动率当涨跌方向。 · as_of '+escapeHtml(s.as_of||'--')+(r.issue?' · '+escapeHtml(r.issue):'')+'</div>';
+  }
+
+  function scenarioParticipationHtml(sc, result) {
+    if (!result || result.status !== 'available' || !Number.isFinite(result.adjustments && result.adjustments[sc.id])) return '';
+    var delta = result.adjustments[sc.id], direction = sc.rr && sc.rr.direction === 'long' ? '偏多' : '偏空';
+    return '<div class="sc-participation">参与度校正 <b>' + (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pct</b> · 宽度/权重/贡献对该' + direction + '情景' + (delta >= 0 ? '加权' : '降权') + '</div>';
+  }
+
   function renderScenarioCards(a) {
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
@@ -2061,6 +2148,10 @@
     wrap.classList.remove('hidden');
     el('probNote').classList.remove('hidden');
     var refPx = scenarioRefPrice(f);
+    var participation = participationEvaluation(a);
+    var context = contextEvaluation(a, participation);
+    renderParticipationStrip(a);
+    renderMarketContextStrip(a);
     scenarios.forEach(function (sc, idx) {
       var card = document.createElement('div');
       card.className = 'sc-card';
@@ -2086,11 +2177,14 @@
         (rr.entryHint ? '<div class="sc-row">入场确认：' + escapeHtml(rr.entryHint) + '</div>' : '') +
         (sc.note ? '<div class="sc-row">' + escapeHtml(sc.note) + '</div>' : '');
       var holdingHtml = sc.holding_period ? '<span class="sc-holding" title="预期持仓周期">⏱ 持仓 ' + escapeHtml(sc.holding_period) + '</span>' : '';
+      var effectiveWeight = context.status === 'available' && Number.isFinite(context.weights[sc.id]) ? context.weights[sc.id] : (participation.status === 'available' && Number.isFinite(participation.weights[sc.id]) ? participation.weights[sc.id] : (sc.probability || 0));
+      var weightTitle = context.status === 'available' ? ('宽度/权重/贡献之后，再由夜盘方向有限校正；流动性和VHSI只控制可靠度。基础权重 '+Math.round((sc.probability||0)*100)+'%，不是历史胜率') : (participation.status === 'available' ? ('参与度校正权重；基础权重 ' + Math.round((sc.probability || 0) * 100) + '%，不是历史胜率') : '盘前基础权重；市场参与度数据未通过门禁，不是历史胜率');
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
-          '<span class="sc-prob" title="主观情景权重，不是历史命中率">' + Math.round((sc.probability || 0) * 100) + '% 权重</span></div>' +
+          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + Math.round(effectiveWeight * 100) + '% 权重</span></div>' +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + holdingHtml + '</span>' +
         numsHtml +
+        scenarioParticipationHtml(sc, participation) +
         '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' +
         '<div class="sc-live-rr-holder">' + scenarioLiveRRHtml(sc) + '</div>' +
         '<div class="sc-evidence-holder">' + scenarioEvidenceHtml(sc) + '</div>' +
@@ -2444,7 +2538,7 @@
   function renderTradingOperation() {
     var box = el('operationCard');
     if (!box || viewingDate) { if (box) box.classList.add('hidden'); return; }
-    tradingOperation = TradingOperation.build({ annotations: annotations, scenarioStatus: scenarioStatus, dailyBars: currentIv === '1d' ? currentBars : [], quote: realtimeData || yahooQuote });
+    tradingOperation = TradingOperation.build({ annotations: annotations, scenarioStatus: scenarioStatus, participation: participationSnapshot, dailyBars: currentIv === '1d' ? currentBars : [], quote: realtimeData || yahooQuote });
     var noTrade = operationSection('no_trade_conditions'), paths = operationSection('scenario_paths'), risks = operationSection('risk_controls'), trigger = operationSection('trigger_confirmation');
     var blocked = tradingOperation.action_state === 'no_trade', reasons = noTrade && noTrade.data && noTrade.data.conditions || [], scenarios = paths && paths.data && paths.data.scenarios || [], riskRows = risks && risks.data && risks.data.scenarios || [], decision = tradingOperation.decision || {};
     var scenarioStateLabel = function (s) {
@@ -2471,22 +2565,26 @@
       var icon = state === 'complete' ? '✓' : state === 'blocked' ? '×' : '○';
       return '<span class="op-step ' + state + '">' + icon + ' ' + stepLabels[key][state] + '</span>';
     }).join('<span class="op-arrow">›</span>');
-    var stateLabel = decision.code === 'INTRADAY_GUIDANCE' ? '盘中观察' : (blocked ? '暂不执行' : '计划可用');
+    var zoneAction = decision.current_zone && decision.current_zone.action || '';
+    var zoneScenarioMatch = String(zoneAction).match(/([ABC])(?:剧本|情景)/);
+    var activeScenarioText = zoneScenarioMatch ? zoneScenarioMatch[1] : (decision.scenario_id || '--');
+    var stateLabel = decision.code === 'INTRADAY_GUIDANCE' ? '只观察·不开仓' : (blocked ? '暂不执行' : '计划可用');
     box.className = 'operation-card' + (blocked ? ' no-trade' : '');
     box.innerHTML =
-      '<div class="op-head"><span class="op-title">当前作战结论</span><span class="op-state">' + stateLabel + '</span></div>' +
+      '<div class="op-head"><span class="op-title">A/B/C 盘中执行状态</span><span class="op-state">' + stateLabel + '</span></div>' +
       '<div class="op-verdict">' + escapeHtml(decision.headline || '等待数据') + ' · ' + escapeHtml(decision.label || '等待判断') + '</div>' +
       '<div class="op-next"><b>下一步：</b>' + escapeHtml(decision.next_action || '等待规则条件完成。') + '</div>' +
       '<div class="op-facts">' +
         '<div class="op-fact"><span>' + priceLabel + '</span><b>' + (Number.isFinite(price) ? fmt(price) : '--') + '</b></div>' +
         '<div class="op-fact"><span>所在战区</span><b title="' + escapeHtml(decision.current_zone && decision.current_zone.stance || '') + '">' + escapeHtml(zoneText) + '</b></div>' +
-        '<div class="op-fact"><span>' + escapeHtml(decision.scenario_id ? decision.scenario_id + ' 结构失效' : '结构失效') + '</span><b>' + invalidation + '</b></div>' +
-        '<div class="op-fact"><span>' + escapeHtml(decision.scenario_id ? decision.scenario_id + ' 目标' : '目标') + '</span><b>' + target + '</b></div>' +
+        '<div class="op-fact"><span>当前最接近</span><b>' + escapeHtml(activeScenarioText === '--' ? '战区观察' : activeScenarioText + ' 情景') + '</b></div>' +
+        '<div class="op-fact"><span>正式确认</span><b>' + (decision.code === 'INTRADAY_GUIDANCE' ? '等待收盘K' : escapeHtml(scenarioStateLabel(scenarios.filter(function (s) { return s.id === activeScenarioText; })[0]))) + '</b></div>' +
       '</div>' +
       '<div class="op-gap"><span>跳空兜底</span><b>' + escapeHtml(gapText) + '</b><em>越过常规战区时，按缺口回退条件重新判断，不追价。</em></div>' +
-      '<div class="op-steps" aria-label="当前决策步骤">' + stepHtml + '</div>' +
-      (reasons.length ? '<div class="op-blockers"><b>暂不执行原因</b><ul class="op-list">' + reasons.map(function (r) { return '<li>' + escapeHtml(r) + '</li>'; }).join('') + '</ul></div>' : '') +
-      '<details class="op-details"><summary>展开完整依据与数据状态</summary><div class="op-grid"><div class="op-item"><b>市场状态</b>' + escapeHtml((operationSection('market_regime').data.label || '--')) + '</div><div class="op-item"><b>缺口回退</b>' + escapeHtml(gapText) + '</div><div class="op-item"><b>A/B/C</b>' + escapeHtml(scenarioText) + '</div><div class="op-item"><b>收盘确认</b>' + escapeHtml(trigger && trigger.data.daily_confirmation || '--') + '</div><div class="op-item"><b>风控完整性</b>' + riskText + '</div></div><div class="op-meta">as_of ' + escapeHtml(tradingOperation.as_of || '--') + ' · contract v' + escapeHtml(tradingOperation.schema_version) + ' · 数据不足时自动停止给出动作</div></details>';
+      '<details class="op-details"><summary>查看门禁原因与完整数据状态</summary>' +
+        (reasons.length ? '<div class="op-blockers"><b>当前未执行的系统原因</b><ul class="op-list">' + reasons.map(function (r) { return '<li>' + escapeHtml(r) + '</li>'; }).join('') + '</ul></div>' : '') +
+        '<div class="op-steps" aria-label="当前决策步骤">' + stepHtml + '</div>' +
+        '<div class="op-grid"><div class="op-item"><b>市场状态</b>' + escapeHtml((operationSection('market_regime').data.label || '--')) + '</div><div class="op-item"><b>缺口回退</b>' + escapeHtml(gapText) + '</div><div class="op-item"><b>A/B/C</b>' + escapeHtml(scenarioText) + '</div><div class="op-item"><b>收盘确认</b>' + escapeHtml(trigger && trigger.data.daily_confirmation || '--') + '</div><div class="op-item"><b>风控完整性</b>' + riskText + '</div></div><div class="op-meta">as_of ' + escapeHtml(tradingOperation.as_of || '--') + ' · contract v' + escapeHtml(tradingOperation.schema_version) + ' · 数据不足时自动停止给出动作</div></details>';
     box.classList.remove('hidden');
   }
 
@@ -2680,7 +2778,7 @@
     }
     var html = pts.map(function (p) {
       var top = Math.max(6, Math.min(h - 6, p.y));
-      return '<div class="gutter-label" style="top:' + top.toFixed(1) + 'px;color:' + p.color + '">' + escapeHtml(p.text) + '</div>';
+      return '<div class="gutter-label" title="' + escapeHtml(p.text) + '" style="top:' + top.toFixed(1) + 'px;color:' + p.color + '">' + escapeHtml(p.text) + '</div>';
     }).join('');
     levelGutterEl.innerHTML = html;
   }
@@ -2715,6 +2813,26 @@
     var name = String(lv.label || '').replace(/\s*[0-9][0-9,，.\s\-–—~～]*$/, '').trim();
     if (!name) name = (lv.strength === 'strong' ? '强' : '') + (isSupport ? '支撑' : '阻力');
     return name + ' ' + fmt(lv.price);
+  }
+
+  function scenarioRolesAtPrice(a, price) {
+    var scenarios = a && a.forecast && Array.isArray(a.forecast.scenarios) ? a.forecast.scenarios : [];
+    var roles = [];
+    scenarios.forEach(function (sc) {
+      var id = sc.id || shortName(sc.name), rr = sc.rr || {};
+      var add = function (value, label) {
+        if (typeof value === 'number' && Math.abs(value - price) <= 5) roles.push(id + label);
+      };
+      add(rr.entry, '确认'); add(rr.interim, '减仓'); add(rr.target, '目标'); add(rr.stop, '失效');
+      var structural = sc.risk && sc.risk.structural_invalidation;
+      if (structural && typeof structural.price === 'number' && Math.abs(structural.price - price) <= 5 && roles.indexOf(id + '失效') < 0) roles.push(id + '失效');
+    });
+    return roles;
+  }
+
+  function levelTitleWithScenario(a, lv) {
+    var base = shortLevelTitle(lv), roles = scenarioRolesAtPrice(a, lv.price);
+    return roles.length ? roles.join('/') + ' · ' + base : base;
   }
 
   function levelRange(lv) {
@@ -2833,7 +2951,7 @@
       if (isCurrent) {
         gutterItems.push({
           price: lv.price,
-          text: shortLevelTitle(lv),
+          text: levelTitleWithScenario(a, lv),
           color: baseColor,
           source: 'level'
         });
@@ -3398,6 +3516,7 @@
     renderPlaybook(a);
     renderPathTree(a);
     renderScenarioCards(a);
+    renderParticipationStrip(a);
     renderDisclaimer(a);
     renderIntradayPanel();
     renderNextDayDraft(a);
@@ -3574,6 +3693,33 @@
     initHistCtrl();
   });
 
+  function fetchParticipation() {
+    function staticSnapshot() {
+      return fetch('hsi-participation.json?t=' + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    }
+    return fetch('/api/hsi-participation?t=' + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (live) { return live && live.status === 'available' ? live : staticSnapshot(); });
+  }
+
+  function refreshParticipation() {
+    return fetchParticipation().then(function (snapshot) {
+      if (snapshot) participationSnapshot = snapshot;
+      if (annotations) { renderScenarioCards(annotations); renderParticipationStrip(annotations); renderTradingOperation(); }
+    });
+  }
+  refreshParticipation();
+  setInterval(refreshParticipation, 60 * 1000);
+
+  function refreshMarketContext() {
+    return fetch('/api/hsi-context?t=' + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (snapshot) {
+        if (snapshot) marketContextSnapshot = snapshot;
+        if (annotations) { renderScenarioCards(annotations); renderMarketContextStrip(annotations); }
+      });
+  }
+  refreshMarketContext();
+  setInterval(refreshMarketContext, 30 * 1000);
+
   loadInterval('1d');
 
   // 首次拉取东财实时数据 + 启动定时刷新（盘中30s / 盘外5min）
@@ -3687,6 +3833,7 @@
         if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
       }),
       fetchRealtime().then(function (rt) { applyRealtime(rt); }),
+      refreshParticipation(),
       refreshMirror()
     ];
     Promise.all(tasks.map(function (p) { return p.catch(function () {}); })).then(function () {

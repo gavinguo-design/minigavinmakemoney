@@ -1,0 +1,993 @@
+{
+  "schema_version": "1.0.0",
+  "status": "available",
+  "mode": "close_final",
+  "index_id": "HSI",
+  "as_of": "2026-10-06",
+  "baseline_date": "2026-10-06",
+  "updated_at": "2026-10-07T01:00:00+08:00",
+  "source": {
+    "name": "Hang Seng Indexes Constituent Daily Performance",
+    "kind": "official_daily_constituent_report",
+    "url": "https://www.hsi.com.hk/api/wsit-hsi-ddoc-ea-public-website-proxy/v1/content/gcs/download?resource=/public-website/webapp/contents/en/indexes/report/hsi/con_6Oct26.pdf",
+    "file": "research/data-readiness/evidence/hsi-con_6Oct26.pdf",
+    "sha256": "04fc303b6812e9c76dfbf61cd405b0413dfea0cb40ee8ccf1b205ca931ad889f"
+  },
+  "data_quality": {
+    "constituent_count": 95,
+    "quote_coverage": 1,
+    "weight_coverage": 1.0002,
+    "expected_weight_coverage": 1.0002,
+    "weight_rounding_tolerance": 0.0005,
+    "reconciled": true,
+    "official_index_close": 24280.56,
+    "official_index_point_change": 240.22,
+    "constituent_point_sum": 240.23,
+    "reconciliation_difference": 0.01,
+    "note": "官方报告权重按两位小数发布，合计误差与成分贡献舍入差均在声明容差内。"
+  },
+  "metrics": {
+    "advances": 69,
+    "declines": 22,
+    "unchanged": 4,
+    "equal_name_breadth": 0.72631579,
+    "weighted_breadth": 0.76814637,
+    "declining_weight_share": 0.19826035,
+    "net_point_contribution": 240.23,
+    "gross_absolute_point_contribution": 294.97,
+    "contribution_direction": 0.81442181,
+    "top_five_absolute_contribution_share": 0.49981354,
+    "concentration_hhi": 0.06851059
+  },
+  "top_positive_contributors": [
+    {
+      "security_id": "9988.HK",
+      "name": "BABA - W 阿里巴巴 - W",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 108.2,
+      "return_pct": 2.66,
+      "official_point_contribution": 51.45,
+      "weight": 0.0819
+    },
+    {
+      "security_id": "0005.HK",
+      "name": "HSBC HOLDINGS 滙豐控股",
+      "industry": "50 Financials 金融業",
+      "close": 152.8,
+      "return_pct": 1.93,
+      "official_point_contribution": 36.63,
+      "weight": 0.0795
+    },
+    {
+      "security_id": "0700.HK",
+      "name": "TENCENT 騰訊控股",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 428.2,
+      "return_pct": 1.23,
+      "official_point_contribution": 23.9,
+      "weight": 0.0811
+    },
+    {
+      "security_id": "0939.HK",
+      "name": "CCB 建設銀行",
+      "industry": "50 Financials 金融業",
+      "close": 9.65,
+      "return_pct": 1.47,
+      "official_point_contribution": 20.08,
+      "weight": 0.057
+    },
+    {
+      "security_id": "1398.HK",
+      "name": "ICBC 工商銀行",
+      "industry": "50 Financials 金融業",
+      "close": 7.58,
+      "return_pct": 1.68,
+      "official_point_contribution": 15.37,
+      "weight": 0.0384
+    }
+  ],
+  "top_negative_contributors": [
+    {
+      "security_id": "0992.HK",
+      "name": "LENOVO GROUP 聯想集團",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 35.4,
+      "return_pct": -1.45,
+      "official_point_contribution": -5.77,
+      "weight": 0.0162
+    },
+    {
+      "security_id": "2020.HK",
+      "name": "ANTA SPORTS 安踏體育",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 71.4,
+      "return_pct": -2.53,
+      "official_point_contribution": -3.86,
+      "weight": 0.0061
+    },
+    {
+      "security_id": "2628.HK",
+      "name": "CHINA LIFE 中國人壽",
+      "industry": "50 Financials 金融業",
+      "close": 27.3,
+      "return_pct": -0.94,
+      "official_point_contribution": -2.89,
+      "weight": 0.0125
+    },
+    {
+      "security_id": "1299.HK",
+      "name": "AIA 友邦保險",
+      "industry": "50 Financials 金融業",
+      "close": 68.8,
+      "return_pct": -0.22,
+      "official_point_contribution": -2.31,
+      "weight": 0.0437
+    },
+    {
+      "security_id": "1347.HK",
+      "name": "HUA HONG GRACE 華虹宏力",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 108.2,
+      "return_pct": -1.64,
+      "official_point_contribution": -2.14,
+      "weight": 0.0053
+    }
+  ],
+  "constituents": [
+    {
+      "security_id": "0001.HK",
+      "name": "CKH HOLDINGS 長和",
+      "industry": "80 Conglom erates 綜合企業",
+      "close": 67.35,
+      "return_pct": -0.07,
+      "official_point_contribution": -0.2,
+      "weight": 0.0111
+    },
+    {
+      "security_id": "0002.HK",
+      "name": "CLP HOLDINGS 中電控股",
+      "industry": "40 Utilities 公用事業",
+      "close": 75.9,
+      "return_pct": 0.33,
+      "official_point_contribution": 0.61,
+      "weight": 0.0077
+    },
+    {
+      "security_id": "0003.HK",
+      "name": "HK & CHINA GAS 香港中華煤 氣",
+      "industry": "40 Utilities 公用事業",
+      "close": 7.07,
+      "return_pct": 0.21,
+      "official_point_contribution": 0.25,
+      "weight": 0.0049
+    },
+    {
+      "security_id": "0005.HK",
+      "name": "HSBC HOLDINGS 滙豐控股",
+      "industry": "50 Financials 金融業",
+      "close": 152.8,
+      "return_pct": 1.93,
+      "official_point_contribution": 36.63,
+      "weight": 0.0795
+    },
+    {
+      "security_id": "0006.HK",
+      "name": "POWER ASSETS 電能實業",
+      "industry": "40 Utilities 公用事業",
+      "close": 59.35,
+      "return_pct": 0.42,
+      "official_point_contribution": 0.52,
+      "weight": 0.005
+    },
+    {
+      "security_id": "0012.HK",
+      "name": "HENDERSO N LAND 恒基地產",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 25.56,
+      "return_pct": 0.24,
+      "official_point_contribution": 0.13,
+      "weight": 0.0023
+    },
+    {
+      "security_id": "0016.HK",
+      "name": "SHK PPT 新鴻基地產",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 104.4,
+      "return_pct": -0.57,
+      "official_point_contribution": -1.3,
+      "weight": 0.0093
+    },
+    {
+      "security_id": "0027.HK",
+      "name": "GALAXY ENT 銀河娛樂",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 30.52,
+      "return_pct": -0.39,
+      "official_point_contribution": -0.35,
+      "weight": 0.0037
+    },
+    {
+      "security_id": "0066.HK",
+      "name": "MTR CORP ORATION 港鐵公司",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 31.12,
+      "return_pct": 1.7,
+      "official_point_contribution": 1.45,
+      "weight": 0.0036
+    },
+    {
+      "security_id": "0101.HK",
+      "name": "HANG LUNG PPT 恒隆地產",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 6.53,
+      "return_pct": 0.85,
+      "official_point_contribution": 0.15,
+      "weight": 0.0007
+    },
+    {
+      "security_id": "0175.HK",
+      "name": "GEELY AUTO 吉利汽車",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 14.97,
+      "return_pct": 0.6,
+      "official_point_contribution": 0.87,
+      "weight": 0.0059
+    },
+    {
+      "security_id": "0241.HK",
+      "name": "ALI HEALTH 阿里健康",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 2.83,
+      "return_pct": 0.71,
+      "official_point_contribution": 0.19,
+      "weight": 0.0011
+    },
+    {
+      "security_id": "0267.HK",
+      "name": "CITIC 中信股份",
+      "industry": "80 Conglom erates 綜合企業",
+      "close": 12.78,
+      "return_pct": 0.08,
+      "official_point_contribution": 0.09,
+      "weight": 0.0046
+    },
+    {
+      "security_id": "0285.HK",
+      "name": "BYD ELECT RONIC 比亞迪電子",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 23.9,
+      "return_pct": 5.01,
+      "official_point_contribution": 1.34,
+      "weight": 0.0012
+    },
+    {
+      "security_id": "0288.HK",
+      "name": "WH GROUP 萬洲國際",
+      "industry": "25 Consumer Staples 必需性消費",
+      "close": 6.55,
+      "return_pct": -0.53,
+      "official_point_contribution": -0.44,
+      "weight": 0.0034
+    },
+    {
+      "security_id": "0291.HK",
+      "name": "CHINA RES BEER 華潤啤酒",
+      "industry": "25 Consumer Staples 必需性消費",
+      "close": 18.63,
+      "return_pct": 0.43,
+      "official_point_contribution": 0.19,
+      "weight": 0.0019
+    },
+    {
+      "security_id": "0300.HK",
+      "name": "MIDEA GROUP 美的集團",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 90.8,
+      "return_pct": 0.17,
+      "official_point_contribution": 0.14,
+      "weight": 0.0034
+    },
+    {
+      "security_id": "0316.HK",
+      "name": "OOIL 東方海 外國際",
+      "industry": "10 Industrials 工業",
+      "close": 142.7,
+      "return_pct": -0.07,
+      "official_point_contribution": -0.02,
+      "weight": 0.0012
+    },
+    {
+      "security_id": "0322.HK",
+      "name": "TINGYI 康師傅控股",
+      "industry": "25 Consumer Staples 必需性消費",
+      "close": 11.51,
+      "return_pct": 0.35,
+      "official_point_contribution": 0.12,
+      "weight": 0.0014
+    },
+    {
+      "security_id": "0386.HK",
+      "name": "SINOPEC CORP 中國石 油化工股份",
+      "industry": "00 Energy 能源業",
+      "close": 4.39,
+      "return_pct": 0.23,
+      "official_point_contribution": 0.34,
+      "weight": 0.0061
+    },
+    {
+      "security_id": "0388.HK",
+      "name": "HKEX 香港交易所",
+      "industry": "50 Financials 金融業",
+      "close": 380.0,
+      "return_pct": 0.53,
+      "official_point_contribution": 3.59,
+      "weight": 0.0281
+    },
+    {
+      "security_id": "0669.HK",
+      "name": "TECHTRON IC IND 創科實業",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 130.3,
+      "return_pct": 0.0,
+      "official_point_contribution": 0.0,
+      "weight": 0.0117
+    },
+    {
+      "security_id": "0688.HK",
+      "name": "CHINA OVERSEAS 中國海外發 展",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 13.0,
+      "return_pct": 1.09,
+      "official_point_contribution": 0.8,
+      "weight": 0.0031
+    },
+    {
+      "security_id": "0700.HK",
+      "name": "TENCENT 騰訊控股",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 428.2,
+      "return_pct": 1.23,
+      "official_point_contribution": 23.9,
+      "weight": 0.0811
+    },
+    {
+      "security_id": "0728.HK",
+      "name": "CHINA TELECOM 中國電信",
+      "industry": "35 Telecom munication s 電訊業",
+      "close": 4.505,
+      "return_pct": 1.01,
+      "official_point_contribution": 0.88,
+      "weight": 0.0036
+    },
+    {
+      "security_id": "0762.HK",
+      "name": "CHINA UNICOM 中國聯通",
+      "industry": "35 Telecom munication s 電訊業",
+      "close": 5.44,
+      "return_pct": 0.28,
+      "official_point_contribution": 0.14,
+      "weight": 0.002
+    },
+    {
+      "security_id": "0823.HK",
+      "name": "LINK REIT 領展房產基 金",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 36.86,
+      "return_pct": 1.26,
+      "official_point_contribution": 1.78,
+      "weight": 0.0059
+    },
+    {
+      "security_id": "0836.HK",
+      "name": "CHINA RES POWER 華潤電力",
+      "industry": "40 Utilities 公用事業",
+      "close": 19.7,
+      "return_pct": 0.77,
+      "official_point_contribution": 0.46,
+      "weight": 0.0025
+    },
+    {
+      "security_id": "0857.HK",
+      "name": "PETROCHI NA 中國石油 股份",
+      "industry": "00 Energy 能源業",
+      "close": 9.67,
+      "return_pct": 1.1,
+      "official_point_contribution": 3.3,
+      "weight": 0.0125
+    },
+    {
+      "security_id": "0868.HK",
+      "name": "XINYI GLASS 信義玻璃",
+      "industry": "10 Industrials 工業",
+      "close": 7.865,
+      "return_pct": 0.06,
+      "official_point_contribution": 0.02,
+      "weight": 0.0011
+    },
+    {
+      "security_id": "0883.HK",
+      "name": "CNOOC 中國 海洋石油",
+      "industry": "00 Energy 能源業",
+      "close": 23.44,
+      "return_pct": 0.09,
+      "official_point_contribution": 0.46,
+      "weight": 0.0224
+    },
+    {
+      "security_id": "0939.HK",
+      "name": "CCB 建設銀行",
+      "industry": "50 Financials 金融業",
+      "close": 9.65,
+      "return_pct": 1.47,
+      "official_point_contribution": 20.08,
+      "weight": 0.057
+    },
+    {
+      "security_id": "0941.HK",
+      "name": "CHINA MOBILE 中國移動",
+      "industry": "35 Telecom munication s 電訊業",
+      "close": 78.85,
+      "return_pct": -0.06,
+      "official_point_contribution": -0.46,
+      "weight": 0.0302
+    },
+    {
+      "security_id": "0960.HK",
+      "name": "LONGFOR GROUP 龍湖集團",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 5.29,
+      "return_pct": -0.09,
+      "official_point_contribution": -0.02,
+      "weight": 0.0008
+    },
+    {
+      "security_id": "0968.HK",
+      "name": "XINYI SOLAR 信義光能",
+      "industry": "10 Industrials 工業",
+      "close": 1.885,
+      "return_pct": 0.0,
+      "official_point_contribution": 0.0,
+      "weight": 0.0005
+    },
+    {
+      "security_id": "0981.HK",
+      "name": "SMIC 中芯國際",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 61.55,
+      "return_pct": 0.41,
+      "official_point_contribution": 1.68,
+      "weight": 0.0171
+    },
+    {
+      "security_id": "0992.HK",
+      "name": "LENOVO GROUP 聯想集團",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 35.4,
+      "return_pct": -1.45,
+      "official_point_contribution": -5.77,
+      "weight": 0.0162
+    },
+    {
+      "security_id": "1024.HK",
+      "name": "KUAISHOU - W 快手 - W",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 30.18,
+      "return_pct": 2.31,
+      "official_point_contribution": 3.07,
+      "weight": 0.0056
+    },
+    {
+      "security_id": "1038.HK",
+      "name": "CKI HOLDINGS 長江基建集 團",
+      "industry": "40 Utilities 公用事業",
+      "close": 65.35,
+      "return_pct": 0.77,
+      "official_point_contribution": 0.47,
+      "weight": 0.0025
+    },
+    {
+      "security_id": "1044.HK",
+      "name": "HENGAN INT'L 恒安國際",
+      "industry": "25 Consumer Staples 必需性消費",
+      "close": 19.2,
+      "return_pct": -0.36,
+      "official_point_contribution": -0.07,
+      "weight": 0.0007
+    },
+    {
+      "security_id": "1088.HK",
+      "name": "CHINA SHENHUA 中國神華",
+      "industry": "00 Energy 能源業",
+      "close": 43.18,
+      "return_pct": -0.74,
+      "official_point_contribution": -1.53,
+      "weight": 0.0085
+    },
+    {
+      "security_id": "1093.HK",
+      "name": "CSPC PHARMA 石藥集團",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 10.0,
+      "return_pct": 1.47,
+      "official_point_contribution": 1.74,
+      "weight": 0.005
+    },
+    {
+      "security_id": "1099.HK",
+      "name": "SINOPHAR M 國藥控股",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 14.92,
+      "return_pct": 1.43,
+      "official_point_contribution": 0.42,
+      "weight": 0.0012
+    },
+    {
+      "security_id": "1109.HK",
+      "name": "CHINA RES LAND 華潤置地",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 29.54,
+      "return_pct": 0.48,
+      "official_point_contribution": 0.67,
+      "weight": 0.0058
+    },
+    {
+      "security_id": "1113.HK",
+      "name": "CK ASSET 長實集團",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 45.22,
+      "return_pct": -0.31,
+      "official_point_contribution": -0.4,
+      "weight": 0.0053
+    },
+    {
+      "security_id": "1177.HK",
+      "name": "SBP GROUP 中國生物製 藥",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 5.79,
+      "return_pct": 4.32,
+      "official_point_contribution": 3.68,
+      "weight": 0.0037
+    },
+    {
+      "security_id": "1209.HK",
+      "name": "CHINA RES MIXC 華潤萬 象生活",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 36.84,
+      "return_pct": -0.38,
+      "official_point_contribution": -0.14,
+      "weight": 0.0015
+    },
+    {
+      "security_id": "1211.HK",
+      "name": "BYD COMPANY 比亞迪股份",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 75.0,
+      "return_pct": 1.21,
+      "official_point_contribution": 4.94,
+      "weight": 0.017
+    },
+    {
+      "security_id": "1299.HK",
+      "name": "AIA 友邦保險",
+      "industry": "50 Financials 金融業",
+      "close": 68.8,
+      "return_pct": -0.22,
+      "official_point_contribution": -2.31,
+      "weight": 0.0437
+    },
+    {
+      "security_id": "1347.HK",
+      "name": "HUA HONG GRACE 華虹宏力",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 108.2,
+      "return_pct": -1.64,
+      "official_point_contribution": -2.14,
+      "weight": 0.0053
+    },
+    {
+      "security_id": "1378.HK",
+      "name": "CHINAHO NGQIAO 中國宏橋",
+      "industry": "05 Materials 原材料業",
+      "close": 21.2,
+      "return_pct": 0.19,
+      "official_point_contribution": 0.21,
+      "weight": 0.0045
+    },
+    {
+      "security_id": "1398.HK",
+      "name": "ICBC 工商銀行",
+      "industry": "50 Financials 金融業",
+      "close": 7.58,
+      "return_pct": 1.68,
+      "official_point_contribution": 15.37,
+      "weight": 0.0384
+    },
+    {
+      "security_id": "1519.HK",
+      "name": "J&T EXPRESS - W 極兔速遞 - W",
+      "industry": "10 Industrials 工業",
+      "close": 8.975,
+      "return_pct": 5.03,
+      "official_point_contribution": 4.34,
+      "weight": 0.0037
+    },
+    {
+      "security_id": "1801.HK",
+      "name": "INNOVENT BIO 信達生物",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 99.35,
+      "return_pct": 2.11,
+      "official_point_contribution": 5.05,
+      "weight": 0.0101
+    },
+    {
+      "security_id": "1810.HK",
+      "name": "XIAOMI - W 小米集團 - W",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 24.26,
+      "return_pct": 1.59,
+      "official_point_contribution": 10.23,
+      "weight": 0.0269
+    },
+    {
+      "security_id": "1876.HK",
+      "name": "BUD APAC 百威亞太",
+      "industry": "25 Consumer Staples 必需性消費",
+      "close": 5.67,
+      "return_pct": 1.07,
+      "official_point_contribution": 0.18,
+      "weight": 0.0007
+    },
+    {
+      "security_id": "1928.HK",
+      "name": "SANDS CHINA LTD 金沙中國有 限公司",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 11.43,
+      "return_pct": -0.87,
+      "official_point_contribution": -0.36,
+      "weight": 0.0017
+    },
+    {
+      "security_id": "1929.HK",
+      "name": "CHOW TAI FOOK 周大福",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 10.91,
+      "return_pct": 0.0,
+      "official_point_contribution": 0.0,
+      "weight": 0.0013
+    },
+    {
+      "security_id": "1997.HK",
+      "name": "WHARF REIC 九龍倉置業",
+      "industry": "60 Properties and Constru ction 地產建築業",
+      "close": 29.84,
+      "return_pct": 1.29,
+      "official_point_contribution": 0.95,
+      "weight": 0.0031
+    },
+    {
+      "security_id": "2015.HK",
+      "name": "LI AUTO - W 理想汽車 - W",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 42.6,
+      "return_pct": 0.47,
+      "official_point_contribution": 0.41,
+      "weight": 0.0036
+    },
+    {
+      "security_id": "2020.HK",
+      "name": "ANTA SPORTS 安踏體育",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 71.4,
+      "return_pct": -2.53,
+      "official_point_contribution": -3.86,
+      "weight": 0.0061
+    },
+    {
+      "security_id": "2057.HK",
+      "name": "ZTO EXPRESS - W 中通快遞 - W",
+      "industry": "10 Industrials 工業",
+      "close": 153.9,
+      "return_pct": 0.92,
+      "official_point_contribution": 0.8,
+      "weight": 0.0036
+    },
+    {
+      "security_id": "2269.HK",
+      "name": "WUXI BIO 藥明生物",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 57.9,
+      "return_pct": 4.51,
+      "official_point_contribution": 14.68,
+      "weight": 0.014
+    },
+    {
+      "security_id": "2313.HK",
+      "name": "SHENZHO U INTL 申洲國際",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 33.78,
+      "return_pct": 0.9,
+      "official_point_contribution": 0.37,
+      "weight": 0.0017
+    },
+    {
+      "security_id": "2318.HK",
+      "name": "PING AN 中國平安",
+      "industry": "50 Financials 金融業",
+      "close": 51.55,
+      "return_pct": -0.39,
+      "official_point_contribution": -2.0,
+      "weight": 0.0212
+    },
+    {
+      "security_id": "2319.HK",
+      "name": "MENGNIU DAIRY 蒙牛乳業",
+      "industry": "25 Consumer Staples 必需性消費",
+      "close": 17.22,
+      "return_pct": -0.86,
+      "official_point_contribution": -0.69,
+      "weight": 0.0033
+    },
+    {
+      "security_id": "2331.HK",
+      "name": "LI NING 李寧",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 12.33,
+      "return_pct": 0.41,
+      "official_point_contribution": 0.17,
+      "weight": 0.0018
+    },
+    {
+      "security_id": "2338.HK",
+      "name": "WEICHAI POWER 濰柴動力",
+      "industry": "10 Industrials 工業",
+      "close": 29.48,
+      "return_pct": 0.75,
+      "official_point_contribution": 0.64,
+      "weight": 0.0035
+    },
+    {
+      "security_id": "2359.HK",
+      "name": "WUXI APPTEC 藥明康德",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 218.6,
+      "return_pct": 2.92,
+      "official_point_contribution": 4.31,
+      "weight": 0.0063
+    },
+    {
+      "security_id": "2382.HK",
+      "name": "SUNNY OPTICAL 舜 宇光學科技",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 64.1,
+      "return_pct": 3.47,
+      "official_point_contribution": 2.25,
+      "weight": 0.0028
+    },
+    {
+      "security_id": "2388.HK",
+      "name": "BOC HONG KONG 中銀香港",
+      "industry": "50 Financials 金融業",
+      "close": 51.15,
+      "return_pct": 1.29,
+      "official_point_contribution": 3.59,
+      "weight": 0.0116
+    },
+    {
+      "security_id": "2600.HK",
+      "name": "CHALCO 中國鋁業",
+      "industry": "05 Materials 原材料業",
+      "close": 7.69,
+      "return_pct": 1.12,
+      "official_point_contribution": 0.47,
+      "weight": 0.0018
+    },
+    {
+      "security_id": "2618.HK",
+      "name": "JD LOGISTICS 京東物流",
+      "industry": "10 Industrials 工業",
+      "close": 9.87,
+      "return_pct": 2.02,
+      "official_point_contribution": 0.78,
+      "weight": 0.0016
+    },
+    {
+      "security_id": "2628.HK",
+      "name": "CHINA LIFE 中國人壽",
+      "industry": "50 Financials 金融業",
+      "close": 27.3,
+      "return_pct": -0.94,
+      "official_point_contribution": -2.89,
+      "weight": 0.0125
+    },
+    {
+      "security_id": "2688.HK",
+      "name": "ENN ENERGY 新奧能源",
+      "industry": "40 Utilities 公用事業",
+      "close": 48.96,
+      "return_pct": 0.53,
+      "official_point_contribution": 0.31,
+      "weight": 0.0024
+    },
+    {
+      "security_id": "2899.HK",
+      "name": "ZIJIN MINING 紫金礦業",
+      "industry": "05 Materials 原材料業",
+      "close": 32.58,
+      "return_pct": 1.31,
+      "official_point_contribution": 3.75,
+      "weight": 0.012
+    },
+    {
+      "security_id": "3690.HK",
+      "name": "MEITUAN - W 美團 - W",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 70.8,
+      "return_pct": 0.21,
+      "official_point_contribution": 1.24,
+      "weight": 0.0242
+    },
+    {
+      "security_id": "3692.HK",
+      "name": "HANSOH PHARMA 翰森製藥",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 34.6,
+      "return_pct": 1.7,
+      "official_point_contribution": 1.31,
+      "weight": 0.0032
+    },
+    {
+      "security_id": "3750.HK",
+      "name": "CATL 寧德時代",
+      "industry": "10 Industrials 工業",
+      "close": 488.6,
+      "return_pct": 1.08,
+      "official_point_contribution": 1.61,
+      "weight": 0.0062
+    },
+    {
+      "security_id": "3968.HK",
+      "name": "CM BANK 招商銀行",
+      "industry": "50 Financials 金融業",
+      "close": 51.0,
+      "return_pct": 0.59,
+      "official_point_contribution": 1.75,
+      "weight": 0.0122
+    },
+    {
+      "security_id": "3988.HK",
+      "name": "BANK OF CHINA 中國銀行",
+      "industry": "50 Financials 金融業",
+      "close": 6.015,
+      "return_pct": 1.6,
+      "official_point_contribution": 10.07,
+      "weight": 0.0263
+    },
+    {
+      "security_id": "3993.HK",
+      "name": "CMOC 洛陽鉬業",
+      "industry": "05 Materials 原材料業",
+      "close": 15.42,
+      "return_pct": 1.51,
+      "official_point_contribution": 1.28,
+      "weight": 0.0035
+    },
+    {
+      "security_id": "6160.HK",
+      "name": "BEONE ME DICINES 百濟神州",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 220.6,
+      "return_pct": 0.91,
+      "official_point_contribution": 3.62,
+      "weight": 0.0164
+    },
+    {
+      "security_id": "6181.HK",
+      "name": "LAOPU GOLD 老鋪黃金",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 322.6,
+      "return_pct": -0.8,
+      "official_point_contribution": -0.25,
+      "weight": 0.0013
+    },
+    {
+      "security_id": "6618.HK",
+      "name": "JD HEALTH 京東健康",
+      "industry": "28 Healthcare 醫療保健業",
+      "close": 35.14,
+      "return_pct": 0.92,
+      "official_point_contribution": 0.54,
+      "weight": 0.0024
+    },
+    {
+      "security_id": "6690.HK",
+      "name": "HAIER SMA RTHOME 海爾智家",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 19.94,
+      "return_pct": 0.45,
+      "official_point_contribution": 0.33,
+      "weight": 0.003
+    },
+    {
+      "security_id": "6862.HK",
+      "name": "HAIDILAO 海底撈",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 9.225,
+      "return_pct": 0.49,
+      "official_point_contribution": 0.13,
+      "weight": 0.0011
+    },
+    {
+      "security_id": "9618.HK",
+      "name": "JD - SW 京東集團 - SW",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 103.6,
+      "return_pct": 1.17,
+      "official_point_contribution": 2.77,
+      "weight": 0.0099
+    },
+    {
+      "security_id": "9633.HK",
+      "name": "NONGFU SPRING 農夫山泉",
+      "industry": "25 Consumer Staples 必需性消費",
+      "close": 39.36,
+      "return_pct": -1.55,
+      "official_point_contribution": -1.86,
+      "weight": 0.0049
+    },
+    {
+      "security_id": "9888.HK",
+      "name": "BIDU - W 百度集團 - W",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 86.15,
+      "return_pct": 3.3,
+      "official_point_contribution": 6.42,
+      "weight": 0.0083
+    },
+    {
+      "security_id": "9901.HK",
+      "name": "NEW ORIENTAL - S 新東方 - S",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 44.18,
+      "return_pct": 0.64,
+      "official_point_contribution": 0.36,
+      "weight": 0.0023
+    },
+    {
+      "security_id": "9961.HK",
+      "name": "TRIP.COM - S 攜程集團 - S",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 301.0,
+      "return_pct": -0.2,
+      "official_point_contribution": -0.31,
+      "weight": 0.0064
+    },
+    {
+      "security_id": "9988.HK",
+      "name": "BABA - W 阿里巴巴 - W",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 108.2,
+      "return_pct": 2.66,
+      "official_point_contribution": 51.45,
+      "weight": 0.0819
+    },
+    {
+      "security_id": "9992.HK",
+      "name": "POP MART 泡泡瑪特",
+      "industry": "23 Consumer D iscretionary 非必需性消 費",
+      "close": 150.6,
+      "return_pct": 0.47,
+      "official_point_contribution": 0.76,
+      "weight": 0.0068
+    },
+    {
+      "security_id": "9999.HK",
+      "name": "NTES 網易",
+      "industry": "70 Informati on Technolo gy 資訊科技業",
+      "close": 185.6,
+      "return_pct": 0.0,
+      "official_point_contribution": 0.0,
+      "weight": 0.0201
+    }
+  ]
+}

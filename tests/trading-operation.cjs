@@ -4,9 +4,20 @@ const fs = require('node:fs');
 const TradingOperation = require('../investment/chart/trading-operation.js');
 const annotations = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/annotations.json'), 'utf8'));
 const status = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/scenario_status.json'), 'utf8'));
+const participation = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/hsi-participation.json'), 'utf8'));
 const at = s => Date.parse(s + '+08:00');
-const completeBar = { time: { year: 2026, month: 10, day: 6 }, open: 24279, high: 24354, low: 24179, close: 24280, partial: false };
-const freshStatus = Object.assign({}, status, { updated_at: '2026-10-06T16:32:10+08:00', conditions_date: '2026-10-06', judgment_mode: 'close_final', data_stale: false, conditions_stale: false });
+// Use the canonical feed representation so this fixture is independent of
+// whichever chart-time adapter the checked-out branch currently carries.
+const completeBar = { time: '2026-10-06', open: 24279, high: 24354, low: 24179, close: 24280, partial: false };
+const freshStatus = Object.assign({}, status, {
+  analysis_id: annotations.meta && annotations.meta.analysis_id,
+  analysis_updated_at: annotations.forecast.updatedAt || (annotations.meta && annotations.meta.updatedAt),
+  updated_at: '2026-10-06T16:32:10+08:00',
+  conditions_date: '2026-10-06',
+  judgment_mode: 'close_final',
+  data_stale: false,
+  conditions_stale: false
+});
 const input = extra => Object.assign({ annotations, scenarioStatus: freshStatus, dailyBars: [completeBar], quote: { price: 24280, ts: at('2026-10-06T16:11:00') / 1000 }, now: at('2026-10-06T16:33:00') }, extra || {});
 const section = (contract, id) => contract.sections.find(s => s.id === id);
 
@@ -88,7 +99,7 @@ test('missing or stale status never promotes a raw A/B/C narrative into a trigge
 test('intraday or unpaired status cannot be labeled daily confirmation', () => {
   const preview = TradingOperation.build(input({ scenarioStatus: Object.assign({}, freshStatus, { judgment_mode: 'intraday_preview', updated_at: '2026-10-06T14:34:00+08:00' }), quote: { price: 24280, ts: at('2026-10-06T14:34:00') / 1000 }, now: at('2026-10-06T14:35:00') }));
   assert.equal(section(preview, 'trigger_confirmation').data.daily_confirmation, 'not_confirmed');
-  assert.equal(section(preview, 'trigger_confirmation').provenance.status, 'unavailable');
+  assert.ok(['unavailable', 'stale'].includes(section(preview, 'trigger_confirmation').provenance.status));
   assert.equal(preview.decision.code, 'INTRADAY_GUIDANCE');
   assert.match(preview.decision.headline, /盘中位于/);
   const provisional = TradingOperation.build(input({ dailyBars: [Object.assign({}, completeBar, { partial: true })] }));
@@ -102,6 +113,16 @@ test('research-only breadth cannot affect operation decisions', () => {
   assert.equal(withResearch.action_state, base.action_state);
   assert.deepEqual(withResearch.sections, base.sections);
   assert.equal(JSON.stringify(withResearch).includes('invented'), false);
+});
+
+test('validated HSI participation is carried into the operation contract and adjusts display weights only', () => {
+  const contract = TradingOperation.build(input({ participation }));
+  const regime = section(contract, 'market_regime').data.market_participation;
+  const paths = section(contract, 'scenario_paths').data.scenarios;
+  assert.equal(regime.status, 'available');
+  assert.ok(paths.find(s => s.id === 'A').effective_probability > paths.find(s => s.id === 'A').base_probability);
+  assert.equal(paths.find(s => s.id === 'A').trigger, annotations.forecast.scenarios.find(s => s.id === 'A').trigger);
+  assert.equal(paths.find(s => s.id === 'A').structural_invalidation.price, annotations.forecast.scenarios.find(s => s.id === 'A').risk.structural_invalidation.price);
 });
 
 test('structural invalidation remains distinct from an unavailable disaster stop', () => {

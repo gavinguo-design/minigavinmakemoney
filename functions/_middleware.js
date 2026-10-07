@@ -37,11 +37,14 @@ const WHITELIST_EXACT = new Set([
   '/chart/scenario_status.json',
   '/chart/kline_futu.json',
   '/chart/historical_mirror.json',
+  '/chart/hsi-participation.json',
 ]);
 
 const WHITELIST_PREFIX = [
   '/api/kline',
   '/api/realtime',
+  '/api/hsi-participation',
+  '/api/hsi-context',
   '/chart/archive/',
   '/chart/predictions/',
 ];
@@ -113,4 +116,3 @@ export async function onRequest(context) {
     },
   });
 }
-

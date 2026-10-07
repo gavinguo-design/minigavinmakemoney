@@ -11,10 +11,10 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
-  <script src="market-rules.js?v=1"></script>
+  <script src="market-rules.js?v=2"></script>
   <script src="market-participation.js?v=1"></script>
   <script src="market-context.js?v=1"></script>
-  <script src="trading-operation.js?v=2"></script>
+  <script src="trading-operation.js?v=3"></script>
   <script src="technical-analysis.js?v=1"></script>
   <script src="technical-panel.js?v=1"></script>
   <link rel="stylesheet" href="technical-panel.css?v=1">
@@ -110,27 +110,24 @@
       .sb-kv b { font-size: 14px; }
     }
 
-    /* One operational conclusion. Existing A/B/C cards remain the action layer below the chart. */
-    .operation-card { margin:10px 0 14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(245,200,66,.38); background:linear-gradient(120deg,rgba(245,200,66,.10),rgba(10,132,255,.06)); }
-    .operation-card.no-trade { border-color:rgba(255,159,10,.55); background:linear-gradient(120deg,rgba(255,159,10,.12),rgba(28,28,30,.92)); }
-    .op-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-    .op-title { font-size:12px; font-weight:800; color:var(--muted); letter-spacing:.03em; }
-    .op-state { font:800 11px 'JetBrains Mono',monospace; border-radius:999px; padding:4px 9px; color:var(--gold); background:rgba(245,200,66,.14); border:1px solid rgba(245,200,66,.3); }
-    .operation-card.no-trade .op-state { color:#ffbd66; background:rgba(255,159,10,.13); border-color:rgba(255,159,10,.35); }
-    .op-verdict { margin-top:7px; font-size:19px; line-height:1.35; font-weight:900; color:#fff; }
-    .op-next { margin-top:5px; font-size:12.5px; line-height:1.55; color:rgba(235,235,245,.78); }
-    .op-scope { margin-top:5px; font-size:10.5px; color:rgba(235,235,245,.48); }
-    .op-facts { margin-top:11px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; }
-    .op-fact { padding:8px 9px; border:1px solid var(--border); border-radius:9px; background:rgba(255,255,255,.025); min-width:0; }
-    .op-fact span { display:block; font-size:9.5px; color:var(--muted); margin-bottom:3px; }
-    .op-fact b { display:block; font:800 12px 'JetBrains Mono',monospace; color:#f5f5f7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    /* Compact intraday status: one glance before the chart, details stay folded. */
+    .operation-card { position:sticky; top:0; z-index:18; margin:6px 0 8px; padding:8px 12px; border-radius:11px; border:1px solid rgba(255,255,255,.14); background:rgba(28,28,30,.96); backdrop-filter:blur(12px); }
+    .operation-card.near-level { border-color:rgba(245,200,66,.62); }
+    .operation-card.gap-takeover { border-color:rgba(255,159,10,.78); background:rgba(66,39,12,.97); }
+    .op-strip { display:flex; align-items:center; gap:8px 13px; min-width:0; flex-wrap:wrap; }
+    .op-strip-main { display:flex; align-items:center; gap:8px 13px; min-width:0; flex:1 1 auto; flex-wrap:wrap; }
+    .op-kv { font-size:12px; color:rgba(235,235,245,.72); white-space:nowrap; }
+    .op-kv b { color:#fff; font:800 13px 'JetBrains Mono',monospace; }
+    .op-kv.near { color:var(--gold); font-weight:800; }
+    .op-prefix { color:#ffbd66; font-weight:900; white-space:nowrap; }
+    .op-state { margin-left:auto; font-size:10.5px; font-weight:800; border-radius:999px; padding:4px 8px; white-space:nowrap; color:#ffbd66; background:rgba(255,159,10,.11); border:1px solid rgba(255,159,10,.32); }
     .op-steps { display:flex; gap:5px; flex-wrap:wrap; margin-top:10px; }
     .op-arrow { color:rgba(235,235,245,.28); align-self:center; font-size:12px; }
     .op-step { font-size:10px; font-weight:800; padding:3px 7px; border-radius:999px; border:1px solid var(--border); color:var(--muted); background:rgba(255,255,255,.03); }
     .op-step.complete { color:var(--good); border-color:rgba(50,215,75,.3); background:rgba(50,215,75,.08); }
     .op-step.waiting { color:var(--gold); border-color:rgba(245,200,66,.3); background:rgba(245,200,66,.08); }
     .op-step.blocked { color:#ff9c96; border-color:rgba(255,69,58,.3); background:rgba(255,69,58,.08); }
-    .op-details { margin-top:10px; border-top:1px dashed var(--border); padding-top:8px; }
+    .op-details { margin-top:6px; border-top:1px dashed var(--border); padding-top:6px; }
     .op-details summary { cursor:pointer; color:var(--muted); font-size:10.5px; font-weight:700; }
     .op-gap { margin-top:8px; display:flex; align-items:baseline; gap:7px; flex-wrap:wrap; font-size:11px; color:var(--muted); }
     .op-gap span { font-weight:800; color:#ffbd66; }
@@ -143,7 +140,7 @@
     .op-item { padding:8px 9px; border:1px solid var(--border); border-radius:8px; color:rgba(235,235,245,.68); font-size:10.5px; line-height:1.5; }
     .op-item b { display:block; color:#f5f5f7; margin-bottom:3px; }
     .op-meta { margin-top:7px; color:var(--muted); font:9.5px 'JetBrains Mono',monospace; }
-    @media (max-width:720px) { .op-facts { grid-template-columns:repeat(2,minmax(0,1fr)); }.op-verdict{font-size:17px;}.op-grid{grid-template-columns:1fr;} }
+    @media (max-width:720px) { .operation-card{padding:7px 9px}.op-strip{gap:6px 9px}.op-strip-main{gap:5px 9px}.op-kv{font-size:10.5px}.op-kv b{font-size:11.5px}.op-grid{grid-template-columns:1fr;} }
 
     /* 波段节奏顶部横幅 */
     .swing-rhythm-banner {
@@ -250,6 +247,7 @@
     .sc-tick.stop { background: #7CE596; }
     .sc-tick.entry { background: rgba(255,255,255,0.9); }
     .sc-tick.target { background: #FF8D85; }
+    .sc-tick.boundary { background:#64D2FF; box-shadow:0 0 5px rgba(100,210,255,.75); }
     .sc-cursor { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--gold); box-shadow: 0 0 5px rgba(245,200,66,0.9); }
     .sc-cursor::after {
       content: ''; position: absolute; top: -4px; left: -3px;
@@ -261,6 +259,11 @@
     .sc-ruler-labels .rl:last-child { align-items: flex-end; text-align: right; }
     .sc-ruler-labels .rl b { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.85); }
     .sc-cursor-note { margin-top: 4px; font-size: 10px; color: var(--gold); font-family: 'JetBrains Mono', monospace; }
+    .sc-chase { margin-top:6px; padding:6px 8px; border-radius:7px; font-size:10.5px; line-height:1.45; border:1px solid rgba(50,215,75,.26); background:rgba(50,215,75,.07); color:rgba(235,235,245,.82); }
+    .sc-chase.missed { border-color:rgba(142,142,147,.28); background:rgba(142,142,147,.08); color:rgba(235,235,245,.55); }
+    .sc-chase b { color:var(--good); }
+    .sc-chase.missed b { color:#aeaeb2; }
+    .sc-chase-small { display:block; margin-top:2px; color:var(--muted); font-size:9.5px; }
     /* 实时赔率补充行：视觉弱化一档（小字/灰度），数字按赔率优劣着色 */
     .sc-live-rr { margin-top: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 10px; color: var(--muted); opacity: 0.88; }
     .sc-live-rr .sc-live-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
@@ -755,14 +758,15 @@
     /* chart */
     .chart-row { display: flex; align-items: stretch; gap: 6px; }
     .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: visible; position: relative; flex: 1 1 auto; min-width: 0; }
-    #chart { width: 100%; height: 90vh; min-height: 700px; max-height: 1080px; border-radius: 14px; overflow: hidden; }
+    #chart { width: 100%; height: 76vh; min-height: 520px; max-height: 820px; border-radius: 14px; overflow: hidden; }
     #fcEndpointLabels { position: absolute; inset: 0; pointer-events: none; z-index: 6; overflow: hidden; border-radius: 14px; }
     .fc-endpoint-label {
-      position: absolute; width: 30px; height: 30px; border-radius: 50%;
-      transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center;
-      color: #fff; font: 800 12px/1 'JetBrains Mono', monospace;
-      border: 2px solid rgba(255,255,255,0.48); box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-      text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+      position:absolute; transform:translate(-17px,-50%); display:flex; align-items:center; gap:6px;
+      color:#fff; font:800 11px/1 'JetBrains Mono',monospace; white-space:nowrap;
+    }
+    .fc-endpoint-label b { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+      color:#fff; border:2px solid rgba(255,255,255,.52); box-shadow:0 2px 8px rgba(0,0,0,.5); flex:0 0 34px; }
+    .fc-endpoint-label span { padding:4px 7px; border-radius:6px; background:rgba(13,13,15,.82); border:1px solid rgba(255,255,255,.14); text-shadow:0 1px 2px rgba(0,0,0,.45); }
     }
 
     /* 价位标签栏：priceLine 文字移出图内，放在价格轴右侧独立列，避免叠在情景区域/轴标签上 */
@@ -782,7 +786,7 @@
       #levelGutter { display: none; }
     }
     @media (max-width: 1100px) and (min-width: 769px) {
-      #chart { height: 82vh; min-height: 580px; max-height: 900px; }
+      #chart { height: 68vh; min-height: 460px; max-height: 700px; }
       #levelGutter { flex-basis: 220px; width: 220px; }
     }
     .loading {
@@ -833,7 +837,7 @@
     @media (max-width: 640px) {
       .price-line .px { font-size: 15px; }
       h1 { font-size: 18px; }
-      #chart { height: 68vh; min-height: 460px; max-height: 720px; }
+      #chart { height: 60vh; min-height: 380px; max-height: 600px; }
       .tab { font-size: 12px; padding: 8px 0; }
       /* 移动端字阶整体略降一档，层级比例保持 */
       .block-title, .section-title { font-size: 15px; margin-top: 24px; }
@@ -1087,9 +1091,9 @@
     wickUpColor: UP, wickDownColor: DOWN,
     priceScaleId: 'right'
   });
-  // 顶部/底部各留出足够刻度文字高度：top 0.06→0.10 避免最高刻度数字被画布上边缘裁切；
-  // bottom 0.24→0.28 让价格轴底部刻度与下方成交量柱之间留出安全间距（2026-09-28 修复刻度裁切/遮挡反馈）。
-  chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.10, bottom: 0.28 } });
+  // 价格内容尽量占满画布：只保留刻度与成交量所需的安全边距。
+  // 过大的底部边距会把关键支撑阻力挤在中间，产生大片无效空白。
+  chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.06, bottom: 0.18 } });
 
   // volume histogram (own price scale, pinned to bottom ~14% of chart)
   var volumeSeries = chart.addHistogramSeries({
@@ -1098,8 +1102,7 @@
     priceLineVisible: false,
     lastValueVisible: false
   });
-  // top 0.82→0.86：成交量柱区域收窄，进一步降低与价格轴底部刻度重叠的概率
-  chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.86, bottom: 0 }, visible: false });
+  chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.84, bottom: 0 }, visible: false });
 
   // ---------- 均线 MA5/10/20/60（由已加载K线本地计算，不额外请求） ----------
   var MA_DEFS = [
@@ -1290,6 +1293,11 @@
     return MarketRules.rr(rr.entry == null ? rr.refPrice : rr.entry, rr.target, rr.stop, rr.direction);
   }
 
+  function scenarioRREligible(sc) {
+    var stat = computeRR(sc && sc.rr);
+    return !!stat && stat.ratio >= 2;
+  }
+
   function fmtRatio(r) {
     return (r >= 10 ? r.toFixed(0) : r.toFixed(1)) + ' : 1';
   }
@@ -1447,41 +1455,48 @@
         fill.setData(data);
         return fill;
       };
-      var upperFill = makeFill(upperData, 0.11);
-      var lowerFill = makeFill(lowerData, 0.08);
-      var upperLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
-      var lowerLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      var weight = Number.isFinite(sc.probability) ? Math.max(0, Math.min(1, sc.probability)) : 0.33;
+      var bandAlpha = 0.07 + weight * 0.18;
+      var upperFill = makeFill(upperData, bandAlpha);
+      var lowerFill = makeFill(lowerData, bandAlpha * 0.82);
+      var upperLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.28), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      var lowerLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.28), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
       upperLine.setData(upperData); lowerLine.setData(lowerData);
+      var centerData = upperData.map(function (p, i) { return { time:p.time, value:(p.value + lowerData[i].value) / 2 }; });
+      var centerLine = chart.addLineSeries({ color:hexToRgba(scColor, 0.48), lineWidth:1, lineStyle:LightweightCharts.LineStyle.Dashed, priceLineVisible:false, lastValueVisible:false, crosshairMarkerVisible:false });
+      centerLine.setData(centerData);
 
       // 终点由 DOM overlay 绘制，字母放在圆内；Lightweight Charts 的 marker text
       // 固定排在圆外，会造成 A/B/C 与圆点视觉分离。
-      var end = upperData[upperData.length - 1];
+      var upperEnd = upperData[upperData.length - 1], lowerEnd = lowerData[lowerData.length - 1];
+      var end = { time:upperEnd.time, value:(upperEnd.value + lowerEnd.value) / 2 };
       upperLine.setMarkers([]);
       // 情景显隐用「颜色透明化」而非 series.visible 开关（2026-09-28 修复）：
       // visible:false 会把该系列从价格轴 autoScale 计算中剔除，导致点击情景卡
       // 切换时纵向视野跳动重置。透明化让所有系列始终参与布局与 autoScale，
       // 切换只改观感，图表视野纹丝不动。
-      var setShown = (function (upperFill, lowerFill, upperLine, lowerLine, color) {
+      var setShown = (function (upperFill, lowerFill, upperLine, lowerLine, centerLine, color, alpha) {
         var TRANS = 'rgba(0,0,0,0)';
         return function (shown) {
           upperFill.applyOptions({
-            topFillColor1: shown ? hexToRgba(color, 0.11) : TRANS,
+            topFillColor1: shown ? hexToRgba(color, alpha) : TRANS,
             topFillColor2: shown ? hexToRgba(color, 0.01) : TRANS,
             bottomFillColor1: shown ? hexToRgba(color, 0.01) : TRANS,
-            bottomFillColor2: shown ? hexToRgba(color, 0.11) : TRANS
+            bottomFillColor2: shown ? hexToRgba(color, alpha) : TRANS
           });
           lowerFill.applyOptions({
-            topFillColor1: shown ? hexToRgba(color, 0.08) : TRANS,
+            topFillColor1: shown ? hexToRgba(color, alpha * 0.82) : TRANS,
             topFillColor2: shown ? hexToRgba(color, 0.01) : TRANS,
             bottomFillColor1: shown ? hexToRgba(color, 0.01) : TRANS,
-            bottomFillColor2: shown ? hexToRgba(color, 0.08) : TRANS
+            bottomFillColor2: shown ? hexToRgba(color, alpha * 0.82) : TRANS
           });
-          var lineColor = shown ? hexToRgba(color, 0.8) : TRANS;
+          var lineColor = shown ? hexToRgba(color, 0.28) : TRANS;
           upperLine.applyOptions({ color: lineColor });
           lowerLine.applyOptions({ color: lineColor });
+          centerLine.applyOptions({ color:shown ? hexToRgba(color, 0.48) : TRANS });
         };
-      })(upperFill, lowerFill, upperLine, lowerLine, scColor);
-      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine], scenario: sc, index: idx, endTime: end.time, endPrice: end.value, color: scColor, shown: true, setShown: setShown });
+      })(upperFill, lowerFill, upperLine, lowerLine, centerLine, scColor, bandAlpha);
+      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine, centerLine], scenario: sc, index: idx, endTime: end.time, endPrice: end.value, endRange:[Math.min(lowerEnd.value,upperEnd.value),Math.max(lowerEnd.value,upperEnd.value)], color: scColor, shown: true, setShown: setShown });
     });
     applyScenarioVisibility();
   }
@@ -1709,10 +1724,12 @@
     var rr = sc && sc.rr;
     if (!rr || typeof rr.entry !== 'number' || typeof rr.target !== 'number' || typeof rr.stop !== 'number') return '';
     var stat = computeRR({ refPrice: rr.entry, target: rr.target, stop: rr.stop, direction: rr.direction });
-    if (!stat) return '';
+    if (!stat || !stat.executable) return '';
+    var chase = MarketRules.chaseBoundary(rr.direction, rr.stop, rr.target, 2);
+    if (!chase) return '';
     var dirTxt = stat.dir === 'short' ? '做空' : '做多';
     // 标尺坐标系：覆盖 stop/entry/target（及游标价），两端留 4% 内边距
-    var ps = [rr.stop, rr.entry, rr.target];
+    var ps = [rr.stop, rr.entry, rr.target, chase.boundary];
     var hasCur = typeof refPx === 'number';
     if (hasCur) ps.push(refPx);
     var lo = Math.min.apply(null, ps), hi = Math.max.apply(null, ps);
@@ -1721,12 +1738,15 @@
     var pad = span * 0.04;
     lo -= pad; hi += pad; span = hi - lo;
     var pos = function (p) { return Math.max(0, Math.min(100, (p - lo) / span * 100)); };
-    var pStop = pos(rr.stop), pEntry = pos(rr.entry), pTarget = pos(rr.target);
+    var pStop = pos(rr.stop), pEntry = pos(rr.entry), pTarget = pos(rr.target), pBoundary = pos(chase.boundary);
     var segHtml =
       '<div class="sc-seg loss" style="left:' + Math.min(pStop, pEntry).toFixed(1) + '%;width:' + Math.abs(pEntry - pStop).toFixed(1) + '%"></div>' +
       '<div class="sc-seg gain" style="left:' + Math.min(pEntry, pTarget).toFixed(1) + '%;width:' + Math.abs(pTarget - pEntry).toFixed(1) + '%"></div>';
     var cursorLabel = viewingDate ? '冻结基准' : '当前价';
     var cursorHtml = hasCur ? '<div class="sc-cursor" style="left:' + pos(refPx).toFixed(1) + '%" title="' + cursorLabel + ' ' + fmt(Math.round(refPx)) + '"></div>' : '';
+    var inLegal = !hasCur || (stat.dir === 'short' ? refPx >= chase.boundary && refPx < rr.stop : refPx > rr.stop && refPx <= chase.boundary);
+    var boundaryText = stat.dir === 'short' ? ('跌破 ' + fmt(Math.round(chase.boundary)) + ' 不追空') : ('涨过 ' + fmt(Math.round(chase.boundary)) + ' 不追多');
+    var distanceText = hasCur ? ('距理想入场 ' + fmt(Math.round(Math.abs(refPx - rr.entry))) + '点 · 距追价边界 ' + fmt(Math.round(Math.abs(refPx - chase.boundary))) + '点 · 距止损 ' + fmt(Math.round(Math.abs(refPx - rr.stop))) + '点') : '';
     // 标签按标尺实际左中右顺序排列（做空时 target 在左、stop 在右）
     var pts = [
       { p: pStop, label: '止损', px: rr.stop },
@@ -1743,10 +1763,14 @@
         '<div class="sc-tick stop" style="left:' + pStop.toFixed(1) + '%"></div>' +
         '<div class="sc-tick entry" style="left:' + pEntry.toFixed(1) + '%"></div>' +
         '<div class="sc-tick target" style="left:' + pTarget.toFixed(1) + '%"></div>' +
+        '<div class="sc-tick boundary" style="left:' + pBoundary.toFixed(1) + '%" title="' + boundaryText + '"></div>' +
         cursorHtml +
       '</div>' +
       '<div class="sc-ruler-labels">' + labelHtml + '</div>' +
       (hasCur ? '<div class="sc-cursor-note">▼ ' + cursorLabel + ' ' + fmt(Math.round(refPx)) + '</div>' : '') +
+      '<div class="sc-chase' + (inLegal ? '' : ' missed') + '"><b>' + (inLegal ? '当前仍在可执行入场区' : '错过，等下一结构') + '</b> · ' + boundaryText +
+        (distanceText ? '<br>' + distanceText : '') +
+        '<span class="sc-chase-small">追价边界按止损与目标反推最低 2:1 赔率</span></div>' +
     '</div>';
   }
 
@@ -2154,6 +2178,9 @@
     renderParticipationStrip(a);
     renderMarketContextStrip(a);
     scenarios.forEach(function (sc, idx) {
+      // Hard admission gate: a scenario with invalid or sub-2:1 planned RR never
+      // renders as a complete actionable card. It remains in the frozen record.
+      if (!scenarioRREligible(sc)) return;
       var card = document.createElement('div');
       card.className = 'sc-card';
       card.setAttribute('data-idx', String(idx));
@@ -2495,12 +2522,7 @@
     if (rtTs < lastTs) return; // 实时数据比Yahoo最后一根还旧，不动
     // 当日K线已收盘定型（非 partial）且有真实量能时，保留原值不用实时换算值；
     // 富途盘中 partial K线的成交额允许被更实时的东财 amount 覆盖
-    if (!isNewBar && !last.partial && bar.partial) {
-      return; // A provisional quote cannot rewrite a confirmed daily bar.
-    }
-    if (!isNewBar && !last.partial && typeof last.volume === 'number' && last.volume > 0) {
-      bar.volume = last.volume;
-    }
+    if (!isNewBar && !last.partial) return; // Confirmed OHLCV is immutable; even final:true conflicts are rejected.
     if (!isNewBar) {
       currentBars[currentBars.length - 1] = bar;
     } else {
@@ -2577,21 +2599,31 @@
     var zoneAction = decision.current_zone && decision.current_zone.action || '';
     var zoneScenarioMatch = String(zoneAction).match(/([ABC])(?:剧本|情景)/);
     var activeScenarioText = zoneScenarioMatch ? zoneScenarioMatch[1] : (decision.scenario_id || '--');
-    var stateLabel = decision.code === 'INTRADAY_GUIDANCE' ? '只观察·不开仓' : (blocked ? '暂不执行' : '计划可用');
-    box.className = 'operation-card' + (blocked ? ' no-trade' : '');
+    var stateLabel = '只观察·不开仓';
+    var distances = Array.isArray(decision.key_level_distances) ? decision.key_level_distances : [];
+    var nearLevel = distances.some(function (d) { return Math.abs(d.distance_points) <= 30; });
+    var signed = function (n) { return (n > 0 ? '+' : '') + Math.round(n); };
+    var triggeredIds = scenarios.filter(function (s) { return s.state === 'triggered' && s.status === 'available'; }).map(function (s) { return s.id; });
+    var closeText = decision.close_confirmed ? ('已收盘 · ' + (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '确认') : '情景未确认')) : '等收盘';
+    var stripDistances = decision.close_confirmed ? '' : distances.map(function (d) {
+      var near = Math.abs(d.distance_points) <= 30;
+      return '<span class="op-kv' + (near ? ' near' : '') + '">' + escapeHtml(d.label) + ' <b>' + signed(d.distance_points) + '点</b>' + (near ? ' · 接近关键位' : '') + '</span>';
+    }).join('');
+    box.className = 'operation-card' + (nearLevel ? ' near-level' : '') + (decision.gap_takeover ? ' gap-takeover' : '');
     box.innerHTML =
-      '<div class="op-head"><span class="op-title">盘中即时战术窗口</span><span class="op-state">' + stateLabel + '</span></div>' +
-      '<div class="op-verdict">' + escapeHtml(tacticalBand) + ' · ' + escapeHtml(tactical && tactical.stance || decision.label || '等待判断') + '</div>' +
-      '<div class="op-scope">小区间只回答眼前几十至数百点怎样处理；A/B/C继续负责数个交易日的大方向。</div>' +
-      '<div class="op-next"><b>眼前处理：</b>' + escapeHtml(nearestInstruction || decision.next_action || '等待规则条件完成。') + '</div>' +
-      '<div class="op-facts">' +
-        '<div class="op-fact"><span>' + priceLabel + '</span><b>' + (Number.isFinite(price) ? fmt(price) : '--') + '</b></div>' +
-        '<div class="op-fact"><span>即时带宽</span><b>' + escapeHtml(tacticalWidth) + '</b></div>' +
-        '<div class="op-fact"><span>下沿 · 距离</span><b>' + escapeHtml(lowerText) + '</b></div>' +
-        '<div class="op-fact"><span>上沿 · 距离</span><b>' + escapeHtml(upperText) + '</b></div>' +
+      '<div class="op-strip">' +
+        '<div class="op-strip-main">' +
+          (decision.gap_takeover ? '<span class="op-prefix">⚠ 跳空接管中</span>' : '') +
+          '<span class="op-kv"><b>' + (Number.isFinite(price) ? fmt(price) : '--') + '</b></span>' +
+          '<span class="op-kv">' + escapeHtml(tacticalBand) + '</span>' +
+          '<span class="op-kv">' + escapeHtml(tactical && tactical.stance || decision.label || '等待判断') + '</span>' +
+          stripDistances +
+          '<span class="op-kv">' + closeText + '</span>' +
+        '</div><span class="op-state">' + stateLabel + '</span>' +
       '</div>' +
-      '<div class="op-gap"><span>跳空兜底</span><b>' + escapeHtml(gapText) + '</b><em>越过常规战区时，按缺口回退条件重新判断，不追价。</em></div>' +
       '<details class="op-details"><summary>查看门禁原因与完整数据状态</summary>' +
+        '<div class="op-next"><b>下一步：</b>' + escapeHtml(nearestInstruction || decision.next_action || '等待规则条件完成。') + '</div>' +
+        '<div class="op-gap"><span>跳空兜底</span><b>' + escapeHtml(gapText) + '</b><em>越过常规战区时，按缺口回退条件重新判断，不追价。</em></div>' +
         (reasons.length ? '<div class="op-blockers"><b>当前未执行的系统原因</b><ul class="op-list">' + reasons.map(function (r) { return '<li>' + escapeHtml(r) + '</li>'; }).join('') + '</ul></div>' : '') +
         '<div class="op-steps" aria-label="当前决策步骤">' + stepHtml + '</div>' +
         '<div class="op-grid"><div class="op-item"><b>市场状态</b>' + escapeHtml((operationSection('market_regime').data.label || '--')) + '</div><div class="op-item"><b>缺口回退</b>' + escapeHtml(gapText) + '</div><div class="op-item"><b>A/B/C</b>' + escapeHtml(scenarioText) + '</div><div class="op-item"><b>收盘确认</b>' + escapeHtml(trigger && trigger.data.daily_confirmation || '--') + '</div><div class="op-item"><b>风控完整性</b>' + riskText + '</div></div><div class="op-meta">as_of ' + escapeHtml(tradingOperation.as_of || '--') + ' · contract v' + escapeHtml(tradingOperation.schema_version) + ' · 数据不足时自动停止给出动作</div></details>';
@@ -2802,7 +2834,8 @@
       var x = chart.timeScale().timeToCoordinate(fs.endTime);
       var y = series.priceToCoordinate(fs.endPrice);
       if (x == null || y == null || x < -20 || y < -20 || x > chartEl.clientWidth + 20 || y > chartEl.clientHeight + 20) return;
-      html.push('<div class="fc-endpoint-label" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px;background:' + fs.color + '">' + escapeHtml(shortName(fs.scenario.name)) + '</div>');
+      var rangeText = fs.endRange ? fmt(Math.round(fs.endRange[0])) + '–' + fmt(Math.round(fs.endRange[1])) : '';
+      html.push('<div class="fc-endpoint-label" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px"><b style="background:' + fs.color + '">' + escapeHtml(shortName(fs.scenario.name)) + '</b><span>' + escapeHtml(rangeText) + '</span></div>');
     });
     layer.innerHTML = html.join('');
   }
@@ -3345,8 +3378,8 @@
 
   // ---------- default view ----------
   // 默认只看最近一段行情，而不是 fitContent 挤压全部历史
-  var DEFAULT_VISIBLE_BARS = { '1d': 14, '1wk': 30, '60m': 35, '15m': 55 };
-  var FORECAST_EXTRA_BARS = 9; // 日线预测蜡烛区留白
+  var DEFAULT_VISIBLE_BARS = { '1d': 12, '1wk': 28, '60m': 32, '15m': 50 };
+  var FORECAST_EXTRA_BARS = 7; // 覆盖6日情景路径，同时避免右侧空白过宽
 
   function setDefaultView(iv) {
     // 先恢复价格轴 autoScale（若被任何交互关掉，重置必须连纵向一起复位）

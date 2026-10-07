@@ -124,11 +124,38 @@ test('intraday window is a narrow tactical band with explicit boundary distances
   assert.equal(tactical.upper.next_stance, '偏多观察');
 });
 
-test('chart gives the price map more vertical space and labels the tactical layer separately', () => {
+test('chart keeps a compact canvas while price content occupies more of it', () => {
   const source = fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/index.html'), 'utf8');
-  assert.match(source, /#chart \{ width: 100%; height: 90vh; min-height: 700px; max-height: 1080px;/);
-  assert.match(source, /盘中即时战术窗口/);
-  assert.match(source, /A\/B\/C继续负责数个交易日的大方向/);
+  assert.match(source, /#chart \{ width: 100%; height: 76vh; min-height: 520px; max-height: 820px;/);
+  assert.match(source, /scaleMargins: \{ top: 0\.06, bottom: 0\.18 \}/);
+  assert.match(source, /bandAlpha = 0\.07 \+ weight \* 0\.18/);
+  assert.match(source, /centerLine/);
+  assert.match(source, /Compact intraday status/);
+  assert.match(source, /key_level_distances/);
+  assert.match(source, /gap-takeover/);
+});
+
+test('key-level distances are signed, dynamic, nearest-first, and fail closed', () => {
+  const scenarios=[{id:'C',rr:{entry:24072,stop:24100}}];
+  const playbook={zones:[{range:[24100,24276]}]};
+  const result=TradingOperation.keyLevelDistances(24130,scenarios,playbook,{range:[24100,24276]});
+  assert.equal(result.length,2);
+  assert.equal(result[0].price,24100);
+  assert.equal(result[0].distance_points,-30);
+  assert.equal(result[1].label,'C触发');
+  assert.equal(result[1].distance_points,-58);
+  scenarios[0].rr.entry=24120;
+  assert.equal(TradingOperation.keyLevelDistances(24130,scenarios,playbook,null)[0].distance_points,-10);
+  assert.deepEqual(TradingOperation.keyLevelDistances(null,scenarios,playbook,null),[]);
+});
+
+test('intraday gap takeover and close-final state are explicit contract fields', () => {
+  const intraday=Object.assign({},freshStatus,{judgment_mode:'intraday_preview'});
+  const open=TradingOperation.build(input({scenarioStatus:intraday,dailyBars:[],quote:{price:24130.5,ts:at('2026-10-06T14:30:00')/1000},now:at('2026-10-06T14:35:00')}));
+  assert.equal(open.decision.gap_takeover,true);
+  assert.equal(open.decision.close_confirmed,false);
+  const closed=TradingOperation.build(input());
+  assert.equal(closed.decision.close_confirmed,true);
 });
 
 test('research-only breadth cannot affect operation decisions', () => {

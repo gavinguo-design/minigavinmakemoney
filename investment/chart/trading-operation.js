@@ -5,7 +5,7 @@
   else root.TradingOperation = factory(root.MarketRules, root.MarketParticipation);
 })(typeof self !== 'undefined' ? self : this, function (MarketRules, MarketParticipation) {
   'use strict';
-  var VERSION = '1.4.0';
+  var VERSION = '1.5.0';
   var SECTION_IDS = ['market_regime','key_price_zones','scenario_paths','trigger_confirmation','no_trade_conditions','risk_controls','position_management','post_market_review'];
   var SOURCE = { annotations: 'annotations.json', status: 'scenario_status.json', quote: '/api/realtime', bars: 'loaded daily OHLCV' };
 
@@ -127,6 +127,40 @@
       scope: 'intraday_tactical'
     };
   }
+  function keyLevelDistances(price, scenarios, playbook, fallback) {
+    if (!Number.isFinite(price)) return [];
+    var points = [];
+    function add(label, value, kind) {
+      if (!Number.isFinite(value)) return;
+      points.push({ label: label, price: value, distance_points: value - price, kind: kind });
+    }
+    (Array.isArray(scenarios) ? scenarios : scenarios ? [scenarios] : []).forEach(function (sc) {
+      var id = scenarioId(sc) || '情景', rr = sc && sc.rr || {};
+      add(id + '触发', rr.entry, 'trigger');
+      add(id + '失效', rr.stop, 'invalidation');
+      if (sc && sc.structural_invalidation) add(id + '结构失效', sc.structural_invalidation.price, 'invalidation');
+    });
+    var zones = playbook && playbook.zones || [];
+    zones.forEach(function (z) {
+      if (!z || !Array.isArray(z.range)) return;
+      add('区间下沿', z.range[0], 'zone_boundary');
+      add('区间上沿', z.range[1], 'zone_boundary');
+    });
+    if (fallback && Array.isArray(fallback.range)) {
+      add('兜底下沿', fallback.range[0], 'fallback_boundary');
+      add('兜底上沿', fallback.range[1], 'fallback_boundary');
+    }
+    var seen = {};
+    var priority = { trigger:0, invalidation:1, fallback_boundary:2, zone_boundary:3 };
+    return points.sort(function (a, b) {
+      return Math.abs(a.distance_points) - Math.abs(b.distance_points) || priority[a.kind] - priority[b.kind] || a.label.localeCompare(b.label);
+    }).filter(function (p) {
+      var key = String(p.price);
+      if (seen[key]) return false;
+      seen[key] = true;
+      return true;
+    }).slice(0, 2);
+  }
   function rangeText(range) {
     if (!Array.isArray(range)) return '未匹配';
     if (range[0] == null) return '< ' + fmt(range[1]);
@@ -166,7 +200,6 @@
     var riskUnsupported = scenarios.some(function (s) { return !s.disaster_stop || s.disaster_stop.status === 'not_configured' || s.disaster_stop.price == null; });
     var riskBudget = input.riskBudget || null;
     var positionUnsupported = !riskBudget || !Number.isFinite(riskBudget.max_loss) || riskBudget.max_loss <= 0;
-    var triggerBlocked = scenarioStatus !== 'available' || !closeConfirmed;
     var triggered = scenarios.filter(function (s) { return s.status === 'available' && s.state === 'triggered'; });
     var confirming = scenarios.filter(function (s) { return s.status === 'available' && s.state === 'confirming'; });
     var primary = triggered[0] || confirming[0] || scenarios.filter(function (s) { return s.status === 'available'; })[0] || null;
@@ -208,6 +241,9 @@
       reference_price: Number.isFinite(f.basePrice) ? f.basePrice : null,
       current_zone: zone ? { range: zone.range, range_text: rangeText(zone.range), stance: zone.stance, action: zone.action, invalidation: zone.invalidation } : null,
       tactical_window: tactical,
+      key_level_distances: keyLevelDistances(quoteStatus === 'available' && quote ? quote.price : null, scenarios, annotations && annotations.intraday_playbook, gap.status === 'available' ? gap.data : null),
+      gap_takeover: !!(intradayGuidance && gap.status === 'available' && gap.data && Array.isArray(gap.data.range) && quote && Number.isFinite(quote.price) && quote.price >= gap.data.range[0] && quote.price < gap.data.range[1]),
+      close_confirmed: closeConfirmed,
       intraday_guidance: intradayGuidance,
       gap_fallback: gap.status === 'available' ? clone(gap.data) : null,
       plan: primary && primary.rr ? clone(primary.rr) : null,
@@ -242,5 +278,5 @@
     var ids = (contract.sections || []).map(function (s) { return s.id; });
     return SECTION_IDS.every(function (id) { return ids.indexOf(id) >= 0; }) && ids.length === SECTION_IDS.length;
   }
-  return { VERSION: VERSION, SECTION_IDS: SECTION_IDS, build: build, validate: validate, fmt: fmt };
+  return { VERSION: VERSION, SECTION_IDS: SECTION_IDS, build: build, validate: validate, fmt: fmt, keyLevelDistances: keyLevelDistances };
 });

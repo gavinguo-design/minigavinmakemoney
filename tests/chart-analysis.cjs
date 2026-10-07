@@ -110,6 +110,30 @@ test('invalid RR rejected; long and short use the real planned entry',()=>{
   closeTo(MR.rr(24280,24648,24100,'long').ratio,368/180);
   closeTo(MR.rr(24200,23500,24444,'short').ratio,700/244);
 });
+test('sub-2:1 and invalid scenarios fail the rendering admission gate',()=>{
+  const c=render('scenarioRREligible',{computeRR:rr=>MR.rr(rr.entry,rr.target,rr.stop,rr.direction)});
+  assert.equal(c.scenarioRREligible({rr:{entry:100,target:119,stop:90,direction:'long'}}),false);
+  assert.equal(c.scenarioRREligible({rr:{entry:100,target:120,stop:90,direction:'long'}}),true);
+  assert.equal(c.scenarioRREligible({rr:{entry:100,target:90,stop:110,direction:'long'}}),false);
+});
+test('chase boundary is exactly 2:1 and prices beyond it are rejected for both directions',()=>{
+  const short=MR.chaseBoundary('short',110,80,2);
+  closeTo(short.boundary,100);
+  closeTo(MR.rr(short.boundary,80,110,'short').ratio,2);
+  assert.ok(MR.rr(99.9,80,110,'short').ratio<2);
+  const long=MR.chaseBoundary('long',90,120,2);
+  closeTo(long.boundary,100);
+  closeTo(MR.rr(long.boundary,120,90,'long').ratio,2);
+  assert.ok(MR.rr(100.1,120,90,'long').ratio<2);
+});
+test('scenario ruler shows a human chase boundary, missed state, and hides incomplete odds',()=>{
+  const c=render('scenarioRulerHtml',{viewingDate:null,computeRR:rr=>MR.rr(rr.refPrice,rr.target,rr.stop,rr.direction),fmt:String,fmtRatio:r=>r.toFixed(1)+' : 1'});
+  const out=c.scenarioRulerHtml({rr:{entry:100,target:80,stop:110,direction:'short'}},99);
+  assert.match(out,/跌破 100 不追空/);
+  assert.match(out,/错过，等下一结构/);
+  assert.match(out,/距理想入场 1点/);
+  assert.equal(c.scenarioRulerHtml({rr:{entry:100,stop:110,direction:'short'}},100),'');
+});
 test('rendered badge never claims trigger when data is missing/stale',()=>{
   const c=render('scenarioBadgeHtml',{viewingDate:null,annotations:{forecast:{}},scenarioStatus:null,statusForScenario:()=>null,currentBars:[],currentIv:'1d',escapeHtml:String,signalStateForScenario:()=>({id:'unavailable',label:'待核对',title:'条件待确认'})});
   const output=c.scenarioBadgeHtml({rr:{entry:24200,direction:'short'}},23000);
@@ -140,6 +164,22 @@ test('a closing-preview quote never downgrades a confirmed daily bar',()=>{
   c.mergeRealtimeIntoChart({ts:at('2026-10-06T16:08:26')/1000,price:24280.56,open:24279.63,high:24354.11,low:24179.38,amount:982.6e8,final:false});
   assert.equal(c.currentBars[0].partial,false);
   assert.equal(c.currentBars[0].close,24280);
+  assert.equal(c.currentBars[0].volume,982.6);
+  assert.equal(updates,0);
+});
+test('a conflicting final tick never rewrites a confirmed daily bar',()=>{
+  let updates=0;
+  const confirmed={...bar(24280),time:{year:2026,month:10,day:6},open:24279,high:24354,low:24179,volume:982.6,partial:false};
+  const c=render('mergeRealtimeIntoChart',{
+    currentIv:'1d',klineSource:'futu',currentBars:[confirmed],
+    hktDateOf:ts=>{const p=MR.hk(ts*1000).date.split('-');return {year:+p[0],month:+p[1],day:+p[2]};},
+    sameDay:(a,b)=>MR.dayString(a)===MR.dayString(b),round2:x=>x,
+    estimateTodayVolume:()=>999,series:{update(){updates++;}},volumeSeries:{update(){updates++;}},updateMALines(){},computePatterns(){},applyAllMarkers(){},
+    el:()=>({classList:{toggle(){}}}),hasRecentVolumeGap:()=>false
+  });
+  c.mergeRealtimeIntoChart({ts:at('2026-10-06T16:11:00')/1000,price:24100,open:24000,high:25000,low:23000,amount:999e8,final:true});
+  assert.equal(c.currentBars[0].close,24280);
+  assert.equal(c.currentBars[0].high,24354);
   assert.equal(c.currentBars[0].volume,982.6);
   assert.equal(updates,0);
 });

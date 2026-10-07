@@ -159,10 +159,22 @@
     if(reward<=0 || risk<=0) return null;
     var ratio=reward/risk, grade=ratio>=2?'good':ratio>=1?'mid':'bad';
     return {dir:short?'short':'long',entry:entry,reward:reward,risk:risk,ratio:ratio,grade:grade,
-      emoji:grade==='good'?'🟢':grade==='mid'?'🟡':'🔴',verdict:grade==='good'?'距离比≥2':grade==='mid'?'距离比≥1':'距离比<1'};
+      executable:ratio>=2,status:ratio>=2?'executable':'insufficient_rr',
+      emoji:grade==='good'?'🟢':grade==='mid'?'🟡':'🔴',verdict:ratio>=2?'具备可执行赔率':'不具备可执行赔率'};
+  }
+  function chaseBoundary(direction,stop,target,minRR) {
+    minRR=Number.isFinite(minRR)?minRR:2;
+    if(!Number.isFinite(stop)||!Number.isFinite(target)||!(minRR>0)) return null;
+    var short=direction==='short';
+    if(short && !(target<stop)) return null;
+    if(!short && !(stop<target)) return null;
+    var boundary=short?(minRR*stop+target)/(minRR+1):(target+minRR*stop)/(minRR+1);
+    return {direction:short?'short':'long',boundary:boundary,min_rr:minRR,
+      legal_min:short?boundary:stop,legal_max:short?stop:boundary,
+      lower_inclusive:short,upper_inclusive:!short};
   }
   return {hk:hk,dayString:dayString,shift:shift,known:known,tradingDay:tradingDay,
     closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,timestamp:timestamp,
     quoteState:quoteState,validQuote:validQuote,markBars:markBars,statusIssue:statusIssue,
-    sanitizeStatus:sanitizeStatus,rr:rr};
+    sanitizeStatus:sanitizeStatus,rr:rr,chaseBoundary:chaseBoundary};
 });

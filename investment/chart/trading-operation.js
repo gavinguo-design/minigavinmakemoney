@@ -1,11 +1,11 @@
 /* Versioned, display-only HSI operating contract. It consumes existing production
  * annotations, scenario-status, bars, and quote state; it never creates signals. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./market-rules.js'), require('./market-participation.js'));
-  else root.TradingOperation = factory(root.MarketRules, root.MarketParticipation);
-})(typeof self !== 'undefined' ? self : this, function (MarketRules, MarketParticipation) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./market-rules.js'), require('./market-participation.js'), require('./market-context.js'));
+  else root.TradingOperation = factory(root.MarketRules, root.MarketParticipation, root.MarketContext);
+})(typeof self !== 'undefined' ? self : this, function (MarketRules, MarketParticipation, MarketContext) {
   'use strict';
-  var VERSION = '1.5.0';
+  var VERSION = '1.6.0';
   var SECTION_IDS = ['market_regime','key_price_zones','scenario_paths','trigger_confirmation','no_trade_conditions','risk_controls','position_management','post_market_review'];
   var SOURCE = { annotations: 'annotations.json', status: 'scenario_status.json', quote: '/api/realtime', bars: 'loaded daily OHLCV' };
 
@@ -99,6 +99,24 @@
     })[0];
     if (!zone) return null;
     return { range: clone(zone.range), stance: zone.stance || null, action: zone.action || null, invalidation: zone.invalid || null };
+  }
+  // A historical gap zone is a price reference, never proof of a new session gap.
+  // Only today's open outside the previous completed session's full range counts.
+  // Returning to that range fills the gap and ends takeover for the session.
+  function sessionGap(bars, date) {
+    var rows = (bars || []).filter(function (b) { return b && barDate(b) <= date; }).slice().sort(function(a,b) { return barDate(a).localeCompare(barDate(b)); });
+    var current = rows.filter(function (b) { return barDate(b) === date; }).pop();
+    var previous = rows.filter(function (b) { return barDate(b) < date && !b.partial; }).pop();
+    if (!current || !previous || ![current.open,current.high,current.low,previous.high,previous.low].every(Number.isFinite)
+      || current.low > current.open || current.high < current.open || previous.low > previous.high
+      || MarketRules.latestDay(timestamp(date + 'T09:30:00+08:00'), true) !== barDate(previous)) {
+      return { status:'unavailable', date:date, active:false };
+    }
+    var direction = current.open > previous.high ? 'up' : current.open < previous.low ? 'down' : null;
+    if (!direction) return { status:'no_gap', date:date, active:false };
+    var filled = direction === 'up' ? current.low <= previous.high : current.high >= previous.low;
+    return { status:filled ? 'filled' : 'unfilled', date:date, active:!filled, direction:direction,
+      range:direction === 'up' ? [previous.high,current.open] : [current.open,previous.low], previous_date:barDate(previous) };
   }
   function tacticalWindow(a, price) {
     if (!Number.isFinite(price)) return null;
@@ -204,13 +222,16 @@
     var participation = MarketParticipation && MarketParticipation.evaluate
       ? MarketParticipation.evaluate(input.participation || null, f.scenarios || [], status && status.conditions_date || date)
       : { status:'unavailable', issue:'参与度模块未加载', weights:{}, adjustments:{} };
+    var context = MarketContext && MarketContext.evaluate ? MarketContext.evaluate(input.marketContext || null, f.scenarios || [], participation.status === 'available' ? participation.weights : null) : { status:'unavailable', weights:{} };
     scenarios.forEach(function (row) {
       row.base_probability = (f.scenarios || []).filter(function (sc) { return scenarioId(sc) === row.id; })[0];
       row.base_probability = row.base_probability && row.base_probability.probability || null;
-      row.effective_probability = participation.status === 'available' && Number.isFinite(participation.weights[row.id]) ? participation.weights[row.id] : row.base_probability;
+      row.effective_probability = context.status === 'available' && Number.isFinite(context.weights[row.id]) ? context.weights[row.id] : participation.status === 'available' && Number.isFinite(participation.weights[row.id]) ? participation.weights[row.id] : row.base_probability;
       row.participation_adjustment = participation.status === 'available' && Number.isFinite(participation.adjustments[row.id]) ? participation.adjustments[row.id] : null;
     });
     var gap = gapFallback(annotations);
+    var currentSession = MarketRules.session(now);
+    var observedGap = sessionGap(bars, currentSession.date);
     var zone = quoteStatus === 'available' ? activeZone(annotations, quote && quote.price) : null;
     var tactical = quoteStatus === 'available' ? tacticalWindow(annotations, quote && quote.price) : null;
     var intradayGuidance = mapStatus === 'available' && quoteStatus === 'available' && !!zone && (scenarioStatus !== 'available' || !closeConfirmed);
@@ -251,6 +272,11 @@
     var decision = {
       code: decisionCode,
       label: decisionLabels[decisionCode],
+      observation_label: (decisionCode === 'INTRADAY_GUIDANCE' || decisionCode === 'WAIT_CLOSE') ? (currentSession.phase === 'closed' && quoteState === 'last-close' ? '已收盘·确认数据待同步·不开仓' : '等收盘确认·不开仓')
+        : decisionCode === 'WAIT_TRIGGER' ? '条件未触发·不开仓'
+        : decisionCode === 'TRIGGERED_RISK_INCOMPLETE' ? '已触发·风控待补·不开仓'
+        : decisionCode === 'PLAN_WITHOUT_SIZE' ? '已触发·仓位待定·不开仓'
+        : decisionCode === 'DATA_UNAVAILABLE' ? '数据待核对·不开仓' : '仅供观察·不开仓',
       headline: intradayGuidance ? ('盘中位于 ' + rangeText(zone.range) + (zone.stance ? ' \u00b7 ' + zone.stance : ''))
         : primary ? (primary.id + '情景' + (primary.state === 'triggered' ? '已触发' : primary.state === 'confirming' ? '确认中' : '候选')) : '情景不可用',
       scenario_id: primary && primary.id || null,
@@ -260,7 +286,10 @@
       current_zone: zone ? { range: zone.range, range_text: rangeText(zone.range), stance: zone.stance, action: zone.action, invalidation: zone.invalidation } : null,
       tactical_window: tactical,
       key_level_distances: keyLevelDistances(quoteStatus === 'available' && quote ? quote.price : null, scenarios, annotations && annotations.intraday_playbook, gap.status === 'available' ? gap.data : null),
-      gap_takeover: !!(intradayGuidance && gap.status === 'available' && gap.data && Array.isArray(gap.data.range) && quote && Number.isFinite(quote.price) && quote.price >= gap.data.range[0] && quote.price < gap.data.range[1]),
+      session_gap: observedGap,
+      market_session: currentSession.phase,
+      gap_takeover: !!(intradayGuidance && observedGap.active && quote && MarketRules.hk(quote.ts * 1000).date === currentSession.date && ['open','lunch','closing'].indexOf(currentSession.phase) >= 0
+        && (observedGap.direction === 'up' ? quote.price > observedGap.range[0] : quote.price < observedGap.range[1])),
       close_confirmed: closeConfirmed,
       scenario_pointer: scenarioPointer(quoteStatus === 'available' && quote ? quote.price : null, scenarios, recentAtr(bars), closeConfirmed),
       intraday_guidance: intradayGuidance,
@@ -297,5 +326,5 @@
     var ids = (contract.sections || []).map(function (s) { return s.id; });
     return SECTION_IDS.every(function (id) { return ids.indexOf(id) >= 0; }) && ids.length === SECTION_IDS.length;
   }
-  return { VERSION: VERSION, SECTION_IDS: SECTION_IDS, build: build, validate: validate, fmt: fmt, keyLevelDistances: keyLevelDistances, scenarioPointer: scenarioPointer };
+  return { VERSION: VERSION, SECTION_IDS: SECTION_IDS, build: build, validate: validate, fmt: fmt, keyLevelDistances: keyLevelDistances, scenarioPointer: scenarioPointer, sessionGap:sessionGap };
 });

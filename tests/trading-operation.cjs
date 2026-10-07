@@ -126,8 +126,8 @@ test('intraday window is a narrow tactical band with explicit boundary distances
 
 test('chart keeps a compact canvas while price content occupies more of it', () => {
   const source = fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/index.html'), 'utf8');
-  assert.match(source, /#chart \{ width: 100%; height: 76vh; min-height: 520px; max-height: 820px;/);
-  assert.match(source, /scaleMargins: \{ top: 0\.06, bottom: 0\.18 \}/);
+  assert.match(source, /#chart \{ width: 100%; height: 50vh; min-height: 360px; max-height: 520px;/);
+  assert.match(source, /scaleMargins: \{ top: 0\.04, bottom: 0\.14 \}/);
   assert.match(source, /bandAlpha = 0\.07 \+ weight \* 0\.18/);
   assert.match(source, /centerLine/);
   assert.match(source, /Compact intraday status/);
@@ -152,10 +152,51 @@ test('key-level distances are signed, dynamic, nearest-first, and fail closed', 
 test('intraday gap takeover and close-final state are explicit contract fields', () => {
   const intraday=Object.assign({},freshStatus,{judgment_mode:'intraday_preview'});
   const open=TradingOperation.build(input({scenarioStatus:intraday,dailyBars:[],quote:{price:24130.5,ts:at('2026-10-06T14:30:00')/1000},now:at('2026-10-06T14:35:00')}));
-  assert.equal(open.decision.gap_takeover,true);
+  assert.equal(open.decision.gap_takeover,false, 'an old gap zone alone is not a current session gap');
+  assert.equal(open.decision.session_gap.status,'unavailable');
   assert.equal(open.decision.close_confirmed,false);
   const closed=TradingOperation.build(input());
   assert.equal(closed.decision.close_confirmed,true);
+});
+
+test('session takeover uses same-day OHLC, ends after filling, and ignores historic gap prices', () => {
+  const prior={time:'2026-10-05',open:23963,high:24040,low:23835,close:24040};
+  const today={time:'2026-10-06',open:24279,high:24354,low:24179,close:24280,partial:true};
+  assert.equal(TradingOperation.sessionGap([prior,today],'2026-10-06').status,'unfilled');
+  assert.equal(TradingOperation.sessionGap([prior,{...today,low:24040}],'2026-10-06').status,'filled');
+  const next={time:'2026-10-07',open:24172,high:24266,low:24071,close:24130,partial:true};
+  assert.equal(TradingOperation.sessionGap([{...today,partial:false},next],'2026-10-07').status,'filled');
+  assert.equal(TradingOperation.sessionGap([{...today,partial:false},{...next,open:24200}],'2026-10-07').status,'no_gap');
+  assert.equal(TradingOperation.sessionGap([prior,next],'2026-10-07').status,'unavailable', 'missing previous session cannot imply a gap');
+  const intraday={...freshStatus,judgment_mode:'intraday_preview'};
+  const active=TradingOperation.build(input({scenarioStatus:intraday,dailyBars:[prior,today],quote:{price:24200,ts:at('2026-10-06T14:30:00')/1000},now:at('2026-10-06T14:31:00')}));
+  assert.equal(active.decision.gap_takeover,true);
+  assert.equal(active.decision.observation_label,'等收盘确认·不开仓');
+  const filled=TradingOperation.build(input({scenarioStatus:intraday,dailyBars:[prior,{...today,low:24040}],quote:{price:24130,ts:at('2026-10-06T14:30:00')/1000},now:at('2026-10-06T14:31:00')}));
+  assert.equal(filled.decision.gap_takeover,false, 'price in historic zone does not reactivate filled gap');
+  const afterClose=TradingOperation.build(input({scenarioStatus:intraday,dailyBars:[prior,today],quote:{price:24200,ts:at('2026-10-06T16:09:00')/1000},now:at('2026-10-06T16:33:00')}));
+  assert.equal(afterClose.decision.gap_takeover,false);
+  assert.match(afterClose.decision.observation_label,/已收盘.*待同步/);
+  const down={time:'2026-10-06',open:23700,high:23800,low:23600,partial:true};
+  assert.equal(TradingOperation.sessionGap([prior,down],'2026-10-06').direction,'down');
+  assert.equal(TradingOperation.sessionGap([prior,{...down,high:23835}],'2026-10-06').active,false);
+});
+
+test('console weights include the same context correction as cards, without promoting triggers', () => {
+  const MarketContext=require('../investment/chart/market-context.js');
+  const MarketParticipation=require('../investment/chart/market-participation.js');
+  const ctx={status:'available',futures:{return_from_previous_close:-.015,basis_pct:-.004},liquidity:{spread_points:2},options_risk:{price:25}};
+  const part=MarketParticipation.evaluate(participation,annotations.forecast.scenarios,freshStatus.conditions_date);
+  const expected=MarketContext.evaluate(ctx,annotations.forecast.scenarios,part.status==='available'?part.weights:null);
+  const before=TradingOperation.build(input({participation}));
+  const after=TradingOperation.build(input({participation,marketContext:ctx}));
+  for(const row of section(after,'scenario_paths').data.scenarios) {
+    assert.equal(row.effective_probability,expected.weights[row.id]);
+    assert.equal(row.state,section(before,'scenario_paths').data.scenarios.find(s=>s.id===row.id).state);
+  }
+  const top=after.decision.scenario_pointer.top_weight;
+  assert.equal(top.weight,expected.weights[top.id]);
+  assert.notEqual(after.decision.scenario_pointer.top_weight.weight,before.decision.scenario_pointer.top_weight.weight);
 });
 
 test('scenario pointer separates nearest, top weight, divergence and close confirmation', () => {

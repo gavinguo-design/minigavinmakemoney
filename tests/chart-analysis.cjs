@@ -136,7 +136,7 @@ test('scenario ruler shows a human chase boundary, missed state, and hides incom
   const c=render('scenarioRulerHtml',{viewingDate:null,computeRR:rr=>MR.rr(rr.refPrice,rr.target,rr.stop,rr.direction),fmt:String,fmtRatio:r=>r.toFixed(1)+' : 1'});
   const out=c.scenarioRulerHtml({rr:{entry:100,target:80,stop:110,direction:'short'}},99);
   assert.match(out,/跌破 100 不追空/);
-  assert.match(out,/错过，等下一结构/);
+  assert.match(out,/价格已越追价边界·等下一结构/);
   assert.match(out,/距理想入场 1点/);
   assert.equal(c.scenarioRulerHtml({rr:{entry:100,stop:110,direction:'short'}},100),'');
 });

@@ -579,7 +579,7 @@
     @media (max-width: 720px) { .scenarios { grid-template-columns: 1fr; } }
     .participation-strip { margin: 0 0 10px; padding: 10px 12px; border: 1px solid rgba(50,215,75,.28); border-radius: 12px; background: rgba(50,215,75,.055); }
     .console-evidence { margin:0 0 8px; }
-    .console-evidence>summary { cursor:pointer; color:var(--muted); font-size:10.5px; font-weight:700; padding:3px 2px 7px; }
+    .console-evidence>summary { cursor:pointer; color:var(--accent); font-size:12px; font-weight:700; padding:10px 12px; border:1px solid rgba(10,132,255,.3); border-radius:9px; background:rgba(10,132,255,.06); }
     .participation-strip.unavailable { border-color: rgba(245,166,35,.32); background: rgba(245,166,35,.055); }
     .ps-head { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px; }
     .ps-title { font-size:12.5px; font-weight:800; color:#f5f5f7; }
@@ -768,7 +768,7 @@
     /* chart */
     .chart-row { display: flex; align-items: stretch; gap: 6px; }
     .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: visible; position: relative; flex: 1 1 auto; min-width: 0; }
-    #chart { width: 100%; height: 76vh; min-height: 520px; max-height: 820px; border-radius: 14px; overflow: hidden; }
+    #chart { width: 100%; height: 50vh; min-height: 360px; max-height: 520px; border-radius: 14px; overflow: hidden; }
     #fcEndpointLabels { position: absolute; inset: 0; pointer-events: none; z-index: 6; overflow: hidden; border-radius: 14px; }
     .fc-endpoint-label {
       position:absolute; transform:translate(-17px,-50%); display:flex; align-items:center; gap:6px;
@@ -777,18 +777,16 @@
     .fc-endpoint-label b { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
       color:#fff; border:2px solid rgba(255,255,255,.52); box-shadow:0 2px 8px rgba(0,0,0,.5); flex:0 0 34px; }
     .fc-endpoint-label span { padding:4px 7px; border-radius:6px; background:rgba(13,13,15,.82); border:1px solid rgba(255,255,255,.14); text-shadow:0 1px 2px rgba(0,0,0,.45); }
-    }
-
     /* 价位标签栏：priceLine 文字移出图内，放在价格轴右侧独立列，避免叠在情景区域/轴标签上 */
     #levelGutter {
-      flex: 0 0 264px; width: 264px; position: relative; overflow: hidden;
+      flex: 0 0 300px; width: 300px; position: relative; overflow: hidden;
       border: 1px solid var(--border); border-left: none; border-radius: 0 14px 14px 0;
       background: rgba(28,28,30,0.55);
     }
     .gutter-label {
       position: absolute; left: 8px; right: 6px; transform: translateY(-50%);
-      font-size: 11px; font-weight: 700; line-height: 1.25; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis;
+      font-size: 11px; font-weight: 700; line-height: 1.35; white-space: normal;
+      overflow-wrap: anywhere;
       font-family: 'JetBrains Mono', monospace;
       text-shadow: 0 0 4px rgba(0,0,0,0.6);
     }
@@ -796,7 +794,7 @@
       #levelGutter { display: none; }
     }
     @media (max-width: 1100px) and (min-width: 769px) {
-      #chart { height: 68vh; min-height: 460px; max-height: 700px; }
+      #chart { height: 48vh; min-height: 340px; max-height: 480px; }
       #levelGutter { flex-basis: 220px; width: 220px; }
     }
     .loading {
@@ -847,7 +845,7 @@
     @media (max-width: 640px) {
       .price-line .px { font-size: 15px; }
       h1 { font-size: 18px; }
-      #chart { height: 60vh; min-height: 380px; max-height: 600px; }
+      #chart { height: 48vh; min-height: 320px; max-height: 440px; }
       .tab { font-size: 12px; padding: 8px 0; }
       /* 移动端字阶整体略降一档，层级比例保持 */
       .block-title, .section-title { font-size: 15px; margin-top: 24px; }
@@ -904,13 +902,13 @@
     <!-- 当前操作层：只消费 versioned trading_operation contract，不复制静态交易文案。 -->
     <section class="operation-card hidden" id="operationCard" aria-label="当前操作状态"></section>
 
-    <!-- 战情控制台：状态条之后立即展示三种互不混淆的情景状态。 -->
-    <div class="scenarios hidden" id="scenarioCards"></div>
-    <p class="prob-note hidden" id="probNote">ℹ︎ 卡片显示盘前基础权重；宽度、权重和贡献通过覆盖与指数对账后才做有限校正。它不是历史胜率，触发仍以卡片条件为准。</p>
-    <details class="console-evidence"><summary>环境证据（宽度 · 权重贡献 · 夜盘 · 波动）</summary>
+    <details class="console-evidence" id="environmentEvidence"><summary>夜期／权重股／市场宽度 · 点击查看环境数据与依据</summary>
       <div class="participation-strip unavailable hidden" id="participationStrip"></div>
       <div class="participation-strip unavailable hidden" id="marketContextStrip"></div>
     </details>
+    <!-- 入场距离、展示权重和正式触发分别表达。 -->
+    <div class="scenarios hidden" id="scenarioCards"></div>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 卡片与状态条使用同一校正权重；宽度、权重贡献与市场环境通过数据校验后参与有限校正。权重不是历史胜率；满足2:1价格条件也不代表已经触发入场。</p>
 
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
@@ -1103,7 +1101,7 @@
   });
   // 价格内容尽量占满画布：只保留刻度与成交量所需的安全边距。
   // 过大的底部边距会把关键支撑阻力挤在中间，产生大片无效空白。
-  chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.06, bottom: 0.18 } });
+  chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.04, bottom: 0.14 } });
 
   // volume histogram (own price scale, pinned to bottom ~14% of chart)
   var volumeSeries = chart.addHistogramSeries({
@@ -1778,7 +1776,7 @@
       '</div>' +
       '<div class="sc-ruler-labels">' + labelHtml + '</div>' +
       (hasCur ? '<div class="sc-cursor-note">▼ ' + cursorLabel + ' ' + fmt(Math.round(refPx)) + '</div>' : '') +
-      '<div class="sc-chase' + (inLegal ? '' : ' missed') + '"><b>' + (inLegal ? '当前仍在可执行入场区' : '错过，等下一结构') + '</b> · ' + boundaryText +
+      '<div class="sc-chase' + (inLegal ? '' : ' missed') + '"><b>' + (inLegal ? '价格满足2:1·仍需触发确认' : '价格已越追价边界·等下一结构') + '</b> · ' + boundaryText +
         (distanceText ? '<br>' + distanceText : '') +
         '<span class="sc-chase-small">追价边界按止损与目标反推最低 2:1 赔率</span></div>' +
     '</div>';
@@ -2189,12 +2187,7 @@
     scenarios.forEach(function(sc){
       effectiveById[sc.id] = context.status === 'available' && Number.isFinite(context.weights[sc.id]) ? context.weights[sc.id] : (participation.status === 'available' && Number.isFinite(participation.weights[sc.id]) ? participation.weights[sc.id] : (sc.probability || 0));
     });
-    var taNow = TechnicalAnalysis.calculate((currentBars || []).filter(function(b){ return b && !b.partial; }));
-    var atrValues = taNow && taNow.atr || [], currentAtr = null;
-    for(var ai=atrValues.length-1;ai>=0;ai--){ if(Number.isFinite(atrValues[ai])){ currentAtr=atrValues[ai]; break; } }
-    var closeFinal = !!(scenarioStatus && scenarioStatus.judgment_mode === 'close_final' && !MarketRules.statusIssue(scenarioStatus, a));
-    var pointerRows = scenarios.map(function(sc){ var ss=statusForScenario(sc); return {id:sc.id,rr:sc.rr,effective_probability:effectiveById[sc.id],status:ss?'available':'missing',state:ss&&ss.triggered?'triggered':'candidate'}; });
-    var pointer = TradingOperation.scenarioPointer(refPx, pointerRows, currentAtr, closeFinal);
+    var pointer = TradingOperation.build({ annotations:a, scenarioStatus:scenarioStatus, participation:participationSnapshot, marketContext:marketContextSnapshot, dailyBars:currentIv === '1d' ? currentBars : [], quote:realtimeData || yahooQuote }).decision.scenario_pointer;
     renderParticipationStrip(a);
     renderMarketContextStrip(a);
     scenarios.forEach(function (sc, idx) {
@@ -2213,7 +2206,7 @@
       var dirTxt = dir === 'short' ? '做空' : '做多';
       var numsHtml = hasRR
         ? '<div class="sc-nums">' +
-            '<div class="sc-num"><span>入场<span class="sc-dir ' + dir + '">·' + dirTxt + '</span></span><b>' + fmt(rr.entry) + '</b></div>' +
+            '<div class="sc-num"><span>计划入场<span class="sc-dir ' + dir + '">·' + dirTxt + '</span></span><b>' + fmt(rr.entry) + '</b></div>' +
             '<div class="sc-num st"><span>结构失效</span><b>' + fmt(structural.price) + '</b></div>' +
             '<div class="sc-num tg"><span>第一目标</span><b>' + fmt(typeof rr.interim === 'number' ? rr.interim : rr.target) + '</b></div>' +
             '<div class="sc-num tg"><span>最终目标</span><b>' + fmt(rr.target) + '</b></div>' +
@@ -2237,7 +2230,7 @@
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
           '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + Math.round(effectiveWeight * 100) + '% 权重' + (isTopWeight?'<i class="sc-weight-badge">最高权重</i>':'') + '</span></div>' +
-        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 当前观察</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
+        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 距离最近·非入场信号</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
         numsHtml +
         scenarioParticipationHtml(sc, participation) +
         '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' +
@@ -2588,7 +2581,7 @@
   function renderTradingOperation() {
     var box = el('operationCard');
     if (!box || viewingDate) { if (box) box.classList.add('hidden'); return; }
-    tradingOperation = TradingOperation.build({ annotations: annotations, scenarioStatus: scenarioStatus, participation: participationSnapshot, dailyBars: currentIv === '1d' ? currentBars : [], quote: realtimeData || yahooQuote });
+    tradingOperation = TradingOperation.build({ annotations: annotations, scenarioStatus: scenarioStatus, participation: participationSnapshot, marketContext:marketContextSnapshot, dailyBars: currentIv === '1d' ? currentBars : [], quote: realtimeData || yahooQuote });
     var noTrade = operationSection('no_trade_conditions'), paths = operationSection('scenario_paths'), risks = operationSection('risk_controls'), trigger = operationSection('trigger_confirmation');
     var blocked = tradingOperation.action_state === 'no_trade', reasons = noTrade && noTrade.data && noTrade.data.conditions || [], scenarios = paths && paths.data && paths.data.scenarios || [], riskRows = risks && risks.data && risks.data.scenarios || [], decision = tradingOperation.decision || {};
     var scenarioStateLabel = function (s) {
@@ -2626,7 +2619,7 @@
     var zoneAction = decision.current_zone && decision.current_zone.action || '';
     var zoneScenarioMatch = String(zoneAction).match(/([ABC])(?:剧本|情景)/);
     var activeScenarioText = zoneScenarioMatch ? zoneScenarioMatch[1] : (decision.scenario_id || '--');
-    var stateLabel = '只观察·不开仓';
+    var stateLabel = decision.observation_label || '只观察·不开仓';
     var distances = Array.isArray(decision.key_level_distances) ? decision.key_level_distances : [];
     var nearLevel = distances.some(function (d) { return Math.abs(d.distance_points) <= 30; });
     var signed = function (n) { return (n > 0 ? '+' : '') + Math.round(n); };
@@ -2635,7 +2628,7 @@
     var pointer = decision.scenario_pointer || {};
     var nearestPointer = pointer.nearest ? ('<span style="color:' + scenarioColor({id:pointer.nearest.id}) + '">' + escapeHtml(pointer.nearest.id) + '</span> · 距' + escapeHtml(pointer.nearest.id) + '入场 ' + signed(pointer.nearest.distance_points) + '点') : '情景分歧区·仅观察';
     var topPointer = pointer.top_weight ? ('<span style="color:' + scenarioColor({id:pointer.top_weight.id}) + '">' + escapeHtml(pointer.top_weight.id) + '</span> ' + Math.round(pointer.top_weight.weight*100) + '%') : '待数据';
-    var executionPointer = decision.close_confirmed ? (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '已确认') : '收盘未确认情景') : '等待收盘确认';
+    var executionPointer = decision.close_confirmed ? (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '已确认') : '收盘未确认情景') : decision.market_session === 'closed' ? '已收盘·确认数据待同步' : '等待收盘确认';
     var stripDistances = decision.close_confirmed ? '' : distances.map(function (d) {
       var near = Math.abs(d.distance_points) <= 30;
       return '<span class="op-kv' + (near ? ' near' : '') + '">' + escapeHtml(d.label) + ' <b>' + signed(d.distance_points) + '点</b>' + (near ? ' · 接近关键位' : '') + '</span>';
@@ -2650,13 +2643,13 @@
           '<span class="op-kv">' + escapeHtml(tactical && tactical.stance || decision.label || '等待判断') + '</span>' +
           '<span class="op-kv">当前最接近：<b>' + nearestPointer + '</b></span>' +
           '<span class="op-kv">权重最高：<b>' + topPointer + '</b></span>' +
-          '<span class="op-kv">正式执行：<b>' + executionPointer + '</b></span>' +
+          '<span class="op-kv">正式触发：<b>' + executionPointer + '</b></span>' +
           stripDistances +
         '</div><span class="op-state">' + stateLabel + '</span>' +
       '</div>' +
       '<details class="op-details"><summary>查看门禁原因与完整数据状态</summary>' +
         '<div class="op-next"><b>下一步：</b>' + escapeHtml(nearestInstruction || decision.next_action || '等待规则条件完成。') + '</div>' +
-        '<div class="op-gap"><span>跳空兜底</span><b>' + escapeHtml(gapText) + '</b><em>越过常规战区时，按缺口回退条件重新判断，不追价。</em></div>' +
+        '<div class="op-gap"><span>' + (decision.gap_takeover ? '当日跳空' : '历史缺口参考') + '</span><b>' + escapeHtml(gapText) + '</b><em>历史缺口是支撑／阻力参考，现价进入该区不代表当天发生新跳空。</em></div>' +
         (reasons.length ? '<div class="op-blockers"><b>当前未执行的系统原因</b><ul class="op-list">' + reasons.map(function (r) { return '<li>' + escapeHtml(r) + '</li>'; }).join('') + '</ul></div>' : '') +
         '<div class="op-steps" aria-label="当前决策步骤">' + stepHtml + '</div>' +
         '<div class="op-grid"><div class="op-item"><b>市场状态</b>' + escapeHtml((operationSection('market_regime').data.label || '--')) + '</div><div class="op-item"><b>缺口回退</b>' + escapeHtml(gapText) + '</div><div class="op-item"><b>A/B/C</b>' + escapeHtml(scenarioText) + '</div><div class="op-item"><b>收盘确认</b>' + escapeHtml(trigger && trigger.data.daily_confirmation || '--') + '</div><div class="op-item"><b>风控完整性</b>' + riskText + '</div></div><div class="op-meta">as_of ' + escapeHtml(tradingOperation.as_of || '--') + ' · contract v' + escapeHtml(tradingOperation.schema_version) + ' · 数据不足时自动停止给出动作</div></details>';
@@ -2837,30 +2830,29 @@
       pts.push({ y: y, text: it.text, color: it.color });
     });
     pts.sort(function (x, y) { return x.y - y.y; });
-    // 重叠处理（2026-09-28 修复）：旧版只做「向下错开」再统一 clamp 到 [6, h-6]，
-    // 当密集价位（如均线密集区 25,320 附近）把多条标签向下推出可视区下边界后，
-    // 全部被 clamp 到同一个 h-6 像素，导致文字重叠压在一起。现改为标准三步防重叠：
-    // 1) 正向压：从上到下保证相邻间距 ≥ MIN_GAP；2) 若最后一条仍超出底部，先把它
-    // 钳制到底部，再反向压：从下到上保证间距，把上面的条目顶回去；3) 最后再统一
-    // clamp 到 [6, h-6] 兜底（此时理论上已不会再触发重叠）。
-    var MIN_GAP = 16;
-    for (var i = 1; i < pts.length; i++) {
-      if (pts[i].y - pts[i - 1].y < MIN_GAP) pts[i].y = pts[i - 1].y + MIN_GAP;
-    }
-    if (pts.length) {
-      var last = pts.length - 1;
-      if (pts[last].y > h - 6) {
-        pts[last].y = h - 6;
-        for (var j = last - 1; j >= 0; j--) {
-          if (pts[j + 1].y - pts[j].y < MIN_GAP) pts[j].y = pts[j + 1].y - MIN_GAP;
-        }
-      }
-    }
     var html = pts.map(function (p) {
-      var top = Math.max(6, Math.min(h - 6, p.y));
-      return '<div class="gutter-label" title="' + escapeHtml(p.text) + '" style="top:' + top.toFixed(1) + 'px;color:' + p.color + '">' + escapeHtml(p.text) + '</div>';
+      return '<div class="gutter-label" title="' + escapeHtml(p.text) + '" style="color:' + p.color + '">' + escapeHtml(p.text) + '</div>';
     }).join('');
     levelGutterEl.innerHTML = html;
+    // Measure wrapped text instead of assuming every label fits on one line.
+    var labels = Array.from(levelGutterEl.children);
+    var heights = labels.map(function(label) { return label.offsetHeight; });
+    var total = heights.reduce(function(sum,v) { return sum+v+4; }, 12);
+    levelGutterEl.style.overflowY = total > h ? 'auto' : 'hidden';
+    if (total > h) {
+      labels.forEach(function(label) { label.style.position='relative'; label.style.transform='none'; label.style.left='0'; label.style.right='auto'; label.style.margin='4px 8px'; });
+      return;
+    }
+    pts.forEach(function(p,i) {
+      p.y=Math.max(p.y, heights[i]/2+6);
+      if(i) p.y=Math.max(p.y,pts[i-1].y+(heights[i-1]+heights[i])/2+4);
+    });
+    if (pts.length) {
+      var last=pts.length-1;
+      pts[last].y=Math.min(pts[last].y,h-heights[last]/2-6);
+      for(var j=last-1;j>=0;j--) pts[j].y=Math.min(pts[j].y,pts[j+1].y-(heights[j]+heights[j+1])/2-4);
+    }
+    labels.forEach(function(label,i) { label.style.top=pts[i].y.toFixed(1)+'px'; });
   }
 
   function renderForecastEndpointLabels() {
@@ -3795,7 +3787,7 @@
     return fetch('/api/hsi-context?t=' + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
       .then(function (snapshot) {
         if (snapshot) marketContextSnapshot = snapshot;
-        if (annotations) { renderScenarioCards(annotations); renderMarketContextStrip(annotations); }
+        if (annotations) { renderScenarioCards(annotations); renderMarketContextStrip(annotations); renderTradingOperation(); }
       });
   }
   refreshMarketContext();

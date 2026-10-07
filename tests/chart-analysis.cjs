@@ -38,6 +38,7 @@ test('16:00-16:10 is a closing preview, never mislabeled as a confirmed close',(
 });
 test('HKEX holidays, half days, lunch, year transition and unsupported calendar',()=>{
   assert.equal(MR.tradingDay('2026-10-01'),false);
+  assert.equal(MR.tradingDay('2026-10-07'),true);
   assert.equal(MR.session(at('2026-12-24T13:00:00')).phase,'closed');
   assert.equal(MR.session(at('2026-10-06T12:30:00')).phase,'lunch');
   assert.equal(MR.session(at('2027-02-05T13:00:00')).active,false);
@@ -45,6 +46,11 @@ test('HKEX holidays, half days, lunch, year transition and unsupported calendar'
   assert.deepEqual(MR.nextDays('2026-12-31',1).map(MR.dayString),['2027-01-04']);
   assert.equal(MR.tradingDay('2028-01-03'),null);
   assert.deepEqual(MR.nextDays('2027-12-31',1),[]);
+});
+test('track display corrects the frozen 10/7 holiday wording without rewriting the ledger source',()=>{
+  const source=fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/track/index.html'),'utf8');
+  assert.match(source,/10\/7港股正常交易（仅沪深港通关闭）/);
+  assert.match(source,/displayCorrection\(v\)/);
 });
 test('partial candles: daily, weekly before Friday, minute session boundary and HKT shift',()=>{
   assert.equal(MR.markBars([{...bar(100),time:'2026-10-06'}],'1d',now)[0].partial,true);

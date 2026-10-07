@@ -138,6 +138,11 @@
     });
   }
   function fmt(n) { return Number(n).toLocaleString('en-US'); }
+  function displayCorrection(value) {
+    return String(value == null ? '' : value)
+      .replace(/中间隔\s*10\/7\s*中秋翌日休市[，,]?\s*/g, '')
+      .replace(/10\/7中秋翌日休市/g, '10/7港股正常交易（仅沪深港通关闭）');
+  }
 
   fetch('../predictions/log.json?t=' + Date.now())
     .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
@@ -247,7 +252,7 @@
 
         var fieldRow = function (k, v, cls) {
           if (!v) return '';
-          return '<div class="p-field"><span class="fk">' + k + '</span><span class="fv' + (cls ? ' ' + cls : '') + '">' + escapeHtml(v) + '</span></div>';
+          return '<div class="p-field"><span class="fk">' + k + '</span><span class="fv' + (cls ? ' ' + cls : '') + '">' + escapeHtml(displayCorrection(v)) + '</span></div>';
         };
 
         var scRows = (p.scenarios || []).map(function (sc) {

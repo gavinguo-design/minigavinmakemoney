@@ -180,7 +180,7 @@ test('label-derived level zones only render when the annotated level lies inside
   assert.equal(JSON.stringify(c.levelRange({price:24100,label:'向下缺口 24100–24333'})),JSON.stringify({low:24100,high:24333}));
   assert.equal(c.levelRange({price:24000,label:'整数关 24000'}),null);
   assert.equal(c.levelRange({price:24000,label:'无关区 24100–24333'}),null);
-  assert.equal(c.levelRange({price:24444,label:'C剧本作废位 24444（9/29低点）'}),null);
+  assert.equal(c.levelRange({price:24444,label:'A剧本作废位 24444（9/29低点）'}),null);
   assert.equal(c.levelRange({price:23500,label:'7月平台上沿 23500'}),null);
   assert.equal(JSON.stringify(c.levelRange({price:24280,label:'多空分界 24276–24358（10/2失守转阻）'})),JSON.stringify({low:24276,high:24358}));
 });

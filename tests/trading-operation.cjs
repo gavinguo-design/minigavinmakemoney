@@ -31,10 +31,25 @@ test('complete close-final input keeps A/B/C and gap fallback coherent but fails
   assert.equal(section(contract, 'risk_controls').data.scenarios[0].disaster_stop_status, 'unavailable');
   assert.equal(contract.action_state, 'no_trade');
   assert.equal(contract.decision.code, 'TRIGGERED_RISK_INCOMPLETE');
-  assert.equal(contract.decision.scenario_id, 'C');
+  assert.equal(contract.decision.scenario_id, 'A');
   assert.equal(contract.decision.structural_invalidation, 24100);
   assert.equal(contract.decision.plan.target, 24648);
   assert.deepEqual(contract.decision.gap_fallback.range, [24100, 24276]);
+});
+
+test('A/B/C is permanently ordered from most bullish to most bearish', () => {
+  const scenarios = annotations.forecast.scenarios;
+  assert.deepEqual(scenarios.map(s => s.id), ['A', 'B', 'C']);
+  assert.equal(annotations.forecast.scenario_order.version, 'direction_desc_v1');
+  assert.equal(scenarios[0].rr.direction, 'long');
+  assert.match(scenarios[0].name, /收复24276/);
+  assert.equal(scenarios[1].rr.direction, 'short');
+  assert.match(scenarios[1].name, /弱反抽/);
+  assert.equal(scenarios[2].rr.direction, 'short');
+  assert.match(scenarios[2].name, /跌破23865/);
+  assert.ok(scenarios[0].rr.target > scenarios[0].rr.entry);
+  assert.ok(scenarios[1].rr.target < scenarios[1].rr.entry);
+  assert.ok(scenarios[2].rr.target < scenarios[2].rr.entry);
 });
 
 test('missing or stale status never promotes a raw A/B/C narrative into a trigger', () => {
@@ -44,17 +59,23 @@ test('missing or stale status never promotes a raw A/B/C narrative into a trigge
   const stale = TradingOperation.build(input({ scenarioStatus: Object.assign({}, freshStatus, { updated_at: '2026-10-06T14:00:00+08:00' }) }));
   assert.equal(section(stale, 'trigger_confirmation').provenance.status, 'stale');
   assert.ok(section(stale, 'scenario_paths').data.scenarios.every(s => s.state === 'not_actionable'));
-  assert.equal(stale.decision.code, 'DATA_UNAVAILABLE');
+  assert.equal(stale.decision.code, 'INTRADAY_GUIDANCE');
+  assert.equal(stale.decision.label, '盘中参考·待收盘');
+  assert.equal(stale.decision.intraday_guidance, true);
+  assert.equal(stale.decision.current_zone.range_text, '24,276–24,444');
+  assert.match(stale.decision.next_action, /A剧本预备区/);
   assert.equal(stale.decision.scenario_id, null);
 });
 
 test('intraday or unpaired status cannot be labeled daily confirmation', () => {
-  const preview = TradingOperation.build(input({ scenarioStatus: Object.assign({}, freshStatus, { judgment_mode: 'intraday_preview', updated_at: '2026-10-06T14:34:00+08:00' }), now: at('2026-10-06T14:35:00') }));
+  const preview = TradingOperation.build(input({ scenarioStatus: Object.assign({}, freshStatus, { judgment_mode: 'intraday_preview', updated_at: '2026-10-06T14:34:00+08:00' }), quote: { price: 24280, ts: at('2026-10-06T14:34:00') / 1000 }, now: at('2026-10-06T14:35:00') }));
   assert.equal(section(preview, 'trigger_confirmation').data.daily_confirmation, 'not_confirmed');
   assert.equal(section(preview, 'trigger_confirmation').provenance.status, 'unavailable');
+  assert.equal(preview.decision.code, 'INTRADAY_GUIDANCE');
+  assert.match(preview.decision.headline, /盘中位于/);
   const provisional = TradingOperation.build(input({ dailyBars: [Object.assign({}, completeBar, { partial: true })] }));
   assert.equal(section(provisional, 'trigger_confirmation').data.daily_confirmation, 'not_confirmed');
-  assert.equal(section(provisional, 'scenario_paths').data.scenarios.find(s => s.id === 'C').state, 'not_actionable');
+  assert.equal(section(provisional, 'scenario_paths').data.scenarios.find(s => s.id === 'A').state, 'not_actionable');
 });
 
 test('research-only breadth cannot affect operation decisions', () => {

@@ -1,142 +1,119 @@
 {
-  "updated_at": "2026-10-06T16:32:10+08:00",
-  "judgment_mode": "close_final",
-  "judgment_mode_note": "收盘定案：close_gte/close_lt 类条件已用收盘价确认",
-  "data_stale": false,
-  "stale_reason": null,
-  "conditions_date": "2026-10-06",
-  "conditions_stale": false,
-  "metrics": {
-    "price": 24280.56,
-    "open": 24279.63,
-    "high": 24354.11,
-    "low": 24179.38,
-    "prev_close": 24040.34,
-    "update_time": "2026-10-06 16:00:00",
-    "volume_ratio": 0.62,
-    "today_turnover_yi": 982.6,
-    "ref_turnover_yi": 1586.4,
-    "southbound_net_yi": 68.6
-  },
-  "scenarios": [
+ "updated_at": "2026-10-07T09:30:08+08:00",
+ "judgment_mode": "intraday_preview",
+ "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；此数据不构成操作信号",
+ "data_stale": false,
+ "stale_reason": null,
+ "conditions_date": "2026-10-06",
+ "conditions_stale": false,
+ "metrics": {
+  "price": 24210.85,
+  "open": 24172.29,
+  "high": 24200.77,
+  "low": 24172.29,
+  "prev_close": 24280.56,
+  "update_time": "2026-10-07 09:30:08",
+  "volume_ratio": 1.08,
+  "today_turnover_yi": 31.6,
+  "ref_turnover_yi": 29.2,
+  "southbound_net_yi": 68.6
+ },
+ "scenarios": [
+  {
+   "name_prefix": "A",
+   "triggered": true,
+   "core_met": 2,
+   "core_total": 2,
+   "confirm_met": 0,
+   "confirm_total": 1,
+   "strength": "弱",
+   "met_count": 2,
+   "total": 3,
+   "conditions": [
     {
-      "name_prefix": "A",
-      "triggered": false,
-      "core_met": 1,
-      "core_total": 2,
-      "confirm_met": 1,
-      "confirm_total": 1,
-      "strength": null,
-      "met_count": 2,
-      "total": 3,
-      "conditions": [
-        {
-          "id": "no_reclaim_24276",
-          "label": "收盘未收复多空分界（收盘收于 24,276 之下，收盘确认）",
-          "role": "core",
-          "met": false,
-          "value_text": "⚠️ 临界，差 5 点"
-        },
-        {
-          "id": "hold_23865",
-          "label": "收盘未跌破 10/2 低点（收盘收于 23,865 之上，收盘确认）",
-          "role": "core",
-          "met": true,
-          "value_text": ""
-        },
-        {
-          "id": "weak_vol",
-          "label": "缩量反抽（量比 < 1.0，弱反抽更可靠=空点确认强度高）",
-          "role": "confirm",
-          "met": true,
-          "value_text": ""
-        }
-      ],
-      "id": "A",
-      "evidence_ref": {
-        "scenario_id": "A",
-        "state": "observed"
-      }
+     "id": "no_reclaim_24276",
+     "label": "收盘未收复多空分界（收盘收于 24,276 之下，收盘确认）",
+     "role": "core",
+     "met": true,
+     "value_text": ""
     },
     {
-      "name_prefix": "B",
-      "triggered": false,
-      "core_met": 0,
-      "core_total": 1,
-      "confirm_met": 0,
-      "confirm_total": 1,
-      "strength": null,
-      "met_count": 0,
-      "total": 2,
-      "conditions": [
-        {
-          "id": "break_23865",
-          "label": "收盘跌破 23,865（10/2低点，收盘确认；10/5盘中23,835.68一过不算）＝下探激活看 23,500–23,250",
-          "role": "core",
-          "met": false,
-          "value_text": ""
-        },
-        {
-          "id": "vol_down",
-          "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收，加速确认）",
-          "role": "confirm",
-          "met": false,
-          "value_text": "量比 0.62 · 昨收 24,040 → 现价 24,281"
-        }
-      ],
-      "id": "B",
-      "evidence_ref": {
-        "scenario_id": "B",
-        "state": "observed"
-      }
+     "id": "hold_23865",
+     "label": "收盘未跌破 10/2 低点（收盘收于 23,865 之上，收盘确认）",
+     "role": "core",
+     "met": true,
+     "value_text": ""
     },
     {
-      "name_prefix": "C",
-      "triggered": true,
-      "core_met": 1,
-      "core_total": 1,
-      "confirm_met": 1,
-      "confirm_total": 2,
-      "strength": "中",
-      "met_count": 2,
-      "total": 3,
-      "conditions": [
-        {
-          "id": "reclaim_24276",
-          "label": "收盘收复 24,276 多空分界（收盘确认，破位剧本降级）",
-          "role": "core",
-          "met": true,
-          "value_text": ""
-        },
-        {
-          "id": "strong_vol",
-          "label": "放量收阳强确认（量比 ≥ 1.3 且收盘高于今日开盘；薄市平量收复为弱确认）",
-          "role": "confirm",
-          "met": false,
-          "value_text": ""
-        },
-        {
-          "id": "southbound",
-          "label": "南向资金确认（净买 ≥ 30 亿；10/1–10/7 南向通道关闭期间此条件不可用）",
-          "role": "confirm",
-          "met": true,
-          "value_text": "南向净买 +68.6 亿"
-        }
-      ],
-      "id": "C",
-      "evidence_ref": {
-        "scenario_id": "C",
-        "state": "observed"
-      }
+     "id": "weak_vol",
+     "label": "缩量反抽（量比 < 1.0，弱反抽更可靠=空点确认强度高）",
+     "role": "confirm",
+     "met": false,
+     "value_text": ""
     }
-  ],
-  "note": "波段节奏（決策点=盘前09:15+收盘 16:10后）。判定口径：core 收盘确认条件全满足=情景触发；confirm 量能/资金只决确认强度。盘中运行标记 intraday_preview（近似预览，不构成操作信号）；16:10后标记 close_final（收盘确认）。",
-  "analysis_id": "HSI-20261006-price-action-v1",
-  "evidence_ref": {
-    "analysis_id": "HSI-20261006-price-action-v1",
-    "schema_version": "1.0",
-    "timeframe": "1d",
-    "last_bar_date": "2026-10-06",
-    "generated_at": "2026-10-06T16:32:23+08:00"
+   ]
+  },
+  {
+   "name_prefix": "B",
+   "triggered": false,
+   "core_met": 0,
+   "core_total": 1,
+   "confirm_met": 0,
+   "confirm_total": 1,
+   "strength": null,
+   "met_count": 0,
+   "total": 2,
+   "conditions": [
+    {
+     "id": "break_23865",
+     "label": "收盘跌破 23,865（10/2低点，收盘确认；10/5盘中23,835.68一过不算）＝下探激活看 23,500–23,250",
+     "role": "core",
+     "met": false,
+     "value_text": ""
+    },
+    {
+     "id": "vol_down",
+     "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收，加速确认）",
+     "role": "confirm",
+     "met": false,
+     "value_text": "量比 1.08 · 昨收 24,281 → 现价 24,211"
+    }
+   ]
+  },
+  {
+   "name_prefix": "C",
+   "triggered": false,
+   "core_met": 0,
+   "core_total": 1,
+   "confirm_met": 1,
+   "confirm_total": 2,
+   "strength": null,
+   "met_count": 1,
+   "total": 3,
+   "conditions": [
+    {
+     "id": "reclaim_24276",
+     "label": "收盘收复 24,276 多空分界（收盘确认，破位剧本降级）",
+     "role": "core",
+     "met": false,
+     "value_text": ""
+    },
+    {
+     "id": "strong_vol",
+     "label": "放量收阳强确认（量比 ≥ 1.3 且收盘高于今日开盘；薄市平量收复为弱确认）",
+     "role": "confirm",
+     "met": false,
+     "value_text": ""
+    },
+    {
+     "id": "southbound",
+     "label": "南向资金确认（净买 ≥ 30 亿；10/1–10/7 南向通道关闭期间此条件不可用）",
+     "role": "confirm",
+     "met": true,
+     "value_text": "南向净买 +68.6 亿"
+    }
+   ]
   }
+ ],
+ "note": "波段节奏（決策点=盘前09:15+收盘 16:10后）。判定口径：core 收盘确认条件全满足=情景触发；confirm 量能/资金只决确认强度。盘中运行标记 intraday_preview（近似预览，不构成操作信号）；16:10后标记 close_final（收盘确认）。"
 }

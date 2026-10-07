@@ -12,7 +12,7 @@
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
   <script src="market-rules.js?v=1"></script>
-  <script src="trading-operation.js?v=1"></script>
+  <script src="trading-operation.js?v=2"></script>
   <script src="technical-analysis.js?v=1"></script>
   <script src="technical-panel.js?v=1"></script>
   <link rel="stylesheet" href="technical-panel.css?v=1">
@@ -2439,16 +2439,22 @@
     var invalidation = Number.isFinite(decision.structural_invalidation) ? fmt(decision.structural_invalidation) : '--';
     var target = decision.plan && Number.isFinite(decision.plan.target) ? fmt(decision.plan.target) : '--';
     var gapText = decision.gap_fallback && Array.isArray(decision.gap_fallback.range) ? decision.gap_fallback.range.map(fmt).join('–') : '--';
-    var stepLabels = { data:'数据', close:'收盘', scenario:'情景', risk:'风控' };
+    var stepLabels = {
+      data: { complete:'数据已就绪', waiting:'数据待更新', blocked:'数据待核对' },
+      close: { complete:'收盘已确认', waiting:'收盘待确认', blocked:'收盘不可用' },
+      scenario: { complete:'情景已触发', waiting:'情景待确认', blocked:'情景不可用' },
+      risk: { complete:'风控已配置', waiting:'风控待补齐', blocked:'风控未配置' }
+    };
     var steps = decision.steps || {};
     var stepHtml = ['data','close','scenario','risk'].map(function (key) {
       var state = steps[key] || 'waiting';
-      var icon = state === 'complete' ? '✓' : state === 'blocked' ? '×' : '…';
-      return '<span class="op-step ' + state + '">' + icon + ' ' + stepLabels[key] + '</span>';
+      var icon = state === 'complete' ? '✓' : state === 'blocked' ? '×' : '○';
+      return '<span class="op-step ' + state + '">' + icon + ' ' + stepLabels[key][state] + '</span>';
     }).join('<span class="op-arrow">›</span>');
+    var stateLabel = decision.code === 'INTRADAY_GUIDANCE' ? '盘中观察' : (blocked ? '暂不执行' : '计划可用');
     box.className = 'operation-card' + (blocked ? ' no-trade' : '');
     box.innerHTML =
-      '<div class="op-head"><span class="op-title">当前作战结论</span><span class="op-state">' + (blocked ? '暂不执行' : '计划可用') + '</span></div>' +
+      '<div class="op-head"><span class="op-title">当前作战结论</span><span class="op-state">' + stateLabel + '</span></div>' +
       '<div class="op-verdict">' + escapeHtml(decision.headline || '等待数据') + ' · ' + escapeHtml(decision.label || '等待判断') + '</div>' +
       '<div class="op-next"><b>下一步：</b>' + escapeHtml(decision.next_action || '等待规则条件完成。') + '</div>' +
       '<div class="op-facts">' +

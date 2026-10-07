@@ -5,7 +5,7 @@
   else root.TradingOperation = factory(root.MarketRules);
 })(typeof self !== 'undefined' ? self : this, function (MarketRules) {
   'use strict';
-  var VERSION = '1.1.0';
+  var VERSION = '1.3.0';
   var SECTION_IDS = ['market_regime','key_price_zones','scenario_paths','trigger_confirmation','no_trade_conditions','risk_controls','position_management','post_market_review'];
   var SOURCE = { annotations: 'annotations.json', status: 'scenario_status.json', quote: '/api/realtime', bars: 'loaded daily OHLCV' };
 
@@ -116,6 +116,7 @@
     var scenarios = scenarioRows(annotations, status, scenarioStatus, closeConfirmed);
     var gap = gapFallback(annotations);
     var zone = quoteStatus === 'available' ? activeZone(annotations, quote && quote.price) : null;
+    var intradayGuidance = mapStatus === 'available' && quoteStatus === 'available' && !!zone && (scenarioStatus !== 'available' || !closeConfirmed);
     var levels = f.card && f.card.keyLines || [];
     var riskUnsupported = scenarios.some(function (s) { return !s.disaster_stop || s.disaster_stop.status === 'not_configured' || s.disaster_stop.price == null; });
     var riskBudget = input.riskBudget || null;
@@ -124,14 +125,15 @@
     var triggered = scenarios.filter(function (s) { return s.status === 'available' && s.state === 'triggered'; });
     var confirming = scenarios.filter(function (s) { return s.status === 'available' && s.state === 'confirming'; });
     var primary = triggered[0] || confirming[0] || scenarios.filter(function (s) { return s.status === 'available'; })[0] || null;
-    var decisionCode = scenarioStatus !== 'available' ? 'DATA_UNAVAILABLE'
+    var decisionCode = intradayGuidance ? 'INTRADAY_GUIDANCE'
+      : scenarioStatus !== 'available' ? 'DATA_UNAVAILABLE'
       : !closeConfirmed ? 'WAIT_CLOSE'
       : !triggered.length ? 'WAIT_TRIGGER'
       : riskUnsupported ? 'TRIGGERED_RISK_INCOMPLETE'
       : positionUnsupported ? 'PLAN_WITHOUT_SIZE'
       : 'PLAN_READY';
     var decisionLabels = {
-      DATA_UNAVAILABLE: '数据待核对', WAIT_CLOSE: '等待收盘', WAIT_TRIGGER: '等待触发',
+      INTRADAY_GUIDANCE: '盘中参考\u00b7待收盘', DATA_UNAVAILABLE: '数据待核对', WAIT_CLOSE: '等待收盘', WAIT_TRIGGER: '等待触发',
       TRIGGERED_RISK_INCOMPLETE: '已触发\u00b7风控未齐', PLAN_WITHOUT_SIZE: '计划成立\u00b7仓位未定', PLAN_READY: '计划要素齐全'
     };
     var actionState = decisionCode === 'PLAN_READY' ? 'observe_only' : 'no_trade';
@@ -141,7 +143,8 @@
     if (quoteStatus !== 'available') noTrade.push('当前报价' + (quoteState === 'missing' ? '缺失' : '已过期') + '，只观察，不以价格触及触发。');
     if (riskUnsupported) noTrade.push('独立灾难止损未配置；结构失效位不能替代灾难止损。');
     if (positionUnsupported) noTrade.push('未提供风险预算/仓位规模，不能给出或暗示仓位。');
-    var nextAction = decisionCode === 'DATA_UNAVAILABLE' ? '先恢复同日情景状态与数据版本。'
+    var nextAction = decisionCode === 'INTRADAY_GUIDANCE' ? (zone.action || '按当前价格战区观察；正式情景等待收盘确认。')
+      : decisionCode === 'DATA_UNAVAILABLE' ? '先恢复同日情景状态与数据版本。'
       : decisionCode === 'WAIT_CLOSE' ? '等待同日完整日K与 close_final，盘中触及不算。'
       : decisionCode === 'WAIT_TRIGGER' ? '等待A/B/C核心条件按规则完成，不提前押方向。'
       : decisionCode === 'TRIGGERED_RISK_INCOMPLETE' ? '情景已触发；补齐独立灾难止损前不执行。'
@@ -152,19 +155,21 @@
     var decision = {
       code: decisionCode,
       label: decisionLabels[decisionCode],
-      headline: primary ? (primary.id + '情景' + (primary.state === 'triggered' ? '已触发' : primary.state === 'confirming' ? '确认中' : '候选')) : '情景不可用',
+      headline: intradayGuidance ? ('盘中位于 ' + rangeText(zone.range) + (zone.stance ? ' \u00b7 ' + zone.stance : ''))
+        : primary ? (primary.id + '情景' + (primary.state === 'triggered' ? '已触发' : primary.state === 'confirming' ? '确认中' : '候选')) : '情景不可用',
       scenario_id: primary && primary.id || null,
       scenario_strength: primary && primary.strength || null,
       current_price: quoteStatus === 'available' && quote && Number.isFinite(quote.price) ? quote.price : null,
       reference_price: Number.isFinite(f.basePrice) ? f.basePrice : null,
       current_zone: zone ? { range: zone.range, range_text: rangeText(zone.range), stance: zone.stance, action: zone.action, invalidation: zone.invalidation } : null,
+      intraday_guidance: intradayGuidance,
       gap_fallback: gap.status === 'available' ? clone(gap.data) : null,
       plan: primary && primary.rr ? clone(primary.rr) : null,
       next_action: nextAction,
       structural_invalidation: primaryInvalidation,
       blockers: clone(noTrade),
       steps: {
-        data: scenarioStatus === 'available' ? 'complete' : 'blocked',
+        data: scenarioStatus === 'available' || intradayGuidance ? 'complete' : 'blocked',
         close: closeConfirmed ? 'complete' : 'waiting',
         scenario: triggered.length ? 'complete' : confirming.length ? 'waiting' : 'waiting',
         risk: riskUnsupported ? 'blocked' : positionUnsupported ? 'waiting' : 'complete'

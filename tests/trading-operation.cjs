@@ -40,6 +40,11 @@ test('complete close-final input keeps A/B/C and gap fallback coherent but fails
 test('A/B/C is permanently ordered from most bullish to most bearish', () => {
   const scenarios = annotations.forecast.scenarios;
   assert.deepEqual(scenarios.map(s => s.id), ['A', 'B', 'C']);
+  assert.deepEqual(Object.fromEntries(scenarios.map(s => [s.id, s.color])), {
+    A: '#00d87f',
+    B: '#a78bfa',
+    C: '#ff8c42'
+  });
   assert.equal(annotations.forecast.scenario_order.version, 'direction_desc_v1');
   assert.equal(scenarios[0].rr.direction, 'long');
   assert.match(scenarios[0].name, /收复24276/);
@@ -50,6 +55,19 @@ test('A/B/C is permanently ordered from most bullish to most bearish', () => {
   assert.ok(scenarios[0].rr.target > scenarios[0].rr.entry);
   assert.ok(scenarios[1].rr.target < scenarios[1].rr.entry);
   assert.ok(scenarios[2].rr.target < scenarios[2].rr.entry);
+  assert.equal(annotations.forecast.scenario_evidence.scenarios.A.direction_alignment, 'aligned');
+  assert.equal(annotations.forecast.scenario_evidence.scenarios.B.direction_alignment, 'conflicts');
+  assert.equal(annotations.forecast.scenario_evidence.scenarios.C.direction_alignment, 'conflicts');
+});
+
+test('scenario identity colours cannot be replaced by state colours', () => {
+  const source = fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/index.html'), 'utf8');
+  assert.match(source, /SCENARIO_COLORS\s*=\s*\{\s*A:\s*'#00d87f',\s*B:\s*'#a78bfa',\s*C:\s*'#ff8c42'\s*\}/);
+  assert.doesNotMatch(source, /invalid\s*\?\s*'#FF453A'\s*:\s*hexToRgba\(sc\.color/);
+  assert.match(source, /card\.style\.setProperty\('--sc-color',\s*scenarioColor\(sc\)\)/);
+  assert.match(source, /class="fc-endpoint-label"/);
+  assert.match(source, /timeToCoordinate\(fs\.endTime\)/);
+  assert.doesNotMatch(source, /shape:\s*'circle'.*text:\s*shortName\(sc\.name\)/);
 });
 
 test('missing or stale status never promotes a raw A/B/C narrative into a trigger', () => {

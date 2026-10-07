@@ -625,7 +625,7 @@
           "scenario_id": "A",
           "scenario_direction": "long",
           "state": "observed",
-          "direction_alignment": "conflicts",
+          "direction_alignment": "aligned",
           "observation": {
             "id": "gapUp",
             "name": "向上跳空缺口",

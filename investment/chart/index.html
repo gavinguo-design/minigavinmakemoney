@@ -741,6 +741,14 @@
     .chart-row { display: flex; align-items: stretch; gap: 6px; }
     .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: visible; position: relative; flex: 1 1 auto; min-width: 0; }
     #chart { width: 100%; height: 62vh; min-height: 340px; max-height: 640px; border-radius: 14px; overflow: hidden; }
+    #fcEndpointLabels { position: absolute; inset: 0; pointer-events: none; z-index: 6; overflow: hidden; border-radius: 14px; }
+    .fc-endpoint-label {
+      position: absolute; width: 30px; height: 30px; border-radius: 50%;
+      transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center;
+      color: #fff; font: 800 12px/1 'JetBrains Mono', monospace;
+      border: 2px solid rgba(255,255,255,0.48); box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+    }
 
     /* 价位标签栏：priceLine 文字移出图内，放在价格轴右侧独立列，避免叠在情景区域/轴标签上 */
     #levelGutter {
@@ -885,6 +893,7 @@
     <div class="chart-row">
       <div class="chart-card">
         <div id="chart"></div>
+        <div id="fcEndpointLabels" aria-hidden="true"></div>
         <div class="struct-banner hidden" id="structBanner"></div>
         <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
         <div class="sim-badge hidden" id="simBadge">A/B/C 情景带 · 从最新确认K线出发</div>
@@ -1193,6 +1202,8 @@
       fs.series.forEach(function (s) { try { chart.removeSeries(s); } catch (e) {} });
     });
     fcSeriesList = [];
+    var endpointLabels = el('fcEndpointLabels');
+    if (endpointLabels) endpointLabels.innerHTML = '';
     if (fcBgSeries) { try { chart.removeSeries(fcBgSeries); } catch (e) {} fcBgSeries = null; }
     clearGutterSource('scenario');
     clearRRSeries();
@@ -1326,6 +1337,14 @@
     return String(name || '').split('·')[0].trim() || name;
   }
 
+  // A/B/C are identities, so their colours must not change with trigger state.
+  // State badges keep their own semantic colours (waiting/triggered/invalidated).
+  var SCENARIO_COLORS = { A: '#00d87f', B: '#a78bfa', C: '#ff8c42' };
+  function scenarioColor(sc) {
+    var id = sc && (sc.id || shortName(sc.name));
+    return SCENARIO_COLORS[id] || (sc && sc.color) || '#f5c842';
+  }
+
   function zonePoints(sc) {
     // New zone data is preferred. Existing path remains valid source data for old records.
     // It is converted to high/low envelopes only; no OHLC prediction is rendered.
@@ -1387,6 +1406,7 @@
 
     scenarios.forEach(function (sc, idx) {
       var points = zonePoints(sc), base = lastBar.close;
+      var scColor = scenarioColor(sc);
       var upperData = anchoredZoneData(points.upper, lastBar, futureTimes, maxOffset);
       var lowerData = anchoredZoneData(points.lower, lastBar, futureTimes, maxOffset);
       if (!upperData.length || !lowerData.length) return;
@@ -1396,8 +1416,8 @@
       var makeFill = function (data, alpha) {
         var fill = chart.addBaselineSeries({
           baseValue: { type: 'price', price: base },
-          topFillColor1: hexToRgba(sc.color, alpha), topFillColor2: hexToRgba(sc.color, 0.01),
-          bottomFillColor1: hexToRgba(sc.color, 0.01), bottomFillColor2: hexToRgba(sc.color, alpha),
+          topFillColor1: hexToRgba(scColor, alpha), topFillColor2: hexToRgba(scColor, 0.01),
+          bottomFillColor1: hexToRgba(scColor, 0.01), bottomFillColor2: hexToRgba(scColor, alpha),
           topLineColor: 'rgba(0,0,0,0)', bottomLineColor: 'rgba(0,0,0,0)',
           priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false
         });
@@ -1406,19 +1426,19 @@
       };
       var upperFill = makeFill(upperData, 0.11);
       var lowerFill = makeFill(lowerData, 0.08);
-      var upperLine = chart.addLineSeries({ color: hexToRgba(sc.color, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
-      var lowerLine = chart.addLineSeries({ color: hexToRgba(sc.color, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      var upperLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      var lowerLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.8), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
       upperLine.setData(upperData); lowerLine.setData(lowerData);
 
-      // 情景终点直接写 A/B/C，避免只剩彩色圆点、无法辨认路径归属。
+      // 终点由 DOM overlay 绘制，字母放在圆内；Lightweight Charts 的 marker text
+      // 固定排在圆外，会造成 A/B/C 与圆点视觉分离。
       var end = upperData[upperData.length - 1];
-      var endMarker = [{ time: end.time, position: 'aboveBar', shape: 'circle', color: hexToRgba(sc.color, 0.95), text: shortName(sc.name) }];
-      upperLine.setMarkers(endMarker);
+      upperLine.setMarkers([]);
       // 情景显隐用「颜色透明化」而非 series.visible 开关（2026-09-28 修复）：
       // visible:false 会把该系列从价格轴 autoScale 计算中剔除，导致点击情景卡
       // 切换时纵向视野跳动重置。透明化让所有系列始终参与布局与 autoScale，
       // 切换只改观感，图表视野纹丝不动。
-      var setShown = (function (upperFill, lowerFill, upperLine, lowerLine, color, endMarker) {
+      var setShown = (function (upperFill, lowerFill, upperLine, lowerLine, color) {
         var TRANS = 'rgba(0,0,0,0)';
         return function (shown) {
           upperFill.applyOptions({
@@ -1436,10 +1456,9 @@
           var lineColor = shown ? hexToRgba(color, 0.8) : TRANS;
           upperLine.applyOptions({ color: lineColor });
           lowerLine.applyOptions({ color: lineColor });
-          upperLine.setMarkers(shown ? endMarker : []);
         };
-      })(upperFill, lowerFill, upperLine, lowerLine, sc.color, endMarker);
-      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine], scenario: sc, index: idx, endPrice: end.value, setShown: setShown });
+      })(upperFill, lowerFill, upperLine, lowerLine, scColor);
+      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine], scenario: sc, index: idx, endTime: end.time, endPrice: end.value, color: scColor, shown: true, setShown: setShown });
     });
     applyScenarioVisibility();
   }
@@ -1452,6 +1471,7 @@
     try { savedRange = chart.timeScale().getVisibleLogicalRange(); } catch (e) {}
     fcSeriesList.forEach(function (fs) {
       var shown = activeScenario === -1 || fs.index === activeScenario;
+      fs.shown = shown;
       if (fs.setShown) fs.setShown(shown);
       else fs.series.forEach(function (s) { s.applyOptions({ visible: shown }); });
     });
@@ -2045,7 +2065,7 @@
       var card = document.createElement('div');
       card.className = 'sc-card';
       card.setAttribute('data-idx', String(idx));
-      card.style.setProperty('--sc-color', sc.color || 'rgba(235,235,245,0.5)');
+      card.style.setProperty('--sc-color', scenarioColor(sc));
       var rr = sc.rr || {};
       var structural = sc.risk && sc.risk.structural_invalidation;
       var hasRR = typeof rr.entry === 'number' && typeof rr.target === 'number' && structural && typeof structural.price === 'number';
@@ -2099,8 +2119,8 @@
       fallback.className = 'sc-fallback';
       fallback.innerHTML =
         '<div class="sc-fallback-title">收盘三分区完整覆盖' +
-          '<small>B &lt; 23,865 ｜ A 23,865–24,276 ｜ C ≥ 24,276</small></div>' +
-        (highGap ? '<div class="sc-fallback-item"><b>高开 ≥ ' + fmt(highGap.range[0]) + '</b><br>不追多，空单离场；等待收盘确认，再按 C 或原区间评估。</div>' : '') +
+          '<small>C &lt; 23,865 ｜ B 23,865–24,276 ｜ A ≥ 24,276</small></div>' +
+        (highGap ? '<div class="sc-fallback-item"><b>高开 ≥ ' + fmt(highGap.range[0]) + '</b><br>不追多，空单离场；等待收盘确认，再按 A 或原区间评估。</div>' : '') +
         (lowGap ? '<div class="sc-fallback-item"><b>低开 &lt; ' + fmt(lowGap.range[1]) + '</b><br>不追空，空单止盈，多头不接飞刀；等待止跌或收复平台。</div>' : '');
       wrap.appendChild(fallback);
     }
@@ -2665,12 +2685,27 @@
     levelGutterEl.innerHTML = html;
   }
 
+  function renderForecastEndpointLabels() {
+    var layer = el('fcEndpointLabels');
+    if (!layer) return;
+    var html = [];
+    fcSeriesList.forEach(function (fs) {
+      if (!fs.shown) return;
+      var x = chart.timeScale().timeToCoordinate(fs.endTime);
+      var y = series.priceToCoordinate(fs.endPrice);
+      if (x == null || y == null || x < -20 || y < -20 || x > chartEl.clientWidth + 20 || y > chartEl.clientHeight + 20) return;
+      html.push('<div class="fc-endpoint-label" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px;background:' + fs.color + '">' + escapeHtml(shortName(fs.scenario.name)) + '</div>');
+    });
+    layer.innerHTML = html.join('');
+  }
+
   var gutterRafId = null;
   function scheduleGutterRefresh() {
     if (gutterRafId != null) return;
     gutterRafId = requestAnimationFrame(function () {
       gutterRafId = null;
       renderGutter();
+      renderForecastEndpointLabels();
     });
   }
 
@@ -2727,12 +2762,12 @@
       if (!structural || typeof structural.price !== 'number') return;
       var state = signalStateForScenario(sc, viewingDate ? null : statusForScenario(sc), bars, iv);
       var invalid = state.id === 'invalidated';
-      var color = invalid ? '#FF453A' : hexToRgba(sc.color || '#f5c842', 0.75);
+      var color = hexToRgba(scenarioColor(sc), invalid ? 0.95 : 0.75);
       structureLines.push(series.createPriceLine({
         price: structural.price, color: color, lineWidth: invalid ? 2 : 1,
         lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: false, title: ''
       }));
-      gutterItems.push({ price: structural.price, text: shortName(sc.name) + ' · 结构失效 ' + fmt(structural.price), color: color, source: 'invalidation' });
+      gutterItems.push({ price: structural.price, text: shortName(sc.name) + ' · 结构失效 ' + fmt(structural.price) + (invalid ? '（已失效）' : ''), color: color, source: 'invalidation' });
     });
   }
 

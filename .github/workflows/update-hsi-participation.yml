@@ -1,0 +1,62 @@
+name: Update HSI market participation
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 01:30 HKT after each Monday-Friday session.
+    - cron: '30 17 * * 1-5'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-hsi-participation
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install 'pdfplumber==0.11.7'
+      - name: Download latest official HSI reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest_url='https://www.hsi.com.hk/api/wsit-hsi-ddoc-ea-public-website-proxy/v1/product-data/pub/series/metadata/v2?data=dailyReport&seriesCode=hsi'
+          curl --fail --location --retry 3 "$manifest_url" --output /tmp/hsi-manifest.json
+          python - <<'PY' > /tmp/hsi-latest.tsv
+          import json
+          data=json.load(open('/tmp/hsi-manifest.json'))
+          reports={item['reportType']:item['reportDate'] for item in data[0]['reportList']}
+          con=reports['con-pdf-1'][0]
+          idx=next(item for item in reports['idx'] if item['date']==con['date'])
+          print(con['date'], con['url'], idx['url'], sep='\t')
+          PY
+          IFS=$'\t' read -r report_date con_resource idx_resource < /tmp/hsi-latest.tsv
+          base='https://www.hsi.com.hk/api/wsit-hsi-ddoc-ea-public-website-proxy/v1/content/gcs/download?resource='
+          curl --fail --location --retry 3 "${base}${con_resource}" --output /tmp/hsi-constituents.pdf
+          curl --fail --location --retry 3 "${base}${idx_resource}" --output /tmp/hsi-index.csv
+          python scripts/extract-hsi-participation.py \
+            --source /tmp/hsi-constituents.pdf \
+            --index-report /tmp/hsi-index.csv \
+            --source-url "${base}${con_resource}"
+          test "$(python -c 'import json; print(json.load(open("investment/chart/hsi-participation.json"))["as_of"])')" = "$report_date"
+      - name: Verify
+        run: node --test tests/*.cjs
+      - name: Commit refreshed snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add investment/chart/hsi-participation.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          report_date=$(python -c 'import json; print(json.load(open("investment/chart/hsi-participation.json"))["as_of"])')
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Update HSI participation ${report_date}"
+          git push

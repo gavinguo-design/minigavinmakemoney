@@ -161,6 +161,24 @@
       return true;
     }).slice(0, 2);
   }
+  function scenarioPointer(price, scenarios, atr, closeConfirmed) {
+    var rows = (scenarios || []).filter(function (s) { return s && s.rr && Number.isFinite(s.rr.entry); });
+    var weighted = rows.filter(function (s) { return Number.isFinite(s.effective_probability); }).sort(function (a,b) { return b.effective_probability-a.effective_probability; });
+    var top = weighted.length ? { id:weighted[0].id, weight:weighted[0].effective_probability } : null;
+    var confirmed = closeConfirmed ? rows.filter(function (s) { return s.status === 'available' && s.state === 'triggered'; }).map(function (s) { return s.id; }) : [];
+    if (!Number.isFinite(price) || !rows.length || !Number.isFinite(atr) || atr <= 0) return { nearest:null, top_weight:top, confirmed:confirmed };
+    var ranked = rows.map(function (s) { return { id:s.id, entry:s.rr.entry, distance_points:s.rr.entry-price, absolute_distance:Math.abs(s.rr.entry-price) }; })
+      .sort(function (a,b) { return a.absolute_distance-b.absolute_distance; });
+    var tied = ranked.length > 1 && Math.abs(ranked[0].absolute_distance-ranked[1].absolute_distance) < 0.000001;
+    return { nearest:(!tied && ranked[0].absolute_distance <= atr) ? ranked[0] : null, top_weight:top, confirmed:confirmed };
+  }
+  function recentAtr(bars) {
+    var rows=(bars||[]).filter(function(b){return b&&!b.partial&&[b.high,b.low,b.close].every(Number.isFinite);}).slice(-14);
+    if(!rows.length) return null;
+    var sum=0;
+    rows.forEach(function(b,i){var prev=i?rows[i-1].close:b.close;sum+=Math.max(b.high-b.low,Math.abs(b.high-prev),Math.abs(b.low-prev));});
+    return sum/rows.length;
+  }
   function rangeText(range) {
     if (!Array.isArray(range)) return '未匹配';
     if (range[0] == null) return '< ' + fmt(range[1]);
@@ -244,6 +262,7 @@
       key_level_distances: keyLevelDistances(quoteStatus === 'available' && quote ? quote.price : null, scenarios, annotations && annotations.intraday_playbook, gap.status === 'available' ? gap.data : null),
       gap_takeover: !!(intradayGuidance && gap.status === 'available' && gap.data && Array.isArray(gap.data.range) && quote && Number.isFinite(quote.price) && quote.price >= gap.data.range[0] && quote.price < gap.data.range[1]),
       close_confirmed: closeConfirmed,
+      scenario_pointer: scenarioPointer(quoteStatus === 'available' && quote ? quote.price : null, scenarios, recentAtr(bars), closeConfirmed),
       intraday_guidance: intradayGuidance,
       gap_fallback: gap.status === 'available' ? clone(gap.data) : null,
       plan: primary && primary.rr ? clone(primary.rr) : null,
@@ -278,5 +297,5 @@
     var ids = (contract.sections || []).map(function (s) { return s.id; });
     return SECTION_IDS.every(function (id) { return ids.indexOf(id) >= 0; }) && ids.length === SECTION_IDS.length;
   }
-  return { VERSION: VERSION, SECTION_IDS: SECTION_IDS, build: build, validate: validate, fmt: fmt, keyLevelDistances: keyLevelDistances };
+  return { VERSION: VERSION, SECTION_IDS: SECTION_IDS, build: build, validate: validate, fmt: fmt, keyLevelDistances: keyLevelDistances, scenarioPointer: scenarioPointer };
 });

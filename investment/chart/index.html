@@ -578,6 +578,8 @@
     .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
     @media (max-width: 720px) { .scenarios { grid-template-columns: 1fr; } }
     .participation-strip { margin: 0 0 10px; padding: 10px 12px; border: 1px solid rgba(50,215,75,.28); border-radius: 12px; background: rgba(50,215,75,.055); }
+    .console-evidence { margin:0 0 8px; }
+    .console-evidence>summary { cursor:pointer; color:var(--muted); font-size:10.5px; font-weight:700; padding:3px 2px 7px; }
     .participation-strip.unavailable { border-color: rgba(245,166,35,.32); background: rgba(245,166,35,.055); }
     .ps-head { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px; }
     .ps-title { font-size:12.5px; font-weight:800; color:#f5f5f7; }
@@ -599,6 +601,14 @@
       content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
       background: var(--sc-color, rgba(235,235,245,0.5));
     }
+    .sc-card.sc-nearest { border-color:var(--sc-color); box-shadow:0 0 0 1px var(--sc-color); }
+    .sc-card.sc-nearest::after { content:''; position:absolute; left:0; right:0; top:0; height:3px; background:var(--sc-color); }
+    .sc-card.sc-confirmed { background:linear-gradient(180deg,color-mix(in srgb,var(--sc-color) 18%,var(--card)),var(--card) 38%); }
+    .sc-card.sc-confirmed-dim { opacity:.42; }
+    .sc-link-badge,.sc-weight-badge { display:inline-block; margin-left:5px; padding:2px 5px; border-radius:999px; font-size:9px; font-weight:800; }
+    .sc-link-badge { color:var(--sc-color); border:1px solid var(--sc-color); }
+    .sc-weight-badge { color:var(--gold); border:1px solid rgba(245,200,66,.35); background:rgba(245,200,66,.08); }
+    @media(min-width:1100px){.sc-card.sc-nearest{transform:translateY(2px)}.sc-card.sc-nearest .sc-tip::after{content:' ↓ 对应图内同色情景带';color:var(--sc-color)}}
     .sc-card:hover { border-color: rgba(255,255,255,0.18); }
     .sc-card.active { border-color: var(--sc-color, rgba(255,255,255,0.18)); box-shadow: 0 0 0 1px var(--sc-color); }
     .sc-card.dimmed { opacity: 0.35; }
@@ -894,6 +904,14 @@
     <!-- 当前操作层：只消费 versioned trading_operation contract，不复制静态交易文案。 -->
     <section class="operation-card hidden" id="operationCard" aria-label="当前操作状态"></section>
 
+    <!-- 战情控制台：状态条之后立即展示三种互不混淆的情景状态。 -->
+    <div class="scenarios hidden" id="scenarioCards"></div>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 卡片显示盘前基础权重；宽度、权重和贡献通过覆盖与指数对账后才做有限校正。它不是历史胜率，触发仍以卡片条件为准。</p>
+    <details class="console-evidence"><summary>环境证据（宽度 · 权重贡献 · 夜盘 · 波动）</summary>
+      <div class="participation-strip unavailable hidden" id="participationStrip"></div>
+      <div class="participation-strip unavailable hidden" id="marketContextStrip"></div>
+    </details>
+
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
       <div class="tab active" data-iv="1d">日线</div>
@@ -933,14 +951,6 @@
       </div>
       <div id="levelGutter"></div>
     </div>
-
-    <!-- 市场参与度只在来源、覆盖与指数对账同时通过后校正A/B/C。 -->
-    <div class="participation-strip unavailable hidden" id="participationStrip"></div>
-    <div class="participation-strip unavailable hidden" id="marketContextStrip"></div>
-
-    <!-- A/B/C 情景卡：紧跟主图，作为第二层行动地图。 -->
-    <div class="scenarios hidden" id="scenarioCards"></div>
-    <p class="prob-note hidden" id="probNote">ℹ︎ 卡片显示盘前基础权重；宽度、权重和贡献通过覆盖与指数对账后才做有限校正。它不是历史胜率，触发仍以卡片条件为准。</p>
 
     <details class="technical-panel" aria-label="技术指标与结构验证">
       <summary class="technical-fold">技术指标验证（辅助核对，默认收起）</summary>
@@ -2175,6 +2185,16 @@
     var refPx = scenarioRefPrice(f);
     var participation = participationEvaluation(a);
     var context = contextEvaluation(a, participation);
+    var effectiveById = {};
+    scenarios.forEach(function(sc){
+      effectiveById[sc.id] = context.status === 'available' && Number.isFinite(context.weights[sc.id]) ? context.weights[sc.id] : (participation.status === 'available' && Number.isFinite(participation.weights[sc.id]) ? participation.weights[sc.id] : (sc.probability || 0));
+    });
+    var taNow = TechnicalAnalysis.calculate((currentBars || []).filter(function(b){ return b && !b.partial; }));
+    var atrValues = taNow && taNow.atr || [], currentAtr = null;
+    for(var ai=atrValues.length-1;ai>=0;ai--){ if(Number.isFinite(atrValues[ai])){ currentAtr=atrValues[ai]; break; } }
+    var closeFinal = !!(scenarioStatus && scenarioStatus.judgment_mode === 'close_final' && !MarketRules.statusIssue(scenarioStatus, a));
+    var pointerRows = scenarios.map(function(sc){ var ss=statusForScenario(sc); return {id:sc.id,rr:sc.rr,effective_probability:effectiveById[sc.id],status:ss?'available':'missing',state:ss&&ss.triggered?'triggered':'candidate'}; });
+    var pointer = TradingOperation.scenarioPointer(refPx, pointerRows, currentAtr, closeFinal);
     renderParticipationStrip(a);
     renderMarketContextStrip(a);
     scenarios.forEach(function (sc, idx) {
@@ -2205,12 +2225,19 @@
         (rr.entryHint ? '<div class="sc-row">入场确认：' + escapeHtml(rr.entryHint) + '</div>' : '') +
         (sc.note ? '<div class="sc-row">' + escapeHtml(sc.note) + '</div>' : '');
       var holdingHtml = sc.holding_period ? '<span class="sc-holding" title="预期持仓周期">⏱ 持仓 ' + escapeHtml(sc.holding_period) + '</span>' : '';
-      var effectiveWeight = context.status === 'available' && Number.isFinite(context.weights[sc.id]) ? context.weights[sc.id] : (participation.status === 'available' && Number.isFinite(participation.weights[sc.id]) ? participation.weights[sc.id] : (sc.probability || 0));
+      var effectiveWeight = effectiveById[sc.id];
+      var isNearest = !!(pointer.nearest && pointer.nearest.id === sc.id);
+      var isTopWeight = !!(pointer.top_weight && pointer.top_weight.id === sc.id);
+      var isConfirmed = pointer.confirmed.indexOf(sc.id) >= 0;
+      if(isNearest) card.classList.add('sc-nearest');
+      if(isTopWeight) card.classList.add('sc-top-weight');
+      if(isConfirmed) card.classList.add('sc-confirmed');
+      if(pointer.confirmed.length && !isConfirmed) card.classList.add('sc-confirmed-dim');
       var weightTitle = context.status === 'available' ? ('宽度/权重/贡献之后，再由夜盘方向有限校正；流动性和VHSI只控制可靠度。基础权重 '+Math.round((sc.probability||0)*100)+'%，不是历史胜率') : (participation.status === 'available' ? ('参与度校正权重；基础权重 ' + Math.round((sc.probability || 0) * 100) + '%，不是历史胜率') : '盘前基础权重；市场参与度数据未通过门禁，不是历史胜率');
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
-          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + Math.round(effectiveWeight * 100) + '% 权重</span></div>' +
-        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + holdingHtml + '</span>' +
+          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + Math.round(effectiveWeight * 100) + '% 权重' + (isTopWeight?'<i class="sc-weight-badge">最高权重</i>':'') + '</span></div>' +
+        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 当前观察</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
         numsHtml +
         scenarioParticipationHtml(sc, participation) +
         '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' +
@@ -2605,6 +2632,10 @@
     var signed = function (n) { return (n > 0 ? '+' : '') + Math.round(n); };
     var triggeredIds = scenarios.filter(function (s) { return s.state === 'triggered' && s.status === 'available'; }).map(function (s) { return s.id; });
     var closeText = decision.close_confirmed ? ('已收盘 · ' + (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '确认') : '情景未确认')) : '等收盘';
+    var pointer = decision.scenario_pointer || {};
+    var nearestPointer = pointer.nearest ? ('<span style="color:' + scenarioColor({id:pointer.nearest.id}) + '">' + escapeHtml(pointer.nearest.id) + '</span> · 距' + escapeHtml(pointer.nearest.id) + '入场 ' + signed(pointer.nearest.distance_points) + '点') : '情景分歧区·仅观察';
+    var topPointer = pointer.top_weight ? ('<span style="color:' + scenarioColor({id:pointer.top_weight.id}) + '">' + escapeHtml(pointer.top_weight.id) + '</span> ' + Math.round(pointer.top_weight.weight*100) + '%') : '待数据';
+    var executionPointer = decision.close_confirmed ? (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '已确认') : '收盘未确认情景') : '等待收盘确认';
     var stripDistances = decision.close_confirmed ? '' : distances.map(function (d) {
       var near = Math.abs(d.distance_points) <= 30;
       return '<span class="op-kv' + (near ? ' near' : '') + '">' + escapeHtml(d.label) + ' <b>' + signed(d.distance_points) + '点</b>' + (near ? ' · 接近关键位' : '') + '</span>';
@@ -2617,8 +2648,10 @@
           '<span class="op-kv"><b>' + (Number.isFinite(price) ? fmt(price) : '--') + '</b></span>' +
           '<span class="op-kv">' + escapeHtml(tacticalBand) + '</span>' +
           '<span class="op-kv">' + escapeHtml(tactical && tactical.stance || decision.label || '等待判断') + '</span>' +
+          '<span class="op-kv">当前最接近：<b>' + nearestPointer + '</b></span>' +
+          '<span class="op-kv">权重最高：<b>' + topPointer + '</b></span>' +
+          '<span class="op-kv">正式执行：<b>' + executionPointer + '</b></span>' +
           stripDistances +
-          '<span class="op-kv">' + closeText + '</span>' +
         '</div><span class="op-state">' + stateLabel + '</span>' +
       '</div>' +
       '<details class="op-details"><summary>查看门禁原因与完整数据状态</summary>' +

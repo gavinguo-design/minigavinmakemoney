@@ -158,6 +158,28 @@ test('intraday gap takeover and close-final state are explicit contract fields',
   assert.equal(closed.decision.close_confirmed,true);
 });
 
+test('scenario pointer separates nearest, top weight, divergence and close confirmation', () => {
+  const rows=[
+    {id:'A',rr:{entry:24400},effective_probability:.48,status:'available',state:'candidate'},
+    {id:'B',rr:{entry:24172},effective_probability:.32,status:'available',state:'candidate'},
+    {id:'C',rr:{entry:23900},effective_probability:.20,status:'available',state:'triggered'}
+  ];
+  const p=TradingOperation.scenarioPointer(24130,rows,200,false);
+  assert.equal(p.nearest.id,'B'); assert.equal(p.nearest.distance_points,42);
+  assert.deepEqual(p.top_weight,{id:'A',weight:.48}); assert.deepEqual(p.confirmed,[]);
+  assert.equal(TradingOperation.scenarioPointer(24286,rows,200,false).nearest,null);
+  assert.equal(TradingOperation.scenarioPointer(25000,rows,200,false).nearest,null);
+  assert.deepEqual(TradingOperation.scenarioPointer(24130,rows,200,true).confirmed,['C']);
+});
+
+test('scenario colours have one source and drive cards, pointers and chart bands', () => {
+  const source=fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/index.html'),'utf8');
+  assert.match(source,/var SCENARIO_COLORS = \{ A: '#00d87f', B: '#a78bfa', C: '#ff8c42' \}/);
+  assert.match(source,/card\.style\.setProperty\('--sc-color', scenarioColor\(sc\)\)/);
+  assert.match(source,/scenarioColor\(\{id:pointer\.nearest\.id\}\)/);
+  assert.match(source,/var scColor = scenarioColor\(sc\)/);
+});
+
 test('research-only breadth cannot affect operation decisions', () => {
   const base = TradingOperation.build(input());
   const withResearch = TradingOperation.build(input({ breadth: { status: 'available', score: 999, contribution: ['invented'] }, options: { iv: 1 } }));

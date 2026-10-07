@@ -107,6 +107,30 @@ test('intraday or unpaired status cannot be labeled daily confirmation', () => {
   assert.equal(section(provisional, 'scenario_paths').data.scenarios.find(s => s.id === 'A').state, 'not_actionable');
 });
 
+test('intraday window is a narrow tactical band with explicit boundary distances', () => {
+  const contract = TradingOperation.build(input({
+    scenarioStatus: Object.assign({}, freshStatus, { judgment_mode: 'intraday_preview', updated_at: '2026-10-06T14:34:00+08:00' }),
+    quote: { price: 24130.5, ts: at('2026-10-06T14:34:00') / 1000 },
+    now: at('2026-10-06T14:35:00')
+  }));
+  const tactical = contract.decision.tactical_window;
+  assert.equal(tactical.scope, 'intraday_tactical');
+  assert.deepEqual(tactical.range, [24100, 24276]);
+  assert.equal(tactical.width_points, 176);
+  assert.equal(tactical.lower.distance_points, 30.5);
+  assert.equal(tactical.upper.distance_points, 145.5);
+  assert.equal(tactical.nearest_boundary, 'lower');
+  assert.equal(tactical.lower.next_stance, '偏空/观望');
+  assert.equal(tactical.upper.next_stance, '偏多观察');
+});
+
+test('chart gives the price map more vertical space and labels the tactical layer separately', () => {
+  const source = fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/index.html'), 'utf8');
+  assert.match(source, /#chart \{ width: 100%; height: 90vh; min-height: 700px; max-height: 1080px;/);
+  assert.match(source, /盘中即时战术窗口/);
+  assert.match(source, /A\/B\/C继续负责数个交易日的大方向/);
+});
+
 test('research-only breadth cannot affect operation decisions', () => {
   const base = TradingOperation.build(input());
   const withResearch = TradingOperation.build(input({ breadth: { status: 'available', score: 999, contribution: ['invented'] }, options: { iv: 1 } }));

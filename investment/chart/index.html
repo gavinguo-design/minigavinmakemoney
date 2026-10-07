@@ -119,6 +119,7 @@
     .operation-card.no-trade .op-state { color:#ffbd66; background:rgba(255,159,10,.13); border-color:rgba(255,159,10,.35); }
     .op-verdict { margin-top:7px; font-size:19px; line-height:1.35; font-weight:900; color:#fff; }
     .op-next { margin-top:5px; font-size:12.5px; line-height:1.55; color:rgba(235,235,245,.78); }
+    .op-scope { margin-top:5px; font-size:10.5px; color:rgba(235,235,245,.48); }
     .op-facts { margin-top:11px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; }
     .op-fact { padding:8px 9px; border:1px solid var(--border); border-radius:9px; background:rgba(255,255,255,.025); min-width:0; }
     .op-fact span { display:block; font-size:9.5px; color:var(--muted); margin-bottom:3px; }
@@ -754,7 +755,7 @@
     /* chart */
     .chart-row { display: flex; align-items: stretch; gap: 6px; }
     .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: visible; position: relative; flex: 1 1 auto; min-width: 0; }
-    #chart { width: 100%; height: 76vh; min-height: 520px; max-height: 820px; border-radius: 14px; overflow: hidden; }
+    #chart { width: 100%; height: 90vh; min-height: 700px; max-height: 1080px; border-radius: 14px; overflow: hidden; }
     #fcEndpointLabels { position: absolute; inset: 0; pointer-events: none; z-index: 6; overflow: hidden; border-radius: 14px; }
     .fc-endpoint-label {
       position: absolute; width: 30px; height: 30px; border-radius: 50%;
@@ -781,7 +782,7 @@
       #levelGutter { display: none; }
     }
     @media (max-width: 1100px) and (min-width: 769px) {
-      #chart { height: 68vh; min-height: 460px; max-height: 700px; }
+      #chart { height: 82vh; min-height: 580px; max-height: 900px; }
       #levelGutter { flex-basis: 220px; width: 220px; }
     }
     .loading {
@@ -832,7 +833,7 @@
     @media (max-width: 640px) {
       .price-line .px { font-size: 15px; }
       h1 { font-size: 18px; }
-      #chart { height: 60vh; min-height: 380px; max-height: 600px; }
+      #chart { height: 68vh; min-height: 460px; max-height: 720px; }
       .tab { font-size: 12px; padding: 8px 0; }
       /* 移动端字阶整体略降一档，层级比例保持 */
       .block-title, .section-title { font-size: 15px; margin-top: 24px; }
@@ -2553,6 +2554,14 @@
     var invalidation = Number.isFinite(decision.structural_invalidation) ? fmt(decision.structural_invalidation) : '--';
     var target = decision.plan && Number.isFinite(decision.plan.target) ? fmt(decision.plan.target) : '--';
     var gapText = decision.gap_fallback && Array.isArray(decision.gap_fallback.range) ? decision.gap_fallback.range.map(fmt).join('–') : '--';
+    var tactical = decision.tactical_window || null;
+    var tacticalBand = tactical && Array.isArray(tactical.range) ? tactical.range.map(function (v) { return Number.isFinite(v) ? fmt(v) : '开放'; }).join('–') : zoneText;
+    var tacticalWidth = tactical && Number.isFinite(tactical.width_points) ? fmt(tactical.width_points) + '点' : '--';
+    var lowerText = tactical && tactical.lower ? fmt(tactical.lower.price) + ' · ' + fmt(tactical.lower.distance_points) + '点' : '--';
+    var upperText = tactical && tactical.upper ? fmt(tactical.upper.price) + ' · ' + fmt(tactical.upper.distance_points) + '点' : '--';
+    var nearest = tactical && tactical.nearest_boundary === 'upper' ? tactical.upper : tactical && tactical.lower;
+    var nearestSide = tactical && tactical.nearest_boundary === 'upper' ? '上沿' : '下沿';
+    var nearestInstruction = nearest ? ('距' + nearestSide + ' ' + fmt(nearest.distance_points) + '点；越过后切换为' + (nearest.next_stance || '相邻战区')) : '';
     var stepLabels = {
       data: { complete:'数据已就绪', waiting:'数据待更新', blocked:'数据待核对' },
       close: { complete:'收盘已确认', waiting:'收盘待确认', blocked:'收盘不可用' },
@@ -2571,14 +2580,15 @@
     var stateLabel = decision.code === 'INTRADAY_GUIDANCE' ? '只观察·不开仓' : (blocked ? '暂不执行' : '计划可用');
     box.className = 'operation-card' + (blocked ? ' no-trade' : '');
     box.innerHTML =
-      '<div class="op-head"><span class="op-title">A/B/C 盘中执行状态</span><span class="op-state">' + stateLabel + '</span></div>' +
-      '<div class="op-verdict">' + escapeHtml(decision.headline || '等待数据') + ' · ' + escapeHtml(decision.label || '等待判断') + '</div>' +
-      '<div class="op-next"><b>下一步：</b>' + escapeHtml(decision.next_action || '等待规则条件完成。') + '</div>' +
+      '<div class="op-head"><span class="op-title">盘中即时战术窗口</span><span class="op-state">' + stateLabel + '</span></div>' +
+      '<div class="op-verdict">' + escapeHtml(tacticalBand) + ' · ' + escapeHtml(tactical && tactical.stance || decision.label || '等待判断') + '</div>' +
+      '<div class="op-scope">小区间只回答眼前几十至数百点怎样处理；A/B/C继续负责数个交易日的大方向。</div>' +
+      '<div class="op-next"><b>眼前处理：</b>' + escapeHtml(nearestInstruction || decision.next_action || '等待规则条件完成。') + '</div>' +
       '<div class="op-facts">' +
         '<div class="op-fact"><span>' + priceLabel + '</span><b>' + (Number.isFinite(price) ? fmt(price) : '--') + '</b></div>' +
-        '<div class="op-fact"><span>所在战区</span><b title="' + escapeHtml(decision.current_zone && decision.current_zone.stance || '') + '">' + escapeHtml(zoneText) + '</b></div>' +
-        '<div class="op-fact"><span>当前最接近</span><b>' + escapeHtml(activeScenarioText === '--' ? '战区观察' : activeScenarioText + ' 情景') + '</b></div>' +
-        '<div class="op-fact"><span>正式确认</span><b>' + (decision.code === 'INTRADAY_GUIDANCE' ? '等待收盘K' : escapeHtml(scenarioStateLabel(scenarios.filter(function (s) { return s.id === activeScenarioText; })[0]))) + '</b></div>' +
+        '<div class="op-fact"><span>即时带宽</span><b>' + escapeHtml(tacticalWidth) + '</b></div>' +
+        '<div class="op-fact"><span>下沿 · 距离</span><b>' + escapeHtml(lowerText) + '</b></div>' +
+        '<div class="op-fact"><span>上沿 · 距离</span><b>' + escapeHtml(upperText) + '</b></div>' +
       '</div>' +
       '<div class="op-gap"><span>跳空兜底</span><b>' + escapeHtml(gapText) + '</b><em>越过常规战区时，按缺口回退条件重新判断，不追价。</em></div>' +
       '<details class="op-details"><summary>查看门禁原因与完整数据状态</summary>' +

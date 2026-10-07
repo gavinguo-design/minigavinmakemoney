@@ -100,6 +100,33 @@
     if (!zone) return null;
     return { range: clone(zone.range), stance: zone.stance || null, action: zone.action || null, invalidation: zone.invalid || null };
   }
+  function tacticalWindow(a, price) {
+    if (!Number.isFinite(price)) return null;
+    var zones = a && a.intraday_playbook && a.intraday_playbook.zones || [];
+    var index = zones.findIndex(function (z) {
+      if (!z || !Array.isArray(z.range)) return false;
+      var low = z.range[0], high = z.range[1];
+      return (low == null || price >= low) && (high == null || price < high);
+    });
+    if (index < 0) return null;
+    var zone = zones[index], low = zone.range[0], high = zone.range[1];
+    var lowerDistance = Number.isFinite(low) ? Math.max(0, price - low) : null;
+    var upperDistance = Number.isFinite(high) ? Math.max(0, high - price) : null;
+    var nearest = upperDistance == null || (lowerDistance != null && lowerDistance <= upperDistance) ? 'lower' : 'upper';
+    var above = index > 0 ? zones[index - 1] : null;
+    var below = index + 1 < zones.length ? zones[index + 1] : null;
+    return {
+      range: clone(zone.range),
+      width_points: Number.isFinite(low) && Number.isFinite(high) ? high - low : null,
+      lower: Number.isFinite(low) ? { price: low, distance_points: lowerDistance, next_stance: below && below.stance || null } : null,
+      upper: Number.isFinite(high) ? { price: high, distance_points: upperDistance, next_stance: above && above.stance || null } : null,
+      nearest_boundary: nearest,
+      stance: zone.stance || null,
+      action: zone.action || null,
+      invalidation: zone.invalid || null,
+      scope: 'intraday_tactical'
+    };
+  }
   function rangeText(range) {
     if (!Array.isArray(range)) return '未匹配';
     if (range[0] == null) return '< ' + fmt(range[1]);
@@ -133,6 +160,7 @@
     });
     var gap = gapFallback(annotations);
     var zone = quoteStatus === 'available' ? activeZone(annotations, quote && quote.price) : null;
+    var tactical = quoteStatus === 'available' ? tacticalWindow(annotations, quote && quote.price) : null;
     var intradayGuidance = mapStatus === 'available' && quoteStatus === 'available' && !!zone && (scenarioStatus !== 'available' || !closeConfirmed);
     var levels = f.card && f.card.keyLines || [];
     var riskUnsupported = scenarios.some(function (s) { return !s.disaster_stop || s.disaster_stop.status === 'not_configured' || s.disaster_stop.price == null; });
@@ -179,6 +207,7 @@
       current_price: quoteStatus === 'available' && quote && Number.isFinite(quote.price) ? quote.price : null,
       reference_price: Number.isFinite(f.basePrice) ? f.basePrice : null,
       current_zone: zone ? { range: zone.range, range_text: rangeText(zone.range), stance: zone.stance, action: zone.action, invalidation: zone.invalidation } : null,
+      tactical_window: tactical,
       intraday_guidance: intradayGuidance,
       gap_fallback: gap.status === 'available' ? clone(gap.data) : null,
       plan: primary && primary.rr ? clone(primary.rr) : null,

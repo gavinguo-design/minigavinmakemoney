@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-08T10:00:05+08:00",
+ "updated_at": "2026-10-08T10:30:07+08:00",
  "judgment_mode": "intraday_preview",
  "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；此数据不构成操作信号",
  "data_stale": false,
@@ -7,16 +7,16 @@
  "conditions_date": "2026-10-06",
  "conditions_stale": false,
  "metrics": {
-  "price": 24063.52,
+  "price": 24092.91,
   "open": 24031.66,
   "high": 24146.01,
   "low": 24031.66,
   "prev_close": 24130.5,
-  "update_time": "2026-10-08 10:00:04",
-  "volume_ratio": 1.42,
-  "today_turnover_yi": 449.8,
-  "ref_turnover_yi": 316.5,
-  "southbound_net_yi": 20.6
+  "update_time": "2026-10-08 10:30:06",
+  "volume_ratio": 1.53,
+  "today_turnover_yi": 676.7,
+  "ref_turnover_yi": 443.7,
+  "southbound_net_yi": 38.5
  },
  "scenarios": [
   {
@@ -76,7 +76,7 @@
      "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收，加速确认）",
      "role": "confirm",
      "met": true,
-     "value_text": "量比 1.42 · 昨收 24,130 → 现价 24,064"
+     "value_text": "量比 1.53 · 昨收 24,130 → 现价 24,093"
     }
    ]
   },
@@ -85,10 +85,10 @@
    "triggered": false,
    "core_met": 0,
    "core_total": 1,
-   "confirm_met": 1,
+   "confirm_met": 2,
    "confirm_total": 2,
    "strength": null,
-   "met_count": 1,
+   "met_count": 2,
    "total": 3,
    "conditions": [
     {
@@ -109,8 +109,8 @@
      "id": "southbound",
      "label": "南向资金确认（净买 ≥ 30 亿；10/1–10/7 南向通道关闭期间此条件不可用）",
      "role": "confirm",
-     "met": false,
-     "value_text": "南向净买 +20.6 亿"
+     "met": true,
+     "value_text": "南向净买 +38.5 亿"
     }
    ]
   }

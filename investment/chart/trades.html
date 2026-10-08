@@ -137,6 +137,10 @@
     .hint { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 6px; }
 
     /* toast */
+    .upload-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:12px; margin:8px 0; background:var(--card); border:1px solid var(--border); border-radius:12px; }
+    .upload-row img { width:52px; height:76px; object-fit:contain; }
+    .upload-row a { color:#64D2FF; }
+    .upload-row p { color:var(--muted); font-size:12px; margin-top:6px; overflow-wrap:anywhere; }
     #toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       background: #2C2C2E; border: 1px solid rgba(255,255,255,0.14); color: var(--text);
@@ -166,6 +170,7 @@
       <input type="file" id="fileInput" accept="image/*" style="display:none" />
     </div>
 
+    <section id="uploadContent" aria-live="polite"></section>
     <div id="content" class="loading">加载中…</div>
   </div>
 
@@ -232,6 +237,7 @@
 
   <script>
     const fmtNum = (n, d = 2) => (n === null || n === undefined || isNaN(n)) ? '--' : Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const fmtPrice = (n) => fmtNum(n, Number(n) > 0 && Number(n) < 1 ? 3 : 2);
     const signed = (n, d = 2) => (n === null || n === undefined || isNaN(n)) ? '--' : (n > 0 ? '+' : '') + fmtNum(n, d);
     const cls = (n) => (n === null || n === undefined || isNaN(n)) ? 'flat' : (n > 0 ? 'up' : n < 0 ? 'down' : 'flat');
     const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -295,18 +301,19 @@
           <div class="t-top">
             <span class="t-sym mono">${esc(t.symbol) || '--'}</span>
             <span class="t-name">${esc(t.name)}</span>
-            <span class="t-dir ${t.direction}">${t.direction === 'short' ? '做空 SHORT' : '做多 LONG'}</span>
+            <span class="t-dir ${t.direction}">${t.instrumentType === 'bear_certificate' ? '买入熊证 · 标的看空' : t.direction === 'short' ? '做空 SHORT' : '做多 LONG'}</span>
             ${pnlHtml}
           </div>
           <div class="t-grid">
-            <span><span class="lbl">开仓</span> <span class="val">${esc(t.openDate) || '--'} @ ${fmtNum(t.openPrice)}</span></span>
+            <span><span class="lbl">开仓</span> <span class="val">${esc(t.openDate) || '--'} @ ${fmtPrice(t.openPrice)}</span></span>
             ${isClosed
-              ? `<span><span class="lbl">平仓</span> <span class="val">${esc(t.closeDate) || '--'} @ ${fmtNum(t.closePrice)}</span></span>`
+              ? `<span><span class="lbl">平仓</span> <span class="val">${esc(t.closeDate) || '--'} @ ${fmtPrice(t.closePrice)}</span></span>`
               : ''}
             ${t.size ? `<span><span class="lbl">仓位</span> <span class="val">${esc(t.size)}</span></span>` : ''}
             <span><span class="lbl">编号</span> <span class="val">${esc(t.id)}</span></span>
           </div>
           ${t.note ? `<div class="t-note">${esc(t.note)}</div>` : ''}
+          ${uploadUrl(t.sourceScreenshot) ? `<div class="t-note"><a href="${esc(uploadUrl(t.sourceScreenshot))}" target="_blank" rel="noopener">查看成交截图</a></div>` : ''}
           ${actions}
         </div>`;
     }
@@ -349,6 +356,40 @@
 
       el.className = '';
       el.innerHTML = html;
+    }
+
+    function uploadUrl(file) {
+      return /^investment\/chart\/uploads\/[A-Za-z0-9_-]+\.(png|jpe?g|webp|gif|heic)$/i.test(String(file || ''))
+        ? './' + file.replace('investment/chart/', '') : null;
+    }
+
+    function renderUploads(list) {
+      const box = $('uploadContent');
+      const uploads = (Array.isArray(list) ? list : []).filter(u => uploadUrl(u.file));
+      box.innerHTML = uploads.length ? '<h2>📷 已上传截图 <span class="cnt">' + uploads.length + ' 张</span></h2>' +
+        uploads.slice().sort((a,b) => String(b.uploadedAt).localeCompare(String(a.uploadedAt))).map(u => {
+          const url = uploadUrl(u.file);
+          const label = u.status === 'processed' ? '已入账' : u.status === 'failed' ? '识别失败' : '已收到 · 待识别';
+          return `<div class="upload-row"><a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="成交截图" loading="lazy"></a><div><b>${esc(label)}</b><p>${esc(u.uploadedAt || '')}</p><p>${esc(u.note || (u.status === 'processed' ? '已录入下方交易列表' : '截图已保存；尚未生成交易记录，不计入战绩'))}</p><a href="${esc(url)}" target="_blank" rel="noopener">查看原图</a></div></div>`;
+        }).join('') : '';
+    }
+
+    async function loadUploads() {
+      try {
+        const headers = {};
+        if (getToken()) headers['X-GH-Token'] = getToken();
+        const res = await fetch('/api/upload?t=' + Date.now(), { headers });
+        if (!res.ok) throw new Error('queue unavailable');
+        const data = await res.json();
+        if (!Array.isArray(data.uploads)) throw new Error('queue invalid');
+        renderUploads(data.uploads);
+      } catch {
+        try {
+          const res = await fetch('uploads/pending.json?t=' + Date.now());
+          if (!res.ok) throw new Error('queue unavailable');
+          renderUploads(await res.json());
+        } catch { $('uploadContent').textContent = '截图列表暂未获取，请刷新重试'; }
+      }
     }
 
     async function load() {
@@ -416,7 +457,7 @@
     // ---- close ----
     function startClose(t) {
       closingId = t.id;
-      $('cInfo').textContent = `${t.symbol} ${t.name || ''} · ${t.direction === 'short' ? '做空' : '做多'} · 开仓 ${t.openDate} @ ${fmtNum(t.openPrice)}`;
+      $('cInfo').textContent = `${t.symbol} ${t.name || ''} · ${t.direction === 'short' ? '做空' : '做多'} · 开仓 ${t.openDate} @ ${fmtPrice(t.openPrice)}`;
       $('cDate').value = today(); $('cPrice').value = '';
       openModal('mClose');
     }
@@ -495,7 +536,8 @@
           if (data.needToken) openModal('mToken');
           throw new Error(data.error || `HTTP ${res.status}`);
         }
-        toast('✅ 已上传，miniGG 识别后自动入账（通常30分钟内）', 6000);
+        toast('✅ 截图已收到 · 待识别；处理状态见截图列表', 6000);
+        await loadUploads();
       } catch (err) {
         toast('上传失败：' + err.message, 6000);
       }
@@ -518,6 +560,7 @@
     });
 
     load();
+    loadUploads();
   </script>
 </body>
 </html>

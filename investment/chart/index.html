@@ -3647,7 +3647,8 @@
     var banner = el('histBanner');
     if (!viewingDate) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
     banner.innerHTML =
-      '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(cnDate(viewingDate) + '（' + weekdayOf(viewingDate) + '）') + '</b> 冻结的分析 · 情景区域从当天K线展开，右侧叠加此后真实走势，预测 vs 现实直接对比</span>' +
+      (annotations && annotations.archive_record ? '<span>📅 <b>' + escapeHtml(viewingDate) + '</b> · ' + (annotations.archive_record.kind === 'recovered_snapshot' ? '历史版本补录' : annotations.archive_record.kind === 'carried_forward_snapshot' ? '沿用旧分析' : '当日冻结') + ' · 原分析冻结于 ' + escapeHtml(annotations.archive_record.original_analysis_date) + '。' + escapeHtml(annotations.archive_record.note) + '</span>' :
+      '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(cnDate(viewingDate) + '（' + weekdayOf(viewingDate) + '）') + '</b> 冻结的分析 · 情景区域从当天K线展开，右侧叠加此后真实走势，预测 vs 现实直接对比</span>') +
       '<button class="hb-back" id="histBack" type="button">返回最新</button>';
     banner.classList.remove('hidden');
     el('histBack').addEventListener('click', function () { switchToDate(''); });
@@ -3682,9 +3683,9 @@
       }
       viewingDate = date;
       if (sel) sel.value = date;
-      updateHistBanner();
       renderCalPanel();
       applyAnnotations(a);
+      updateHistBanner();
       setHistView();
     });
   }

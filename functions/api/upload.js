@@ -96,6 +96,29 @@ function nowShanghai() {
   };
 }
 
+// Show received screenshots independently of trade recognition or Pages build timing.
+export async function onRequestGet(context) {
+  const token = context.env?.GH_TOKEN || context.request.headers.get('X-GH-Token') || '';
+  try {
+    let text;
+    if (token) {
+      ({ text } = await ghGetFile(PENDING_PATH, token));
+    } else {
+      const res = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${PENDING_PATH}?ts=${Date.now()}`, {
+        headers: { 'User-Agent': 'minigavin-pages-fn' },
+      });
+      if (res.status === 404) return json({ uploads: [] });
+      if (!res.ok) throw new Error(`Upload queue fetch → ${res.status}`);
+      text = await res.text();
+    }
+    const uploads = text ? JSON.parse(text) : [];
+    if (!Array.isArray(uploads)) throw new Error('Invalid upload queue');
+    return json({ uploads });
+  } catch (e) {
+    return json({ error: String(e.message || e) }, 502);
+  }
+}
+
 export async function onRequestPost(context) {
   const { request } = context;
   const token = context.env?.GH_TOKEN || request.headers.get('X-GH-Token') || '';

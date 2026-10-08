@@ -1,7 +1,25 @@
 {
-  "trades": [],
+  "trades": [
+    {
+      "id": "T20261008-upload-135211",
+      "status": "open",
+      "symbol": "65702.HK",
+      "name": "恒指法兴九一熊N.P",
+      "direction": "long",
+      "instrumentType": "bear_certificate",
+      "underlyingDirection": "short",
+      "openDate": "2026-10-08",
+      "openTime": "11:21:28+08:00",
+      "openPrice": 0.035,
+      "size": "120000份",
+      "note": "成交截图补录：买入熊证，全部成交；买入产品的盈亏按产品价格计算，恒指标的方向为看空。截图未含平仓信息。",
+      "sourceScreenshot": "investment/chart/uploads/20261008-135211.png",
+      "pnl": null,
+      "pnlPct": null
+    }
+  ],
   "stats": {
-    "total": 0,
+    "total": 1,
     "wins": 0,
     "losses": 0,
     "winRate": null,

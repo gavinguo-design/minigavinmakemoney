@@ -2,6 +2,8 @@
   {
     "file": "investment/chart/uploads/20261008-135211.png",
     "uploadedAt": "2026-10-08T13:52:11+08:00",
-    "status": "pending"
+    "status": "processed",
+    "tradeId": "T20261008-upload-135211",
+    "note": "已核对截图成交行并入账：65702熊证，买入120,000份，成交价0.035；未发现平仓信息。"
   }
 ]

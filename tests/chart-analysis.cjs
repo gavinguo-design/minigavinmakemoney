@@ -103,8 +103,8 @@ test('the latest analysis selector and missing archive warning disclose the actu
   });
   vm.runInContext(extract('renderHistSelection'),c);
   c.renderAnalysisAvailability();
-  assert.equal(caption.textContent,'最新已存分析：2026-10-06');
-  assert.equal(select.options[0].textContent,'最新已存分析（2026-10-06）');
+  assert.equal(caption.textContent,'当前在线分析冻结：2026-10-06');
+  assert.equal(select.options[0].textContent,'当前在线分析（冻结 2026-10-06）');
   assert.match(box.textContent,/2026-10-08 的分析尚未发布/);
   assert.match(box.textContent,/缺少分析归档：2026-10-07、2026-10-08/);
 });

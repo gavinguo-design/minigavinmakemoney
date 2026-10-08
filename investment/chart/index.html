@@ -899,7 +899,7 @@
     <!-- 历史分析回看控件 -->
     <div class="hist-ctrl hidden" id="histCtrl" style="position:relative">
       <label for="histSelect">查看历史分析</label>
-      <select id="histSelect"><option value="">最新已存分析</option></select>
+      <select id="histSelect"><option value="">当前在线分析</option></select>
       <button class="cal-btn" id="calBtn" type="button" title="打开日历选择存档日期">📅</button>
       <span class="hist-selection" id="histSelection" aria-live="polite"></span>
       <div class="cal-panel hidden" id="calPanel"></div>
@@ -1214,7 +1214,10 @@
   function renderAnalysisAvailability() {
     var state=MarketRules.analysisAvailability(latestAnnotations||annotations);
     var select=el('histSelect');
-    if(select&&select.options.length) select.options[0].textContent='最新已存分析'+(state.date?'（'+state.date+'）':'（待发布）');
+    if(select&&select.options.length) {
+      var onlineOption=Array.from(select.options).find(function(o){return o.value==='';})||select.options[0];
+      onlineOption.textContent='当前在线分析'+(state.date?'（冻结 '+state.date+'）':'（待发布）');
+    }
     renderHistSelection();
     var box=el('analysisAvailability');
     if(!box) return;
@@ -3658,7 +3661,7 @@
     if(!caption) return;
     var date=viewingDate || MarketRules.analysisAvailability(latestAnnotations||annotations).date;
     var record=viewingDate && annotations && annotations.archive_record;
-    caption.textContent=(viewingDate?'已选历史：':'最新已存分析：')+(date||'待发布')+
+    caption.textContent=(viewingDate?'已选归档：':'当前在线分析冻结：')+(date||'待发布')+
       (record?' · 原分析冻结：'+record.original_analysis_date+(record.kind==='recovered_snapshot'?' · 历史版本补录':''):'');
   }
 
@@ -3669,7 +3672,7 @@
     banner.innerHTML =
       (annotations && annotations.archive_record ? '<span>📅 <b>' + escapeHtml(viewingDate) + '</b> · ' + (annotations.archive_record.kind === 'recovered_snapshot' ? '历史版本补录' : annotations.archive_record.kind === 'carried_forward_snapshot' ? '沿用旧分析' : '当日冻结') + ' · 原分析冻结于 ' + escapeHtml(annotations.archive_record.original_analysis_date) + '。' + escapeHtml(annotations.archive_record.note) + '</span>' :
       '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(cnDate(viewingDate) + '（' + weekdayOf(viewingDate) + '）') + '</b> 冻结的分析 · 情景区域从当天K线展开，右侧叠加此后真实走势，预测 vs 现实直接对比</span>') +
-      '<button class="hb-back" id="histBack" type="button">返回最新</button>';
+      '<button class="hb-back" id="histBack" type="button">返回在线分析</button>';
     banner.classList.remove('hidden');
     el('histBack').addEventListener('click', function () { switchToDate(''); });
   }
@@ -3748,7 +3751,7 @@
       }
     }
     html += '</div><div class="cal-foot">金色日期 = 有冻结存档可回看 · 其余日期无存档</div>' +
-      '<button class="cal-latest" id="calLatest" type="button">回到最新分析</button>';
+      '<button class="cal-latest" id="calLatest" type="button">返回在线分析</button>';
     panel.innerHTML = html;
     var prev = document.getElementById('calPrev'), next = document.getElementById('calNext');
     if (prev) prev.addEventListener('click', function (e) { e.stopPropagation(); calMonth = shiftMonth(calMonth, -1); renderCalPanel(); });
@@ -3784,6 +3787,7 @@
         opt.value = d; opt.textContent = d + ' ' + weekdayOf(d); // 显示星期几，方便「切到周三」这种心智
         sel.appendChild(opt);
       });
+      sel.appendChild(sel.options[0]); // 日期最新的归档排第一，在线分析单独列在末尾
       sel.addEventListener('change', function () { switchToDate(sel.value); });
       var calBtn = el('calBtn');
       calBtn.addEventListener('click', function (e) {
@@ -3805,6 +3809,10 @@
         if (!panel.contains(e.target) && e.target !== calBtn) hideCalPanel();
       });
       el('histCtrl').classList.remove('hidden');
+      // 归档日和原分析日是两个日期。在线分析已落后于最近归档时，
+      // 首屏选择最近归档并明确展示其原始分析日期，避免把旧分析当作今日新判断。
+      var onlineDate=MarketRules.analysisAvailability(latestAnnotations).date;
+      if(!viewingDate && onlineDate && dates[0]>onlineDate) switchToDate(dates[0]);
     });
   }
 

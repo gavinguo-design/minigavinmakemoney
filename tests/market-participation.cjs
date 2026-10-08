@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const Participation = require('../investment/chart/market-participation.js');
-const snapshot = JSON.parse(fs.readFileSync(path.join(__dirname, '../investment/chart/hsi-participation.json'), 'utf8'));
+const snapshot = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/hsi-participation-2026-10-06.json'), 'utf8'));
 const annotations = JSON.parse(fs.readFileSync(path.join(__dirname, '../investment/chart/annotations.json'), 'utf8'));
 
 test('official HSI snapshot has complete breadth, weight and contribution coverage', () => {

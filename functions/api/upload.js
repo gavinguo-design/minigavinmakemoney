@@ -6,7 +6,7 @@
 //   { "file": "investment/chart/uploads/20260926-150301.jpg",
 //     "uploadedAt": "2026-09-26T15:03:01+08:00",
 //     "status": "pending" }
-// 识别端（Mac mini cron 视觉模型）处理后将 status 改为 processed 并更新 trades.json。
+// GitHub Actions 用本地 OCR 核对成交行；可确认的买入才入账，含糊结果标为 needs_review。
 //
 // Token 通道与 /api/trades 相同：env.GH_TOKEN 优先，其次 X-GH-Token header。
 // 本路径不在 _middleware.js 白名单内，受整站 cookie 登录门禁保护。

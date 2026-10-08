@@ -3,7 +3,9 @@ const test = require('node:test');
 const fs = require('node:fs');
 const TradingOperation = require('../investment/chart/trading-operation.js');
 const annotations = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/annotations.json'), 'utf8'));
-const participation = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/hsi-participation.json'), 'utf8'));
+// A dated fixture keeps the October 6 decision tests stable when the live
+// participation snapshot advances to the next session.
+const participation = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, 'fixtures/hsi-participation-2026-10-06.json'), 'utf8'));
 const at = s => Date.parse(s + '+08:00');
 // Use the canonical feed representation so this fixture is independent of
 // whichever chart-time adapter the checked-out branch currently carries.

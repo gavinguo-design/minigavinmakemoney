@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-08T14:00:09+08:00",
+ "updated_at": "2026-10-08T14:30:07+08:00",
  "judgment_mode": "intraday_preview",
  "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；此数据不构成操作信号",
  "data_stale": false,
@@ -7,27 +7,27 @@
  "conditions_date": "2026-10-06",
  "conditions_stale": false,
  "metrics": {
-  "price": 23890.63,
+  "price": 23864.75,
   "open": 24031.66,
   "high": 24146.01,
-  "low": 23890.63,
+  "low": 23864.06,
   "prev_close": 24130.5,
-  "update_time": "2026-10-08 14:00:08",
-  "volume_ratio": 1.66,
-  "today_turnover_yi": 1358.0,
-  "ref_turnover_yi": 817.9,
-  "southbound_net_yi": 60.8
+  "update_time": "2026-10-08 14:30:06",
+  "volume_ratio": 1.68,
+  "today_turnover_yi": 1486.3,
+  "ref_turnover_yi": 884.1,
+  "southbound_net_yi": 59.1
  },
  "scenarios": [
   {
    "name_prefix": "A",
-   "triggered": true,
-   "core_met": 2,
+   "triggered": false,
+   "core_met": 1,
    "core_total": 2,
    "confirm_met": 0,
    "confirm_total": 1,
-   "strength": "弱",
-   "met_count": 2,
+   "strength": null,
+   "met_count": 1,
    "total": 3,
    "conditions": [
     {
@@ -41,8 +41,8 @@
      "id": "hold_23865",
      "label": "收盘未跌破 10/2 低点（收盘收于 23,865 之上，收盘确认）",
      "role": "core",
-     "met": true,
-     "value_text": ""
+     "met": false,
+     "value_text": "⚠️ 临界，差 0 点"
     },
     {
      "id": "weak_vol",
@@ -55,20 +55,20 @@
   },
   {
    "name_prefix": "B",
-   "triggered": false,
-   "core_met": 0,
+   "triggered": true,
+   "core_met": 1,
    "core_total": 1,
    "confirm_met": 1,
    "confirm_total": 1,
-   "strength": null,
-   "met_count": 1,
+   "strength": "强",
+   "met_count": 2,
    "total": 2,
    "conditions": [
     {
      "id": "break_23865",
      "label": "收盘跌破 23,865（10/2低点，收盘确认；10/5盘中23,835.68一过不算）＝下探激活看 23,500–23,250",
      "role": "core",
-     "met": false,
+     "met": true,
      "value_text": ""
     },
     {
@@ -76,7 +76,7 @@
      "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收，加速确认）",
      "role": "confirm",
      "met": true,
-     "value_text": "量比 1.66 · 昨收 24,130 → 现价 23,891"
+     "value_text": "量比 1.68 · 昨收 24,130 → 现价 23,865"
     }
    ]
   },
@@ -110,7 +110,7 @@
      "label": "南向资金确认（净买 ≥ 30 亿；10/1–10/7 南向通道关闭期间此条件不可用）",
      "role": "confirm",
      "met": true,
-     "value_text": "南向净买 +60.8 亿"
+     "value_text": "南向净买 +59.1 亿"
     }
    ]
   }

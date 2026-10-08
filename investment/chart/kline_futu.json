@@ -1,7 +1,7 @@
 {
  "symbol": "HK.800000",
  "source": "futu-opend",
- "updated_at": "2026-10-08T16:00:14+08:00",
+ "updated_at": "2026-10-08T16:30:15+08:00",
  "candles": [
   {
    "date": "2026-04-01",
@@ -1032,9 +1032,8 @@
    "open": 24031.66,
    "high": 24146.01,
    "low": 23737.14,
-   "close": 23742.61,
-   "turnover_yi": 1960.9,
-   "partial": true
+   "close": 23785.79,
+   "turnover_yi": 2072.6
   }
  ]
 }

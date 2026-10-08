@@ -94,14 +94,16 @@ test('archive coverage exposes missing trading sessions and never invents snapsh
   assert.equal(JSON.stringify(dates),original);
 });
 test('the latest analysis selector and missing archive warning disclose the actual frozen date',()=>{
-  const box={textContent:'',classList:{toggle(){},add(){}}},select={options:[{textContent:'最新'}]};
+  const box={textContent:'',classList:{toggle(){},add(){}}},caption={textContent:''},select={options:[{textContent:'最新'}]};
   const when=at('2026-10-08T16:30:00');
   const c=render('renderAnalysisAvailability',{
     MarketRules:{...MR,analysisAvailability:a=>MR.analysisAvailability(a,when),archiveCoverage:dates=>MR.archiveCoverage(dates,when)},
     latestAnnotations:{meta:{updatedAt:'2026-10-06T08:45:00+08:00'}},annotations:null,viewingDate:null,archiveDates:['2026-10-06'],
-    el:id=>id==='histSelect'?select:box
+    el:id=>id==='histSelect'?select:id==='histSelection'?caption:box
   });
+  vm.runInContext(extract('renderHistSelection'),c);
   c.renderAnalysisAvailability();
+  assert.equal(caption.textContent,'最新已存分析：2026-10-06');
   assert.equal(select.options[0].textContent,'最新已存分析（2026-10-06）');
   assert.match(box.textContent,/2026-10-08 的分析尚未发布/);
   assert.match(box.textContent,/缺少分析归档：2026-10-07、2026-10-08/);

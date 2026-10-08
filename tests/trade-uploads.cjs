@@ -6,8 +6,8 @@ test('pending and processed uploads visible without entering them into trade sta
  vm.runInContext(extract('uploadUrl')+'\n'+extract('renderUploads'),c);
  assert.equal(c.uploadUrl('investment/chart/uploads/../../secret.png'),null);
  c.renderUploads([{file:'investment/chart/uploads/20261008-135211.png',uploadedAt:'2026-10-08T13:52:11+08:00',status:'pending',note:'<script>'}]);
- assert.match(box.innerHTML,/待识别/);assert.match(box.innerHTML,/&lt;script>/);assert.match(box.innerHTML,/查看原图/);
- c.renderUploads([{file:'investment/chart/uploads/20261008-135211.png',status:'processed'}]);assert.match(box.innerHTML,/已入账/);
+ assert.match(box.innerHTML,/正在自动提取/);assert.match(box.innerHTML,/&lt;script>/);assert.match(box.innerHTML,/查看原图/);
+ c.renderUploads([{file:'investment/chart/uploads/20261008-135211.png',status:'processed',tradeId:'T20261008-upload-135211'}]);assert.match(box.innerHTML,/已入账/);assert.match(box.innerHTML,/查看交易记录/);
  assert.doesNotMatch(html,/通常30分钟内/);
 });
 test('screenshot recovery uses execution price, not live quote, with product purchase and bearish underlying kept distinct',()=>{

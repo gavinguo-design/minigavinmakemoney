@@ -297,7 +297,7 @@
           <button class="btn small danger" data-act="del" data-id="${esc(t.id)}">🗑 删除</button>
         </div>`;
       return `
-        <div class="trade">
+        <div class="trade" id="trade-${esc(t.id)}">
           <div class="t-top">
             <span class="t-sym mono">${esc(t.symbol) || '--'}</span>
             <span class="t-name">${esc(t.name)}</span>
@@ -369,8 +369,10 @@
       box.innerHTML = uploads.length ? '<h2>📷 已上传截图 <span class="cnt">' + uploads.length + ' 张</span></h2>' +
         uploads.slice().sort((a,b) => String(b.uploadedAt).localeCompare(String(a.uploadedAt))).map(u => {
           const url = uploadUrl(u.file);
-          const label = u.status === 'processed' ? '已入账' : u.status === 'failed' ? '识别失败' : '已收到 · 待识别';
-          return `<div class="upload-row"><a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="成交截图" loading="lazy"></a><div><b>${esc(label)}</b><p>${esc(u.uploadedAt || '')}</p><p>${esc(u.note || (u.status === 'processed' ? '已录入下方交易列表' : '截图已保存；尚未生成交易记录，不计入战绩'))}</p><a href="${esc(url)}" target="_blank" rel="noopener">查看原图</a></div></div>`;
+          const label = u.status === 'processed' ? '已入账' : u.status === 'needs_review' ? '自动提取待核对' : u.status === 'failed' ? '识别失败' : '已收到 · 正在自动提取';
+          const tradeLink = u.status === 'processed' && /^T[A-Za-z0-9-]+$/.test(String(u.tradeId || ''))
+            ? ` · <a href="#trade-${esc(u.tradeId)}">查看交易记录</a>` : '';
+          return `<div class="upload-row"><a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="成交截图" loading="lazy"></a><div><b>${esc(label)}</b><p>${esc(u.uploadedAt || '')}</p><p>${esc(u.note || (u.status === 'processed' ? '已录入下方交易列表' : '截图已保存；未核对前不计入战绩'))}</p><a href="${esc(url)}" target="_blank" rel="noopener">查看原图</a>${tradeLink}</div></div>`;
         }).join('') : '';
     }
 

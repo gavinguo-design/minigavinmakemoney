@@ -71,6 +71,41 @@ test('horizon validation flags false holiday text and date mismatches without mu
   assert.equal(MR.auditHorizon({...record,horizonDesc:'至 2026-10-14'}).status,'mismatch');
   assert.equal(MR.auditHorizon({}).status,'unavailable');
 });
+test('a fresh quote cannot make an October 6 frozen analysis current on October 8',()=>{
+  const analysis={meta:{updatedAt:'2026-10-06T08:45:00+08:00'},forecast:{baseDate:'2026-10-05'}};
+  const original=JSON.stringify(analysis);
+  assert.deepEqual(MR.analysisAvailability(analysis,at('2026-10-08T16:30:00')),{status:'stale',date:'2026-10-06',expected:'2026-10-08'});
+  assert.equal(MR.analysisAvailability(analysis,at('2026-10-08T08:45:00')).status,'stale');
+  assert.equal(MR.analysisAvailability({...analysis,forecast:{applicable_date:'2026-10-08'}},at('2026-10-08T16:30:00')).status,'current');
+  assert.equal(MR.analysisAvailability({meta:{updatedAt:'2026-10-09T08:45:00+08:00'}},at('2026-10-08T16:30:00')).status,'future');
+  assert.equal(MR.analysisAvailability({meta:{updatedAt:'2026-02-30'}},at('2026-10-08T16:30:00')).status,'missing');
+  assert.equal(JSON.stringify(analysis),original);
+});
+test('archive coverage exposes missing trading sessions and never invents snapshots or counts an uncompleted day',()=>{
+  const dates=['2026-09-30','2026-10-02','2026-10-05','2026-10-06'];
+  const original=JSON.stringify(dates);
+  assert.deepEqual(MR.archiveCoverage(dates,at('2026-10-08T16:30:00')).missing,['2026-10-07','2026-10-08']);
+  assert.deepEqual(MR.archiveCoverage(dates,at('2026-10-08T16:08:00')).missing,['2026-10-07']);
+  assert.deepEqual(MR.archiveCoverage(dates,at('2026-10-06T16:30:00')).missing,[]);
+  assert.deepEqual(MR.archiveCoverage([...dates,'2026-10-08'],at('2026-10-08T16:30:00')).missing,['2026-10-07']);
+  assert.equal(MR.archiveCoverage([],at('2026-10-08T16:30:00')).status,'empty');
+  assert.equal(MR.archiveCoverage(['2026-02-30','invalid',null],at('2026-10-08T16:30:00')).status,'empty');
+  assert.equal(MR.archiveCoverage(dates,at('2028-01-03T16:30:00')).status,'unknown');
+  assert.equal(JSON.stringify(dates),original);
+});
+test('the latest analysis selector and missing archive warning disclose the actual frozen date',()=>{
+  const box={textContent:'',classList:{toggle(){},add(){}}},select={options:[{textContent:'最新'}]};
+  const when=at('2026-10-08T16:30:00');
+  const c=render('renderAnalysisAvailability',{
+    MarketRules:{...MR,analysisAvailability:a=>MR.analysisAvailability(a,when),archiveCoverage:dates=>MR.archiveCoverage(dates,when)},
+    latestAnnotations:{meta:{updatedAt:'2026-10-06T08:45:00+08:00'}},annotations:null,viewingDate:null,archiveDates:['2026-10-06'],
+    el:id=>id==='histSelect'?select:box
+  });
+  c.renderAnalysisAvailability();
+  assert.equal(select.options[0].textContent,'最新已存分析（2026-10-06）');
+  assert.match(box.textContent,/2026-10-08 的分析尚未发布/);
+  assert.match(box.textContent,/缺少分析归档：2026-10-07、2026-10-08/);
+});
 test('B and C share a short direction but have different structural boundaries; untriggered C is not called a stopped trade',()=>{
   const c=render('signalStateForScenario',{fmt:String});
   const scenario=stop=>({direction:'short',risk:{structural_invalidation:{price:stop}}});

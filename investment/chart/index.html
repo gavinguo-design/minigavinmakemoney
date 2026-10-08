@@ -11,7 +11,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
-  <script src="market-rules.js?v=2"></script>
+  <script src="market-rules.js?v=3"></script>
   <script src="market-participation.js?v=1"></script>
   <script src="market-context.js?v=1"></script>
   <script src="trading-operation.js?v=4"></script>
@@ -484,6 +484,7 @@
     }
     .hist-ctrl select:focus { border-color: var(--accent); }
     .hist-ctrl .hist-note { font-size: 10px; color: rgba(235,235,245,0.3); flex-basis: 100%; line-height: 1.5; }
+    .analysis-availability { margin: 12px 0; padding: 12px 16px; border: 1px solid rgba(255,159,10,0.55); border-radius: 12px; background: rgba(255,159,10,0.08); color: #ffbd59; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
     .hist-ctrl .cal-btn {
       background: var(--card); color: var(--text); cursor: pointer;
       border: 1px solid var(--border); border-radius: 10px;
@@ -890,11 +891,12 @@
     <!-- 历史分析回看控件 -->
     <div class="hist-ctrl hidden" id="histCtrl" style="position:relative">
       <label for="histSelect">查看历史分析</label>
-      <select id="histSelect"><option value="">最新</option></select>
+      <select id="histSelect"><option value="">最新已存分析</option></select>
       <button class="cal-btn" id="calBtn" type="button" title="打开日历选择存档日期">📅</button>
       <div class="cal-panel hidden" id="calPanel"></div>
       <span class="hist-note">历史存档为当日冻结快照，生成后不可修改（与预测留痕同一原则）· 选中某日：情景区域从那天的K线出发展开，此后已发生的真实K线叠加其上，预测 vs 现实一眼对比</span>
     </div>
+    <div class="analysis-availability hidden" id="analysisAvailability" role="status"></div>
 
     <!-- 顶部状态条：日期 + 偏向胶囊 + 当前价 + 关键区间，判断依据折叠收纳 -->
     <div class="status-bar hidden" id="statusBar"></div>
@@ -1197,7 +1199,25 @@
     var prefix=viewingDate?'历史模式：指标截至冻结基准；顶部行情单独显示最新报价。':'行情与判断分别校验；价格触及不代表收盘确认。';
     box.textContent=prefix+(klineUpdatedAt?' K线源更新 '+klineUpdatedAt+'。':'')+(warnings.length?' ⚠ '+warnings.join('；'):' 数据校验通过。');
     box.classList.toggle('warning',warnings.length>0);
+    renderAnalysisAvailability();
     renderTradingOperation();
+  }
+  function renderAnalysisAvailability() {
+    var state=MarketRules.analysisAvailability(latestAnnotations||annotations);
+    var select=el('histSelect');
+    if(select&&select.options.length) select.options[0].textContent='最新已存分析'+(state.date?'（'+state.date+'）':'（待发布）');
+    var box=el('analysisAvailability');
+    if(!box) return;
+    if(viewingDate) { box.classList.add('hidden'); return; }
+    var coverage=MarketRules.archiveCoverage(archiveDates||[]);
+    var lines=[];
+    if(state.status==='stale') lines.push('⚠ '+state.expected+' 的分析尚未发布；当前展示 '+state.date+' 冻结的旧分析。行情更新不会自动生成当天分析。');
+    else if(state.status==='missing') lines.push('⚠ 当天分析未提供有效冻结日期，暂不能确认为最新判断。');
+    else if(state.status==='future') lines.push('⚠ 分析日期超前，需核对来源与适用日期。');
+    else if(state.status==='unknown') lines.push('⚠ 交易日历超出支持范围，无法确认分析是否适用于今天。');
+    if(coverage.status==='missing') lines.push('缺少分析归档：'+coverage.missing.slice(-8).join('、')+(coverage.missing.length>8?' 等'+coverage.missing.length+'个交易日':'')+'。缺失记录不会用今天的数据补写。');
+    box.textContent=lines.join(' ');
+    box.classList.toggle('hidden',!lines.length);
   }
   var priceLines = [];      // active price line handles
   var levelHitList = [];    // 供十字线悬停提示用的价位信息
@@ -2725,12 +2745,12 @@
     var basePx = typeof f.basePrice === 'number' ? Math.round(f.basePrice) : null;
     var dateStr = viewingDate || f.applicable_date || f.baseDate || '';
     var dateHtml = dateStr
-      ? '<span class="sb-date">' + escapeHtml(cnDate(dateStr)) + (weekdayOf(dateStr) ? '（' + weekdayOf(dateStr) + '）' : '') +
+      ? '<span class="sb-date">分析冻结：' + escapeHtml(cnDate(dateStr)) + (weekdayOf(dateStr) ? '（' + weekdayOf(dateStr) + '）' : '') +
         (viewingDate ? ' <span class="sb-frozen-tag">冻结</span>' : '') + '</span>'
       : '';
     var range = statusRange(f, c);
     var pxHtml = basePx != null
-      ? '<span class="sb-kv">' + (viewingDate ? '当日基准' : '当前参考') + ' <b' + (viewingDate ? '' : ' id="jdPrice"') + '>' + fmt(basePx) + '</b></span>'
+      ? '<span class="sb-kv">基准收盘 <b>' + fmt(basePx) + '</b>' + (f.baseDate ? '（'+escapeHtml(f.baseDate)+'）' : '') + '</span>'
       : '';
     var rangeHtml = range
       ? '<span class="sb-kv">分析基准邻近区间 <b>' + fmt(range[0]) + '–' + fmt(range[1]) + '</b></span>'
@@ -3734,6 +3754,7 @@
         .sort().reverse(); // 最新日期在前
       if (!dates.length) return;
       archiveDates = dates;
+      renderAnalysisAvailability();
       archiveDateSet = {};
       dates.forEach(function (d) { archiveDateSet[d] = true; });
       var sel = el('histSelect');

@@ -82,6 +82,33 @@
     var wrongHoliday=/10\/7\s*中秋翌日休市/.test(String(r.horizonDesc||''));
     return {status:declared && declared[1]===result.end && !wrongHoliday?'valid':'mismatch',expected:result,declared_end:declared?declared[1]:null};
   }
+  function analysisAvailability(a, now) {
+    var today=hk(now).date;
+    var expected=tradingDay(today)===true?today:latestDay(now,true);
+    var f=a&&a.forecast||{}, meta=a&&a.meta||{};
+    var date=String(f.applicable_date||meta.updatedAt||f.updatedAt||'').slice(0,10);
+    if(!expected) return {status:'unknown',date:date||null,expected:null};
+    var parsed=new Date(date+'T00:00:00Z');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date) return {status:'missing',date:null,expected:expected};
+    return {status:date===expected?'current':date<expected?'stale':'future',date:date,expected:expected};
+  }
+  // Audit the published archive index only. Never manufacture a frozen analysis
+  // from subsequently observed candles or mutate existing snapshots.
+  function archiveCoverage(dates, now) {
+    var end=latestDay(now,true);
+    if(!end) return {status:'unknown',latest:null,through:null,missing:[]};
+    var valid=(Array.isArray(dates)?dates:[]).filter(function(d){
+      if(typeof d!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(d)||d>end||tradingDay(d)!==true) return false;
+      var parsed=new Date(d+'T00:00:00Z');
+      return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===d;
+    }).sort();
+    if(!valid.length) return {status:'empty',latest:null,through:end,missing:[]};
+    var saved=new Set(valid), missing=[], cursor=valid[0];
+    for(var i=0;i<740&&cursor<=end;i++,cursor=shift(cursor,1)) {
+      if(tradingDay(cursor)===true&&!saved.has(cursor)) missing.push(cursor);
+    }
+    return {status:missing.length?'missing':'complete',latest:valid[valid.length-1],through:end,missing:missing};
+  }
   function timestamp(text) {
     if (typeof text==='number') return text;
     if (!text) return NaN;
@@ -191,7 +218,7 @@
       lower_inclusive:short,upper_inclusive:!short};
   }
   return {hk:hk,dayString:dayString,shift:shift,known:known,tradingDay:tradingDay,
-    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,timestamp:timestamp,
+    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,analysisAvailability:analysisAvailability,archiveCoverage:archiveCoverage,timestamp:timestamp,
     quoteState:quoteState,validQuote:validQuote,markBars:markBars,statusIssue:statusIssue,
     sanitizeStatus:sanitizeStatus,rr:rr,chaseBoundary:chaseBoundary};
 });

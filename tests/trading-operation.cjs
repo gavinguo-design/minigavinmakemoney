@@ -3,21 +3,28 @@ const test = require('node:test');
 const fs = require('node:fs');
 const TradingOperation = require('../investment/chart/trading-operation.js');
 const annotations = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/annotations.json'), 'utf8'));
-const status = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/scenario_status.json'), 'utf8'));
 const participation = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/hsi-participation.json'), 'utf8'));
 const at = s => Date.parse(s + '+08:00');
 // Use the canonical feed representation so this fixture is independent of
 // whichever chart-time adapter the checked-out branch currently carries.
 const completeBar = { time: '2026-10-06', open: 24279, high: 24354, low: 24179, close: 24280, partial: false };
-const freshStatus = Object.assign({}, status, {
+// Freeze the status fixture to the same October 6 candle; the live JSON is
+// updated during the day and must not change the meaning of these gate tests.
+const freshStatus = {
   analysis_id: annotations.meta && annotations.meta.analysis_id,
   analysis_updated_at: annotations.forecast.updatedAt || (annotations.meta && annotations.meta.updatedAt),
   updated_at: '2026-10-06T16:32:10+08:00',
   conditions_date: '2026-10-06',
   judgment_mode: 'close_final',
   data_stale: false,
-  conditions_stale: false
-});
+  conditions_stale: false,
+  scenarios: annotations.forecast.scenarios.map(sc => ({
+    id: sc.id, name_prefix: sc.id, triggered: sc.id === 'A',
+    core_total: 1, core_met: sc.id === 'A' ? 1 : 0,
+    confirm_total: 0, confirm_met: 0,
+    conditions: [{id:'frozen_daily_core',label:sc.trigger,role:'core',met:sc.id === 'A'}]
+  }))
+};
 const input = extra => Object.assign({ annotations, scenarioStatus: freshStatus, dailyBars: [completeBar], quote: { price: 24280, ts: at('2026-10-06T16:11:00') / 1000 }, now: at('2026-10-06T16:33:00') }, extra || {});
 const section = (contract, id) => contract.sections.find(s => s.id === id);
 

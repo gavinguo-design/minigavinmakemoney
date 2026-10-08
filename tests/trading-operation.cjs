@@ -142,7 +142,8 @@ test('key-level distances are signed, dynamic, nearest-first, and fail closed', 
   assert.equal(result.length,2);
   assert.equal(result[0].price,24100);
   assert.equal(result[0].distance_points,-30);
-  assert.equal(result[1].label,'C触发');
+  assert.equal(result[1].label,'C计划入场');
+  assert.equal(result[1].kind,'planned_entry');
   assert.equal(result[1].distance_points,-58);
   scenarios[0].rr.entry=24120;
   assert.equal(TradingOperation.keyLevelDistances(24130,scenarios,playbook,null)[0].distance_points,-10);

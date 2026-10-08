@@ -154,7 +154,8 @@
     }
     (Array.isArray(scenarios) ? scenarios : scenarios ? [scenarios] : []).forEach(function (sc) {
       var id = scenarioId(sc) || '情景', rr = sc && sc.rr || {};
-      add(id + '触发', rr.entry, 'trigger');
+      // A planned participation price is not the core close-confirmation level.
+      add(id + '计划入场', rr.entry, 'planned_entry');
       add(id + '失效', rr.stop, 'invalidation');
       if (sc && sc.structural_invalidation) add(id + '结构失效', sc.structural_invalidation.price, 'invalidation');
     });
@@ -169,7 +170,7 @@
       add('兜底上沿', fallback.range[1], 'fallback_boundary');
     }
     var seen = {};
-    var priority = { trigger:0, invalidation:1, fallback_boundary:2, zone_boundary:3 };
+    var priority = { planned_entry:0, invalidation:1, fallback_boundary:2, zone_boundary:3 };
     return points.sort(function (a, b) {
       return Math.abs(a.distance_points) - Math.abs(b.distance_points) || priority[a.kind] - priority[b.kind] || a.label.localeCompare(b.label);
     }).filter(function (p) {

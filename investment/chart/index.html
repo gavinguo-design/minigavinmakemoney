@@ -14,7 +14,7 @@
   <script src="market-rules.js?v=2"></script>
   <script src="market-participation.js?v=1"></script>
   <script src="market-context.js?v=1"></script>
-  <script src="trading-operation.js?v=3"></script>
+  <script src="trading-operation.js?v=4"></script>
   <script src="technical-analysis.js?v=1"></script>
   <script src="technical-panel.js?v=1"></script>
   <link rel="stylesheet" href="technical-panel.css?v=1">
@@ -1829,7 +1829,7 @@
     if (last && structural && typeof structural.price === 'number') {
       var direction = sc.direction || (sc.rr && sc.rr.direction);
       var broken = direction === 'short' ? last.close >= structural.price : last.close <= structural.price;
-      if (broken) return { id: 'invalidated', label: '当前结构不符合', title: '最新完整日K已越过本情景结构边界 ' + fmt(structural.price) + '；不代表该情景此前曾触发或已发生交易止损。' };
+      if (broken) return { id: 'invalidated', label: '最近收盘不符合', as_of_date: MarketRules.dayString(last.time), title: '最近完整日K（' + (MarketRules.dayString(last.time) || '日期待核对') + '）已越过本情景结构边界 ' + fmt(structural.price) + '；盘中现价接近计划入场不代表重新触发，也不代表该情景此前曾触发或已发生交易止损。' };
     }
     if (!st || typeof st.core_total !== 'number' || st.core_total < 1) return { id: 'unavailable', label: '待核对', title: '情景条件或完整K线不足，不能推断状态' };
     if (st.triggered === true) return { id: 'triggered', label: '已触发', title: '既有核心结构条件已满足' };
@@ -1840,7 +1840,7 @@
   function scenarioBadgeHtml(sc, refPx) {
     var st = viewingDate ? null : statusForScenario(sc);
     var state = signalStateForScenario(sc, st, currentBars, currentIv);
-    if (state.id === 'invalidated') return '<span class="sc-status invalidated" title="' + escapeHtml(state.title) + '">⛔ ' + escapeHtml(state.label) + '</span>';
+    if (state.id === 'invalidated') return '<span class="sc-status invalidated" title="' + escapeHtml(state.title) + '">⛔ ' + escapeHtml(state.label) + (state.as_of_date ? '（' + escapeHtml(state.as_of_date.slice(5)) + '）' : '') + '</span>';
     if (state.id === 'triggered') {
       var preview = scenarioStatus && scenarioStatus.judgment_mode === 'intraday_preview';
       return preview
@@ -2238,6 +2238,7 @@
         '<div class="sc-topline">' + badgeHtml +
           '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + Math.round(effectiveWeight * 100) + '% 权重' + (isTopWeight?'<i class="sc-weight-badge">最高权重</i>':'') + '</span></div>' +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 距离最近·非入场信号</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
+        (sc.trigger ? '<div class="sc-trig"><span class="k">触发前提：</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         numsHtml +
         scenarioParticipationHtml(sc, participation) +
         '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' +
@@ -2633,7 +2634,7 @@
     var triggeredIds = scenarios.filter(function (s) { return s.state === 'triggered' && s.status === 'available'; }).map(function (s) { return s.id; });
     var closeText = decision.close_confirmed ? ('已收盘 · ' + (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '确认') : '情景未确认')) : '等收盘';
     var pointer = decision.scenario_pointer || {};
-    var nearestPointer = pointer.nearest ? ('<span style="color:' + scenarioColor({id:pointer.nearest.id}) + '">' + escapeHtml(pointer.nearest.id) + '</span> · 距' + escapeHtml(pointer.nearest.id) + '入场 ' + signed(pointer.nearest.distance_points) + '点') : '情景分歧区·仅观察';
+    var nearestPointer = pointer.nearest ? ('<span style="color:' + scenarioColor({id:pointer.nearest.id}) + '">' + escapeHtml(pointer.nearest.id) + '</span> · 距计划入场 ' + signed(pointer.nearest.distance_points) + '点（非触发）') : '情景分歧区·仅观察';
     var topPointer = pointer.top_weight ? ('<span style="color:' + scenarioColor({id:pointer.top_weight.id}) + '">' + escapeHtml(pointer.top_weight.id) + '</span> ' + Math.round(pointer.top_weight.weight*100) + '%') : '待数据';
     var executionPointer = decision.close_confirmed ? (triggeredIds.length ? ('情景' + triggeredIds.join('/') + '已确认') : '收盘未确认情景') : (decision.market_session === 'closed' || decision.market_session === 'preopen') ? '最近收盘·确认数据待同步' : '等待收盘确认';
     var stripDistances = decision.close_confirmed ? '' : distances.map(function (d) {
@@ -2648,7 +2649,7 @@
           '<span class="op-kv"><b>' + (Number.isFinite(price) ? fmt(price) : '--') + '</b></span>' +
           '<span class="op-kv">' + escapeHtml(tacticalBand) + '</span>' +
           '<span class="op-kv">' + escapeHtml(tactical && tactical.stance || decision.label || '等待判断') + '</span>' +
-          '<span class="op-kv">当前最接近：<b>' + nearestPointer + '</b></span>' +
+          '<span class="op-kv">计划价距离最近：<b>' + nearestPointer + '</b></span>' +
           '<span class="op-kv">权重最高：<b>' + topPointer + '</b></span>' +
           '<span class="op-kv">正式触发：<b>' + executionPointer + '</b></span>' +
           stripDistances +
@@ -2965,7 +2966,7 @@
         price: structural.price, color: color, lineWidth: invalid ? 2 : 1,
         lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: false, title: ''
       }));
-      gutterItems.push({ price: structural.price, text: shortName(sc.name) + ' · 结构失效 ' + fmt(structural.price) + (invalid ? '（当前结构不符合）' : ''), color: color, source: 'invalidation' });
+      gutterItems.push({ price: structural.price, text: shortName(sc.name) + ' · 结构失效 ' + fmt(structural.price) + (invalid ? '（最近收盘不符合）' : ''), color: color, source: 'invalidation' });
     });
   }
 

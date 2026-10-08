@@ -1,0 +1,41 @@
+name: Read uploaded trade screenshots
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'investment/chart/uploads/pending.json'
+      - 'scripts/process-trade-uploads.cjs'
+      - '.github/workflows/process-trade-uploads.yml'
+permissions:
+  contents: write
+concurrency:
+  group: trade-screenshot-recognition
+  cancel-in-progress: false
+jobs:
+  recognize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install local Chinese and English OCR
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-chi-sim
+      - name: Extract only verified execution fields
+        run: |
+          node --test tests/trade-ocr.cjs
+          node scripts/process-trade-uploads.cjs
+      - name: Save recognized trades and review status
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add investment/chart/trades.json investment/chart/uploads/pending.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Review uploaded trade screenshots automatically'
+          git pull --rebase origin main
+          git push origin HEAD:main

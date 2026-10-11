@@ -107,7 +107,8 @@ test('historical renderer produces three compact outcomes without pending signal
  const context={MarketRules:MR,historyDailyFeed:require('../investment/chart/kline_futu.json'),viewingDate:'2026-10-09',el:()=>({classList:{add(){}}}),document:{createElement:()=>({style:{setProperty(){}},innerHTML:''})},escapeHtml:s=>String(s),fmt:n=>n.toLocaleString('en-US'),scenarioColor:()=> '#00cc88',Number};
  vm.createContext(context);vm.runInContext(source,context);
  const a=require('../investment/chart/archive/supplements/2026-10-09.json');context.renderHistoricalResults(a,a.forecast.scenarios,wrap);
- assert.equal(nodes.length,4);assert.equal(classes.has('sc-history'),true);
+ assert.equal(nodes.length,4);
+ for(const card of nodes.slice(1)) for(const label of ['结构目标','结构失效','参与参考','方案赔率']) assert.ok(card.innerHTML.includes(label));assert.equal(classes.has('sc-history'),true);
  assert.match(nodes[0].innerHTML,/B 收盘条件满足/);assert.match(nodes[0].innerHTML,/24,211.35/);assert.match(nodes[2].innerHTML,/当天未触及/);assert.match(nodes[2].className,/sc-history-matched/);
  assert.equal(nodes.every(n=>!n.innerHTML.includes('历史条件未回放')&&!n.innerHTML.includes('盈亏标尺')),true);
  assert.match(html,/\.scenarios\.sc-history \{ align-items: start;/);assert.match(html,/request !== historySelectionRequest/);

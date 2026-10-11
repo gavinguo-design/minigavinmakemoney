@@ -1617,6 +1617,7 @@
   // ---------- 条件式交易地图 playbook ----------
   function renderPlaybook(a) {
     var list = (a && Array.isArray(a.playbook)) ? a.playbook : [];
+    if (!list.length && a && a.forecast && a.forecast.scenarios) list = a.forecast.scenarios.map(function(sc){return {state:sc.name,condition:sc.trigger,then:(sc.rr && sc.rr.entryHint || sc.note || '仅作条件观察')+' 目标参考：'+(sc.target||'未提供')+'；结构失效：'+(sc.invalidation||'未提供')};});
     var wrap = el('playbookList'), title = el('playbookTitle');
     if (!list.length) { wrap.classList.add('hidden'); title.classList.add('hidden'); return; }
     wrap.innerHTML = '';
@@ -1670,6 +1671,12 @@
   function renderIntradayPanel() {
     var box = document.getElementById('intradayPanel');
     if (!box) return;
+    if (viewingDate) {
+      var historical = annotations && annotations.intraday_playbook;
+      var zones = historical && historical.zones || [];
+      box.innerHTML = '<div class="id-head"><span class="id-title">🧭 '+escapeHtml(viewingDate)+' 区间参考</span><span class="id-tag">历史方案 · 不跟随当前报价</span></div>' + zones.map(function(z){return '<p><b>'+escapeHtml(zoneRangeText(z))+' · '+escapeHtml(z.stance||'')+'</b>：'+escapeHtml(z.action||'')+'</p>';}).join('');
+      box.classList.toggle('hidden',!zones.length); return;
+    }
     var ip = MarketRules.analysisAvailability(latestAnnotations).status === 'current' && latestAnnotations && latestAnnotations.intraday_playbook;
     if (viewingDate || !ip || !Array.isArray(ip.zones) || !ip.zones.length) {
       box.classList.add('hidden'); box.innerHTML = ''; return;
@@ -2171,7 +2178,11 @@
       card.innerHTML = '<h4>' + escapeHtml(sc.name || sc.id) + '</h4><b>' + outcome + '</b>' +
         '<p>冻结条件：' + escapeHtml(sc.trigger || '') + '</p>' +
         (Number.isFinite(entry) ? '<p>计划入场 ' + fmt(entry) + ' · <b>' + (r.entryTouched ? '日内曾触及（不代表成交）' : '当天未触及') + '</b></p>' : '<p>没有计划入场价，仅作条件观察。</p>') +
-        '<p>这是当日结果核对，不是当前入场信号。</p>';
+        '<p><b>方向：</b>'+escapeHtml(sc.direction==='long'?'偏多':'偏空')+' · <b>结构目标：</b>'+escapeHtml(sc.target||'未提供')+'</p>' +
+        '<p><b>结构失效：</b>'+escapeHtml(sc.invalidation||'未提供')+'</p>' +
+        '<p><b>参与参考：</b>'+escapeHtml(sc.rr && sc.rr.entryHint || sc.note || '仅作条件观察')+'</p>' +
+        '<p><b>方案赔率：</b>'+(sc.rr && Number.isFinite(sc.rr.entry) && Number.isFinite(sc.rr.target) && Number.isFinite(sc.rr.stop) && Math.abs(sc.rr.entry-sc.rr.stop)>0 ? (Math.abs(sc.rr.target-sc.rr.entry)/Math.abs(sc.rr.entry-sc.rr.stop)).toFixed(2)+':1（低于2:1不可执行；结构止损不等于灾难止损）' : '数据不足，不可执行')+'</p>' +
+        '<p>概率未校准；这是历史条件方案及结果核对，不是当前入场信号。</p>';
       wrap.appendChild(card);
     });
   }
@@ -2783,7 +2794,7 @@
   function renderStructBanner(a) {
     var box = el('structBanner');
     var f = a && a.forecast;
-    var c = f && f.card;
+    var c = f && (f.card || (f.scenarios && {stateLabel:f.biasLabel,structureLine:f.summary,keyLines:(a.levels||[]).map(function(l){return {price:l.price,tag:l.label};}),mainScenarioLine:f.scenarios.map(function(sc){return sc.name+'：'+sc.trigger;}).join('；')}));
     if (!c || !(c.stateLabel || f.biasLabel)) { box.classList.add('hidden'); box.innerHTML = ''; box.onclick = null; return; }
     var toneCls = ({ weak: 'weak', bear: 'bear', bull: 'bull' })[c.stateTone] || 'weak';
     var emoji = c.stateEmoji ? c.stateEmoji + ' ' : '';
@@ -2824,7 +2835,7 @@
     var box = el('statusBar');
     if (!box) return;
     var f = a && a.forecast;
-    var c = f && f.card;
+    var c = f && (f.card || (f.scenarios && {stateLabel:f.biasLabel,structureLine:f.summary,keyLines:(a.levels||[]).map(function(l){return {price:l.price,tag:l.label};}),mainScenarioLine:f.scenarios.map(function(sc){return sc.name+'：'+sc.trigger;}).join('；')}));
     if (!f || !c) { box.classList.add('hidden'); box.innerHTML = ''; return; }
     var toneCls = ({ weak: 'weak', bear: 'bear', bull: 'bull' })[c.stateTone] || 'weak';
     var basePx = typeof f.basePrice === 'number' ? Math.round(f.basePrice) : null;

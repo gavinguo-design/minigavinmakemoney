@@ -85,3 +85,30 @@ test('preopen publishes in an isolated repository, retries preserve the same fre
   const review=JSON.parse(fs.readFileSync(path.join(dir,'daily-reviews/2026-10-12.json'),'utf8'));assert.equal(review.bar.date,'2026-10-12');assert.equal(review.brier,null);
  } finally {fs.rmSync(tmp,{recursive:true});}
 });
+
+test('October 9 replay uses actual close, matches B but never invents a fill or forecast win',()=>{
+ const a=require('../investment/chart/archive/supplements/2026-10-09.json'),daily=require('../investment/chart/kline_futu.json'),frozen=JSON.stringify(a);
+ const result=MR.replaySession(a,daily,'2026-10-09');
+ assert.equal(result.status,'available');assert.equal(result.bar.close,24211.35);
+ assert.deepEqual(result.scenarios.map(s=>s.condition),[false,true,false]);
+ assert.equal(result.scenarios[1].entryTouched,false);assert.equal(result.eligible_as_prediction,false);assert.equal(JSON.stringify(a),frozen);
+ const changed=structuredClone(daily),b=changed.candles.find(b=>b.date==='2026-10-09');b.close=b.high=24354.11;
+ assert.deepEqual(MR.replaySession(a,changed,'2026-10-09').scenarios.map(s=>s.condition),[true,false,false]);
+});
+test('historical replay rejects missing, duplicate, preview and unclosed candles',()=>{
+ const a=build(args),daily=require('../investment/chart/kline_futu.json'),b=daily.candles.find(b=>b.date==='2026-10-09');
+ assert.equal(MR.replaySession(a,daily,'2026-10-09',Date.parse('2026-10-09T12:00:00+08:00')).status,'unavailable');
+ for(const f of [{...daily,updated_at:'2026-10-09T15:00:00+08:00'},{...daily,candles:[]},{...daily,candles:[b,b]},{...daily,candles:[{...b,final:false}]}])assert.equal(MR.replaySession(a,f,'2026-10-09').status,'unavailable');
+});
+test('historical renderer produces three compact outcomes without pending signals or live rulers',()=>{
+ const vm=require('node:vm'),html=fs.readFileSync(require.resolve('../investment/chart/index.html'),'utf8');
+ const source=html.slice(html.indexOf('  function renderHistoricalResults('),html.indexOf('  function renderScenarioCards('));
+ const nodes=[],classes=new Set(),wrap={classList:{add:c=>classes.add(c),remove:c=>classes.delete(c)},appendChild:n=>nodes.push(n)};
+ const context={MarketRules:MR,historyDailyFeed:require('../investment/chart/kline_futu.json'),viewingDate:'2026-10-09',el:()=>({classList:{add(){}}}),document:{createElement:()=>({style:{setProperty(){}},innerHTML:''})},escapeHtml:s=>String(s),fmt:n=>n.toLocaleString('en-US'),scenarioColor:()=> '#00cc88',Number};
+ vm.createContext(context);vm.runInContext(source,context);
+ const a=require('../investment/chart/archive/supplements/2026-10-09.json');context.renderHistoricalResults(a,a.forecast.scenarios,wrap);
+ assert.equal(nodes.length,4);assert.equal(classes.has('sc-history'),true);
+ assert.match(nodes[0].innerHTML,/B 收盘条件满足/);assert.match(nodes[0].innerHTML,/24,211.35/);assert.match(nodes[2].innerHTML,/当天未触及/);assert.match(nodes[2].className,/sc-history-matched/);
+ assert.equal(nodes.every(n=>!n.innerHTML.includes('历史条件未回放')&&!n.innerHTML.includes('盈亏标尺')),true);
+ assert.match(html,/\.scenarios\.sc-history \{ align-items: start;/);assert.match(html,/request !== historySelectionRequest/);
+});

@@ -89,6 +89,25 @@
     if(rule.operator==='range' && Number.isFinite(rule.lower) && Number.isFinite(rule.upper) && rule.lower<rule.upper) return close>=rule.lower && close<rule.upper;
     return null;
   }
+  // Historical outcome overlay: never mutate the frozen analysis or infer fills.
+  function replaySession(a, feed, date, now) {
+    var cutoff=timestamp(date+'T'+(halfDays.has(date)?'12:10':'16:10')+':00+08:00');
+    var sourceTime=timestamp(feed&&feed.updated_at);
+    var unavailable={status:'unavailable',date:date,scenarios:[]};
+    if(tradingDay(date)!==true || !Number.isFinite(cutoff) || !Number.isFinite(sourceTime) ||
+       sourceTime<cutoff || (now==null?Date.now():now)<cutoff) return unavailable;
+    var matches=(feed&&Array.isArray(feed.candles)?feed.candles:[]).filter(function(b){return b.date===date;});
+    if(matches.length!==1) return unavailable;
+    var b=matches[0];
+    if(b.final===false || ![b.open,b.high,b.low,b.close].every(Number.isFinite) ||
+       b.low<=0 || b.high<Math.max(b.open,b.close) || b.low>Math.min(b.open,b.close) || b.low>b.high) return unavailable;
+    var scenarios=(a&&a.forecast&&a.forecast.scenarios||[]).map(function(sc){
+      var verdict=priceCondition(sc.price_rule,b.close),entry=sc.rr&&sc.rr.entry;
+      return {id:sc.id,condition:verdict,entryTouched:Number.isFinite(entry)?entry>=b.low&&entry<=b.high:null};
+    });
+    return {status:'available',date:date,bar:{open:b.open,high:b.high,low:b.low,close:b.close},scenarios:scenarios,
+      eligible_as_prediction:!(a&&a.publication&&a.publication.eligible_as_new_prediction===false)};
+  }
   function analysisAvailability(a, now) {
     var today=hk(now).date;
     var expected=tradingDay(today)===true?today:latestDay(now,true);
@@ -225,7 +244,7 @@
       lower_inclusive:short,upper_inclusive:!short};
   }
   return {hk:hk,dayString:dayString,shift:shift,known:known,tradingDay:tradingDay,
-    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,priceCondition:priceCondition,analysisAvailability:analysisAvailability,archiveCoverage:archiveCoverage,timestamp:timestamp,
+    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,priceCondition:priceCondition,replaySession:replaySession,analysisAvailability:analysisAvailability,archiveCoverage:archiveCoverage,timestamp:timestamp,
     quoteState:quoteState,validQuote:validQuote,markBars:markBars,statusIssue:statusIssue,
     sanitizeStatus:sanitizeStatus,rr:rr,chaseBoundary:chaseBoundary};
 });

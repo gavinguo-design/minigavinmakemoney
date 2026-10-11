@@ -400,6 +400,14 @@
     .nextdraft .nd-sc p b { color: rgba(235,235,245,0.9); font-weight: 600; }
     .nextdraft .nd-src { font-size: 10px; color: rgba(235,235,245,0.3); margin: 8px 0 0; line-height: 1.5; }
 
+    .scenarios.sc-history { align-items: start; }
+    .sc-history-summary { grid-column: 1 / -1; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; line-height: 1.7; }
+    .sc-history-summary p { margin: 3px 0; color: var(--muted); font-size: 12px; }
+    .sc-history-result { border: 1px solid var(--border); border-top: 3px solid var(--sc-color); border-radius: 12px; padding: 14px; background: var(--card); min-width: 0; }
+    .sc-history-result h4 { margin: 0 0 10px; color: var(--sc-color); }
+    .sc-history-result p { margin: 6px 0; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+    .sc-history-result.sc-history-matched { border-color: var(--sc-color); }
+
     /* 情景展示层切换（display-layer only，不动数据文件） */
     .sc-settled-bar { background: rgba(255,159,10,0.06); border: 1px solid rgba(255,159,10,0.28); border-radius: 10px; padding: 8px 13px; margin-bottom: 10px; cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .sc-settled-bar:hover { border-color: rgba(255,159,10,0.5); }
@@ -1247,6 +1255,8 @@
   var levelGutterEl = el('levelGutter'); // 价位线文字标签栏（图内 priceLine title 迁出后的载体，在价格轴右侧）
   var gutterItems = [];     // {price, text, color, source} 当前需要在 gutter 中显示的标签
   var currentIv = '1d';
+  var historyDailyFeed = null;
+  var historySelectionRequest = 0;
   var currentBars = [];     // current candle data
   var markerByTime = {};    // time -> marker obj (for click detail)
   var eventChartMarkers = []; // 人工事件 markers（renderMarkers 产出，与形态 markers 合并后上图）
@@ -2132,11 +2142,47 @@
     return '<div class="sc-participation">参与度校正 <b>' + (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pct</b> · 宽度/权重/贡献对该' + direction + '情景' + (delta >= 0 ? '加权' : '降权') + '</div>';
   }
 
+  function renderHistoricalResults(a, scenarios, wrap) {
+    var replay = MarketRules.replaySession(a, historyDailyFeed, viewingDate);
+    wrap.classList.remove('hidden');
+    wrap.classList.add('sc-history');
+    el('probNote').classList.add('hidden');
+    var summary = document.createElement('div');
+    summary.className = 'sc-history-summary';
+    if (replay.status !== 'available') {
+      summary.textContent = viewingDate + ' · 缺少当天已确认日K，暂不能回放；不使用最新报价代替历史结果。';
+      wrap.appendChild(summary); return;
+    }
+    var matched = replay.scenarios.filter(function(r){return r.condition === true;}).map(function(r){return r.id;});
+    var b = replay.bar;
+    summary.innerHTML = '<b>' + escapeHtml(viewingDate) + ' 已收盘 · ' + (matched.length ? escapeHtml(matched.join('/')) + ' 收盘条件满足' : '没有情景满足收盘条件') + '</b>' +
+      '<p>实际开盘 ' + fmt(b.open) + ' · 最高 ' + fmt(b.high) + ' · 最低 ' + fmt(b.low) + ' · 收盘 <b>' + fmt(b.close) + '</b></p>' +
+      '<p>条件满足与成交分开核对；日K触价不能证明实际成交，也不能判断盘中触价先后。' +
+      (a.publication && a.publication.kind === 'retrospective_backfill' ? '这份分析是事后补录，不计预测命中率。' : '') + '</p>';
+    wrap.appendChild(summary);
+    scenarios.forEach(function(sc, index){
+      var r = replay.scenarios[index], card = document.createElement('div');
+      card.className = 'sc-history-result' + (r.condition === true ? ' sc-history-matched' : '');
+      card.style.setProperty('--sc-color', scenarioColor(sc));
+      var outcome = r.condition === true ? '✓ 当天收盘条件满足' : r.condition === false ? '当天收盘条件未满足' : '缺少冻结价格规则，不能判定';
+      var entry = sc.rr && sc.rr.entry;
+      card.innerHTML = '<h4>' + escapeHtml(sc.name || sc.id) + '</h4><b>' + outcome + '</b>' +
+        '<p>冻结条件：' + escapeHtml(sc.trigger || '') + '</p>' +
+        (Number.isFinite(entry) ? '<p>计划入场 ' + fmt(entry) + ' · <b>' + (r.entryTouched ? '日内曾触及（不代表成交）' : '当天未触及') + '</b></p>' : '<p>没有计划入场价，仅作条件观察。</p>') +
+        '<p>这是当日结果核对，不是当前入场信号。</p>';
+      wrap.appendChild(card);
+    });
+  }
+
   function renderScenarioCards(a) {
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
     var wrap = el('scenarioCards');
     wrap.innerHTML = '';
+    wrap.classList.remove('sc-history');
+    if (viewingDate && scenarios.some(function(sc){return !!sc.price_rule;})) {
+      renderHistoricalResults(a, scenarios, wrap); return;
+    }
 
     if (!viewingDate && MarketRules.analysisAvailability(a).status !== 'current') {
       wrap.classList.remove('hidden');
@@ -3715,6 +3761,7 @@
 
   function switchToDate(date) {
     var sel = el('histSelect');
+    var request = ++historySelectionRequest;
     if (!date) {
       viewingDate = null;
       if (sel) sel.value = '';
@@ -3724,7 +3771,10 @@
       if (currentBars.length) setDefaultView(currentIv);
       return;
     }
-    fetchArchive(date).then(function (a) {
+    Promise.all([fetchArchive(date), fetch('kline_futu.json?t=' + Date.now(), {cache:'no-store'}).then(function(r){if(!r.ok) throw new Error('daily feed unavailable'); return r.json();}).catch(function(){return null;})]).then(function (results) {
+      if (request !== historySelectionRequest) return;
+      var a = results[0];
+      historyDailyFeed = results[1];
       if (!a) { // 存档拉取失败，回退到最新
         if (sel) sel.value = viewingDate || '';
         return;

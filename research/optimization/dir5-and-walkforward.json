@@ -1,0 +1,75 @@
+{
+ "3类": {
+  "test_n": 200,
+  "stay_in_prev_class": 0.81,
+  "entropy_marginal_bits": 1.3839,
+  "entropy_conditional_bits": 0.8891,
+  "info_gain_bits": 0.4948,
+  "brier_transition": 0.3206,
+  "brier_uniform": 0.6667,
+  "brier_skill_vs_uniform": 0.519,
+  "top_hit": 0.81,
+  "freq": {
+   "A": 0.195,
+   "B": 0.595,
+   "C": 0.21
+  }
+ },
+ "4类(B拆上下半)": {
+  "test_n": 200,
+  "stay_in_prev_class": 0.685,
+  "entropy_marginal_bits": 1.9316,
+  "entropy_conditional_bits": 1.3192,
+  "info_gain_bits": 0.6125,
+  "brier_transition": 0.4727,
+  "brier_uniform": 0.75,
+  "brier_skill_vs_uniform": 0.3697,
+  "top_hit": 0.685,
+  "freq": {
+   "A": 0.195,
+   "Bh": 0.255,
+   "Bl": 0.34,
+   "C": 0.21
+  }
+ },
+ "B_half_persistence": {
+  "n": 250,
+  "same_half": 0.756
+ },
+ "expected_range": {
+  "corr_atr_vs_abs_move": 0.1491,
+  "corr_atr_vs_high_low": 0.3912,
+  "corr_hv20pts_vs_abs_move": 0.0595,
+  "close_within_0_5atr": 0.5141,
+  "close_within_1atr": 0.8313,
+  "close_within_1_5atr": 0.9578,
+  "median_abs_move_over_atr": 0.4863,
+  "median_high_low_over_atr": 0.7788
+ },
+ "trigger_distance": {
+  "min_dist_gt_1atr": 0.4,
+  "b_zone_share": 0.6225
+ },
+ "walk_forward_descriptive": {
+  "trans-e0.5-a0.5": {
+   "n": 200,
+   "brier": 0.2869,
+   "v1": 0.3929,
+   "diff_vs_v1": {
+    "mean": -0.106,
+    "lo": -0.1549,
+    "hi": -0.0521
+   }
+  },
+  "mlr-core-l21": {
+   "n": 200,
+   "brier": 0.2875,
+   "v1": 0.3929,
+   "diff_vs_v1": {
+    "mean": -0.1053,
+    "lo": -0.1449,
+    "hi": -0.0647
+   }
+  }
+ }
+}

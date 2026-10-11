@@ -444,3 +444,24 @@ test('expired online analysis never renders its narrative, levels or plan, while
   rendered.length=0;c.viewingDate='2026-10-06';c.applyAnnotations(original);
   assert.equal(rendered.every(a=>a===original),true);
 });
+
+test('two-point scenario envelopes curve across sessions without changing frozen endpoints or source',()=>{
+ const c=render('zonePoints');
+ for(const day of ['2026-10-08','2026-10-09']){
+  const a=require('../investment/chart/archive/supplements/'+day+'.json');
+  for(const sc of a.forecast.scenarios){
+   const frozen=JSON.stringify(sc),points=c.zonePoints(sc);
+   for(const side of ['upper','lower']){
+    const raw=sc.zone[side==='upper'?'upperBound':'lowerBound'],curve=points[side];
+    assert.equal(curve.length,6);assert.equal(curve[0].price,raw[0].price);assert.equal(curve.at(-1).price,raw[1].price);
+    if(raw[1].price!==raw[0].price)assert.notEqual(curve[2].price,raw[0].price+(raw[1].price-raw[0].price)*2/5);
+    assert.equal(curve.every(p=>Number.isFinite(p.price)),true);
+   }
+   for(let i=0;i<6;i++)assert.ok(points.upper[i].price>=points.lower[i].price);
+   assert.equal(JSON.stringify(sc),frozen);
+  }
+ }
+ const original={zone:{upperBound:[{offset:0,price:10},{offset:1,price:13},{offset:2,price:11}],lowerBound:[{offset:0,price:10},{offset:1,price:8},{offset:2,price:9}]}};
+ assert.equal(c.zonePoints(original).upper,original.zone.upperBound);
+ assert.match(html,/情景范围 · 非逐日预测/);
+});

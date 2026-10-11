@@ -1453,6 +1453,23 @@
     var z = sc.zone || {};
     var upper = Array.isArray(z.upperBound) ? z.upperBound : (sc.path || []).map(function (p) { return { offset: p.offset, price: p.h }; });
     var lower = Array.isArray(z.lowerBound) ? z.lowerBound : (sc.path || []).map(function (p) { return { offset: p.offset, price: p.l }; });
+    // Two endpoints define an envelope, not a daily price forecast. Smooth only
+    // its display geometry; preserve all supplied multi-point historical paths.
+    if (upper.length===2 && lower.length===2 && upper[0].offset===0 && lower[0].offset===0 &&
+        upper[1].offset===lower[1].offset && Number.isInteger(upper[1].offset) && upper[1].offset>1 && upper[1].offset<=100 &&
+        upper.concat(lower).every(function(p){return Number.isFinite(p.price);})) {
+      var count=upper[1].offset, startUpper=upper[0].price, startLower=lower[0].price;
+      var endUpper=upper[1].price, endLower=lower[1].price;
+      var interpolate=function(start,end){
+        var points=[];
+        for(var i=0;i<=count;i++) {
+          var t=i/count, expansion=Math.sqrt(t);
+          points.push({offset:i,price:i===0?start:i===count?end:start+(end-start)*expansion});
+        }
+        return points;
+      };
+      upper=interpolate(startUpper,endUpper);lower=interpolate(startLower,endLower);
+    }
     return { upper: upper, lower: lower };
   }
 
@@ -1477,7 +1494,7 @@
       hint.classList.remove('hidden'); simBadge.classList.add('hidden'); scheduleGutterRefresh(); return;
     }
     hint.classList.add('hidden'); simBadge.classList.remove('hidden');
-    simBadge.textContent = viewingDate ? 'A/B/C 情景带 · 金色为冻结分析起点' : 'A/B/C 情景带 · 从最新确认K线出发';
+    simBadge.textContent = viewingDate ? 'A/B/C 情景范围 · 非逐日预测' : 'A/B/C 情景范围 · 非逐日预测';
 
     // 结算后：当日正式情景已失效/过期，清空图上情景区域（不画旧的、不乱画草稿价位，避免误导）
     if (isScenarioSettled(a)) {
@@ -1508,6 +1525,7 @@
 
     scenarios.forEach(function (sc, idx) {
       var points = zonePoints(sc), base = lastBar.close;
+      var lineType = sc.zone && sc.zone.upperBound && sc.zone.upperBound.length === 2 ? LightweightCharts.LineType.Curved : LightweightCharts.LineType.Simple;
       var scColor = scenarioColor(sc);
       var upperData = anchoredZoneData(points.upper, lastBar, futureTimes, maxOffset);
       var lowerData = anchoredZoneData(points.lower, lastBar, futureTimes, maxOffset);
@@ -1517,7 +1535,7 @@
       // depicts a range from the starting price, never a sequence of predicted OHLC bars.
       var makeFill = function (data, alpha) {
         var fill = chart.addBaselineSeries({
-          baseValue: { type: 'price', price: base },
+          baseValue: { type: 'price', price: base }, lineType: lineType,
           topFillColor1: hexToRgba(scColor, alpha), topFillColor2: hexToRgba(scColor, 0.01),
           bottomFillColor1: hexToRgba(scColor, 0.01), bottomFillColor2: hexToRgba(scColor, alpha),
           topLineColor: 'rgba(0,0,0,0)', bottomLineColor: 'rgba(0,0,0,0)',
@@ -1530,11 +1548,11 @@
       var bandAlpha = 0.07 + weight * 0.18;
       var upperFill = makeFill(upperData, bandAlpha);
       var lowerFill = makeFill(lowerData, bandAlpha * 0.82);
-      var upperLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.28), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
-      var lowerLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.28), lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      var upperLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.28), lineType: lineType, lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      var lowerLine = chart.addLineSeries({ color: hexToRgba(scColor, 0.28), lineType: lineType, lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
       upperLine.setData(upperData); lowerLine.setData(lowerData);
       var centerData = upperData.map(function (p, i) { return { time:p.time, value:(p.value + lowerData[i].value) / 2 }; });
-      var centerLine = chart.addLineSeries({ color:hexToRgba(scColor, 0.48), lineWidth:1, lineStyle:LightweightCharts.LineStyle.Dashed, priceLineVisible:false, lastValueVisible:false, crosshairMarkerVisible:false });
+      var centerLine = chart.addLineSeries({ color:hexToRgba(scColor, 0.48), lineType:lineType, lineWidth:1, lineStyle:LightweightCharts.LineStyle.Dashed, priceLineVisible:false, lastValueVisible:false, crosshairMarkerVisible:false });
       centerLine.setData(centerData);
 
       // 终点由 DOM overlay 绘制，字母放在圆内；Lightweight Charts 的 marker text

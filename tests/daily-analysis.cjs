@@ -117,7 +117,7 @@ test('historical renderer produces three compact outcomes without pending signal
  assert.equal(nodes.length,4);for(const card of nodes.slice(1)){assert.match(card.innerHTML,/情景方案保留/);assert.match(card.innerHTML,/触价结果待核对/);assert.doesNotMatch(card.innerHTML,/当天未触及/);}
  context.MarketRules={...MR,replaySession:undefined};nodes.length=0;context.renderHistoricalResults(a,a.forecast.scenarios,wrap);assert.equal(nodes.length,4);
  context.MarketRules={...MR,replaySession(){throw Error('outcome failure');}};context.console={warn(){}};nodes.length=0;context.renderHistoricalResults(a,a.forecast.scenarios,wrap);assert.equal(nodes.length,4);
- assert.match(html,/market-rules\.js\?v=4/);
+ assert.match(html,/market-rules\.js\?v=5/);
  assert.match(html,/\.scenarios\.sc-history \{ align-items: start;/);assert.match(html,/request !== historySelectionRequest/);
 });
 
@@ -161,7 +161,7 @@ test('October 8 has independent reconstruction from the October 7 snapshot, neve
 
 test('rule weights: sum to 1, bounded, 0.05 grid, deterministic, versioned and published as rule_based_uncalibrated',()=>{
  const {scoreScenarioWeights,WEIGHT_MODEL}=require('../scripts/daily-analysis.cjs');
- const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('../investment/chart/hsi-participation.json');
+ const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('./fixtures/hsi-participation-2026-10-09.json');
  const live={date:'2026-10-12',feed:close,seed,participation:part,generatedAt:'2026-10-12T08:45:30+08:00'};
  const a=build(live),b=build(live),p=a.forecast.scenarios.map(s=>s.probability);
  assert.deepEqual(a,b);assert.equal(WEIGHT_MODEL.version,'rule-weights-v1');
@@ -180,7 +180,7 @@ test('rule weights: sum to 1, bounded, 0.05 grid, deterministic, versioned and p
 });
 test('rule weights ignore data after the information cutoff',()=>{
  const {scoreScenarioWeights}=require('../scripts/daily-analysis.cjs');
- const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('../investment/chart/hsi-participation.json');
+ const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('./fixtures/hsi-participation-2026-10-09.json');
  const live={date:'2026-10-12',feed:close,seed,participation:part,generatedAt:'2026-10-12T08:45:30+08:00'},base=build(live);
  const polluted=structuredClone(close);polluted.candles.push({date:'2026-10-12',open:30000,high:31000,low:29000,close:30500});
  assert.deepEqual(build({...live,feed:polluted}).forecast.scenarios,base.forecast.scenarios);
@@ -205,10 +205,10 @@ test('chart shows rule weights with version note and keeps legacy null cards as 
  const html=fs.readFileSync(require.resolve('../investment/chart/index.html'),'utf8');
  const vm=require('node:vm'),src=html.slice(html.indexOf('  function ruleWeightModel('),html.indexOf('  function participationEvaluation('));
  const ctx={escapeHtml:s=>String(s),Number};vm.createContext(ctx);vm.runInContext(src,ctx);
- const a=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('../investment/chart/hsi-participation.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
+ const a=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('./fixtures/hsi-participation-2026-10-09.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
  assert.equal(ctx.ruleWeightModel(a),'rule-weights-v1');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/规则打分 v1，未经回测校准，累计 0 次/);
  assert.equal(ctx.ruleWeightModel(build(args)),null);
- const MP=require('../investment/chart/market-participation.js'),ev=MP.evaluate(require('../investment/chart/hsi-participation.json'),a.forecast.scenarios,'2026-10-09');
+ const MP=require('../investment/chart/market-participation.js'),ev=MP.evaluate(require('./fixtures/hsi-participation-2026-10-09.json'),a.forecast.scenarios,'2026-10-09');
  assert.equal(ev.already_in_base,true);assert.deepEqual(Object.values(ev.weights).map(v=>Math.round(v*100)),[30,50,20]);assert.equal(ctx.ruleWeightModel(seed),null);
  assert.match(html,/'% 权重' : '权重未校准'/);assert.match(html,/主情景 · /);
 });

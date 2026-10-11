@@ -11,7 +11,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
-  <script src="market-rules.js?v=4"></script>
+  <script src="market-rules.js?v=5"></script>
   <script src="market-participation.js?v=2"></script>
   <script src="market-context.js?v=1"></script>
   <script src="trading-operation.js?v=4"></script>
@@ -1872,8 +1872,9 @@
     '</div>';
   }
 
-  // ---------- 情景触发条件清单（scenario_status.json，后台 cron 每小时更新，前端每小时自动刷新） ----------
-  var scenarioStatus = null;   // 最近一次有效的条件清单数据
+  // ---------- 条件清单：盘中随有效报价预览；文件保留独立收盘确认 ----------
+  var scenarioStatus = null;   // 当前展示的预览或收盘确认
+  var storedScenarioStatus = null; // 后台文件原值，不能被盘中报价改写
 
   function fetchScenarioStatus() {
     return fetch('scenario_status.json?t=' + Date.now()).then(function (r) {
@@ -2078,9 +2079,10 @@
 
   function refreshScenarioChecklists() {
     if (viewingDate || !annotations) return;
+    scenarioStatus = MarketRules.resolveScenarioStatus(annotations, storedScenarioStatus, [realtimeData, yahooQuote]);
     var f = annotations.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
-    var cards = document.querySelectorAll('#scenarioCards .sc-card');
+    var cards = document.querySelectorAll('#scenarioCards .sc-card, #scenarioCards .sc-card-settled[data-idx]');
     Array.prototype.forEach.call(cards, function (card) {
       var idx = parseInt(card.getAttribute('data-idx'), 10);
       var sc = scenarios[idx];
@@ -2359,7 +2361,8 @@
         var observation = document.createElement('div');
         observation.className = 'sc-card-settled';
         observation.style.setProperty('--sc-color', scenarioColor(sc));
-        observation.innerHTML = '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span><div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div><div class="sc-row">赔率不可执行 · 仅显示条件观察，不提供入场标尺</div>';
+        observation.setAttribute('data-idx', idx);
+        observation.innerHTML = '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span>' + scenarioBadgeHtml(sc, refPx) + '<div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div><div class="sc-row">赔率不可执行 · 仅显示条件观察，不提供入场标尺</div><div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>';
         wrap.appendChild(observation);
         return;
       }
@@ -2445,7 +2448,7 @@
     var refPx = scenarioRefPrice(f);
     if (typeof refPx !== 'number') return;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
-    var cards = document.querySelectorAll('#scenarioCards .sc-card');
+    var cards = document.querySelectorAll('#scenarioCards .sc-card, #scenarioCards .sc-card-settled[data-idx]');
     Array.prototype.forEach.call(cards, function (card) {
       var idx = parseInt(card.getAttribute('data-idx'), 10);
       var sc = scenarios[idx];
@@ -2601,9 +2604,10 @@
     // 东财实时数据有效时，Yahoo 的延迟现价不再覆盖头部（避免tab切换时价格"跳回"延迟值）
     if (isRealtimeFresh()) return;
     var px = data.regularMarketPrice;
-    var quote = { price: px, ts: data.regularMarketTime };
+    var quote = { price: px, ts: data.regularMarketTime, source:'yahoo' };
     if (!MarketRules.validQuote(quote)) { rejectedQuoteAt = quote.ts; updateDataQuality(); return; }
     yahooQuote = quote;
+    refreshScenarioChecklists();
     var prev = data.previousClose;
     if (px == null) return;
     el('livePrice').textContent = px.toLocaleString('en-US', { maximumFractionDigits: 2 });
@@ -2641,7 +2645,10 @@
   }
 
   function fetchRealtime() {
-    return fetch('/api/realtime').then(function (r) { return r.json(); }).catch(function () { return null; });
+    return fetch('/api/realtime', {cache:'no-store',signal:AbortSignal.timeout(20000)}).then(function (r) {
+      if (!r.ok) throw new Error('quote ' + r.status);
+      return r.json();
+    }).catch(function () { return null; });
   }
 
   function applyRealtime(rt) {
@@ -2735,13 +2742,11 @@
 
   function scheduleRealtime() {
     if (realtimeTimer) clearTimeout(realtimeTimer);
-    updateDataQuality(); refreshScenarioChecklists();
-    var delay = isHKTradingTime() ? 30000 : 300000; // 盘中30秒 / 盘外5分钟
+    refreshScenarioChecklists(); updateDataQuality();
+    var phase = MarketRules.session().phase;
+    var delay = (phase === 'open' || phase === 'closing') ? 30000 : 60000;
     realtimeTimer = setTimeout(function () {
-      fetchRealtime().then(function (rt) {
-        applyRealtime(rt);
-        scheduleRealtime();
-      });
+      fetchRealtime().then(applyRealtime).catch(function () {}).finally(scheduleRealtime);
     }, delay);
   }
 
@@ -3541,7 +3546,7 @@
     el('delayNote').classList.toggle('hidden', !intraday);
     chart.applyOptions({ timeScale: { timeVisible: intraday, secondsVisible: false, borderColor: 'rgba(255,255,255,0.08)' } });
 
-    fetchBars(iv, intraday).then(function (result) {
+    return fetchBars(iv, intraday).then(function (result) {
       if (currentIv !== iv) return; // stale response
       currentBars = result.bars;
       klineSource = result.source;
@@ -3756,6 +3761,7 @@
     // 过期正文、价位、预案全部退出当前展示，原文件仍保留供历史审计。
     if (!viewingDate && MarketRules.analysisAvailability(a).status !== 'current') a = {meta:a && a.meta};
     annotations = a;
+    scenarioStatus = viewingDate ? null : MarketRules.resolveScenarioStatus(a, storedScenarioStatus, [realtimeData, yahooQuote]);
     renderStructBanner(a);
     renderStatusBar(a);
     renderForecast(a);
@@ -4007,11 +4013,8 @@
 
   loadInterval('1d');
 
-  // 首次拉取东财实时数据 + 启动定时刷新（盘中30s / 盘外5min）
-  fetchRealtime().then(function (rt) {
-    applyRealtime(rt);
-    scheduleRealtime();
-  });
+  // 首次报价及轮询；获取或渲染失败也继续，返回页面时立即重新验证。
+  fetchRealtime().then(applyRealtime).catch(function () {}).finally(scheduleRealtime);
 
   // ---------- 历史镜像卡片（historical_mirror.json，cron 每小时更新） ----------
   // 今日盘面特征 vs 历史同状态交易日的后续走势统计；fetch 失败/文件不存在整卡隐藏
@@ -4096,11 +4099,11 @@
 
   // 情景条件清单：首次拉取 + 每小时自动重新 fetch scenario_status.json 并重渲染
   fetchScenarioStatus().then(function (s) {
-    if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
+    if (s) { storedScenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
   });
   setInterval(function () {
     fetchScenarioStatus().then(function (s) {
-      if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
+      if (s) { storedScenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
     });
   }, 60 * 60 * 1000);
 
@@ -4115,31 +4118,35 @@
         if (a) { latestAnnotations = a; return selectDefaultAnalysis(); }
       }),
       fetchScenarioStatus().then(function (s) {
-        if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
+        if (s) { storedScenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
       }),
       fetchRealtime().then(function (rt) { applyRealtime(rt); }),
       refreshParticipation(),
       refreshMirror()
     ];
-    Promise.all(tasks.map(function (p) { return p.catch(function () {}); })).then(function () {
-      loadInterval(currentIv); // 重新拉K线（futu json 带 ?t= 防缓存，API 为动态接口）
-      setTimeout(function () { fab.classList.remove('spinning'); }, 700);
+    return Promise.all(tasks.map(function (p) { return p.catch(function () {}); })).then(function () {
+      return loadInterval(currentIv);
+    }).finally(function () {
+      fab.classList.remove('spinning');
+      refreshScenarioChecklists(); updateDataQuality();
     });
   }
   (function () {
     var fab = document.getElementById('fabRefresh');
     if (fab) fab.addEventListener('click', refreshAllData);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) {
+        refreshScenarioChecklists(); updateDataQuality();
+        refreshAllData();
+      }
+    });
   })();
 
   // ---------- 交易时段自动静默刷新（周一至五 09:30–16:10 HKT，每5分钟） ----------
   // 只刷标注/条件清单（静默、不重置视图）；实时价已有盘中30s轮询，不重复
   function isHKSessionWindow() {
-    var now = new Date();
-    var hkt = new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
-    var dow = hkt.getDay();
-    if (dow === 0 || dow === 6) return false;
-    var mi = hkt.getHours() * 60 + hkt.getMinutes();
-    return mi >= 570 && mi <= 970; // 09:30–16:10
+    var s = MarketRules.session();
+    return ['open','lunch','closing'].indexOf(s.phase) >= 0;
   }
   setInterval(function () {
     if (!isHKSessionWindow()) return;
@@ -4147,7 +4154,7 @@
       if (a) { latestAnnotations = a; return selectDefaultAnalysis(); }
     });
     fetchScenarioStatus().then(function (s) {
-      if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
+      if (s) { storedScenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
     });
   }, 5 * 60 * 1000);
 })();

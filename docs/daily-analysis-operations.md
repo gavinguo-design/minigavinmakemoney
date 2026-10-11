@@ -30,7 +30,9 @@ existing confirmed candles are not overwritten by the alternate source.
 Official participation is usable only for the matching baseline session and
 only if its publication timestamp precedes the information cutoff. Night
 futures, option risk and Southbound data without a verified snapshot stay
-unavailable. Probabilities stay null; no confidence percentages are invented.
+unavailable. Daily scenario weights are versioned rule scores, explicitly
+uncalibrated; they are not historical win rates. Frozen supplements retain
+their original values.
 
 The independent watchdog verifies the applicable date, baseline, publication
 kind and the exact content commit's successful Cloudflare Pages check. The
@@ -56,3 +58,32 @@ isolated temporary project. Tests use dated fixtures rather than mutable live
 analysis, so tomorrow's generated annotations cannot invalidate old test
 expectations. The next scheduled production run still requires observation;
 a rehearsal does not prove a future scheduled job has already succeeded.
+
+## Intraday display refresh
+
+The deployed page evaluates the frozen `daily_rule_analysis` A/B/C price
+partition against valid same-session quotes. It refreshes with the existing
+quote polling (30 seconds in continuous trading and closing auction; 60
+seconds otherwise) and on return to a visible tab. The fetched status file is
+stored separately, so an old external writer cannot replace this preview
+with October 6 conditions. Unsupported legacy rule formats are not guessed.
+
+`updated_at` remains the quote's source timestamp. Stale/future quotes,
+expired analysis, hindsight supplements and incomplete/overlapping price
+partitions cannot produce a live preview. Lunch and half-day behavior uses
+the shared HKEX calendar. After the close, quotes cannot generate a
+`close_final`: the independent published close review is still required.
+No intraday refresh writes to annotations, archives, prediction scores or
+trade records. Observation-only A/B/C cards retain their condition checklist
+without gaining an executable risk/reward ruler.
+
+Repository audit on October 12 HKT: all 509 reachable commits and the sole
+`main` branch were checked. External snapshot-writer source was not present;
+its October 9 commits update the two static JSON snapshots about every 30
+minutes. The latest status had `conditions_date: 2026-10-06` and no analysis
+identity. This display fix does not claim to have changed that external job.
+
+Regression coverage: `tests/intraday-refresh.cjs` verifies source timestamp
+expiry, exact A/B/C boundaries, map identity, non-trading periods, rejected
+requests, continued polling, checklist rendering and refresh completion.
+Local tests and CI are separate from a real trading-session acceptance run.

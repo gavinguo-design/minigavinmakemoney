@@ -223,6 +223,43 @@
     });
     d.metrics=m; return d;
   }
+  // Re-evaluate the frozen daily price partition from a real source timestamp.
+  // This is a display-only preview: it never writes forecasts or close reviews.
+  function resolveScenarioStatus(a, stored, quotes, now) {
+    now=now==null?Date.now():now;
+    if(analysisAvailability(a,now).status!=='current') return null;
+    var saved=stored && !statusIssue(stored,a,now)?sanitizeStatus(stored,now):null;
+    var phase=session(now).phase, pub=a.publication||{}, f=a.forecast||{};
+    if(['open','lunch','closing'].indexOf(phase)<0) return saved;
+    if(pub.kind!=='daily_rule_analysis' || pub.method!=='confirmed-swing-structure-v1') return saved;
+    var date=hk(now).date, generated=timestamp(pub.generated_at), cutoff=timestamp(pub.information_cutoff);
+    if(!a.meta || !a.meta.analysis_id || pub.eligible_as_new_prediction!==true ||
+       pub.session_date!==date || f.applicable_date!==date ||
+       !Number.isFinite(generated) || !Number.isFinite(cutoff) ||
+       hk(generated).date!==date || hk(generated).minute>=570 || cutoff>generated ||
+       pub.baseline_date!==latestDay(timestamp(date+'T08:45:00+08:00'),true)) return null;
+    var scenarios=Array.isArray(f.scenarios)?f.scenarios:[], ids=scenarios.map(function(sc){return sc && sc.id;});
+    if(scenarios.length!==3 || ['A','B','C'].some(function(id){return ids.filter(function(v){return v===id;}).length!==1;})) return null;
+    var byId={}; scenarios.forEach(function(sc){byId[sc.id]=sc.price_rule||{};});
+    if(byId.A.operator!=='gte' || byId.B.operator!=='range' || byId.C.operator!=='lt' ||
+       !Number.isFinite(byId.B.lower) || !Number.isFinite(byId.B.upper) || byId.B.lower<=0 ||
+       byId.B.lower>=byId.B.upper || byId.A.value!==byId.B.upper || byId.C.value!==byId.B.lower) return null;
+    var usable=(Array.isArray(quotes)?quotes:[]).filter(function(q){
+      return validQuote(q,now) && hk(q.ts*1000).date===date && hk(q.ts*1000).minute>=570;
+    }).sort(function(x,y){return y.ts-x.ts;});
+    if(!usable.length) return null;
+    var q=usable[0];
+    return sanitizeStatus({
+      analysis_id:a.meta.analysis_id, conditions_date:date, judgment_mode:'intraday_preview',
+      updated_at:new Date(q.ts*1000+28800000).toISOString().slice(0,-1)+'+08:00',
+      source:'frozen_price_rule_with_live_quote', data_stale:false, conditions_stale:false,
+      metrics:{price:q.price,price_source:q.source||null,price_timestamp:q.ts},
+      scenarios:scenarios.map(function(sc){return {
+        id:sc.id,name_prefix:sc.id,conditions:[{id:'daily_price_structure',role:'core',
+          label:sc.trigger,met:priceCondition(sc.price_rule,q.price),value_text:'现价 '+q.price.toFixed(2)}]
+      };})
+    },now);
+  }
   function rr(entry,target,stop,direction) {
     if(![entry,target,stop].every(Number.isFinite)) return null;
     var short=direction==='short', reward=short?entry-target:target-entry, risk=short?stop-entry:entry-stop;
@@ -246,5 +283,5 @@
   return {hk:hk,dayString:dayString,shift:shift,known:known,tradingDay:tradingDay,
     closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,priceCondition:priceCondition,replaySession:replaySession,analysisAvailability:analysisAvailability,archiveCoverage:archiveCoverage,timestamp:timestamp,
     quoteState:quoteState,validQuote:validQuote,markBars:markBars,statusIssue:statusIssue,
-    sanitizeStatus:sanitizeStatus,rr:rr,chaseBoundary:chaseBoundary};
+    sanitizeStatus:sanitizeStatus,resolveScenarioStatus:resolveScenarioStatus,rr:rr,chaseBoundary:chaseBoundary};
 });

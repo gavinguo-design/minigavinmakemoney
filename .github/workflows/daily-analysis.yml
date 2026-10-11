@@ -8,7 +8,7 @@ on:
         default: preopen
   push:
     branches: [main]
-    paths: ['scripts/daily-analysis.cjs', 'scripts/publish-daily-analysis.cjs', 'scripts/check-daily-publication.cjs', 'tests/daily-analysis.cjs', '.github/workflows/daily-analysis.yml']
+    paths: ['scripts/daily-analysis.cjs', 'scripts/publish-daily-analysis.cjs', 'scripts/check-daily-publication.cjs', 'tests/**', 'investment/chart/index.html', 'investment/chart/market-rules.js', '.github/workflows/daily-analysis.yml']
   schedule:
     # HKT 08:45 generation and 16:20 close review; script checks HKEX calendar.
     - cron: '45 0 * * 1-5'
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/daily-analysis.cjs
+      - run: node --test tests/*.cjs
   publish:
     needs: verify
     if: github.event_name != 'push'
@@ -40,7 +40,7 @@ jobs:
         with:
           node-version: '22'
       - name: Validate generator contract
-        run: node --test tests/daily-analysis.cjs
+        run: node --test tests/*.cjs
       - name: Generate or confirm completed close
         env:
           PHASE: ${{ inputs.phase || (github.event.schedule == '20,40 8 * * 1-5' && 'postclose' || 'preopen') }}

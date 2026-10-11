@@ -434,7 +434,7 @@ test('refresh defaults to October 9 history when live analysis is October 6, the
 test('expired online analysis never renders its narrative, levels or plan, while a manual archive preserves them',()=>{
   const original={meta:{analysis_id:'old',updatedAt:'2026-10-06T08:45:00+08:00'},forecast:{summary:'old guidance'},levels:[{price:1}]};
   const rendered=[];
-  const ctx={annotations:null,viewingDate:null,activeScenario:0,currentBars:[{}],currentIv:'1d',
+  const ctx={annotations:null,storedScenarioStatus:null,realtimeData:null,yahooQuote:null,viewingDate:null,activeScenario:0,currentBars:[{}],currentIv:'1d',
     MarketRules:{...MR,analysisAvailability:a=>MR.analysisAvailability(a,at('2026-10-11T18:00:00'))}};
   for(const fn of ['renderStructBanner','renderStatusBar','renderForecast','renderReasoning','renderPlaybook','renderPathTree','renderScenarioCards','renderParticipationStrip','renderDisclaimer','renderNextDayDraft','renderLevels','renderMarkers','renderForecastZones','renderRRZones'])ctx[fn]=a=>rendered.push(a);
   for(const fn of ['renderIntradayPanel','updateTechnical','updateDataQuality','hideMarkerDetail'])ctx[fn]=()=>{};

@@ -18,7 +18,7 @@ SERIES = {
   'FXI': ('FXI', -5, 'iShares China Large-Cap ETF (US-listed); bar date = US/Eastern'),
   'KWEB': ('KWEB', -5, 'KraneShares China Internet ETF; bar date = US/Eastern'),
   'VIX': ('^VIX', -5, 'CBOE VIX (VHSI not available on Yahoo); bar date = US date'),
-  'CNY': ('CNY=X', 0, 'Yahoo USD/CNY FX quote (CNH=X has no history on Yahoo); bar date = London date, daily bar closes ~23:00 London (~06:00-07:00 HKT next day)'),
+  'CNY': ('CNY=X', 1, 'Yahoo USD/CNY FX quote (CNH=X has no history on Yahoo); bar timestamp = 00:00 London (23:00Z in BST, 00:00Z in GMT) so +1h gives the London date; bar for London date d is complete at 24:00 London = 07:00/08:00 HKT d+1 (< 08:45)'),
 }
 UNAVAILABLE = {
   'CNH=X': 'Yahoo returns a single row (no history)',

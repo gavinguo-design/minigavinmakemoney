@@ -1,5 +1,5 @@
 {
- "retrieved_at": "2026-10-11T18:57:07.605004+00:00",
+ "retrieved_at": "2026-10-11T19:02:41.906009+00:00",
  "source": "yahoo-finance-v8-chart",
  "unavailable": {
   "CNH=X": "Yahoo returns a single row (no history)",
@@ -209,23 +209,23 @@
   },
   "CNY": {
    "symbol": "CNY=X",
-   "note": "Yahoo USD/CNY FX quote (CNH=X has no history on Yahoo); bar date = London date, daily bar closes ~23:00 London (~06:00-07:00 HKT next day)",
+   "note": "Yahoo USD/CNY FX quote (CNH=X has no history on Yahoo); bar timestamp = 00:00 London (23:00Z in BST, 00:00Z in GMT) so +1h gives the London date; bar for London date d is complete at 24:00 London = 07:00/08:00 HKT d+1 (< 08:45)",
    "exchange_tz": "Europe/London",
    "n": 3325,
    "first": "2014-01-01",
    "last": "2026-10-11",
    "dropped_null_rows": [
-    "2017-07-10",
+    "2017-07-11",
     "2017-11-16",
-    "2019-05-21",
+    "2019-05-22",
     "2019-11-08",
     "2025-01-01",
-    "2025-04-17",
-    "2025-04-20",
+    "2025-04-18",
+    "2025-04-21",
     "2025-12-25",
     "2026-01-01"
    ],
-   "rows_sha256": "2796e055e999128e89bd87730d36b9f3ba5907ba4bb5032ef4c1c4ecf68a3174",
+   "rows_sha256": "ab39f2246e8e71a2d918fc6d013e291116da721ce8d30d8cd6135f7288dd645c",
    "raw_response_sha256": "4303b13753607a096fd20f778074d47440e85390979d9f2b187fbb9d090b8809"
   }
  },

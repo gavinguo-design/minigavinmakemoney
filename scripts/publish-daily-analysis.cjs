@@ -3,6 +3,22 @@ const MR=require('../investment/chart/market-rules.js');
 const {build,judge}=require('./daily-analysis.cjs');
 const root=path.join(__dirname,'..'),dir=path.join(root,'investment/chart');
 const read=name=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
+// Multi-class Brier score Σ(p_i - o_i)^2 over A/B/C (range 0..2, lower is better).
+// The A/B/C price rules partition the close, so normally exactly one verdict is met.
+// Rule for anomalies: k>1 met -> o_i = 1/k for each met scenario (shared outcome);
+// none met or any probability missing -> brier null with an explicit status.
+function brierScore(scenarios,verdicts) {
+  const probs=verdicts.map(v=>scenarios.find(s=>s.id===v.id)?.probability);
+  if(!verdicts.length||!probs.every(p=>typeof p==='number'&&Number.isFinite(p)))return {brier:null,brier_status:'no_probability',brier_rule:null};
+  const met=verdicts.filter(v=>v.met===true).length;
+  if(!met)return {brier:null,brier_status:'no_outcome_met',brier_rule:'没有情景成立，不计分'};
+  const score=verdicts.reduce((s,v,i)=>s+(probs[i]-(v.met===true?1/met:0))**2,0);
+  return {brier:Math.round(score*10000)/10000,brier_status:met===1?'scored':'scored_shared_outcome',brier_rule:met===1?'多类Brier Σ(p_i-o_i)^2，成立情景 o=1':'多个情景同时成立，o_i=1/'+met+' 均分'};
+}
+function countScoredReviews(dir) {
+  try {return fs.readdirSync(dir).filter(f=>/^\d{4}-\d{2}-\d{2}\.json$/.test(f)).filter(f=>{try{return Number.isFinite(JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')).brier);}catch(e){return false;}}).length;}
+  catch(e){return 0;}
+}
 function exclusive(file,data) {
   const body=JSON.stringify(data,null,2)+'\n';fs.mkdirSync(path.dirname(file),{recursive:true});
   try {fs.writeFileSync(file,body,{flag:'wx'});}catch(e){if(e.code!=='EEXIST')throw e;}
@@ -23,7 +39,7 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root}={}) {
     const bar=feed.candles.find(b=>b.date===today);
     const verdicts=replay.scenarios.map(s=>({id:s.id,met:s.condition}));
     if(verdicts.some(v=>v.met===null))throw Error('Missing frozen price rule');
-    const record={session_date:today,analysis_id:a.meta.analysis_id,kind:'price_structure_close_review',generated_at:new Date(now).toISOString(),bar,verdicts,probability_status:'uncalibrated',brier:null};
+    const record={session_date:today,analysis_id:a.meta.analysis_id,kind:'price_structure_close_review',generated_at:new Date(now).toISOString(),bar,verdicts,probability_status:a.publication?.probability_status||'uncalibrated',weight_model:a.forecast.weight_model||null,probabilities:Object.fromEntries(a.forecast.scenarios.map(s=>[s.id,s.probability??null])),...brierScore(a.forecast.scenarios,verdicts)};
     exclusive(path.join(dir,'daily-reviews',today+'.json'),record);
     const status={updated_at:new Date(now).toISOString(),judgment_mode:'close_final',analysis_id:a.meta.analysis_id,conditions_date:today,data_stale:false,conditions_stale:false,metrics:{price:bar.close},scenarios:verdicts.map(v=>({id:v.id,name_prefix:v.id,triggered:v.met,core_met:v.met?1:0,core_total:1,confirm_met:0,confirm_total:0,strength:'价格确认·环境未定',conditions:[{id:'daily_price_structure',role:'core',label:a.forecast.scenarios.find(s=>s.id===v.id).trigger,met:v.met}]}))};
     fs.writeFileSync(path.join(dir,'scenario_status.json'),JSON.stringify(status,null,2)+'\n');return;
@@ -45,7 +61,7 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root}={}) {
   }
   const existing=read('annotations.json');
   if(existing.forecast.applicable_date===today && existing.publication?.kind==='daily_rule_analysis') {console.log('Already generated; preserve frozen same-day analysis');return;}
-  const a=build({date:today,feed,seed:existing,participation:read('hsi-participation.json'),generatedAt:new Date(now).toISOString()});
+  const a=build({date:today,feed,seed:existing,participation:read('hsi-participation.json'),generatedAt:new Date(now).toISOString(),scoredReviews:countScoredReviews(path.join(dir,'daily-reviews'))});
   // This prepublication ledger is separate from genuine archive snapshots.
   exclusive(path.join(dir,'daily-generated',today+'.json'),a);
   fs.writeFileSync(path.join(dir,'annotations.json'),JSON.stringify(a,null,2)+'\n');
@@ -53,5 +69,5 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root}={}) {
   fs.writeFileSync(path.join(dir,'scenario_status.json'),JSON.stringify(status,null,2)+'\n');
   console.log(JSON.stringify({generated:today,baseline:expected,analysis_id:a.meta.analysis_id}));
 }
-module.exports={run};
+module.exports={run,brierScore};
 if(require.main===module)run({phase:process.argv[2]||'preopen',now:process.env.ANALYSIS_NOW?MR.timestamp(process.env.ANALYSIS_NOW):Date.now()}).catch(e=>{console.error(e.message);process.exitCode=1;});

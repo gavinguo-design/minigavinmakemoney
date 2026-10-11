@@ -82,7 +82,9 @@ test('preopen publishes in an isolated repository, retries preserve the same fre
   await run({projectRoot:tmp,phase:'postclose',now:Date.parse('2026-10-12T16:20:00+08:00')});
   assert.equal(fs.readFileSync(path.join(dir,'annotations.json'),'utf8'),frozen);
   const status=JSON.parse(fs.readFileSync(path.join(dir,'scenario_status.json'),'utf8'));assert.equal(status.analysis_id,a.meta.analysis_id);assert.equal(status.scenarios.filter(s=>s.triggered).length,1);
-  const review=JSON.parse(fs.readFileSync(path.join(dir,'daily-reviews/2026-10-12.json'),'utf8'));assert.equal(review.bar.date,'2026-10-12');assert.equal(review.brier,null);
+  const review=JSON.parse(fs.readFileSync(path.join(dir,'daily-reviews/2026-10-12.json'),'utf8'));assert.equal(review.bar.date,'2026-10-12');
+  const p=a.forecast.scenarios.map(s=>s.probability),o=review.verdicts.map(v=>v.met?1:0);assert.deepEqual(o,[1,0,0]);
+  assert.equal(review.brier,Math.round(p.reduce((s,v,i)=>s+(v-o[i])**2,0)*10000)/10000);assert.equal(review.brier_status,'scored');assert.equal(review.weight_model,'rule-weights-v1');
  } finally {fs.rmSync(tmp,{recursive:true});}
 });
 
@@ -155,4 +157,58 @@ test('October 8 has independent reconstruction from the October 7 snapshot, neve
  assert.notDeepEqual(saved.forecast.scenarios,require('../investment/chart/archive/supplements/2026-10-09.json').forecast.scenarios);
  const index=require('../investment/chart/archive/supplements/index.json');
  for(const date of ['2026-10-08','2026-10-09'])assert.equal(index[date],'supplements/'+date+'.json');
+});
+
+test('rule weights: sum to 1, bounded, 0.05 grid, deterministic, versioned and published as rule_based_uncalibrated',()=>{
+ const {scoreScenarioWeights,WEIGHT_MODEL}=require('../scripts/daily-analysis.cjs');
+ const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('../investment/chart/hsi-participation.json');
+ const live={date:'2026-10-12',feed:close,seed,participation:part,generatedAt:'2026-10-12T08:45:30+08:00'};
+ const a=build(live),b=build(live),p=a.forecast.scenarios.map(s=>s.probability);
+ assert.deepEqual(a,b);assert.equal(WEIGHT_MODEL.version,'rule-weights-v1');
+ assert.equal(Math.round(p.reduce((s,v)=>s+v,0)*100),100);
+ for(const v of p){assert.ok(v>=0.1-1e-9&&v<=0.7+1e-9);assert.equal(Math.abs(v*20-Math.round(v*20))<1e-9,true);}
+ assert.equal(a.publication.probability_status,'rule_based_uncalibrated');assert.equal(a.forecast.weight_model,'rule-weights-v1');
+ assert.equal(a.forecast.scenarios.every(s=>typeof s.probability_basis==='string'&&s.probability_basis.length>5),true);
+ assert.deepEqual(p,[0.3,0.5,0.2]);assert.equal(a.forecast.weight_model_info.factors.breadth_status,'available');
+ const noBreadth=build({...live,participation:null});assert.equal(noBreadth.forecast.weight_model_info.factors.breadth_status,'unavailable');assert.match(noBreadth.forecast.scenarios[0].probability_basis,/宽度数据不可用，因子权重置0/);
+ // Extreme synthetic inputs still respect [0.10,0.70] and sum 1.
+ const bars=close.candles.filter(x=>x.date<'2026-10-12').map(x=>({...x,time:x.date}));
+ for(const [lo,hi] of [[10000,10001],[40000,40001],[24000,24300],[1,99999]]){
+  const w=scoreScenarioWeights({bars,lower:lo,upper:hi,participation:null,cutoff:'2026-10-12T08:45:00+08:00'}).probabilities,v=Object.values(w);
+  assert.equal(Math.round(v.reduce((s,x)=>s+x,0)*100),100);for(const x of v)assert.ok(x>=0.1-1e-9&&x<=0.7+1e-9);
+ }
+});
+test('rule weights ignore data after the information cutoff',()=>{
+ const {scoreScenarioWeights}=require('../scripts/daily-analysis.cjs');
+ const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('../investment/chart/hsi-participation.json');
+ const live={date:'2026-10-12',feed:close,seed,participation:part,generatedAt:'2026-10-12T08:45:30+08:00'},base=build(live);
+ const polluted=structuredClone(close);polluted.candles.push({date:'2026-10-12',open:30000,high:31000,low:29000,close:30500});
+ assert.deepEqual(build({...live,feed:polluted}).forecast.scenarios,base.forecast.scenarios);
+ // A participation snapshot published after the cutoff, or for another session, is ignored.
+ const late={...part,updated_at:'2026-10-12T09:00:00+08:00'},other={...part,as_of:'2026-10-08'};
+ for(const p of [late,other])assert.equal(build({...live,participation:p}).forecast.weight_model_info.factors.breadth_status,'unavailable');
+ const bars=close.candles.map(x=>({...x,time:x.date}));
+ assert.throws(()=>scoreScenarioWeights({bars,lower:23835.68,upper:24354.11,cutoff:'2026-10-09T08:45:00+08:00'}),/after cutoff/);
+ // Backfill reconstructions keep probability null by default (frozen supplements unchanged).
+ assert.equal(build(args).forecast.scenarios.every(s=>s.probability===null),true);
+});
+test('multi-class Brier score with shared/no-outcome rules',()=>{
+ const {brierScore}=require('../scripts/publish-daily-analysis.cjs');
+ const sc=[{id:'A',probability:0.3},{id:'B',probability:0.5},{id:'C',probability:0.2}],v=m=>['A','B','C'].map((id,i)=>({id,met:m[i]}));
+ assert.equal(brierScore(sc,v([false,true,false])).brier,0.38);
+ assert.equal(brierScore(sc,v([true,false,false])).brier,0.78);
+ const shared=brierScore(sc,v([true,true,false]));assert.equal(shared.brier,0.08);assert.equal(shared.brier_status,'scored_shared_outcome');
+ const none=brierScore(sc,v([false,false,false]));assert.equal(none.brier,null);assert.equal(none.brier_status,'no_outcome_met');
+ const legacy=brierScore(sc.map(s=>({...s,probability:null})),v([false,true,false]));assert.equal(legacy.brier,null);assert.equal(legacy.brier_status,'no_probability');
+});
+test('chart shows rule weights with version note and keeps legacy null cards as uncalibrated',()=>{
+ const html=fs.readFileSync(require.resolve('../investment/chart/index.html'),'utf8');
+ const vm=require('node:vm'),src=html.slice(html.indexOf('  function ruleWeightModel('),html.indexOf('  function participationEvaluation('));
+ const ctx={escapeHtml:s=>String(s),Number};vm.createContext(ctx);vm.runInContext(src,ctx);
+ const a=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('../investment/chart/hsi-participation.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
+ assert.equal(ctx.ruleWeightModel(a),'rule-weights-v1');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/规则打分 v1，未经回测校准，累计 0 次/);
+ assert.equal(ctx.ruleWeightModel(build(args)),null);
+ const MP=require('../investment/chart/market-participation.js'),ev=MP.evaluate(require('../investment/chart/hsi-participation.json'),a.forecast.scenarios,'2026-10-09');
+ assert.equal(ev.already_in_base,true);assert.deepEqual(Object.values(ev.weights).map(v=>Math.round(v*100)),[30,50,20]);assert.equal(ctx.ruleWeightModel(seed),null);
+ assert.match(html,/'% 权重' : '权重未校准'/);assert.match(html,/主情景 · /);
 });

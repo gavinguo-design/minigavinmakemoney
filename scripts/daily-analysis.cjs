@@ -9,11 +9,13 @@ const WEIGHT_MODEL_V1 = Object.freeze({version:'rule-weights-v1',coefficients:Ob
 // Coefficients are deliberately small priors, frozen before retrospective comparison.
 // Citations are to the supplied audits: Grimes PDF pp.37-49, 82-84; Nison Ch.4-8;
 // Sakata Ch.2/6; Natenberg Ch.4 (PDF p.82); Harris Ch.5/6/20 (PDF pp.110-148,423-430).
-const WEIGHT_MODEL = Object.freeze({version:'rule-weights-v2',coefficients:Object.freeze({
+const WEIGHT_MODEL_V2 = Object.freeze({version:'rule-weights-v2.1',coefficients:Object.freeze({
   position:.55,distance:.25,trend:.30,breadth:.25,range_base:.45,
   regime_range:.55,breakout_quality:.30,sakata_exhaustion:.15,candle:.20,
   volatility:.20,stale_shrink:.45,gap_shrink:.25
 }),bounds:Object.freeze({min:.10,max:.70,step:.05})});
+// Production default stays v1 until v2.x passes the two-year backtest (v2 failed independent review 2026-10-12: trend/sakata bugs; v2.1 fixes them but is unvalidated).
+const WEIGHT_MODEL = WEIGHT_MODEL_V1;
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
 const r2=v=>Math.round(v*100)/100;
 function boundedRound(raw,{min,max,step}) { let p=raw.slice(),fixed=p.map(()=>false);for(let k=0;k<5;k++){let changed=false;p=p.map((v,i)=>{if(fixed[i])return v;if(v<min){fixed[i]=changed=true;return min;}if(v>max){fixed[i]=changed=true;return max;}return v;});const free=p.reduce((s,v,i)=>s+(fixed[i]?0:v),0),left=1-p.reduce((s,v,i)=>s+(fixed[i]?v:0),0);if(free)p=p.map((v,i)=>fixed[i]?v:v*left/free);if(!changed)break;}const n=Math.round(1/step),lo=Math.round(min/step),hi=Math.round(max/step),u=p.map(v=>clamp(Math.floor(v*n+1e-9),lo,hi)),o=p.map((v,i)=>({i,f:v*n-Math.floor(v*n+1e-9)})).sort((a,b)=>b.f-a.f||a.i-b.i);for(let q=0;u.reduce((x,y)=>x+y,0)<n&&q<3*n;q++){const x=o[q%o.length];if(u[x.i]<hi)u[x.i]++;}for(let q=0;u.reduce((x,y)=>x+y,0)>n&&q<3*n;q++){const x=o[o.length-1-q%o.length];if(u[x.i]>lo)u[x.i]--;}return u.map(x=>Math.round(x*step*100)/100); }
@@ -28,9 +30,15 @@ function candlePattern(prev,last) {
   const upper=last.high-Math.max(last.open,last.close),lower=Math.min(last.open,last.close)-last.low,star=body(last)<=range*.35&&(upper>=body(last)*2||lower>=body(last)*2);
   return {name:engulfBull?'bullish_engulfing':engulfBear?'bearish_engulfing':dark?'dark_cloud':piercing?'piercing':harami?'harami':doji?'doji':star?'star':'none',bullish:engulfBull||piercing,bearish:engulfBear||dark,neutral:harami||doji};
 }
-function pivotState(bars) { const p=TA.pivots(bars,2),lo=p.lows.slice(-2),hi=p.highs.slice(-2);return {higher_lows:lo.length===2&&lo[1].price>lo[0].price,lower_highs:hi.length===2&&hi[1].price<hi[0].price,pivots:p}; }
+// Grimes: uptrend = higher highs AND higher lows; downtrend = lower highs AND lower lows; otherwise range.
+function pivotState(bars) { const p=TA.pivots(bars,2),lo=p.lows.slice(-2),hi=p.highs.slice(-2),hasLo=lo.length===2,hasHi=hi.length===2;
+ const higher_lows=hasLo&&lo[1].price>lo[0].price,lower_lows=hasLo&&lo[1].price<lo[0].price,higher_highs=hasHi&&hi[1].price>hi[0].price,lower_highs=hasHi&&hi[1].price<hi[0].price;
+ const trend=higher_highs&&higher_lows?'up':lower_highs&&lower_lows?'down':'range';
+ return {higher_lows,lower_lows,higher_highs,lower_highs,trend,pivots:p}; }
 function realizedVolatility(bars,n){const r=[];for(let i=1;i<bars.length;i++)r.push(Math.log(bars[i].close/bars[i-1].close));if(r.length<n)return null;const x=r.slice(-n),m=x.reduce((s,v)=>s+v,0)/n;return Math.sqrt(x.reduce((s,v)=>s+(v-m)**2,0)/(n-1));}
-function sakataNewValues(bars,upper,lower) { let up=0,down=0,hi=upper,lo=lower;for(let i=bars.length-1;i>=0&&i>=bars.length-8;i--){const b=bars[i];if(b.close>hi){up++;hi=b.close;}else if(b.close<lo){down++;lo=b.close;}else break;}return {up,down}; }
+// Sakata new values counted in chronological order: each close beyond the running extreme is one new value;
+// an opposite-side new value resets the other count; non-new-value sessions pause but do not reset.
+function sakataNewValues(bars,upper,lower) { let up=0,down=0,hi=upper,lo=lower;for(let i=Math.max(0,bars.length-8);i<bars.length;i++){const b=bars[i];if(b.close>hi){up++;down=0;hi=b.close;}else if(b.close<lo){down++;up=0;lo=b.close;}}return {up,down}; }
 function sourceFactor(name,raw,contribution,citation){return {name,raw,contribution:typeof contribution==='number'?r2(contribution):contribution,citation};}
 // Pure: bars are completed daily sessions filtered before cutoff. V1 stays callable for comparison.
 function scoreScenarioWeights({bars,lower,upper,participation,cutoff,dataUpdatedAt,model=WEIGHT_MODEL}) {
@@ -39,9 +47,9 @@ function scoreScenarioWeights({bars,lower,upper,participation,cutoff,dataUpdated
  const c=model.coefficients,close=last.close,pos=(close-lower)/(upper-lower),posTerm=clamp(2*pos-1,-1.5,1.5),distA=clamp((upper-close)/atr,0,4),distC=clamp((close-lower)/atr,0,4),slope=clamp((ma-maPrev)/atr,-1,1),rel=clamp((close-ma)/atr,-1,1),trend=.5*slope+.5*rel;
  const breadthOK=!!participation&&participation.as_of===last.date&&Number.isFinite(MR.timestamp(participation.updated_at))&&MR.timestamp(participation.updated_at)<=cutoffMs&&MP.validate(participation,last.date).ok,breadth=breadthOK?MP.signal(participation).score:0;
  if(model.version==='rule-weights-v1'){const tilt=c.position*posTerm+c.trend*trend+(breadthOK?c.breadth*breadth:0),logits={A:tilt-c.distance*distA,B:c.range_base,C:-tilt-c.distance*distC};return finish(logits,{baseline_date:last.date,close,lower,upper,atr14:r2(atr),position:r2(pos),breadth_status:breadthOK?'available':'unavailable'},[],model);}
- const ps=pivotState(bars),width=(upper-lower)/atr,range=!(ps.higher_lows&&ps.lower_highs)||width<3.5;let a=c.position*posTerm+c.trend*trend+(breadthOK?c.breadth*breadth:0)-c.distance*distA,cc=-c.position*posTerm-c.trend*trend-(breadthOK?c.breadth*breadth:0)-c.distance*distC,b=c.range_base;
+ const ps=pivotState(bars),width=(upper-lower)/atr,range=ps.trend==='range';let a=c.position*posTerm+c.trend*trend+(breadthOK?c.breadth*breadth:0)-c.distance*distA,cc=-c.position*posTerm-c.trend*trend-(breadthOK?c.breadth*breadth:0)-c.distance*distC,b=c.range_base;
  const factors=[];const add=(name,raw,da,db,dc,citation)=>{a+=da;b+=db;cc+=dc;factors.push(sourceFactor(name,raw,{A:da,B:db,C:dc},citation));};
- add('regime_gate',{range,width_atr:r2(width),higher_lows:ps.higher_lows,lower_highs:ps.lower_highs},range?-c.regime_range:0,range?c.regime_range:0,range?-c.regime_range:0,'Grimes《艺术与科学》Ch.1, PDF pp.37-49');
+ add('regime_gate',{range,trend:ps.trend,width_atr:r2(width),higher_highs:ps.higher_highs,higher_lows:ps.higher_lows,lower_highs:ps.lower_highs,lower_lows:ps.lower_lows},range?-c.regime_range:0,range?c.regime_range:0,range?-c.regime_range:0,'Grimes《艺术与科学》Ch.1, PDF pp.37-49');
  const nearA=distA<=.75,nearC=distC<=.75;add('breakout_quality',{near_a:nearA,higher_lows:ps.higher_lows,near_c:nearC,lower_highs:ps.lower_highs},nearA?(ps.higher_lows?c.breakout_quality:-c.breakout_quality):0,0,nearC?(ps.lower_highs?c.breakout_quality:-c.breakout_quality):0,'Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认');
  const nv=sakataNewValues(bars,upper,lower),exUp=nv.up>=3,exDown=nv.down>=3;add('sakata_new_value',{up: nv.up,down:nv.down,exhaustion:exUp?'up':exDown?'down':'none'},exUp?-c.sakata_exhaustion:exDown?c.sakata_exhaustion:0,(exUp||exDown)?c.sakata_exhaustion:0,exDown?-c.sakata_exhaustion:exUp?c.sakata_exhaustion:0,'《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率');
  const pat=candlePattern(bars[i-1],last),middle=pos>.35&&pos<.65;add('candle_pattern',{pattern:pat.name,position:r2(pos)},pat.bullish?c.candle:pat.bearish?-c.candle:0,(pat.neutral&&middle)?c.candle:0,pat.bearish?c.candle:pat.bullish?-c.candle:0,'Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认');
@@ -114,4 +122,4 @@ function build({date, feed, seed, participation, generatedAt, backfill=false, pr
     intraday_playbook:{updatedAt:time,note:'仅用于区间定位，不是即时操作指令',zones:[{range:[upper,null],stance:'修复观察',action:'等待A收盘确认'},{range:[lower,upper],stance:'区间观察',action:'等待B收盘确认'},{range:[null,lower],stance:'破位观察',action:'等待C收盘确认'}]},
     levels:[{price:lower,type:'support',label:'最近确认摆动低点',reason:pivots.lows.at(-1).time+'，确认于 '+pivots.lows.at(-1).confirmedAt},{price:upper,type:'resistance',label:'最近确认摆动高点',reason:pivots.highs.at(-1).time+'，确认于 '+pivots.highs.at(-1).confirmedAt},...(downTarget==null?[]:[{price:downTarget,type:'support',label:'下方结构目标',reason:'截止日前的确认摆动低点或既有支撑'}]),...(upTarget==null?[]:[{price:upTarget,type:'resistance',label:'上方结构目标',reason:'截止日前的确认摆动高点或既有阻力'}])],markers:[],playbook:[],pathTree:null};
 }
-module.exports={build,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,WEIGHT_MODEL,WEIGHT_MODEL_V1};
+module.exports={build,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};

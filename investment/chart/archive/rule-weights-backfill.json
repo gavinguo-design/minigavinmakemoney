@@ -1,7 +1,7 @@
 {
   "kind": "retrospective",
-  "weight_model": "rule-weights-v2",
-  "computed_at": "2026-10-11T16:54:01.247Z",
+  "weight_model": "rule-weights-v1",
+  "computed_at": "2026-10-11T17:11:11.815Z",
   "eligible_for_scoring": false,
   "note": "事后补算：rule-weights-v2 上线前的交易日，用当日 08:45 前已存在的 Git 快照重算规则权重。不修改冻结 archive，不计入预测打分或 Brier。",
   "sessions": {
@@ -29,7 +29,7 @@
             "value": 25254.11
           },
           "probability": 0.1,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。A 受区间门控压低。"
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。A 按结构评分。"
         },
         {
           "id": "B",
@@ -38,8 +38,8 @@
             "lower": 24275.56,
             "upper": 25254.11
           },
-          "probability": 0.7,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。B 获区间门控加权。"
+          "probability": 0.5,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。B 为区间基准。"
         },
         {
           "id": "C",
@@ -47,8 +47,8 @@
             "operator": "lt",
             "value": 24275.56
           },
-          "probability": 0.2,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。C 受区间门控压低。"
+          "probability": 0.4,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。C 按结构评分。"
         }
       ],
       "v1_probabilities": {
@@ -56,92 +56,7 @@
         "B": 0.5,
         "C": 0.4
       },
-      "weight_factors": [
-        {
-          "name": "regime_gate",
-          "raw": {
-            "range": true,
-            "width_atr": 3.23,
-            "higher_lows": false,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": -0.55,
-            "B": 0.55,
-            "C": -0.55
-          },
-          "citation": "Grimes《艺术与科学》Ch.1, PDF pp.37-49"
-        },
-        {
-          "name": "breakout_quality",
-          "raw": {
-            "near_a": false,
-            "higher_lows": false,
-            "near_c": false,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认"
-        },
-        {
-          "name": "sakata_new_value",
-          "raw": {
-            "up": 0,
-            "down": 0,
-            "exhaustion": "none"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率"
-        },
-        {
-          "name": "candle_pattern",
-          "raw": {
-            "pattern": "piercing",
-            "position": 0.35
-          },
-          "contribution": {
-            "A": 0.2,
-            "B": 0,
-            "C": -0.2
-          },
-          "citation": "Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认"
-        },
-        {
-          "name": "realized_volatility",
-          "raw": {
-            "hv10": 0.01,
-            "hv20": 0.01,
-            "ratio": 0.92,
-            "iv_status": "unavailable"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号"
-        },
-        {
-          "name": "market_state_gate",
-          "raw": {
-            "holiday_first": false,
-            "gap_atr": 0.43,
-            "stale": false
-          },
-          "contribution": {
-            "shrink": 0
-          },
-          "citation": "Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430"
-        }
-      ],
+      "weight_factors": [],
       "factors": {
         "baseline_date": "2026-09-30",
         "close": 24613.27,
@@ -149,16 +64,11 @@
         "upper": 25254.11,
         "atr14": 302.6,
         "position": 0.35,
-        "dist_a_atr": 2.12,
-        "dist_c_atr": 1.12,
-        "trend": -0.85,
-        "breadth": null,
         "breadth_status": "unavailable",
-        "regime": "range",
         "logits": {
-          "A": -1.31,
-          "B": 1,
-          "C": -0.6
+          "A": -1.42,
+          "B": 0.5,
+          "C": 0.28
         }
       }
     },
@@ -185,8 +95,8 @@
             "operator": "gte",
             "value": 25254.11
           },
-          "probability": 0.15,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。A 受区间门控压低。"
+          "probability": 0.1,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。A 按结构评分。"
         },
         {
           "id": "B",
@@ -195,8 +105,8 @@
             "lower": 24275.56,
             "upper": 25254.11
           },
-          "probability": 0.45,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。B 获区间门控加权。"
+          "probability": 0.2,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。B 为区间基准。"
         },
         {
           "id": "C",
@@ -204,8 +114,8 @@
             "operator": "lt",
             "value": 24275.56
           },
-          "probability": 0.4,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。C 受区间门控压低。"
+          "probability": 0.7,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。C 按结构评分。"
         }
       ],
       "v1_probabilities": {
@@ -213,92 +123,7 @@
         "B": 0.2,
         "C": 0.7
       },
-      "weight_factors": [
-        {
-          "name": "regime_gate",
-          "raw": {
-            "range": true,
-            "width_atr": 2.93,
-            "higher_lows": false,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": -0.55,
-            "B": 0.55,
-            "C": -0.55
-          },
-          "citation": "Grimes《艺术与科学》Ch.1, PDF pp.37-49"
-        },
-        {
-          "name": "breakout_quality",
-          "raw": {
-            "near_a": false,
-            "higher_lows": false,
-            "near_c": true,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": -0.3
-          },
-          "citation": "Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认"
-        },
-        {
-          "name": "sakata_new_value",
-          "raw": {
-            "up": 0,
-            "down": 1,
-            "exhaustion": "none"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率"
-        },
-        {
-          "name": "candle_pattern",
-          "raw": {
-            "pattern": "none",
-            "position": -0.31
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认"
-        },
-        {
-          "name": "realized_volatility",
-          "raw": {
-            "hv10": 0.01,
-            "hv20": 0.01,
-            "ratio": 1.14,
-            "iv_status": "unavailable"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号"
-        },
-        {
-          "name": "market_state_gate",
-          "raw": {
-            "holiday_first": false,
-            "gap_atr": 1.54,
-            "stale": true
-          },
-          "contribution": {
-            "shrink": 0.7
-          },
-          "citation": "Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430"
-        }
-      ],
+      "weight_factors": [],
       "factors": {
         "baseline_date": "2026-10-02",
         "close": 23972.29,
@@ -306,16 +131,11 @@
         "upper": 25254.11,
         "atr14": 334.41,
         "position": -0.31,
-        "dist_a_atr": 3.83,
-        "dist_c_atr": 0,
-        "trend": -0.85,
-        "breadth": null,
         "breadth_status": "unavailable",
-        "regime": "range",
         "logits": {
-          "A": -0.54,
-          "B": 0.53,
-          "C": 0.3
+          "A": -2.97,
+          "B": 0.5,
+          "C": 1.63
         }
       }
     },
@@ -343,7 +163,7 @@
             "value": 25254.11
           },
           "probability": 0.1,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。A 受区间门控压低。"
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。A 按结构评分。"
         },
         {
           "id": "B",
@@ -352,8 +172,8 @@
             "lower": 24275.56,
             "upper": 25254.11
           },
-          "probability": 0.6,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。B 获区间门控加权。"
+          "probability": 0.2,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。B 为区间基准。"
         },
         {
           "id": "C",
@@ -361,8 +181,8 @@
             "operator": "lt",
             "value": 24275.56
           },
-          "probability": 0.3,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。C 受区间门控压低。"
+          "probability": 0.7,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。C 按结构评分。"
         }
       ],
       "v1_probabilities": {
@@ -370,92 +190,7 @@
         "B": 0.2,
         "C": 0.7
       },
-      "weight_factors": [
-        {
-          "name": "regime_gate",
-          "raw": {
-            "range": true,
-            "width_atr": 3.01,
-            "higher_lows": false,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": -0.55,
-            "B": 0.55,
-            "C": -0.55
-          },
-          "citation": "Grimes《艺术与科学》Ch.1, PDF pp.37-49"
-        },
-        {
-          "name": "breakout_quality",
-          "raw": {
-            "near_a": false,
-            "higher_lows": false,
-            "near_c": true,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": -0.3
-          },
-          "citation": "Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认"
-        },
-        {
-          "name": "sakata_new_value",
-          "raw": {
-            "up": 0,
-            "down": 2,
-            "exhaustion": "none"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率"
-        },
-        {
-          "name": "candle_pattern",
-          "raw": {
-            "pattern": "piercing",
-            "position": -0.24
-          },
-          "contribution": {
-            "A": 0.2,
-            "B": 0,
-            "C": -0.2
-          },
-          "citation": "Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认"
-        },
-        {
-          "name": "realized_volatility",
-          "raw": {
-            "hv10": 0.01,
-            "hv20": 0.01,
-            "ratio": 1.25,
-            "iv_status": "unavailable"
-          },
-          "contribution": {
-            "A": 0.2,
-            "B": 0,
-            "C": 0.2
-          },
-          "citation": "Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号"
-        },
-        {
-          "name": "market_state_gate",
-          "raw": {
-            "holiday_first": false,
-            "gap_atr": 0.03,
-            "stale": false
-          },
-          "contribution": {
-            "shrink": 0
-          },
-          "citation": "Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430"
-        }
-      ],
+      "weight_factors": [],
       "factors": {
         "baseline_date": "2026-10-05",
         "close": 24040.34,
@@ -463,16 +198,11 @@
         "upper": 25254.11,
         "atr14": 325.14,
         "position": -0.24,
-        "dist_a_atr": 3.73,
-        "dist_c_atr": 0,
-        "trend": -0.91,
-        "breadth": null,
         "breadth_status": "unavailable",
-        "regime": "range",
         "logits": {
-          "A": -2.17,
-          "B": 1,
-          "C": 0.24
+          "A": -2.94,
+          "B": 0.5,
+          "C": 1.64
         }
       }
     },
@@ -500,7 +230,7 @@
             "value": 25254.11
           },
           "probability": 0.1,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。A 受区间门控压低。"
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。A 按结构评分。"
         },
         {
           "id": "B",
@@ -509,8 +239,8 @@
             "lower": 24275.56,
             "upper": 25254.11
           },
-          "probability": 0.65,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。B 获区间门控加权。"
+          "probability": 0.3,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。B 为区间基准。"
         },
         {
           "id": "C",
@@ -518,8 +248,8 @@
             "operator": "lt",
             "value": 24275.56
           },
-          "probability": 0.25,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。C 受区间门控压低。"
+          "probability": 0.6,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。C 按结构评分。"
         }
       ],
       "v1_probabilities": {
@@ -527,92 +257,7 @@
         "B": 0.3,
         "C": 0.6
       },
-      "weight_factors": [
-        {
-          "name": "regime_gate",
-          "raw": {
-            "range": true,
-            "width_atr": 3.02,
-            "higher_lows": false,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": -0.55,
-            "B": 0.55,
-            "C": -0.55
-          },
-          "citation": "Grimes《艺术与科学》Ch.1, PDF pp.37-49"
-        },
-        {
-          "name": "breakout_quality",
-          "raw": {
-            "near_a": false,
-            "higher_lows": false,
-            "near_c": true,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": -0.3
-          },
-          "citation": "Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认"
-        },
-        {
-          "name": "sakata_new_value",
-          "raw": {
-            "up": 0,
-            "down": 0,
-            "exhaustion": "none"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率"
-        },
-        {
-          "name": "candle_pattern",
-          "raw": {
-            "pattern": "doji",
-            "position": 0.01
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认"
-        },
-        {
-          "name": "realized_volatility",
-          "raw": {
-            "hv10": 0.01,
-            "hv20": 0.01,
-            "ratio": 1.17,
-            "iv_status": "unavailable"
-          },
-          "contribution": {
-            "A": 0.2,
-            "B": 0,
-            "C": 0.2
-          },
-          "citation": "Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号"
-        },
-        {
-          "name": "market_state_gate",
-          "raw": {
-            "holiday_first": false,
-            "gap_atr": 0.74,
-            "stale": false
-          },
-          "contribution": {
-            "shrink": 0
-          },
-          "citation": "Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430"
-        }
-      ],
+      "weight_factors": [],
       "factors": {
         "baseline_date": "2026-10-06",
         "close": 24280.56,
@@ -620,16 +265,11 @@
         "upper": 25254.11,
         "atr14": 324.33,
         "position": 0.01,
-        "dist_a_atr": 3,
-        "dist_c_atr": 0.02,
-        "trend": -0.92,
-        "breadth": null,
         "breadth_status": "unavailable",
-        "regime": "range",
         "logits": {
-          "A": -1.92,
-          "B": 1,
-          "C": 0.17
+          "A": -2.3,
+          "B": 0.5,
+          "C": 1.25
         }
       }
     },
@@ -657,7 +297,7 @@
             "value": 25254.11
           },
           "probability": 0.1,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。A 受区间门控压低。"
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。A 按结构评分。"
         },
         {
           "id": "B",
@@ -666,8 +306,8 @@
             "lower": 23835.68,
             "upper": 25254.11
           },
-          "probability": 0.65,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。B 获区间门控加权。"
+          "probability": 0.4,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。B 为区间基准。"
         },
         {
           "id": "C",
@@ -675,8 +315,8 @@
             "operator": "lt",
             "value": 23835.68
           },
-          "probability": 0.25,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430；宽度数据不可用，因子权重置0。C 受区间门控压低。"
+          "probability": 0.5,
+          "probability_basis": "仅完整日K；；宽度数据不可用，因子权重置0。C 按结构评分。"
         }
       ],
       "v1_probabilities": {
@@ -684,92 +324,7 @@
         "B": 0.4,
         "C": 0.5
       },
-      "weight_factors": [
-        {
-          "name": "regime_gate",
-          "raw": {
-            "range": true,
-            "width_atr": 4.49,
-            "higher_lows": false,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": -0.55,
-            "B": 0.55,
-            "C": -0.55
-          },
-          "citation": "Grimes《艺术与科学》Ch.1, PDF pp.37-49"
-        },
-        {
-          "name": "breakout_quality",
-          "raw": {
-            "near_a": false,
-            "higher_lows": false,
-            "near_c": false,
-            "lower_highs": false
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认"
-        },
-        {
-          "name": "sakata_new_value",
-          "raw": {
-            "up": 0,
-            "down": 0,
-            "exhaustion": "none"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率"
-        },
-        {
-          "name": "candle_pattern",
-          "raw": {
-            "pattern": "star",
-            "position": 0.21
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认"
-        },
-        {
-          "name": "realized_volatility",
-          "raw": {
-            "hv10": 0.01,
-            "hv20": 0.01,
-            "ratio": 1.16,
-            "iv_status": "unavailable"
-          },
-          "contribution": {
-            "A": 0.2,
-            "B": 0,
-            "C": 0.2
-          },
-          "citation": "Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号"
-        },
-        {
-          "name": "market_state_gate",
-          "raw": {
-            "holiday_first": false,
-            "gap_atr": 0.34,
-            "stale": false
-          },
-          "contribution": {
-            "shrink": 0
-          },
-          "citation": "Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430"
-        }
-      ],
+      "weight_factors": [],
       "factors": {
         "baseline_date": "2026-10-07",
         "close": 24130.5,
@@ -777,16 +332,11 @@
         "upper": 25254.11,
         "atr14": 316.1,
         "position": 0.21,
-        "dist_a_atr": 3.55,
-        "dist_c_atr": 0.93,
-        "trend": -0.96,
-        "breadth": null,
         "breadth_status": "unavailable",
-        "regime": "range",
         "logits": {
-          "A": -1.85,
-          "B": 1,
-          "C": 0.03
+          "A": -2.19,
+          "B": 0.5,
+          "C": 0.62
         }
       }
     },
@@ -814,7 +364,7 @@
             "value": 24354.11
           },
           "probability": 0.1,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430。A 受区间门控压低。"
+          "probability_basis": "仅完整日K；。A 按结构评分。"
         },
         {
           "id": "B",
@@ -823,8 +373,8 @@
             "lower": 23835.68,
             "upper": 24354.11
           },
-          "probability": 0.5,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430。B 获区间门控加权。"
+          "probability": 0.2,
+          "probability_basis": "仅完整日K；。B 为区间基准。"
         },
         {
           "id": "C",
@@ -832,8 +382,8 @@
             "operator": "lt",
             "value": 23835.68
           },
-          "probability": 0.4,
-          "probability_basis": "仅完整日K；Grimes《艺术与科学》Ch.1, PDF pp.37-49；Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认；《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率；Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认；Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号；Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430。C 受区间门控压低。"
+          "probability": 0.7,
+          "probability_basis": "仅完整日K；。C 按结构评分。"
         }
       ],
       "v1_probabilities": {
@@ -841,92 +391,7 @@
         "B": 0.2,
         "C": 0.7
       },
-      "weight_factors": [
-        {
-          "name": "regime_gate",
-          "raw": {
-            "range": true,
-            "width_atr": 1.61,
-            "higher_lows": false,
-            "lower_highs": true
-          },
-          "contribution": {
-            "A": -0.55,
-            "B": 0.55,
-            "C": -0.55
-          },
-          "citation": "Grimes《艺术与科学》Ch.1, PDF pp.37-49"
-        },
-        {
-          "name": "breakout_quality",
-          "raw": {
-            "near_a": false,
-            "higher_lows": false,
-            "near_c": true,
-            "lower_highs": true
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0.3
-          },
-          "citation": "Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认"
-        },
-        {
-          "name": "sakata_new_value",
-          "raw": {
-            "up": 0,
-            "down": 1,
-            "exhaustion": "none"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率"
-        },
-        {
-          "name": "candle_pattern",
-          "raw": {
-            "pattern": "none",
-            "position": -0.1
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认"
-        },
-        {
-          "name": "realized_volatility",
-          "raw": {
-            "hv10": 0.01,
-            "hv20": 0.01,
-            "ratio": 1.15,
-            "iv_status": "unavailable"
-          },
-          "contribution": {
-            "A": 0,
-            "B": 0,
-            "C": 0
-          },
-          "citation": "Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号"
-        },
-        {
-          "name": "market_state_gate",
-          "raw": {
-            "holiday_first": false,
-            "gap_atr": 0.31,
-            "stale": false
-          },
-          "contribution": {
-            "shrink": 0
-          },
-          "citation": "Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430"
-        }
-      ],
+      "weight_factors": [],
       "factors": {
         "baseline_date": "2026-10-08",
         "close": 23785.79,
@@ -934,16 +399,11 @@
         "upper": 24354.11,
         "atr14": 322.72,
         "position": -0.1,
-        "dist_a_atr": 1.76,
-        "dist_c_atr": 0,
-        "trend": -1,
-        "breadth": -0.37,
         "breadth_status": "available",
-        "regime": "range",
         "logits": {
-          "A": -2.04,
-          "B": 1,
-          "C": 0.8
+          "A": -2.22,
+          "B": 0.5,
+          "C": 1.6
         }
       }
     }

@@ -18,9 +18,11 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root}={}) {
     if(MR.hk(now).minute<MR.closeMinute(today))throw Error('Not a completed close');
     const a=read('annotations.json'),feed=read('kline_futu.json');
     if(a.forecast.applicable_date!==today||a.publication?.kind!=='daily_rule_analysis')throw Error('No genuine same-day daily analysis to review');
-    const bar=feed.candles.find(b=>b.date===today&&!b.partial);
-    if(!bar || MR.timestamp(feed.updated_at)<MR.timestamp(today+'T'+(MR.closeMinute(today)===730?'12:10':'16:10')+':00+08:00'))throw Error('Missing completed same-day candle');
-    const verdicts=a.forecast.scenarios.map(s=>({id:s.id,met:judge(s.price_rule,bar.close)}));
+    const replay=MR.replaySession(a,feed,today,now);
+    if(replay.status!=='available')throw Error('Missing completed same-day candle');
+    const bar=feed.candles.find(b=>b.date===today);
+    const verdicts=replay.scenarios.map(s=>({id:s.id,met:s.condition}));
+    if(verdicts.some(v=>v.met===null))throw Error('Missing frozen price rule');
     const record={session_date:today,analysis_id:a.meta.analysis_id,kind:'price_structure_close_review',generated_at:new Date(now).toISOString(),bar,verdicts,probability_status:'uncalibrated',brier:null};
     exclusive(path.join(dir,'daily-reviews',today+'.json'),record);
     const status={updated_at:new Date(now).toISOString(),judgment_mode:'close_final',analysis_id:a.meta.analysis_id,conditions_date:today,data_stale:false,conditions_stale:false,metrics:{price:bar.close},scenarios:verdicts.map(v=>({id:v.id,name_prefix:v.id,triggered:v.met,core_met:v.met?1:0,core_total:1,confirm_met:0,confirm_total:0,strength:'价格确认·环境未定',conditions:[{id:'daily_price_structure',role:'core',label:a.forecast.scenarios.find(s=>s.id===v.id).trigger,met:v.met}]}))};
@@ -28,7 +30,7 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root}={}) {
   }
   if(MR.hk(now).minute>=570)throw Error('Preopen missed: refusing hindsight publication');
   const expected=MR.latestDay(now,true);let feed=read('kline_futu.json');
-  if(!feed.candles.some(b=>b.date===expected&&!b.partial)) {
+  if(!feed.candles.some(b=>b.date===expected&&!b.partial&&b.final!==false)) {
     const url='https://query1.finance.yahoo.com/v8/finance/chart/%5EHSI?interval=1d&range=2y';
     const r=await fetch(url,{headers:{'User-Agent':'Mozilla/5.0'},signal:AbortSignal.timeout(15000)});
     if(!r.ok)throw Error('Daily source failed '+r.status);
@@ -36,7 +38,7 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root}={}) {
     if(!q||!raw.timestamp)throw Error('Missing Yahoo daily result');
     const candles=raw.timestamp.map((ts,i)=>({date:MR.hk(ts*1000).date,open:q.open[i],high:q.high[i],low:q.low[i],close:q.close[i]})).filter(b=>b.date<=expected&&[b.open,b.high,b.low,b.close].every(Number.isFinite));
     // Never overwrite already confirmed OHLC with a second provider.
-    const existingDates=new Set(feed.candles.filter(b=>!b.partial).map(b=>b.date));
+    const existingDates=new Set(feed.candles.filter(b=>!b.partial&&b.final!==false).map(b=>b.date));
     const additions=candles.filter(b=>!existingDates.has(b.date));
     feed={symbol:'^HSI',source:feed.source+'; new sessions: '+url,updated_at:new Date(now).toISOString(),candles:[...feed.candles.filter(b=>!b.partial),...additions].sort((a,b)=>a.date.localeCompare(b.date))};
     fs.writeFileSync(path.join(dir,'kline_futu.json'),JSON.stringify(feed,null,2)+'\n');

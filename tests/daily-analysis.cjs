@@ -112,3 +112,27 @@ test('historical renderer produces three compact outcomes without pending signal
  assert.equal(nodes.every(n=>!n.innerHTML.includes('历史条件未回放')&&!n.innerHTML.includes('盈亏标尺')),true);
  assert.match(html,/\.scenarios\.sc-history \{ align-items: start;/);assert.match(html,/request !== historySelectionRequest/);
 });
+
+test('generator rejects explicitly unconfirmed baseline and nonpositive OHLC',()=>{
+ const pending=structuredClone(feed);pending.candles.at(-1).final=false;
+ assert.throws(()=>build({...args,feed:pending}),/baseline/);
+ const zero=structuredClone(feed);Object.assign(zero.candles.at(-1),{open:0,low:0,close:0});
+ assert.throws(()=>build({...args,feed:zero}),/OHLC/);
+});
+test('postclose fails closed before writing a review or final status for invalid daily data',async()=>{
+ const os=require('node:os'),path=require('node:path'),{run}=require('../scripts/publish-daily-analysis.cjs');
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'invalid-close-')),dir=path.join(tmp,'investment/chart');fs.mkdirSync(dir,{recursive:true});
+ const a=build({...args,backfill:false,generatedAt:'2026-10-09T08:46:00+08:00'});
+ const daily=require('../investment/chart/kline_futu.json'),b=daily.candles.find(b=>b.date==='2026-10-09');
+ try {
+  fs.writeFileSync(path.join(dir,'annotations.json'),JSON.stringify(a));
+  fs.writeFileSync(path.join(dir,'scenario_status.json'),'{"sentinel":true}');
+  for(const candles of [[{...b,final:false}],[{...b,partial:true}],[b,b],[{...b,high:1}],[{...b,low:0}]]){
+   fs.writeFileSync(path.join(dir,'kline_futu.json'),JSON.stringify({...daily,updated_at:'2026-10-09T16:15:00+08:00',candles}));
+   await assert.rejects(run({projectRoot:tmp,phase:'postclose',now:Date.parse('2026-10-09T16:20:00+08:00')}),/Missing completed/);
+   assert.equal(fs.existsSync(path.join(dir,'daily-reviews/2026-10-09.json')),false);
+   assert.equal(fs.readFileSync(path.join(dir,'scenario_status.json'),'utf8'),'{"sentinel":true}');
+  }
+  assert.equal(MR.replaySession(a,{...daily,updated_at:'2026-10-10T16:15:00+08:00'},'2026-10-09',Date.parse('2026-10-09T16:20:00+08:00')).status,'unavailable');
+ } finally {fs.rmSync(tmp,{recursive:true});}
+});

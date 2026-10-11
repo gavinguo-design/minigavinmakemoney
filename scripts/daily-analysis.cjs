@@ -9,12 +9,12 @@ function build({date, feed, seed, participation, generatedAt, backfill=false, pr
   const cutoff = backfill ? date+'T08:45:00+08:00' : (generatedAt || new Date().toISOString());
   if (!backfill && (MR.hk(MR.timestamp(cutoff)).date!==date || MR.timestamp(cutoff)>=MR.timestamp(date+'T09:30:00+08:00'))) throw Error('Preopen publication missed; use explicit backfill');
   const expected = MR.latestDay(MR.timestamp(date+'T08:45:00+08:00'), true);
-  const bars=(feed.candles||[]).filter(b=>b.date<date && !b.partial)
+  const bars=(feed.candles||[]).filter(b=>b.date<date && !b.partial && b.final!==false)
     .map(b=>({...b,time:b.date})).sort((a,b)=>a.date.localeCompare(b.date));
   if (bars.length<60 || bars.at(-1).date!==expected) throw Error('Missing latest completed baseline '+expected);
   for (let i=0;i<bars.length;i++) {
     const b=bars[i];
-    if (![b.open,b.high,b.low,b.close].every(Number.isFinite) || b.low>Math.min(b.open,b.close) || b.high<Math.max(b.open,b.close) || (i&&bars[i-1].date===b.date)) throw Error('Invalid/duplicate OHLC');
+    if (![b.open,b.high,b.low,b.close].every(Number.isFinite) || b.low<=0 || MR.tradingDay(b.date)!==true || b.low>Math.min(b.open,b.close) || b.high<Math.max(b.open,b.close) || (i&&bars[i-1].date===b.date)) throw Error('Invalid/duplicate OHLC');
   }
   if (!feed.source || !Number.isFinite(MR.timestamp(feed.updated_at)) || MR.timestamp(feed.updated_at)>MR.timestamp(cutoff)) throw Error('Input snapshot published after preopen cutoff');
   if (seed && MR.timestamp(seed.meta?.updatedAt)>MR.timestamp(cutoff)) throw Error('Future seed');

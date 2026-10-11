@@ -95,11 +95,11 @@
     var sourceTime=timestamp(feed&&feed.updated_at);
     var unavailable={status:'unavailable',date:date,scenarios:[]};
     if(tradingDay(date)!==true || !Number.isFinite(cutoff) || !Number.isFinite(sourceTime) ||
-       sourceTime<cutoff || (now==null?Date.now():now)<cutoff) return unavailable;
+       sourceTime<cutoff || sourceTime>(now==null?Date.now():now)+60000 || (now==null?Date.now():now)<cutoff) return unavailable;
     var matches=(feed&&Array.isArray(feed.candles)?feed.candles:[]).filter(function(b){return b.date===date;});
     if(matches.length!==1) return unavailable;
     var b=matches[0];
-    if(b.final===false || ![b.open,b.high,b.low,b.close].every(Number.isFinite) ||
+    if(b.partial===true || b.final===false || ![b.open,b.high,b.low,b.close].every(Number.isFinite) ||
        b.low<=0 || b.high<Math.max(b.open,b.close) || b.low>Math.min(b.open,b.close) || b.low>b.high) return unavailable;
     var scenarios=(a&&a.forecast&&a.forecast.scenarios||[]).map(function(sc){
       var verdict=priceCondition(sc.price_rule,b.close),entry=sc.rr&&sc.rr.entry;

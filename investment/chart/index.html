@@ -2160,24 +2160,24 @@
     summary.className = 'sc-history-summary';
     if (replay.status !== 'available') {
       summary.textContent = viewingDate + ' · 缺少当天已确认日K，暂不能回放；不使用最新报价代替历史结果。';
-      wrap.appendChild(summary); return;
-    }
+    } else {
     var matched = replay.scenarios.filter(function(r){return r.condition === true;}).map(function(r){return r.id;});
     var b = replay.bar;
     summary.innerHTML = '<b>' + escapeHtml(viewingDate) + ' 已收盘 · ' + (matched.length ? escapeHtml(matched.join('/')) + ' 收盘条件满足' : '没有情景满足收盘条件') + '</b>' +
       '<p>实际开盘 ' + fmt(b.open) + ' · 最高 ' + fmt(b.high) + ' · 最低 ' + fmt(b.low) + ' · 收盘 <b>' + fmt(b.close) + '</b></p>' +
       '<p>条件满足与成交分开核对；日K触价不能证明实际成交，也不能判断盘中触价先后。' +
       (a.publication && a.publication.kind === 'retrospective_backfill' ? '这份分析是事后补录，不计预测命中率。' : '') + '</p>';
+    }
     wrap.appendChild(summary);
     scenarios.forEach(function(sc, index){
-      var r = replay.scenarios[index], card = document.createElement('div');
+      var r = replay.scenarios[index] || {condition:null,entryTouched:null}, card = document.createElement('div');
       card.className = 'sc-history-result' + (r.condition === true ? ' sc-history-matched' : '');
       card.style.setProperty('--sc-color', scenarioColor(sc));
-      var outcome = r.condition === true ? '✓ 当天收盘条件满足' : r.condition === false ? '当天收盘条件未满足' : '缺少冻结价格规则，不能判定';
+      var outcome = r.condition === true ? '✓ 当天收盘条件满足' : r.condition === false ? '当天收盘条件未满足' : replay.status !== 'available' ? '历史结果数据暂不可用；情景方案保留' : '缺少冻结价格规则，不能判定';
       var entry = sc.rr && sc.rr.entry;
       card.innerHTML = '<h4>' + escapeHtml(sc.name || sc.id) + '</h4><b>' + outcome + '</b>' +
         '<p>冻结条件：' + escapeHtml(sc.trigger || '') + '</p>' +
-        (Number.isFinite(entry) ? '<p>计划入场 ' + fmt(entry) + ' · <b>' + (r.entryTouched ? '日内曾触及（不代表成交）' : '当天未触及') + '</b></p>' : '<p>没有计划入场价，仅作条件观察。</p>') +
+        (Number.isFinite(entry) ? '<p>计划入场 ' + fmt(entry) + ' · <b>' + (replay.status !== 'available' ? '触价结果待核对' : r.entryTouched ? '日内曾触及（不代表成交）' : '当天未触及') + '</b></p>' : '<p>没有计划入场价，仅作条件观察。</p>') +
         '<p><b>方向：</b>'+escapeHtml(sc.direction==='long'?'偏多':'偏空')+' · <b>结构目标：</b>'+escapeHtml(sc.target||'未提供')+'</p>' +
         '<p><b>结构失效：</b>'+escapeHtml(sc.invalidation||'未提供')+'</p>' +
         '<p><b>参与参考：</b>'+escapeHtml(sc.rr && sc.rr.entryHint || sc.note || '仅作条件观察')+'</p>' +

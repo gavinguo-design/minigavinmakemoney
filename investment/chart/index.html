@@ -1184,6 +1184,7 @@
 
   var annotations = null;        // 当前渲染用的标注（最新 或 某天历史存档）
   var latestAnnotations = null;  // 最新 annotations.json 内容
+  var automaticHistory = false; // 默认最近记录；用户主动选择后不自动跳转
   var viewingDate = null;        // null=最新；'YYYY-MM-DD'=正在回看该日冻结存档
   var klineUpdatedAt = null, rejectedQuoteAt = null, yahooQuote = null;
   var technicalPanel = new TechnicalPanel(chart, function(iv) {
@@ -1224,7 +1225,7 @@
     var select=el('histSelect');
     if(select&&select.options.length) {
       var onlineOption=Array.from(select.options).find(function(o){return o.value==='';})||select.options[0];
-      onlineOption.textContent='当前在线分析'+(state.date?'（冻结 '+state.date+'）':'（待发布）');
+      onlineOption.textContent=state.status==='current'?'当前分析（'+state.date+'）':'当前分析（未发布）';
     }
     renderHistSelection();
     var box=el('analysisAvailability');
@@ -1237,12 +1238,13 @@
         : record&&record.kind==='carried_forward_snapshot'
         ? '⚠ '+viewingDate+' 没有发布新剧本；这份归档沿用 '+originalDate+' 的分析，只供历史核对。顶部最新报价不会更新归档中的 A/B/C。'
         : '历史回放：当前查看 '+viewingDate+' 的存档'+(originalDate?'，原分析日期 '+originalDate:'')+'。顶部行情单独显示最新报价；切回在线分析才能查看当前发布状态。';
+      if (automaticHistory) box.textContent = '当前分析尚未发布；默认显示最近可用记录。' + box.textContent;
       box.classList.remove('hidden');
       return;
     }
     var coverage=MarketRules.archiveCoverage(archiveDates||[]);
     var lines=[];
-    if(state.status==='stale') lines.push('⚠ 最近适用交易日 '+state.expected+' 的新剧本尚未发布；当前 A/B/C 仍来自 '+state.date+' 的旧分析。行情和权重更新不等于剧本已更新。');
+    if(state.status==='stale') lines.push('⚠ 最近适用交易日 '+state.expected+' 的新剧本尚未发布；'+state.date+' 的旧分析已退出当前展示。行情和权重更新不等于剧本已更新。');
     else if(state.status==='missing') lines.push('⚠ 当天分析未提供有效冻结日期，暂不能确认为最新判断。');
     else if(state.status==='future') lines.push('⚠ 分析日期超前，需核对来源与适用日期。');
     else if(state.status==='unknown') lines.push('⚠ 交易日历超出支持范围，无法确认分析是否适用于今天。');
@@ -1668,7 +1670,7 @@
   function renderIntradayPanel() {
     var box = document.getElementById('intradayPanel');
     if (!box) return;
-    var ip = latestAnnotations && latestAnnotations.intraday_playbook;
+    var ip = MarketRules.analysisAvailability(latestAnnotations).status === 'current' && latestAnnotations && latestAnnotations.intraday_playbook;
     if (viewingDate || !ip || !Array.isArray(ip.zones) || !ip.zones.length) {
       box.classList.add('hidden'); box.innerHTML = ''; return;
     }
@@ -2876,7 +2878,8 @@
     if (!f) {
       badge.textContent = '暂无观点';
       badge.className = 'badge neutral';
-      el('fcSummary').textContent = '分析标注尚未发布。';
+      el('fcSummary').textContent = '当前交易日分析尚未发布；旧分析仅供历史查看。';
+      ['fcTarget','fcHorizon','fcUpdated','fcInvalid'].forEach(function(id){el(id).innerHTML='';});
       return;
     }
     var biasMap = { bullish: ['bull', '偏多'], bearish: ['bear', '偏空'], neutral: ['neutral', '震荡'] };
@@ -3693,6 +3696,8 @@
 
   function applyAnnotations(a) {
     if (!annotations || viewingDate || (annotations.meta && annotations.meta.analysis_id) !== (a && a.meta && a.meta.analysis_id)) activeScenario = -1;
+    // 过期正文、价位、预案全部退出当前展示，原文件仍保留供历史审计。
+    if (!viewingDate && MarketRules.analysisAvailability(a).status !== 'current') a = {meta:a && a.meta};
     annotations = a;
     renderStructBanner(a);
     renderStatusBar(a);
@@ -3732,7 +3737,7 @@
     if(!caption) return;
     var date=viewingDate || MarketRules.analysisAvailability(latestAnnotations||annotations).date;
     var record=viewingDate && annotations && annotations.archive_record;
-    caption.textContent=(viewingDate?'已选归档：':'当前在线分析冻结：')+(date||'待发布')+
+    caption.textContent=(viewingDate?'已选记录：':'当前分析：')+(viewingDate?date:MarketRules.analysisAvailability(latestAnnotations).status==='current'?date:'未发布')+
       (record?' · 原分析冻结：'+record.original_analysis_date+(record.kind==='recovered_snapshot'?' · 历史版本补录':''):'');
   }
 
@@ -3759,7 +3764,8 @@
     chart.timeScale().setVisibleLogicalRange({ from: from, to: to });
   }
 
-  function switchToDate(date) {
+  function switchToDate(date, automatic) {
+    automaticHistory = !!automatic;
     var sel = el('histSelect');
     var request = ++historySelectionRequest;
     if (!date) {
@@ -3771,11 +3777,11 @@
       if (currentBars.length) setDefaultView(currentIv);
       return;
     }
-    Promise.all([fetchArchive(date), fetch('kline_futu.json?t=' + Date.now(), {cache:'no-store'}).then(function(r){if(!r.ok) throw new Error('daily feed unavailable'); return r.json();}).catch(function(){return null;})]).then(function (results) {
+    return Promise.all([fetchArchive(date), fetch('kline_futu.json?t=' + Date.now(), {cache:'no-store'}).then(function(r){if(!r.ok) throw new Error('daily feed unavailable'); return r.json();}).catch(function(){return null;})]).then(function (results) {
       if (request !== historySelectionRequest) return;
       var a = results[0];
       historyDailyFeed = results[1];
-      if (!a) { // 存档拉取失败，回退到最新
+      if (!a || (automatic && (MarketRules.analysisAvailability(a).date !== date || (a.archive_record && a.archive_record.kind === 'carried_forward_snapshot')))) { // 不将沿用旧分析当作最近有效记录
         if (sel) sel.value = viewingDate || '';
         return;
       }
@@ -3847,7 +3853,7 @@
   }
 
   function initHistCtrl() {
-    fetchArchiveIndex().then(function (list) {
+    return fetchArchiveIndex().then(function (list) {
       if (!Array.isArray(list) || !list.length) return; // 无存档则不显示控件
       var dates = list.filter(function (d) { return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d); })
         .sort().reverse(); // 最新日期在前
@@ -3885,9 +3891,22 @@
         if (!panel.contains(e.target) && e.target !== calBtn) hideCalPanel();
       });
       el('histCtrl').classList.remove('hidden');
-      // 最新归档可能只是沿用旧分析，不能把归档日期当成新剧本日期。
-      // 保持在线模式，让分析未更新的提示常驻；历史回放需要主动选择。
+      return selectDefaultAnalysis();
     });
+  }
+
+  // 有效当日分析优先；否则仅默认查看最近适用日记录，明确保持历史身份。
+  function selectDefaultAnalysis() {
+    var state = MarketRules.analysisAvailability(latestAnnotations);
+    if (state.status === 'current') {
+      if (automaticHistory) switchToDate('', true);
+      else if (!viewingDate) applyAnnotations(latestAnnotations);
+      return Promise.resolve();
+    }
+    if (viewingDate && !automaticHistory) return Promise.resolve();
+    var date = archiveDates.find(function(d){return d === state.expected;});
+    if (!date) { if (!viewingDate) applyAnnotations(latestAnnotations); return Promise.resolve(); }
+    return switchToDate(date, true);
   }
 
   fetchAnnotations().then(function (a) {
@@ -4032,7 +4051,7 @@
     technicalPanel.refresh();
     var tasks = [
       fetchAnnotations().then(function (a) {
-        if (a) { latestAnnotations = a; if (!viewingDate) applyAnnotations(a); }
+        if (a) { latestAnnotations = a; return selectDefaultAnalysis(); }
       }),
       fetchScenarioStatus().then(function (s) {
         if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }
@@ -4064,7 +4083,7 @@
   setInterval(function () {
     if (!isHKSessionWindow()) return;
     fetchAnnotations().then(function (a) {
-      if (a) { latestAnnotations = a; if (!viewingDate) applyAnnotations(a); }
+      if (a) { latestAnnotations = a; return selectDefaultAnalysis(); }
     });
     fetchScenarioStatus().then(function (s) {
       if (s) { scenarioStatus = s; refreshScenarioChecklists(); renderIntradayPanel(); updateDataQuality(); }

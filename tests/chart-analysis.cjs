@@ -16,7 +16,7 @@ function extract(name) {
   return html.slice(start,html.indexOf('\n  }',start)+4);
 }
 function render(name,globals={}) {
-  const ctx=vm.createContext({MarketRules:MR,TechnicalAnalysis:TA,Date:class extends Date{static now(){return now;}},...globals});
+  const ctx=vm.createContext({automaticHistory:false,MarketRules:MR,TechnicalAnalysis:TA,Date:class extends Date{static now(){return now;}},...globals});
   vm.runInContext(extract(name),ctx);return ctx;
 }
 test('an upstream quote stays stale despite repeated downloads; future ticks rejected',()=>{
@@ -103,8 +103,8 @@ test('the latest analysis selector and missing archive warning disclose the actu
   });
   vm.runInContext(extract('renderHistSelection'),c);
   c.renderAnalysisAvailability();
-  assert.equal(caption.textContent,'当前在线分析冻结：2026-10-06');
-  assert.equal(select.options[0].textContent,'当前在线分析（冻结 2026-10-06）');
+  assert.equal(caption.textContent,'当前分析：未发布');
+  assert.equal(select.options[0].textContent,'当前分析（未发布）');
   assert.match(box.textContent,/2026-10-08 的新剧本尚未发布/);
   assert.match(box.textContent,/缺少分析归档：2026-10-07、2026-10-08/);
 });
@@ -129,7 +129,7 @@ test('loading newer archive dates preserves online mode and does not automatical
   const c=render('initHistCtrl',{
     fetchArchiveIndex:()=>Promise.resolve(['2026-10-06','2026-10-09']),viewingDate:null,
     archiveDates:[],archiveDateSet:{},latestAnnotations:{meta:{updatedAt:'2026-10-06T08:45:00+08:00'}},
-    renderAnalysisAvailability(){},weekdayOf:()=>'',switchToDate:d=>switched.push(d),
+    selectDefaultAnalysis(){},renderAnalysisAvailability(){},weekdayOf:()=>'',switchToDate:d=>switched.push(d),
     el:id=>id==='histSelect'?select:control,
     document:{createElement:()=>({}),addEventListener(){}},
   });
@@ -412,4 +412,35 @@ test('evidence card consumes generated scenario contract and never falls back to
   const out=c.scenarioEvidenceHtml({id:'A'});
   assert.match(out,/OHLCV evidence/); assert.match(out,/与该情景方向冲突/); assert.match(out,/未配置独立灾难止损/);
   assert.doesNotMatch(out,/patternByTime|最新完整K线未识别/);
+});
+
+test('refresh defaults to October 9 history when live analysis is October 6, then advances to genuine publication',async()=>{
+  const switched=[],applied=[];
+  const when=at('2026-10-11T18:00:00');
+  const c=render('selectDefaultAnalysis',{
+    MarketRules:{...MR,analysisAvailability:a=>MR.analysisAvailability(a,when)},
+    latestAnnotations:{meta:{updatedAt:'2026-10-06T08:45:00+08:00'}},
+    archiveDates:['2026-10-09','2026-10-08','2026-10-06'],viewingDate:null,
+    switchToDate:(d,automatic)=>switched.push([d,automatic]),applyAnnotations:a=>applied.push(a)
+  });
+  await c.selectDefaultAnalysis();assert.deepEqual(switched,[['2026-10-09',true]]);
+  c.viewingDate='2026-10-08';c.automaticHistory=false;
+  await c.selectDefaultAnalysis();assert.equal(switched.length,1); // manual choice survives refresh
+  c.automaticHistory=true;c.latestAnnotations={meta:{updatedAt:'2026-10-09T08:45:00+08:00'}};
+  await c.selectDefaultAnalysis();assert.deepEqual(switched[1],['',true]);
+  c.viewingDate=null;c.latestAnnotations={meta:{updatedAt:'2026-10-06T08:45:00+08:00'}};c.archiveDates=['2026-10-06'];
+  await c.selectDefaultAnalysis();assert.equal(switched.length,2);assert.equal(applied.length,1);
+});
+test('expired online analysis never renders its narrative, levels or plan, while a manual archive preserves them',()=>{
+  const original={meta:{analysis_id:'old',updatedAt:'2026-10-06T08:45:00+08:00'},forecast:{summary:'old guidance'},levels:[{price:1}]};
+  const rendered=[];
+  const ctx={annotations:null,viewingDate:null,activeScenario:0,currentBars:[{}],currentIv:'1d',
+    MarketRules:{...MR,analysisAvailability:a=>MR.analysisAvailability(a,at('2026-10-11T18:00:00'))}};
+  for(const fn of ['renderStructBanner','renderStatusBar','renderForecast','renderReasoning','renderPlaybook','renderPathTree','renderScenarioCards','renderParticipationStrip','renderDisclaimer','renderNextDayDraft','renderLevels','renderMarkers','renderForecastZones','renderRRZones'])ctx[fn]=a=>rendered.push(a);
+  for(const fn of ['renderIntradayPanel','updateTechnical','updateDataQuality','hideMarkerDetail'])ctx[fn]=()=>{};
+  const c=render('applyAnnotations',ctx);c.applyAnnotations(original);
+  assert.equal(rendered.every(a=>!a.forecast&&!a.levels),true);
+  assert.equal(original.forecast.summary,'old guidance');
+  rendered.length=0;c.viewingDate='2026-10-06';c.applyAnnotations(original);
+  assert.equal(rendered.every(a=>a===original),true);
 });

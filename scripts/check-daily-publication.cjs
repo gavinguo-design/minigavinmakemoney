@@ -27,7 +27,9 @@ if(require.main===module)(async()=>{
   const result=audit(a,process.env.ANALYSIS_NOW?MR.timestamp(process.env.ANALYSIS_NOW):Date.now(),process.argv[2]||'preopen');
   if(!result.skipped) {
     const cp=require('node:child_process');
-    const sha=cp.execFileSync('git',['log','-1','--format=%H','--','investment/chart/annotations.json'],{encoding:'utf8'}).trim();
+    const paths=['investment/chart/annotations.json'];
+    if(process.argv[2]==='postclose')paths.push('investment/chart/scenario_status.json','investment/chart/daily-reviews/'+result.date+'.json');
+    const sha=cp.execFileSync('git',['log','-1','--format=%H','--',...paths],{encoding:'utf8'}).trim();
     await deployment(process.env.GITHUB_REPOSITORY||'gavinguo-design/minigavinmakemoney',sha,process.env.GITHUB_TOKEN);
   }
   console.log(JSON.stringify(result));

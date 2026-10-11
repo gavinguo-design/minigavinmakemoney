@@ -28,6 +28,7 @@ test('missing prior session, malformed OHLC and unsupported calendar reject publ
  assert.throws(()=>build({...args,backfill:false}),/missed/);
 });
 test('price partition covers exact boundaries once; environment never changes core verdict',()=>{
+ assert.equal(judge,MR.priceCondition);
  const a=build(args),rules=a.forecast.scenarios.map(s=>s.price_rule),lo=rules[1].lower,hi=rules[1].upper;
  for(const p of [lo-1,lo,lo+1,hi-1,hi,hi+1])assert.equal(rules.filter(r=>judge(r,p)).length,1);
  assert.equal(judge(rules[1],lo),true);assert.equal(judge(rules[0],hi),true);

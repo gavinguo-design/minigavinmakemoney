@@ -62,11 +62,4 @@ function build({date, feed, seed, participation, generatedAt, backfill=false, pr
     intraday_playbook:{updatedAt:time,note:'仅用于区间定位，不是即时操作指令',zones:[{range:[upper,null],stance:'修复观察',action:'等待A收盘确认'},{range:[lower,upper],stance:'区间观察',action:'等待B收盘确认'},{range:[null,lower],stance:'破位观察',action:'等待C收盘确认'}]},
     levels:[{price:lower,type:'support',label:'最近确认摆动低点',reason:pivots.lows.at(-1).time+'，确认于 '+pivots.lows.at(-1).confirmedAt},{price:upper,type:'resistance',label:'最近确认摆动高点',reason:pivots.highs.at(-1).time+'，确认于 '+pivots.highs.at(-1).confirmedAt},...(downTarget==null?[]:[{price:downTarget,type:'support',label:'下方结构目标',reason:'截止日前的确认摆动低点或既有支撑'}]),...(upTarget==null?[]:[{price:upTarget,type:'resistance',label:'上方结构目标',reason:'截止日前的确认摆动高点或既有阻力'}])],markers:[],playbook:[],pathTree:null};
 }
-function judge(rule,close) {
-  if (!rule||!Number.isFinite(close)) return null;
-  if(rule.operator==='gte') return close>=rule.value;
-  if(rule.operator==='lt') return close<rule.value;
-  if(rule.operator==='range') return close>=rule.lower&&close<rule.upper;
-  return null;
-}
-module.exports={build,judge};
+module.exports={build,judge:MR.priceCondition};

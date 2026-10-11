@@ -82,6 +82,13 @@
     var wrongHoliday=/10\/7\s*中秋翌日休市/.test(String(r.horizonDesc||''));
     return {status:declared && declared[1]===result.end && !wrongHoliday?'valid':'mismatch',expected:result,declared_end:declared?declared[1]:null};
   }
+  function priceCondition(rule, close) {
+    if(!rule || !Number.isFinite(close)) return null;
+    if(rule.operator==='gte' && Number.isFinite(rule.value)) return close>=rule.value;
+    if(rule.operator==='lt' && Number.isFinite(rule.value)) return close<rule.value;
+    if(rule.operator==='range' && Number.isFinite(rule.lower) && Number.isFinite(rule.upper) && rule.lower<rule.upper) return close>=rule.lower && close<rule.upper;
+    return null;
+  }
   function analysisAvailability(a, now) {
     var today=hk(now).date;
     var expected=tradingDay(today)===true?today:latestDay(now,true);
@@ -218,7 +225,7 @@
       lower_inclusive:short,upper_inclusive:!short};
   }
   return {hk:hk,dayString:dayString,shift:shift,known:known,tradingDay:tradingDay,
-    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,analysisAvailability:analysisAvailability,archiveCoverage:archiveCoverage,timestamp:timestamp,
+    closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,priceCondition:priceCondition,analysisAvailability:analysisAvailability,archiveCoverage:archiveCoverage,timestamp:timestamp,
     quoteState:quoteState,validQuote:validQuote,markBars:markBars,statusIssue:statusIssue,
     sanitizeStatus:sanitizeStatus,rr:rr,chaseBoundary:chaseBoundary};
 });

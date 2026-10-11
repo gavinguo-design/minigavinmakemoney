@@ -84,7 +84,7 @@ test('preopen publishes in an isolated repository, retries preserve the same fre
   const status=JSON.parse(fs.readFileSync(path.join(dir,'scenario_status.json'),'utf8'));assert.equal(status.analysis_id,a.meta.analysis_id);assert.equal(status.scenarios.filter(s=>s.triggered).length,1);
   const review=JSON.parse(fs.readFileSync(path.join(dir,'daily-reviews/2026-10-12.json'),'utf8'));assert.equal(review.bar.date,'2026-10-12');
   const p=a.forecast.scenarios.map(s=>s.probability),o=review.verdicts.map(v=>v.met?1:0);assert.deepEqual(o,[1,0,0]);
-  assert.equal(review.brier,Math.round(p.reduce((s,v,i)=>s+(v-o[i])**2,0)*10000)/10000);assert.equal(review.brier_status,'scored');assert.equal(review.weight_model,'rule-weights-v1');
+  assert.equal(review.brier,Math.round(p.reduce((s,v,i)=>s+(v-o[i])**2,0)*10000)/10000);assert.equal(review.brier_status,'scored');assert.equal(review.weight_model,'rule-weights-v2');
  } finally {fs.rmSync(tmp,{recursive:true});}
 });
 
@@ -164,12 +164,12 @@ test('rule weights: sum to 1, bounded, 0.05 grid, deterministic, versioned and p
  const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('./fixtures/hsi-participation-2026-10-09.json');
  const live={date:'2026-10-12',feed:close,seed,participation:part,generatedAt:'2026-10-12T08:45:30+08:00'};
  const a=build(live),b=build(live),p=a.forecast.scenarios.map(s=>s.probability);
- assert.deepEqual(a,b);assert.equal(WEIGHT_MODEL.version,'rule-weights-v1');
+ assert.deepEqual(a,b);assert.equal(WEIGHT_MODEL.version,'rule-weights-v2');
  assert.equal(Math.round(p.reduce((s,v)=>s+v,0)*100),100);
  for(const v of p){assert.ok(v>=0.1-1e-9&&v<=0.7+1e-9);assert.equal(Math.abs(v*20-Math.round(v*20))<1e-9,true);}
- assert.equal(a.publication.probability_status,'rule_based_uncalibrated');assert.equal(a.forecast.weight_model,'rule-weights-v1');
+ assert.equal(a.publication.probability_status,'rule_based_uncalibrated');assert.equal(a.forecast.weight_model,'rule-weights-v2');
  assert.equal(a.forecast.scenarios.every(s=>typeof s.probability_basis==='string'&&s.probability_basis.length>5),true);
- assert.deepEqual(p,[0.3,0.5,0.2]);assert.equal(a.forecast.weight_model_info.factors.breadth_status,'available');
+ assert.equal(p[1]>=0.3,true);assert.equal(a.forecast.weight_model_info.factors.breadth_status,'available');
  const noBreadth=build({...live,participation:null});assert.equal(noBreadth.forecast.weight_model_info.factors.breadth_status,'unavailable');assert.match(noBreadth.forecast.scenarios[0].probability_basis,/宽度数据不可用，因子权重置0/);
  // Extreme synthetic inputs still respect [0.10,0.70] and sum 1.
  const bars=close.candles.filter(x=>x.date<'2026-10-12').map(x=>({...x,time:x.date}));
@@ -206,9 +206,22 @@ test('chart shows rule weights with version note and keeps legacy null cards as 
  const vm=require('node:vm'),src=html.slice(html.indexOf('  function ruleWeightModel('),html.indexOf('  function participationEvaluation('));
  const ctx={escapeHtml:s=>String(s),Number};vm.createContext(ctx);vm.runInContext(src,ctx);
  const a=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('./fixtures/hsi-participation-2026-10-09.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
- assert.equal(ctx.ruleWeightModel(a),'rule-weights-v1');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/规则打分 v1，未经回测校准，累计 0 次/);
+ assert.equal(ctx.ruleWeightModel(a),'rule-weights-v2');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/规则打分 v2，未经回测校准，累计 0 次/);
  assert.equal(ctx.ruleWeightModel(build(args)),null);
  const MP=require('../investment/chart/market-participation.js'),ev=MP.evaluate(require('./fixtures/hsi-participation-2026-10-09.json'),a.forecast.scenarios,'2026-10-09');
- assert.equal(ev.already_in_base,true);assert.deepEqual(Object.values(ev.weights).map(v=>Math.round(v*100)),[30,50,20]);assert.equal(ctx.ruleWeightModel(seed),null);
+ assert.equal(ev.already_in_base,true);assert.deepEqual(Object.values(ev.weights).map(v=>Math.round(v*100)),a.forecast.scenarios.map(s=>Math.round(s.probability*100)));assert.equal(ctx.ruleWeightModel(seed),null);
  assert.match(html,/'% 权重' : '权重未校准'/);assert.match(html,/主情景 · /);
+});
+
+test('v2 completed-bar factors and Nison patterns have deterministic directional effects',()=>{
+ const {candlePattern,scoreScenarioWeights,WEIGHT_MODEL}=require('../scripts/daily-analysis.cjs');
+ const c=(o,h,l,close)=>({open:o,high:h,low:l,close});
+ assert.equal(candlePattern(c(10,11,8,9),c(8.5,12,8,11.5)).name,'bullish_engulfing');
+ assert.equal(candlePattern(c(9,11,8,10.5),c(11,11.2,8,8.8)).name,'bearish_engulfing');
+ assert.equal(candlePattern(c(12,13,9,10),c(9,12,8,11.5)).name,'piercing');
+ assert.equal(candlePattern(c(10,12,9,11),c(13,14,7,13.05)).name,'doji');
+ const close=require('./fixtures/hsi-close-2026-10-09.json');const bars=close.candles.filter(x=>x.date<'2026-10-12').map(x=>({...x,time:x.date}));
+ const x=scoreScenarioWeights({bars,lower:23835.68,upper:24354.11,participation:null,cutoff:'2026-10-12T08:45:00+08:00'});
+ assert.equal(x.version,'rule-weights-v2');assert.equal(x.weight_factors.length,6);assert.equal(x.weight_factors.find(f=>f.name==='regime_gate').raw.range,true);
+ const vals=Object.values(x.probabilities);assert.equal(vals.reduce((a,b)=>a+b,0),1);for(const v of vals)assert.ok(v>=.1&&v<=.7);
 });

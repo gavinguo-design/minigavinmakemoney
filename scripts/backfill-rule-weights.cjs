@@ -4,7 +4,7 @@
 // never feeds Brier / prediction scoring.
 const fs=require('node:fs'),path=require('node:path'),{execFileSync}=require('node:child_process');
 const MR=require('../investment/chart/market-rules.js');
-const {build,WEIGHT_MODEL}=require('./daily-analysis.cjs');
+const {build,WEIGHT_MODEL,WEIGHT_MODEL_V1,scoreScenarioWeights}=require('./daily-analysis.cjs');
 const root=path.join(__dirname,'..');
 const git=(...a)=>execFileSync('git',a,{cwd:root,encoding:'utf8'}).trim();
 function snapshotAt(file,cutoff){
@@ -19,14 +19,20 @@ function compute(dates,computedAt=new Date().toISOString()){
   for(const date of dates){
     const cutoff=date+'T08:45:00+08:00';
     const k=snapshotAt('investment/chart/kline_futu.json',cutoff),p=snapshotAt('investment/chart/hsi-participation.json',cutoff);
-    const a=build({date,feed:k.data,seed,participation:p&&p.data,generatedAt:computedAt,backfill:true,ruleWeights:true});
+    const seedAt=snapshotAt('investment/chart/archive/'+date+'.json',cutoff);
+    const pointInTimeSeed=seedAt?seedAt.data:{...seed,meta:{...seed.meta,updatedAt:cutoff}};
+    const a=build({date,feed:k.data,seed:pointInTimeSeed,participation:p&&p.data,generatedAt:computedAt,backfill:true,ruleWeights:true});
     const f=a.forecast.weight_model_info.factors;
+    const v1=scoreScenarioWeights({bars:k.data.candles.filter(b=>b.date<date&&!b.partial&&b.final!==false).map(b=>({...b,time:b.date})),lower:a.forecast.scenarios[1].price_rule.lower,upper:a.forecast.scenarios[1].price_rule.upper,participation:p&&p.data,cutoff,dataUpdatedAt:k.data.updated_at,model:WEIGHT_MODEL_V1});
+    const after=snapshotAt('investment/chart/kline_futu.json',date+'T23:59:59+08:00');
+    const actualBar=after&&after.data.candles.filter(b=>b.date===date&&!b.partial&&b.final!==false).at(-1);
+    const actualScenario=actualBar?a.forecast.scenarios.filter(s=>MR.priceCondition(s.price_rule,actualBar.close)).map(s=>s.id):[];
     sessions[date]={information_cutoff:cutoff,baseline_date:a.forecast.baseDate,base_close:a.forecast.basePrice,
-      source_snapshot:{kline_commit:k.commit,kline_committed_at:k.committed_at,participation_commit:p?p.commit:null,participation_committed_at:p?p.committed_at:null,participation_used:f.breadth_status==='available'},
-      scenarios:a.forecast.scenarios.map(s=>({id:s.id,price_rule:s.price_rule,probability:s.probability,probability_basis:s.probability_basis})),factors:f};
+      realized:actualBar?{close:actualBar.close,scenario:actualScenario[0]||null,source_commit:after.commit}:null,source_snapshot:{kline_commit:k.commit,kline_committed_at:k.committed_at,participation_commit:p?p.commit:null,participation_committed_at:p?p.committed_at:null,participation_used:f.breadth_status==='available'},
+      scenarios:a.forecast.scenarios.map(s=>({id:s.id,price_rule:s.price_rule,probability:s.probability,probability_basis:s.probability_basis})),v1_probabilities:v1.probabilities,weight_factors:a.forecast.weight_factors,factors:f};
   }
   return {kind:'retrospective',weight_model:WEIGHT_MODEL.version,computed_at:computedAt,eligible_for_scoring:false,
-    note:'事后补算：rule-weights-v1 上线前的交易日，用当日 08:45 前已存在的 Git 快照重算规则权重。不修改冻结 archive，不计入预测打分或 Brier。',sessions};
+    note:'事后补算：rule-weights-v2 上线前的交易日，用当日 08:45 前已存在的 Git 快照重算规则权重。不修改冻结 archive，不计入预测打分或 Brier。',sessions};
 }
 module.exports={compute};
 if(require.main===module){

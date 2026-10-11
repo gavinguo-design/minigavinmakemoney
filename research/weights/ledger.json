@@ -1,0 +1,8 @@
+{
+  "ledger_version": "1.0.0",
+  "purpose": "Pre-registered audit ledger for uncalibrated rule weights; retrospective results never enter Brier scoring.",
+  "models": [
+    {"version":"rule-weights-v1","status":"superseded_for_new_publications","factors":["position","distance","trend","breadth","range_base"],"source_commit":"19ab95d"},
+    {"version":"rule-weights-v2","status":"exploratory_uncalibrated","frozen_before_backfill":true,"factors":["regime_gate","breakout_quality","sakata_new_value","candle_pattern","realized_volatility","market_state_gate"],"coefficients_source":"scripts/daily-analysis.cjs","sources":["Grimes PDF pp.37-49,82-84","Sakata Ch.2/6","Nison Ch.4-8","Natenberg PDF p.82","Harris PDF pp.110-148,423-430","Aronson Ch.6 PDF pp.258-333"],"backfill":"investment/chart/archive/rule-weights-backfill.json","outcome":"pending_retrospective_run"}
+  ]
+}

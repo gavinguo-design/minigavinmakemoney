@@ -4,71 +4,53 @@ const MR = require('../investment/chart/market-rules.js');
 const TA = require('../investment/chart/technical-analysis.js');
 const MP = require('../investment/chart/market-participation.js');
 const crypto = require('node:crypto');
-// Rule-based scenario weights. Interpretable logit model + softmax; NOT backtested
-// or calibrated. Every factor is computed from completed sessions up to the
-// information cutoff (previous close) only. Positive factor values lean towards A
-// (close >= swing high), negative towards C (close < swing low); B has a constant
-// base logit because the swing range is the default state.
-const WEIGHT_MODEL = Object.freeze({
-  version: 'rule-weights-v1',
-  coefficients: Object.freeze({
-    position: 0.8,   // (close-low)/(high-low) mapped to [-1,1] (clamped at ±1.5 outside the range)
-    distance: 0.35,  // penalty per ATR14 between close and the trigger of A (upper) / C (lower), capped 0..4
-    trend: 0.5,      // 0.5*MA20 slope over 5 sessions/ATR14 + 0.5*(close-MA20)/ATR14, each clamped ±1
-    breadth: 0.4,    // MarketParticipation.signal().score of the baseline session; 0 when unavailable
-    range_base: 0.5  // constant logit of B
-  }),
-  bounds: Object.freeze({min: 0.10, max: 0.70, step: 0.05})
-});
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const r2 = v => Math.round(v * 100) / 100;
-// Water-fill clamp to [min,max] keeping sum 1, then round to `step` by largest remainder.
-function boundedRound(raw, {min, max, step}) {
-  let p = raw.slice(), fixed = p.map(() => false);
-  for (let k = 0; k < 5; k++) {
-    let changed = false;
-    p = p.map((v, i) => { if (fixed[i]) return v; if (v < min) { fixed[i] = changed = true; return min; } if (v > max) { fixed[i] = changed = true; return max; } return v; });
-    const freeSum = p.reduce((s, v, i) => s + (fixed[i] ? 0 : v), 0), left = 1 - p.reduce((s, v, i) => s + (fixed[i] ? v : 0), 0);
-    if (freeSum > 0) p = p.map((v, i) => fixed[i] ? v : v * left / freeSum);
-    if (!changed) break;
-  }
-  const n = Math.round(1 / step), lo = Math.round(min / step), hi = Math.round(max / step);
-  const units = p.map(v => clamp(Math.floor(v * n + 1e-9), lo, hi));
-  const order = p.map((v, i) => ({i, f: v * n - Math.floor(v * n + 1e-9)})).sort((a, b) => b.f - a.f || a.i - b.i);
-  for (let guard = 0; units.reduce((s, u) => s + u, 0) < n && guard < 3 * n; guard++) { const o = order[guard % order.length]; if (units[o.i] < hi) units[o.i]++; }
-  for (let guard = 0; units.reduce((s, u) => s + u, 0) > n && guard < 3 * n; guard++) { const o = order[order.length - 1 - guard % order.length]; if (units[o.i] > lo) units[o.i]--; }
-  return units.map(u => Math.round(u * step * 100) / 100);
+// Rule-based daily weights use completed bars only. These are research rules, not calibrated odds.
+const WEIGHT_MODEL_V1 = Object.freeze({version:'rule-weights-v1',coefficients:Object.freeze({position:.8,distance:.35,trend:.5,breadth:.4,range_base:.5}),bounds:Object.freeze({min:.10,max:.70,step:.05})});
+// Coefficients are deliberately small priors, frozen before retrospective comparison.
+// Citations are to the supplied audits: Grimes PDF pp.37-49, 82-84; Nison Ch.4-8;
+// Sakata Ch.2/6; Natenberg Ch.4 (PDF p.82); Harris Ch.5/6/20 (PDF pp.110-148,423-430).
+const WEIGHT_MODEL = Object.freeze({version:'rule-weights-v2',coefficients:Object.freeze({
+  position:.55,distance:.25,trend:.30,breadth:.25,range_base:.45,
+  regime_range:.55,breakout_quality:.30,sakata_exhaustion:.15,candle:.20,
+  volatility:.20,stale_shrink:.45,gap_shrink:.25
+}),bounds:Object.freeze({min:.10,max:.70,step:.05})});
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+const r2=v=>Math.round(v*100)/100;
+function boundedRound(raw,{min,max,step}) { let p=raw.slice(),fixed=p.map(()=>false);for(let k=0;k<5;k++){let changed=false;p=p.map((v,i)=>{if(fixed[i])return v;if(v<min){fixed[i]=changed=true;return min;}if(v>max){fixed[i]=changed=true;return max;}return v;});const free=p.reduce((s,v,i)=>s+(fixed[i]?0:v),0),left=1-p.reduce((s,v,i)=>s+(fixed[i]?v:0),0);if(free)p=p.map((v,i)=>fixed[i]?v:v*left/free);if(!changed)break;}const n=Math.round(1/step),lo=Math.round(min/step),hi=Math.round(max/step),u=p.map(v=>clamp(Math.floor(v*n+1e-9),lo,hi)),o=p.map((v,i)=>({i,f:v*n-Math.floor(v*n+1e-9)})).sort((a,b)=>b.f-a.f||a.i-b.i);for(let q=0;u.reduce((x,y)=>x+y,0)<n&&q<3*n;q++){const x=o[q%o.length];if(u[x.i]<hi)u[x.i]++;}for(let q=0;u.reduce((x,y)=>x+y,0)>n&&q<3*n;q++){const x=o[o.length-1-q%o.length];if(u[x.i]>lo)u[x.i]--;}return u.map(x=>Math.round(x*step*100)/100); }
+function candlePattern(prev,last) {
+  const body=b=>Math.abs(b.close-b.open), bull=b=>b.close>b.open, bear=b=>b.close<b.open;
+  const range=Math.max(last.high-last.low,1), doji=body(last)<=range*.10;
+  const engulfBull=bear(prev)&&bull(last)&&last.open<=prev.close&&last.close>=prev.open;
+  const engulfBear=bull(prev)&&bear(last)&&last.open>=prev.close&&last.close<=prev.open;
+  const dark=bull(prev)&&bear(last)&&last.open>=prev.close&&last.close<(prev.open+prev.close)/2&&last.close>prev.open;
+  const piercing=bear(prev)&&bull(last)&&last.open<=prev.close&&last.close>(prev.open+prev.close)/2&&last.close<prev.open;
+  const harami=body(last)<body(prev)&&Math.max(last.open,last.close)<=Math.max(prev.open,prev.close)&&Math.min(last.open,last.close)>=Math.min(prev.open,prev.close);
+  const upper=last.high-Math.max(last.open,last.close),lower=Math.min(last.open,last.close)-last.low,star=body(last)<=range*.35&&(upper>=body(last)*2||lower>=body(last)*2);
+  return {name:engulfBull?'bullish_engulfing':engulfBear?'bearish_engulfing':dark?'dark_cloud':piercing?'piercing':harami?'harami':doji?'doji':star?'star':'none',bullish:engulfBull||piercing,bearish:engulfBear||dark,neutral:harami||doji};
 }
-// Pure: same input -> same output. `bars` must already be filtered to completed
-// sessions before the analysis date; `participation` is used only if it is the
-// baseline session's validated snapshot published no later than `cutoff`.
-function scoreScenarioWeights({bars, lower, upper, participation, cutoff, model = WEIGHT_MODEL}) {
-  const last = bars.at(-1), cutoffMs = MR.timestamp(cutoff);
-  if (!last || !(lower < upper) || !Number.isFinite(cutoffMs)) throw Error('Invalid weight inputs');
-  if (bars.some(b => MR.timestamp(b.date + 'T16:10:00+08:00') > cutoffMs)) throw Error('Weight inputs after cutoff');
-  const d = TA.calculate(bars), i = bars.length - 1, atr = d.atr[i], ma20 = d.ma20[i], ma20prev = d.ma20[i - 5];
-  if (![atr, ma20, ma20prev].every(Number.isFinite) || atr <= 0) throw Error('Insufficient history for weights');
-  const c = model.coefficients, close = last.close;
-  const pos = (close - lower) / (upper - lower), posTerm = clamp(2 * pos - 1, -1.5, 1.5);
-  const distA = clamp((upper - close) / atr, 0, 4), distC = clamp((close - lower) / atr, 0, 4);
-  const slope = clamp((ma20 - ma20prev) / atr, -1, 1), rel = clamp((close - ma20) / atr, -1, 1), trend = 0.5 * slope + 0.5 * rel;
-  const breadthOK = !!participation && participation.as_of === last.date && Number.isFinite(MR.timestamp(participation.updated_at)) && MR.timestamp(participation.updated_at) <= cutoffMs && MP.validate(participation, last.date).ok;
-  const breadth = breadthOK ? MP.signal(participation).score : 0, wBreadth = breadthOK ? c.breadth : 0;
-  const tilt = c.position * posTerm + c.trend * trend + wBreadth * breadth;
-  const logits = {A: tilt - c.distance * distA, B: c.range_base, C: -tilt - c.distance * distC};
-  const mx = Math.max(logits.A, logits.B, logits.C), ex = ['A', 'B', 'C'].map(k => Math.exp(logits[k] - mx)), sum = ex.reduce((s, v) => s + v, 0);
-  const raw = ex.map(v => v / sum), rounded = boundedRound(raw, model.bounds);
-  const posLabel = pos >= 1 ? '收盘已在区间上沿之上' : pos < 0 ? '收盘已跌破区间下沿' : '收盘位于区间 ' + Math.round(pos * 100) + '% 分位（' + (pos >= 0.5 ? '偏上沿' : '偏下沿') + '）';
-  const maLabel = (rel >= 0 ? '站上' : '低于') + ' MA20 ' + Math.abs(rel).toFixed(2) + 'ATR、MA20 5日' + (slope >= 0 ? '上行' : '下行');
-  const brLabel = breadthOK ? '宽度信号 ' + (breadth >= 0 ? '+' : '') + breadth.toFixed(2) + '（' + participation.as_of + '）' : '宽度数据不可用，因子权重置0';
-  const basis = {
-    A: posLabel + '、距 A 触发 ' + distA.toFixed(2) + 'ATR；' + maLabel + '；' + brLabel + ' → ' + (tilt >= 0 ? '偏 A' : '不利 A'),
-    B: '区间基准分 ' + c.range_base + '；A/C 两侧分别距 ' + distA.toFixed(2) + '/' + distC.toFixed(2) + 'ATR，越近边界 B 越弱',
-    C: posLabel + '、距 C 触发 ' + distC.toFixed(2) + 'ATR；' + maLabel + '；' + brLabel + ' → ' + (tilt <= 0 ? '偏 C' : '不利 C')
-  };
-  return {version: model.version, probabilities: {A: rounded[0], B: rounded[1], C: rounded[2]}, raw: {A: r2(raw[0]), B: r2(raw[1]), C: r2(raw[2])}, basis,
-    factors: {baseline_date: last.date, close, lower, upper, atr14: r2(atr), ma20: r2(ma20), position: r2(pos), dist_a_atr: r2(distA), dist_c_atr: r2(distC), ma20_slope_atr: r2(slope), close_vs_ma20_atr: r2(rel), trend: r2(trend), breadth: breadthOK ? r2(breadth) : null, breadth_status: breadthOK ? 'available' : 'unavailable', tilt: r2(tilt), logits: {A: r2(logits.A), B: r2(logits.B), C: r2(logits.C)}}};
+function pivotState(bars) { const p=TA.pivots(bars,2),lo=p.lows.slice(-2),hi=p.highs.slice(-2);return {higher_lows:lo.length===2&&lo[1].price>lo[0].price,lower_highs:hi.length===2&&hi[1].price<hi[0].price,pivots:p}; }
+function realizedVolatility(bars,n){const r=[];for(let i=1;i<bars.length;i++)r.push(Math.log(bars[i].close/bars[i-1].close));if(r.length<n)return null;const x=r.slice(-n),m=x.reduce((s,v)=>s+v,0)/n;return Math.sqrt(x.reduce((s,v)=>s+(v-m)**2,0)/(n-1));}
+function sakataNewValues(bars,upper,lower) { let up=0,down=0,hi=upper,lo=lower;for(let i=bars.length-1;i>=0&&i>=bars.length-8;i--){const b=bars[i];if(b.close>hi){up++;hi=b.close;}else if(b.close<lo){down++;lo=b.close;}else break;}return {up,down}; }
+function sourceFactor(name,raw,contribution,citation){return {name,raw,contribution:typeof contribution==='number'?r2(contribution):contribution,citation};}
+// Pure: bars are completed daily sessions filtered before cutoff. V1 stays callable for comparison.
+function scoreScenarioWeights({bars,lower,upper,participation,cutoff,dataUpdatedAt,model=WEIGHT_MODEL}) {
+ const last=bars.at(-1),cutoffMs=MR.timestamp(cutoff);if(!last||!(lower<upper)||!Number.isFinite(cutoffMs))throw Error('Invalid weight inputs');if(bars.some(b=>MR.timestamp(b.date+'T16:10:00+08:00')>cutoffMs))throw Error('Weight inputs after cutoff');
+ const d=TA.calculate(bars),i=bars.length-1,atr=d.atr[i],ma=d.ma20[i],maPrev=d.ma20[i-5];if(![atr,ma,maPrev].every(Number.isFinite)||atr<=0)throw Error('Insufficient history for weights');
+ const c=model.coefficients,close=last.close,pos=(close-lower)/(upper-lower),posTerm=clamp(2*pos-1,-1.5,1.5),distA=clamp((upper-close)/atr,0,4),distC=clamp((close-lower)/atr,0,4),slope=clamp((ma-maPrev)/atr,-1,1),rel=clamp((close-ma)/atr,-1,1),trend=.5*slope+.5*rel;
+ const breadthOK=!!participation&&participation.as_of===last.date&&Number.isFinite(MR.timestamp(participation.updated_at))&&MR.timestamp(participation.updated_at)<=cutoffMs&&MP.validate(participation,last.date).ok,breadth=breadthOK?MP.signal(participation).score:0;
+ if(model.version==='rule-weights-v1'){const tilt=c.position*posTerm+c.trend*trend+(breadthOK?c.breadth*breadth:0),logits={A:tilt-c.distance*distA,B:c.range_base,C:-tilt-c.distance*distC};return finish(logits,{baseline_date:last.date,close,lower,upper,atr14:r2(atr),position:r2(pos),breadth_status:breadthOK?'available':'unavailable'},[],model);}
+ const ps=pivotState(bars),width=(upper-lower)/atr,range=!(ps.higher_lows&&ps.lower_highs)||width<3.5;let a=c.position*posTerm+c.trend*trend+(breadthOK?c.breadth*breadth:0)-c.distance*distA,cc=-c.position*posTerm-c.trend*trend-(breadthOK?c.breadth*breadth:0)-c.distance*distC,b=c.range_base;
+ const factors=[];const add=(name,raw,da,db,dc,citation)=>{a+=da;b+=db;cc+=dc;factors.push(sourceFactor(name,raw,{A:da,B:db,C:dc},citation));};
+ add('regime_gate',{range,width_atr:r2(width),higher_lows:ps.higher_lows,lower_highs:ps.lower_highs},range?-c.regime_range:0,range?c.regime_range:0,range?-c.regime_range:0,'Grimes《艺术与科学》Ch.1, PDF pp.37-49');
+ const nearA=distA<=.75,nearC=distC<=.75;add('breakout_quality',{near_a:nearA,higher_lows:ps.higher_lows,near_c:nearC,lower_highs:ps.lower_highs},nearA?(ps.higher_lows?c.breakout_quality:-c.breakout_quality):0,0,nearC?(ps.lower_highs?c.breakout_quality:-c.breakout_quality):0,'Grimes Ch.1 PDF pp.47-49,82-84；《作手回忆录》关键位确认');
+ const nv=sakataNewValues(bars,upper,lower),exUp=nv.up>=3,exDown=nv.down>=3;add('sakata_new_value',{up: nv.up,down:nv.down,exhaustion:exUp?'up':exDown?'down':'none'},exUp?-c.sakata_exhaustion:exDown?c.sakata_exhaustion:0,(exUp||exDown)?c.sakata_exhaustion:0,exDown?-c.sakata_exhaustion:exUp?c.sakata_exhaustion:0,'《定本酒田战法》Ch.2/Ch.6；3/5为经验节奏，非HSI概率');
+ const pat=candlePattern(bars[i-1],last),middle=pos>.35&&pos<.65;add('candle_pattern',{pattern:pat.name,position:r2(pos)},pat.bullish?c.candle:pat.bearish?-c.candle:0,(pat.neutral&&middle)?c.candle:0,pat.bearish?c.candle:pat.bullish?-c.candle:0,'Nison《日本蜡烛图技术》Ch.4-8：形态须结合位置并待确认');
+ const hv10=realizedVolatility(bars,10),hv20=realizedVolatility(bars,20),ratio=hv10&&hv20?hv10/hv20:null,contracted=ratio!=null&&ratio<.85,expanded=ratio!=null&&ratio>1.15;add('realized_volatility',{hv10:r2(hv10||0),hv20:r2(hv20||0),ratio:r2(ratio||0),iv_status:'unavailable'},expanded?c.volatility:0,contracted?c.volatility:0,expanded?c.volatility:0,'Natenberg《期权波动率》Ch.4 PDF p.82；仓库无IV，仅HV状态，非方向信号');
+ const stale=dataUpdatedAt!=null&&(!Number.isFinite(MR.timestamp(dataUpdatedAt))||cutoffMs-MR.timestamp(dataUpdatedAt)>36*60*60*1000);
+ const previousDate=bars[i-1]?.date,gap=Math.abs(last.open-bars[i-1].close)/atr,holidayFirst=previousDate&&Math.round((new Date(last.date+'T12:00:00+08:00')-new Date(previousDate+'T12:00:00+08:00'))/86400000)>3,shrink=(stale||holidayFirst?c.stale_shrink:0)+(gap>1.5?c.gap_shrink:0);if(shrink){a=a*(1-shrink)+shrink/3;b=b*(1-shrink)+shrink/3;cc=cc*(1-shrink)+shrink/3;}factors.push(sourceFactor('market_state_gate',{holiday_first:holidayFirst,gap_atr:r2(gap),stale},shrink?{shrink:r2(shrink)}:{shrink:0},'Harris《交易与交易所》Ch.5/6/20 PDF pp.110-148,423-430'));
+ return finish({A:a,B:b,C:cc},{baseline_date:last.date,close,lower,upper,atr14:r2(atr),position:r2(pos),dist_a_atr:r2(distA),dist_c_atr:r2(distC),trend:r2(trend),breadth:breadthOK?r2(breadth):null,breadth_status:breadthOK?'available':'unavailable',regime:range?'range':'trend'},factors,model);
 }
+function finish(logits,factors,weightFactors,model){const mx=Math.max(logits.A,logits.B,logits.C),ex=['A','B','C'].map(k=>Math.exp(logits[k]-mx)),sum=ex.reduce((a,b)=>a+b,0),raw=ex.map(x=>x/sum),p=boundedRound(raw,model.bounds),cite=weightFactors.map(f=>f.citation).join('；');const breadthNote=factors.breadth_status==='unavailable'?'；宽度数据不可用，因子权重置0':'';const basis={A:'仅完整日K；'+cite+breadthNote+'。A '+(factors.regime==='range'?'受区间门控压低':'按结构评分')+'。',B:'仅完整日K；'+cite+breadthNote+'。B '+(factors.regime==='range'?'获区间门控加权':'为区间基准')+'。',C:'仅完整日K；'+cite+breadthNote+'。C '+(factors.regime==='range'?'受区间门控压低':'按结构评分')+'。'};return {version:model.version,probabilities:{A:p[0],B:p[1],C:p[2]},raw:{A:r2(raw[0]),B:r2(raw[1]),C:r2(raw[2])},basis,factors:{...factors,logits:{A:r2(logits.A),B:r2(logits.B),C:r2(logits.C)}},weight_factors:weightFactors};}
 const fmt = n => n.toLocaleString('en-US', {maximumFractionDigits:2});
 function build({date, feed, seed, participation, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, scoredReviews=0}) {
   if (MR.tradingDay(date)!==true) throw Error('Unsupported/non-trading analysis date');
@@ -96,7 +78,7 @@ function build({date, feed, seed, participation, generatedAt, backfill=false, pr
   const id='HSI-'+date.replaceAll('-','')+'-structure-v1';
   // Retrospective reconstructions keep probability null unless explicitly requested,
   // so frozen supplements remain byte-for-byte reproducible.
-  const weights=ruleWeights?scoreScenarioWeights({bars,lower,upper,participation,cutoff}):null;
+  const weights=ruleWeights?scoreScenarioWeights({bars,lower,upper,participation,cutoff,dataUpdatedAt:feed.updated_at}):null;
   const priceRules={A:{operator:'gte',value:upper},B:{operator:'range',lower,upper},C:{operator:'lt',value:lower}};
   const scenarios=['A','B','C'].map((key,i)=>{
     const dir=i===0?'long':'short', entry=i===2?lower:upper;
@@ -125,11 +107,11 @@ function build({date, feed, seed, participation, generatedAt, backfill=false, pr
       summary:narrative,horizon:'未来5个交易日，每日重新核验',horizonEndDate:MR.horizon(date,5).end,horizonDesc:MR.horizon(date,5).description,
       reasoning:[narrative,'A/B/C 分别覆盖 ≥上边界、两边界之间、<下边界；盘中穿越不算正式触发。','夜期、IV、南向资金无截止前可信快照时不可用，不用于推断。',participantOK?'环境证据：'+participation.as_of+' 官方成分报告上涨家数占比 '+(participation.metrics.equal_name_breadth*100).toFixed(1)+'%、上涨权重占比 '+(participation.metrics.weighted_breadth*100).toFixed(1)+'%、净点数贡献 '+fmt(participation.metrics.net_point_contribution)+'；只描述环境，不改变价格触发。':'环境证据：无符合截止时间的官方成分报告，标记不可用。'],
       targetUpper:upTarget,targetLower:downTarget,confidence:'未校准',scenarios,
-      ...(weights?{weight_model:WEIGHT_MODEL.version,weight_model_info:{version:WEIGHT_MODEL.version,calibration:'未经回测校准',scored_reviews:scoredReviews,coefficients:WEIGHT_MODEL.coefficients,factors:weights.factors,raw_probabilities:weights.raw}}:{}),
+      ...(weights?{weight_model:WEIGHT_MODEL.version,weight_model_info:{version:WEIGHT_MODEL.version,calibration:'未经回测校准',scored_reviews:scoredReviews,coefficients:WEIGHT_MODEL.coefficients,factors:weights.factors,raw_probabilities:weights.raw},weight_factors:weights.weight_factors}: {}),
       card:{stateEmoji:'📋',stateLabel:backfill?date+' 事后补录分析':date+' 每日结构分析',structureLine:narrative,stateTone:'neutral',keyLines:[{price:lower,tag:'最近确认摆动低点',tf:'日线'},{price:upper,tag:'最近确认摆动高点',tf:'日线'}]},
       scenario_evidence:{analysis_id:id,last_bar:{...last,completed:true},timeframe:'1d',source:feed.source,scenarios:{}}},
     environment_evidence:{volume_ratio:{status:ratio==null?'unavailable':'available',value:ratio,basis:'previous_20_completed_sessions'},participation:{status:participantOK?'available':'unavailable',as_of:participantOK?participation.as_of:null,metrics:participantOK?participation.metrics:null,source:participantOK?participation.source:null},night_futures:{status:'unavailable'},options_risk:{status:'unavailable'},southbound:{status:'unavailable'}},
     intraday_playbook:{updatedAt:time,note:'仅用于区间定位，不是即时操作指令',zones:[{range:[upper,null],stance:'修复观察',action:'等待A收盘确认'},{range:[lower,upper],stance:'区间观察',action:'等待B收盘确认'},{range:[null,lower],stance:'破位观察',action:'等待C收盘确认'}]},
     levels:[{price:lower,type:'support',label:'最近确认摆动低点',reason:pivots.lows.at(-1).time+'，确认于 '+pivots.lows.at(-1).confirmedAt},{price:upper,type:'resistance',label:'最近确认摆动高点',reason:pivots.highs.at(-1).time+'，确认于 '+pivots.highs.at(-1).confirmedAt},...(downTarget==null?[]:[{price:downTarget,type:'support',label:'下方结构目标',reason:'截止日前的确认摆动低点或既有支撑'}]),...(upTarget==null?[]:[{price:upTarget,type:'resistance',label:'上方结构目标',reason:'截止日前的确认摆动高点或既有阻力'}])],markers:[],playbook:[],pathTree:null};
 }
-module.exports={build,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,WEIGHT_MODEL};
+module.exports={build,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,WEIGHT_MODEL,WEIGHT_MODEL_V1};

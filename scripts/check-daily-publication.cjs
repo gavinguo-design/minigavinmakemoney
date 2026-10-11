@@ -7,6 +7,8 @@ function audit(a,now,phase='preopen') {
   if(MR.tradingDay(today)===false)return {skipped:true};
   if(MR.tradingDay(today)!==true)throw Error('Unsupported calendar');
   if(a.publication?.kind!=='daily_rule_analysis'||a.forecast?.applicable_date!==today||a.publication?.eligible_as_new_prediction!==true)throw Error('Missing genuine daily analysis '+today);
+  const generated=MR.timestamp(a.meta.updatedAt);
+  if(!Number.isFinite(generated)||MR.hk(generated).date!==today||a.publication.generated_at!==a.meta.updatedAt)throw Error('Generation timestamp does not belong to this session');
   if(a.publication.baseline_date!==MR.latestDay(MR.timestamp(today+'T08:45:00+08:00'),true))throw Error('Wrong baseline date');
   if(MR.timestamp(a.meta.updatedAt)>=MR.timestamp(today+'T09:30:00+08:00'))throw Error('Publication generated after opening');
   if(phase==='postclose') {

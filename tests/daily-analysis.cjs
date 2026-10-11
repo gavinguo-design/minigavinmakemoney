@@ -42,7 +42,8 @@ test('deadline watchdog rejects carryovers/backfills and accepts genuine preopen
  assert.throws(()=>audit(build(args),now),/genuine/);
  assert.throws(()=>audit(seed,now),/genuine/);
  const daily=build({...args,backfill:false,generatedAt:'2026-10-09T08:46:00+08:00'});
- assert.equal(audit(daily,now).date,'2026-10-09');
+  assert.equal(audit(daily,now).date,'2026-10-09');
+  assert.throws(()=>audit({...daily,meta:{...daily.meta,updatedAt:'2026-10-08T08:45:00+08:00'}},now),/timestamp/);
  assert.equal(audit({},Date.parse('2026-10-11T09:15:00+08:00')).skipped,true);
 });
 test('deployment verification fails on absent, pending or failed Cloudflare checks',async()=>{

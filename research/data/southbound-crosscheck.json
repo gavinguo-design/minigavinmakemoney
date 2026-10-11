@@ -1,0 +1,199 @@
+{
+ "fetched_at": "2026-10-12T01:07:19+08:00",
+ "seed": 20261012,
+ "hkex_retention_window": {
+  "from": "2026-07-06",
+  "to": "2026-10-09",
+  "days": 64
+ },
+ "older_dates_without_second_official_source": [
+  "2024-11-13",
+  "2024-11-27",
+  "2025-03-28",
+  "2025-08-11",
+  "2026-03-19"
+ ],
+ "max_abs_diff_yi": 0.0,
+ "checks": [
+  {
+   "date": "2026-07-06",
+   "eastmoney": {
+    "sh_net": 125.5233,
+    "sz_net": 79.7547,
+    "total_net": 205.278
+   },
+   "hkex": {
+    "sh_net": 125.5233,
+    "sz_net": 79.7547,
+    "total_net": 205.278
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": -0.0
+   }
+  },
+  {
+   "date": "2026-07-07",
+   "eastmoney": {
+    "sh_net": 18.2075,
+    "sz_net": -13.2352,
+    "total_net": 4.9723
+   },
+   "hkex": {
+    "sh_net": 18.2075,
+    "sz_net": -13.2352,
+    "total_net": 4.9723
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": 0.0
+   }
+  },
+  {
+   "date": "2026-07-21",
+   "eastmoney": {
+    "sh_net": 13.0865,
+    "sz_net": 58.5872,
+    "total_net": 71.6737
+   },
+   "hkex": {
+    "sh_net": 13.0865,
+    "sz_net": 58.5872,
+    "total_net": 71.6737
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": 0.0
+   }
+  },
+  {
+   "date": "2026-07-23",
+   "eastmoney": {
+    "sh_net": -18.8535,
+    "sz_net": -23.4077,
+    "total_net": -42.2612
+   },
+   "hkex": {
+    "sh_net": -18.8535,
+    "sz_net": -23.4077,
+    "total_net": -42.2612
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": 0.0
+   }
+  },
+  {
+   "date": "2026-07-27",
+   "eastmoney": {
+    "sh_net": -20.06,
+    "sz_net": 4.316,
+    "total_net": -15.744
+   },
+   "hkex": {
+    "sh_net": -20.06,
+    "sz_net": 4.316,
+    "total_net": -15.744
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": 0.0
+   }
+  },
+  {
+   "date": "2026-08-13",
+   "eastmoney": {
+    "sh_net": 37.7115,
+    "sz_net": -1.0421,
+    "total_net": 36.6694
+   },
+   "hkex": {
+    "sh_net": 37.7115,
+    "sz_net": -1.0421,
+    "total_net": 36.6694
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": 0.0
+   }
+  },
+  {
+   "date": "2026-08-17",
+   "eastmoney": {
+    "sh_net": 19.7398,
+    "sz_net": 11.03,
+    "total_net": 30.7698
+   },
+   "hkex": {
+    "sh_net": 19.7398,
+    "sz_net": 11.03,
+    "total_net": 30.7698
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": 0.0
+   }
+  },
+  {
+   "date": "2026-09-29",
+   "eastmoney": {
+    "sh_net": 23.1384,
+    "sz_net": -22.9921,
+    "total_net": 0.1463
+   },
+   "hkex": {
+    "sh_net": 23.1384,
+    "sz_net": -22.9921,
+    "total_net": 0.1463
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": -0.0
+   }
+  },
+  {
+   "date": "2026-09-30",
+   "eastmoney": {
+    "sh_net": 50.9433,
+    "sz_net": 17.6928,
+    "total_net": 68.6361
+   },
+   "hkex": {
+    "sh_net": 50.9433,
+    "sz_net": 17.6928,
+    "total_net": 68.6361
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": 0.0
+   }
+  },
+  {
+   "date": "2026-10-09",
+   "eastmoney": {
+    "sh_net": -23.3087,
+    "sz_net": 26.2154,
+    "total_net": 2.9067
+   },
+   "hkex": {
+    "sh_net": -23.3087,
+    "sz_net": 26.2154,
+    "total_net": 2.9067
+   },
+   "diff_yi": {
+    "sh": 0.0,
+    "sz": 0.0,
+    "total": 0.0
+   }
+  }
+ ]
+}

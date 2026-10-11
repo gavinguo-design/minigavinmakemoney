@@ -1,8 +1,8 @@
-// rule-weights-v3 (CANDIDATE, not production): multinomial logistic recalibration of v1.
+// rule-weights-v3 (PRODUCTION since 2026-10-12, approved by 潮伟哥): multinomial logistic recalibration of v1.
 // Frozen coefficients = the exact model evaluated once on the 2026-05-18..2026-10-09 holdout in c692d60
 // (scripts/optimize-weights.cjs, train-only fit 2024-10-02..2025-12-15, L2 lambda=0.01 chosen by 5-fold CV on train).
 // Inputs: completed daily bars strictly before the session (same contract as scoreScenarioWeights) + that session's lower/upper.
-// Production default remains WEIGHT_MODEL_V1; nothing here is wired into daily-analysis/publish.
+// Wired into daily-analysis.cjs build(); v1 is still computed alongside as a shadow for comparison.
 'use strict';
 const DA = require('./daily-analysis.cjs');
 const TA = require('../investment/chart/technical-analysis.js');
@@ -11,7 +11,7 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const KEYS = ['A', 'B', 'C'];
 
 const WEIGHT_MODEL_V3 = Object.freeze({
-  version: 'rule-weights-v3-candidate',
+  version: 'rule-weights-v3',
   source_commit: 'c692d60',
   features: Object.freeze(['bias', 'v1_logodds_A_vs_B', 'v1_logodds_C_vs_B', 'position_z', 'adx14_norm', 'prev_zone_A', 'prev_zone_C', 'v2_regime_range']),
   // W[class][feature], classes A,B,C (full softmax parameterisation as fitted).

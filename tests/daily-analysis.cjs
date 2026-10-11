@@ -84,7 +84,7 @@ test('preopen publishes in an isolated repository, retries preserve the same fre
   const status=JSON.parse(fs.readFileSync(path.join(dir,'scenario_status.json'),'utf8'));assert.equal(status.analysis_id,a.meta.analysis_id);assert.equal(status.scenarios.filter(s=>s.triggered).length,1);
   const review=JSON.parse(fs.readFileSync(path.join(dir,'daily-reviews/2026-10-12.json'),'utf8'));assert.equal(review.bar.date,'2026-10-12');
   const p=a.forecast.scenarios.map(s=>s.probability),o=review.verdicts.map(v=>v.met?1:0);assert.deepEqual(o,[1,0,0]);
-  assert.equal(review.brier,Math.round(p.reduce((s,v,i)=>s+(v-o[i])**2,0)*10000)/10000);assert.equal(review.brier_status,'scored');assert.equal(review.weight_model,'rule-weights-v1');
+  assert.equal(review.brier,Math.round(p.reduce((s,v,i)=>s+(v-o[i])**2,0)*10000)/10000);assert.equal(review.brier_status,'scored');assert.equal(review.weight_model,'rule-weights-v3');
  } finally {fs.rmSync(tmp,{recursive:true});}
 });
 
@@ -166,11 +166,12 @@ test('rule weights: sum to 1, bounded, 0.05 grid, deterministic, versioned and p
  const a=build(live),b=build(live),p=a.forecast.scenarios.map(s=>s.probability);
  assert.deepEqual(a,b);assert.equal(WEIGHT_MODEL.version,'rule-weights-v1');
  assert.equal(Math.round(p.reduce((s,v)=>s+v,0)*100),100);
- for(const v of p){assert.ok(v>=0.1-1e-9&&v<=0.7+1e-9);assert.equal(Math.abs(v*20-Math.round(v*20))<1e-9,true);}
- assert.equal(a.publication.probability_status,'rule_based_uncalibrated');assert.equal(a.forecast.weight_model,'rule-weights-v1');
+ for(const v of p){assert.ok(v>=0.1-1e-9&&v<=0.85+1e-9);assert.equal(Math.abs(v*20-Math.round(v*20))<1e-9,true);}
+ assert.equal(a.publication.probability_status,'rule_based_uncalibrated');assert.equal(a.forecast.weight_model,'rule-weights-v3');
  assert.equal(a.forecast.scenarios.every(s=>typeof s.probability_basis==='string'&&s.probability_basis.length>5),true);
- assert.equal(p[1]>=0.3,true);assert.equal(a.forecast.weight_model_info.factors.breadth_status,'available');
- const noBreadth=build({...live,participation:null});assert.equal(noBreadth.forecast.weight_model_info.factors.breadth_status,'unavailable');assert.match(noBreadth.forecast.scenarios[0].probability_basis,/宽度数据不可用，因子权重置0/);
+ assert.equal(p[1]>=0.3,true);assert.equal(a.forecast.weight_model_info.factors.breadth_status,'not_used');assert.deepEqual(a.forecast.weight_model_info.factors.shadow_v1,{A:0.3,B:0.5,C:0.2});assert.equal(a.forecast.scenarios.every(s=>s.probability_locked===true),true);
+ const noBreadth=build({...live,participation:null});assert.deepEqual(noBreadth.forecast.scenarios.map(s=>s.probability),a.forecast.scenarios.map(s=>s.probability));assert.match(noBreadth.forecast.scenarios[0].probability_basis,/不含宽度\/南向/);
+ const {scoreScenarioWeights:sv1}=require('../scripts/daily-analysis.cjs');assert.equal(sv1({bars:close.candles.filter(x=>x.date<'2026-10-12').map(x=>({...x,time:x.date})),lower:23835.68,upper:24354.11,participation:null,cutoff:'2026-10-12T08:45:00+08:00'}).version,'rule-weights-v1');
  // Extreme synthetic inputs still respect [0.10,0.70] and sum 1.
  const bars=close.candles.filter(x=>x.date<'2026-10-12').map(x=>({...x,time:x.date}));
  for(const [lo,hi] of [[10000,10001],[40000,40001],[24000,24300],[1,99999]]){
@@ -186,7 +187,7 @@ test('rule weights ignore data after the information cutoff',()=>{
  assert.deepEqual(build({...live,feed:polluted}).forecast.scenarios,base.forecast.scenarios);
  // A participation snapshot published after the cutoff, or for another session, is ignored.
  const late={...part,updated_at:'2026-10-12T09:00:00+08:00'},other={...part,as_of:'2026-10-08'};
- for(const p of [late,other])assert.equal(build({...live,participation:p}).forecast.weight_model_info.factors.breadth_status,'unavailable');
+ for(const p of [late,other])assert.deepEqual(build({...live,participation:p}).forecast.scenarios.map(s=>s.probability),base.forecast.scenarios.map(s=>s.probability));
  const bars=close.candles.map(x=>({...x,time:x.date}));
  assert.throws(()=>scoreScenarioWeights({bars,lower:23835.68,upper:24354.11,cutoff:'2026-10-09T08:45:00+08:00'}),/after cutoff/);
  // Backfill reconstructions keep probability null by default (frozen supplements unchanged).
@@ -206,7 +207,7 @@ test('chart shows rule weights with version note and keeps legacy null cards as 
  const vm=require('node:vm'),src=html.slice(html.indexOf('  function ruleWeightModel('),html.indexOf('  function participationEvaluation('));
  const ctx={escapeHtml:s=>String(s),Number};vm.createContext(ctx);vm.runInContext(src,ctx);
  const a=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('./fixtures/hsi-participation-2026-10-09.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
- assert.equal(ctx.ruleWeightModel(a),'rule-weights-v1');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/规则打分 v1，未经回测校准，累计 0 次/);
+ assert.equal(ctx.ruleWeightModel(a),'rule-weights-v3');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/模型 v3（两年回测，保留集优于 v1；实盘已打分 0 次）/);
  assert.equal(ctx.ruleWeightModel(build(args)),null);
  const MP=require('../investment/chart/market-participation.js'),ev=MP.evaluate(require('./fixtures/hsi-participation-2026-10-09.json'),a.forecast.scenarios,'2026-10-09');
  assert.equal(ev.already_in_base,true);assert.deepEqual(Object.values(ev.weights).map(v=>Math.round(v*100)),a.forecast.scenarios.map(s=>Math.round(s.probability*100)));assert.equal(ctx.ruleWeightModel(seed),null);

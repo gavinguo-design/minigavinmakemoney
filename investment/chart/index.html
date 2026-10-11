@@ -2127,7 +2127,8 @@
   function ruleWeightNoteHtml(a, sc) {
     var f = a && a.forecast || {}, info = f.weight_model_info || {}, version = ruleWeightModel(a);
     var n = Number.isFinite(info.scored_reviews) ? info.scored_reviews : 0;
-    var label = f.weight_backfill ? ('事后补算 · 规则 ' + String(version).replace(/^rule-weights-/, '') + '（当天未冻结权重，不计入打分）') : ('规则打分 ' + String(version).replace(/^rule-weights-/, '') + '，未经回测校准，累计 ' + n + ' 次');
+    var short = String(version).replace(/^rule-weights-/, '');
+    var label = f.weight_backfill ? ('事后补算 · 规则 ' + short + '（当天未冻结权重，不计入打分）') : (short === 'v3' ? ('模型 v3（两年回测，保留集优于 v1；实盘已打分 ' + n + ' 次）') : ('规则打分 ' + short + '，未经回测校准，累计 ' + n + ' 次'));
     return '<div class="sc-weight-note" title="' + escapeHtml((sc.probability_basis || '') + '｜模型 ' + version + '；累计次数=已完成 Brier 复盘的交易日数') + '">' + escapeHtml(label) + (sc.probability_basis ? '<br><span>' + escapeHtml(sc.probability_basis) + '</span>' : '') + '</div>';
   }
 
@@ -2183,7 +2184,7 @@
 
   function scenarioParticipationHtml(sc, result) {
     if (!result || result.status !== 'available' || !Number.isFinite(result.adjustments && result.adjustments[sc.id])) return '';
-    if (result.already_in_base) return '<div class="sc-participation">参与度已计入规则权重（' + escapeHtml(result.as_of || '') + '），不再二次校正</div>';
+    if (result.already_in_base) return sc && sc.probability_locked ? '<div class="sc-participation">权重来自 v3 模型；宽度/南向经回测无增量，不再校正</div>' : '<div class="sc-participation">参与度已计入规则权重（' + escapeHtml(result.as_of || '') + '），不再二次校正</div>';
     var delta = result.adjustments[sc.id], direction = sc.rr && sc.rr.direction === 'long' ? '偏多' : '偏空';
     return '<div class="sc-participation">参与度校正 <b>' + (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pct</b> · 宽度/权重/贡献对该' + direction + '情景' + (delta >= 0 ? '加权' : '降权') + '</div>';
   }

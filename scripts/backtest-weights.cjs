@@ -62,7 +62,10 @@ function generateDay(date, candles, sessionDates) {
       const w = DA.scoreScenarioWeights({bars, lower: f.lower, upper: f.upper, participation: null, cutoff: date + 'T08:45:00+08:00', dataUpdatedAt: feed.updated_at, model});
       out.models[w.version] = {version: w.version, p: w.probabilities, raw: w.raw, regime: w.factors.regime || null};
     }
-    if (out.models[info.version].p.A !== a.forecast.scenarios.find(s => s.id === 'A').probability) throw Error('build/score mismatch');
+    if (info.version === 'rule-weights-v3') {
+      const V3 = require('./weights-v3.cjs'), w3 = V3.scoreScenarioWeightsV3({bars, lower: f.lower, upper: f.upper, cutoff: date + 'T08:45:00+08:00'});
+      if (w3.probabilities.A !== a.forecast.scenarios.find(s => s.id === 'A').probability) throw Error('build/score mismatch (v3)');
+    } else if (out.models[info.version].p.A !== a.forecast.scenarios.find(s => s.id === 'A').probability) throw Error('build/score mismatch');
     return out;
   });
 }

@@ -10,9 +10,9 @@ const sample = REF.rows.filter((_, i) => i % 7 === 0);
 const {rows} = BT.runBacktest({data, end: '2026-10-09'});
 const rules = new Map(rows.map(r => [r.date, r]));
 
-test('production default is still v1 (candidate is not wired in)', () => {
+test('v3 is the production weight model; v1 remains the scoreScenarioWeights default for shadow', () => {
   assert.equal(DA.WEIGHT_MODEL.version, 'rule-weights-v1');
-  assert.equal(V3.WEIGHT_MODEL_V3.version, 'rule-weights-v3-candidate');
+  assert.equal(V3.WEIGHT_MODEL_V3.version, 'rule-weights-v3');
 });
 
 test('v3 reproduces the evaluated c692d60 logistic model exactly (sampled sessions)', () => {

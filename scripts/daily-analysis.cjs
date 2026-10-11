@@ -59,6 +59,20 @@ function scoreScenarioWeights({bars,lower,upper,participation,cutoff,dataUpdated
  return finish({A:a,B:b,C:cc},{baseline_date:last.date,close,lower,upper,atr14:r2(atr),position:r2(pos),dist_a_atr:r2(distA),dist_c_atr:r2(distC),trend:r2(trend),breadth:breadthOK?r2(breadth):null,breadth_status:breadthOK?'available':'unavailable',regime:range?'range':'trend'},factors,model);
 }
 function finish(logits,factors,weightFactors,model){const mx=Math.max(logits.A,logits.B,logits.C),ex=['A','B','C'].map(k=>Math.exp(logits[k]-mx)),sum=ex.reduce((a,b)=>a+b,0),raw=ex.map(x=>x/sum),p=boundedRound(raw,model.bounds),cite=weightFactors.map(f=>f.citation).join('；');const breadthNote=factors.breadth_status==='unavailable'?'；宽度数据不可用，因子权重置0':'';const basis={A:'仅完整日K；'+cite+breadthNote+'。A '+(factors.regime==='range'?'受区间门控压低':'按结构评分')+'。',B:'仅完整日K；'+cite+breadthNote+'。B '+(factors.regime==='range'?'获区间门控加权':'为区间基准')+'。',C:'仅完整日K；'+cite+breadthNote+'。C '+(factors.regime==='range'?'受区间门控压低':'按结构评分')+'。'};return {version:model.version,probabilities:{A:p[0],B:p[1],C:p[2]},raw:{A:r2(raw[0]),B:r2(raw[1]),C:r2(raw[2])},basis,factors:{...factors,logits:{A:r2(logits.A),B:r2(logits.B),C:r2(logits.C)}},weight_factors:weightFactors};}
+// Production weights = rule-weights-v3 (logistic recalibration, frozen coefficients, holdout-evaluated);
+// v1 is computed on the same inputs as a shadow so daily reviews can keep comparing both.
+function productionWeights(args) {
+  const V3=require('./weights-v3.cjs'); // lazy: weights-v3 requires this module
+  const v1=scoreScenarioWeights({...args,model:WEIGHT_MODEL_V1});
+  const v3=V3.scoreScenarioWeightsV3({bars:args.bars,lower:args.lower,upper:args.upper,cutoff:args.cutoff});
+  const zone={A:'收于A区',B:'收于B区',C:'收于C区'}[v3.factors.prev_zone]||'未知';
+  const common='逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日'+zone+'、区间位置 '+Math.round((args.bars.at(-1).close-args.lower)/Math.max(args.upper-args.lower,1)*100)+'%、ADX14 '+(v3.factors.adx14??'—')+'、'+(v3.factors.regime==='range'?'震荡':'趋势')+'结构；不含宽度/南向（回测无增量）';
+  return {version:V3.WEIGHT_MODEL_V3.version,probabilities:v3.probabilities,raw:v3.raw,
+    basis:{A:common+'。',B:common+'。',C:common+'。'},
+    factors:{...v1.factors,...v3.factors,breadth:null,breadth_status:'not_used',shadow_v1:v1.probabilities},
+    weight_factors:[{name:'logistic_v3',raw:v3.factors.features,contribution:null,citation:'research/optimization/report.md（c692d60）'}],
+    model:V3.WEIGHT_MODEL_V3};
+}
 const fmt = n => n.toLocaleString('en-US', {maximumFractionDigits:2});
 function build({date, feed, seed, participation, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, scoredReviews=0}) {
   if (MR.tradingDay(date)!==true) throw Error('Unsupported/non-trading analysis date');
@@ -86,20 +100,20 @@ function build({date, feed, seed, participation, generatedAt, backfill=false, pr
   const id='HSI-'+date.replaceAll('-','')+'-structure-v1';
   // Retrospective reconstructions keep probability null unless explicitly requested,
   // so frozen supplements remain byte-for-byte reproducible.
-  const weights=ruleWeights?scoreScenarioWeights({bars,lower,upper,participation,cutoff,dataUpdatedAt:feed.updated_at}):null;
+  const weights=ruleWeights?productionWeights({bars,lower,upper,participation,cutoff,dataUpdatedAt:feed.updated_at}):null;
   const priceRules={A:{operator:'gte',value:upper},B:{operator:'range',lower,upper},C:{operator:'lt',value:lower}};
   const scenarios=['A','B','C'].map((key,i)=>{
     const dir=i===0?'long':'short', entry=i===2?lower:upper;
     const stop=i===0?last.low:i===1?(upTarget||upper):last.high;
     const target=i===0?upTarget:downTarget;
     const trigger=i===0?'收盘 ≥ '+fmt(upper):i===1?'收盘 ≥ '+fmt(lower)+' 且 < '+fmt(upper):'收盘 < '+fmt(lower);
-    return {id:key,name:key+' · '+['收复最近摆动高点','摆动区间内整理','跌破最近摆动低点'][i],direction:dir,probability:weights?weights.probabilities[key]:null,...(weights?{probability_basis:weights.basis[key],...(weights.factors.breadth_status==='available'?{probability_includes_breadth:true}:{})}:{}),
+    return {id:key,name:key+' · '+['收复最近摆动高点','摆动区间内整理','跌破最近摆动低点'][i],direction:dir,probability:weights?weights.probabilities[key]:null,...(weights?{probability_basis:weights.basis[key],...(weights.factors.breadth_status==='available'?{probability_includes_breadth:true}:{}),...(weights.factors.breadth_status==='not_used'?{probability_locked:true}:{})}:{}),
       color:['#00d87f','#a78bfa','#ff8c42'][i],trigger:trigger+'；只看完整日K价格结构',price_rule:priceRules[key],
       invalidation:(dir==='long'?'收盘 < ':'收盘 ≥ ')+fmt(stop),
       rr:{entry,stop,target,direction:dir,entryHint:'条件确认之后再观察结构位回测；价格满足赔率不等于触发。'},
       risk:{structural_invalidation:{price:stop,confirmation:'completed_daily_close'},disaster_stop:{price:null,status:'not_configured'}},
       target:target==null?'缺少已观察到的目标结构，赔率不可用':fmt(target)+'（已观察到的结构位）',
-      holding_period:'每日重新核验，不承诺固定持仓天数',note:weights?'规则生成的条件情景；权重为 '+WEIGHT_MODEL.version+' 规则打分，未经回测校准，不是历史胜率。':'规则生成的条件情景；未校准历史发生率，不提供概率百分比。',
+      holding_period:'每日重新核验，不承诺固定持仓天数',note:weights?'规则生成的条件情景；权重为 '+weights.version+' 模型输出，经两年回测、仅约100天保留集验证，不是历史胜率。':'规则生成的条件情景；未校准历史发生率，不提供概率百分比。',
       zone:target==null?{}:{upperBound:[{offset:0,price:last.close},{offset:5,price:Math.max(entry,target)}],lowerBound:[{offset:0,price:last.close},{offset:5,price:Math.min(entry,target)}]}};
   });
   const participantOK=participation?.metrics && [participation.metrics.equal_name_breadth,participation.metrics.weighted_breadth,participation.metrics.net_point_contribution].every(Number.isFinite) && participation?.status==='available' && participation.as_of===last.date && MR.timestamp(participation.updated_at)<=MR.timestamp(cutoff);
@@ -110,12 +124,12 @@ function build({date, feed, seed, participation, generatedAt, backfill=false, pr
   return {$schema_note:'每日规则分析：confirmed pivots(width=2) + 既有可追溯结构目标。价格结构决定核心触发，环境只提供证据。',
     meta:{symbol:'^HSI',updatedAt:time,analysis_id:id,latestClose:last.close,latestCloseDate:last.date,note:backfill?'事后补录，不是当时发布的预测':'自动生成的每日价格结构分析',dataSources:feed.source},
     publication:{kind:backfill?'retrospective_backfill':'daily_rule_analysis',session_date:date,generated_at:time,information_cutoff:cutoff,baseline_date:last.date,source_sha256:sourceHash,source_snapshot:provenance,eligible_as_new_prediction:!backfill,method:'confirmed-swing-structure-v1',probability_status:weights?'rule_based_uncalibrated':'uncalibrated'},
-    disclaimer:'条件式价格结构分析；'+(weights?'权重为规则打分（'+WEIGHT_MODEL.version+'），未经回测校准。':'权重尚未校准。')+'补录不参与预测命中率、Brier或实时入场判断。',
+    disclaimer:'条件式价格结构分析；'+(weights?'权重为 '+weights.version+'（逻辑回归，回测保留集优于v1，样本有限）。':'权重尚未校准。')+'补录不参与预测命中率、Brier或实时入场判断。',
     forecast:{applicable_date:date,updatedAt:time,baseDate:last.date,basePrice:last.close,bias:summary.structure.direction<0?'bearish':summary.structure.direction>0?'bullish':'neutral',biasLabel:summary.structure.label,
       summary:narrative,horizon:'未来5个交易日，每日重新核验',horizonEndDate:MR.horizon(date,5).end,horizonDesc:MR.horizon(date,5).description,
       reasoning:[narrative,'A/B/C 分别覆盖 ≥上边界、两边界之间、<下边界；盘中穿越不算正式触发。','夜期、IV、南向资金无截止前可信快照时不可用，不用于推断。',participantOK?'环境证据：'+participation.as_of+' 官方成分报告上涨家数占比 '+(participation.metrics.equal_name_breadth*100).toFixed(1)+'%、上涨权重占比 '+(participation.metrics.weighted_breadth*100).toFixed(1)+'%、净点数贡献 '+fmt(participation.metrics.net_point_contribution)+'；只描述环境，不改变价格触发。':'环境证据：无符合截止时间的官方成分报告，标记不可用。'],
       targetUpper:upTarget,targetLower:downTarget,confidence:'未校准',scenarios,
-      ...(weights?{weight_model:WEIGHT_MODEL.version,weight_model_info:{version:WEIGHT_MODEL.version,calibration:'未经回测校准',scored_reviews:scoredReviews,coefficients:WEIGHT_MODEL.coefficients,factors:weights.factors,raw_probabilities:weights.raw},weight_factors:weights.weight_factors}: {}),
+      ...(weights?{weight_model:weights.version,weight_model_info:{version:weights.version,calibration:'回测保留集验证（n≈100），未经实盘校准',scored_reviews:scoredReviews,coefficients:weights.model?{W:weights.model.W,features:weights.model.features}:WEIGHT_MODEL.coefficients,factors:weights.factors,raw_probabilities:weights.raw},weight_factors:weights.weight_factors}: {}),
       card:{stateEmoji:'📋',stateLabel:backfill?date+' 事后补录分析':date+' 每日结构分析',structureLine:narrative,stateTone:'neutral',keyLines:[{price:lower,tag:'最近确认摆动低点',tf:'日线'},{price:upper,tag:'最近确认摆动高点',tf:'日线'}]},
       scenario_evidence:{analysis_id:id,last_bar:{...last,completed:true},timeframe:'1d',source:feed.source,scenarios:{}}},
     environment_evidence:{volume_ratio:{status:ratio==null?'unavailable':'available',value:ratio,basis:'previous_20_completed_sessions'},participation:{status:participantOK?'available':'unavailable',as_of:participantOK?participation.as_of:null,metrics:participantOK?participation.metrics:null,source:participantOK?participation.source:null},night_futures:{status:'unavailable'},options_risk:{status:'unavailable'},southbound:{status:'unavailable'}},

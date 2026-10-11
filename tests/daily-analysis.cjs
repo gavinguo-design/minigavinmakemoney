@@ -69,7 +69,7 @@ test('preopen publishes in an isolated repository, retries preserve the same fre
  const os=require('node:os'),path=require('node:path'),{run}=require('../scripts/publish-daily-analysis.cjs');
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'daily-analysis-')),dir=path.join(tmp,'investment/chart');fs.mkdirSync(dir,{recursive:true});
  try {
-  const latest=require('../investment/chart/kline_futu.json');
+  const latest=require('./fixtures/hsi-close-2026-10-09.json');
   for(const [name,value] of [['annotations.json',seed],['kline_futu.json',latest],['hsi-participation.json',{}]])fs.writeFileSync(path.join(dir,name),JSON.stringify(value));
   await run({projectRoot:tmp,now:Date.parse('2026-10-12T08:46:00+08:00')});
   const frozen=fs.readFileSync(path.join(dir,'annotations.json'),'utf8');
@@ -87,7 +87,7 @@ test('preopen publishes in an isolated repository, retries preserve the same fre
 });
 
 test('October 9 replay uses actual close, matches B but never invents a fill or forecast win',()=>{
- const a=require('../investment/chart/archive/supplements/2026-10-09.json'),daily=require('../investment/chart/kline_futu.json'),frozen=JSON.stringify(a);
+ const a=require('../investment/chart/archive/supplements/2026-10-09.json'),daily=require('./fixtures/hsi-close-2026-10-09.json'),frozen=JSON.stringify(a);
  const result=MR.replaySession(a,daily,'2026-10-09');
  assert.equal(result.status,'available');assert.equal(result.bar.close,24211.35);
  assert.deepEqual(result.scenarios.map(s=>s.condition),[false,true,false]);
@@ -96,7 +96,7 @@ test('October 9 replay uses actual close, matches B but never invents a fill or 
  assert.deepEqual(MR.replaySession(a,changed,'2026-10-09').scenarios.map(s=>s.condition),[true,false,false]);
 });
 test('historical replay rejects missing, duplicate, preview and unclosed candles',()=>{
- const a=build(args),daily=require('../investment/chart/kline_futu.json'),b=daily.candles.find(b=>b.date==='2026-10-09');
+ const a=build(args),daily=require('./fixtures/hsi-close-2026-10-09.json'),b=daily.candles.find(b=>b.date==='2026-10-09');
  assert.equal(MR.replaySession(a,daily,'2026-10-09',Date.parse('2026-10-09T12:00:00+08:00')).status,'unavailable');
  for(const f of [{...daily,updated_at:'2026-10-09T15:00:00+08:00'},{...daily,candles:[]},{...daily,candles:[b,b]},{...daily,candles:[{...b,final:false}]}])assert.equal(MR.replaySession(a,f,'2026-10-09').status,'unavailable');
 });
@@ -104,7 +104,7 @@ test('historical renderer produces three compact outcomes without pending signal
  const vm=require('node:vm'),html=fs.readFileSync(require.resolve('../investment/chart/index.html'),'utf8');
  const source=html.slice(html.indexOf('  function renderHistoricalResults('),html.indexOf('  function renderScenarioCards('));
  const nodes=[],classes=new Set(),wrap={classList:{add:c=>classes.add(c),remove:c=>classes.delete(c)},appendChild:n=>nodes.push(n)};
- const context={MarketRules:MR,historyDailyFeed:require('../investment/chart/kline_futu.json'),viewingDate:'2026-10-09',el:()=>({classList:{add(){}}}),document:{createElement:()=>({addEventListener(){},querySelector(){return null;},style:{setProperty(){}},innerHTML:''})},escapeHtml:s=>String(s),fmt:n=>n.toLocaleString('en-US'),scenarioColor:()=> '#00cc88',Number};
+ const context={MarketRules:MR,historyDailyFeed:require('./fixtures/hsi-close-2026-10-09.json'),viewingDate:'2026-10-09',el:()=>({classList:{add(){}}}),document:{createElement:()=>({addEventListener(){},querySelector(){return null;},style:{setProperty(){}},innerHTML:''})},escapeHtml:s=>String(s),fmt:n=>n.toLocaleString('en-US'),scenarioColor:()=> '#00cc88',Number};
  vm.createContext(context);vm.runInContext(source,context);
  const a=require('../investment/chart/archive/supplements/2026-10-09.json');context.renderHistoricalResults(a,a.forecast.scenarios,wrap);
  assert.equal(nodes.length,4);
@@ -129,7 +129,7 @@ test('postclose fails closed before writing a review or final status for invalid
  const os=require('node:os'),path=require('node:path'),{run}=require('../scripts/publish-daily-analysis.cjs');
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'invalid-close-')),dir=path.join(tmp,'investment/chart');fs.mkdirSync(dir,{recursive:true});
  const a=build({...args,backfill:false,generatedAt:'2026-10-09T08:46:00+08:00'});
- const daily=require('../investment/chart/kline_futu.json'),b=daily.candles.find(b=>b.date==='2026-10-09');
+ const daily=require('./fixtures/hsi-close-2026-10-09.json'),b=daily.candles.find(b=>b.date==='2026-10-09');
  try {
   fs.writeFileSync(path.join(dir,'annotations.json'),JSON.stringify(a));
   fs.writeFileSync(path.join(dir,'scenario_status.json'),'{"sentinel":true}');

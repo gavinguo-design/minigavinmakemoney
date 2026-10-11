@@ -1,0 +1,201 @@
+{
+  "kind": "retrospective",
+  "weight_model": "rule-weights-v1",
+  "computed_at": "2026-10-11T16:22:47.213Z",
+  "eligible_for_scoring": false,
+  "note": "事后补算：rule-weights-v1 上线前的交易日，用当日 08:45 前已存在的 Git 快照重算规则权重。不修改冻结 archive，不计入预测打分或 Brier。",
+  "sessions": {
+    "2026-10-07": {
+      "information_cutoff": "2026-10-07T08:45:00+08:00",
+      "baseline_date": "2026-10-06",
+      "base_close": 24280.56,
+      "source_snapshot": {
+        "kline_commit": "a2dc6ea8ed91cdaec786451057e5a5f0f79aed29",
+        "kline_committed_at": "2026-10-06T16:32:25+08:00",
+        "participation_commit": null,
+        "participation_committed_at": null,
+        "participation_used": false
+      },
+      "scenarios": [
+        {
+          "id": "A",
+          "price_rule": {
+            "operator": "gte",
+            "value": 25254.11
+          },
+          "probability": 0.1,
+          "probability_basis": "收盘位于区间 1% 分位（偏下沿）、距 A 触发 3.00ATR；低于 MA20 1.00ATR、MA20 5日下行；宽度数据不可用，因子权重置0 → 不利 A"
+        },
+        {
+          "id": "B",
+          "price_rule": {
+            "operator": "range",
+            "lower": 24275.56,
+            "upper": 25254.11
+          },
+          "probability": 0.3,
+          "probability_basis": "区间基准分 0.5；A/C 两侧分别距 3.00/0.02ATR，越近边界 B 越弱"
+        },
+        {
+          "id": "C",
+          "price_rule": {
+            "operator": "lt",
+            "value": 24275.56
+          },
+          "probability": 0.6,
+          "probability_basis": "收盘位于区间 1% 分位（偏下沿）、距 C 触发 0.02ATR；低于 MA20 1.00ATR、MA20 5日下行；宽度数据不可用，因子权重置0 → 偏 C"
+        }
+      ],
+      "factors": {
+        "baseline_date": "2026-10-06",
+        "close": 24280.56,
+        "lower": 24275.56,
+        "upper": 25254.11,
+        "atr14": 324.33,
+        "ma20": 24715.71,
+        "position": 0.01,
+        "dist_a_atr": 3,
+        "dist_c_atr": 0.02,
+        "ma20_slope_atr": -0.85,
+        "close_vs_ma20_atr": -1,
+        "trend": -0.92,
+        "breadth": null,
+        "breadth_status": "unavailable",
+        "tilt": -1.25,
+        "logits": {
+          "A": -2.3,
+          "B": 0.5,
+          "C": 1.25
+        }
+      }
+    },
+    "2026-10-08": {
+      "information_cutoff": "2026-10-08T08:45:00+08:00",
+      "baseline_date": "2026-10-07",
+      "base_close": 24130.5,
+      "source_snapshot": {
+        "kline_commit": "53b3c4463974c08aec454725955a901c0c4f071f",
+        "kline_committed_at": "2026-10-07T16:30:13+08:00",
+        "participation_commit": "4cabd0bc80885f5691453e320dfb3ed760db7a3a",
+        "participation_committed_at": "2026-10-07T13:44:10Z",
+        "participation_used": false
+      },
+      "scenarios": [
+        {
+          "id": "A",
+          "price_rule": {
+            "operator": "gte",
+            "value": 25254.11
+          },
+          "probability": 0.1,
+          "probability_basis": "收盘位于区间 21% 分位（偏下沿）、距 A 触发 3.55ATR；低于 MA20 1.00ATR、MA20 5日下行；宽度数据不可用，因子权重置0 → 不利 A"
+        },
+        {
+          "id": "B",
+          "price_rule": {
+            "operator": "range",
+            "lower": 23835.68,
+            "upper": 25254.11
+          },
+          "probability": 0.4,
+          "probability_basis": "区间基准分 0.5；A/C 两侧分别距 3.55/0.93ATR，越近边界 B 越弱"
+        },
+        {
+          "id": "C",
+          "price_rule": {
+            "operator": "lt",
+            "value": 23835.68
+          },
+          "probability": 0.5,
+          "probability_basis": "收盘位于区间 21% 分位（偏下沿）、距 C 触发 0.93ATR；低于 MA20 1.00ATR、MA20 5日下行；宽度数据不可用，因子权重置0 → 偏 C"
+        }
+      ],
+      "factors": {
+        "baseline_date": "2026-10-07",
+        "close": 24130.5,
+        "lower": 23835.68,
+        "upper": 25254.11,
+        "atr14": 316.1,
+        "ma20": 24656.38,
+        "position": 0.21,
+        "dist_a_atr": 3.55,
+        "dist_c_atr": 0.93,
+        "ma20_slope_atr": -0.93,
+        "close_vs_ma20_atr": -1,
+        "trend": -0.96,
+        "breadth": null,
+        "breadth_status": "unavailable",
+        "tilt": -0.95,
+        "logits": {
+          "A": -2.19,
+          "B": 0.5,
+          "C": 0.62
+        }
+      }
+    },
+    "2026-10-09": {
+      "information_cutoff": "2026-10-09T08:45:00+08:00",
+      "baseline_date": "2026-10-08",
+      "base_close": 23785.79,
+      "source_snapshot": {
+        "kline_commit": "b4d7e3937228ea0889abe994337e497edeceb90f",
+        "kline_committed_at": "2026-10-08T16:30:17+08:00",
+        "participation_commit": "81107ee7da0161d3235bfcf37672b6c088120000",
+        "participation_committed_at": "2026-10-09T00:59:55+08:00",
+        "participation_used": true
+      },
+      "scenarios": [
+        {
+          "id": "A",
+          "price_rule": {
+            "operator": "gte",
+            "value": 24354.11
+          },
+          "probability": 0.1,
+          "probability_basis": "收盘已跌破区间下沿、距 A 触发 1.76ATR；低于 MA20 1.00ATR、MA20 5日下行；宽度信号 -0.37（2026-10-08） → 不利 A"
+        },
+        {
+          "id": "B",
+          "price_rule": {
+            "operator": "range",
+            "lower": 23835.68,
+            "upper": 24354.11
+          },
+          "probability": 0.2,
+          "probability_basis": "区间基准分 0.5；A/C 两侧分别距 1.76/0.00ATR，越近边界 B 越弱"
+        },
+        {
+          "id": "C",
+          "price_rule": {
+            "operator": "lt",
+            "value": 23835.68
+          },
+          "probability": 0.7,
+          "probability_basis": "收盘已跌破区间下沿、距 C 触发 0.00ATR；低于 MA20 1.00ATR、MA20 5日下行；宽度信号 -0.37（2026-10-08） → 偏 C"
+        }
+      ],
+      "factors": {
+        "baseline_date": "2026-10-08",
+        "close": 23785.79,
+        "lower": 23835.68,
+        "upper": 24354.11,
+        "atr14": 322.72,
+        "ma20": 24581.92,
+        "position": -0.1,
+        "dist_a_atr": 1.76,
+        "dist_c_atr": 0,
+        "ma20_slope_atr": -1,
+        "close_vs_ma20_atr": -1,
+        "trend": -1,
+        "breadth": -0.37,
+        "breadth_status": "available",
+        "tilt": -1.6,
+        "logits": {
+          "A": -2.22,
+          "B": 0.5,
+          "C": 1.6
+        }
+      }
+    }
+  }
+}

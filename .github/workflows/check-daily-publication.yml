@@ -1,0 +1,28 @@
+name: Check daily analysis and deployment deadline
+on:
+  workflow_dispatch:
+  schedule:
+    # HKT 09:15/09:25 independent deadline checks; 16:50 close review check.
+    - cron: '15,25 1 * * 1-5'
+    - cron: '50 8 * * 1-5'
+permissions:
+  contents: read
+  checks: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify analysis date, baseline and deployed commit
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PHASE: ${{ github.event.schedule == '50 8 * * 1-5' && 'postclose' || 'preopen' }}
+        run: node scripts/check-daily-publication.cjs "$PHASE"
+      - name: Explain publication failure
+        if: failure()
+        run: echo 'Daily analysis or deployment verification failed. Old ABC is disabled by the UI freshness gate. Inspect failed step and retry before opening; no automatic carryover.' >> "$GITHUB_STEP_SUMMARY"

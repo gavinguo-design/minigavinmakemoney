@@ -12,7 +12,7 @@
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
   <script src="market-rules.js?v=4"></script>
-  <script src="market-participation.js?v=1"></script>
+  <script src="market-participation.js?v=2"></script>
   <script src="market-context.js?v=1"></script>
   <script src="trading-operation.js?v=4"></script>
   <script src="technical-analysis.js?v=1"></script>
@@ -625,6 +625,8 @@
     .sc-link-badge,.sc-weight-badge { display:inline-block; margin-left:5px; padding:2px 5px; border-radius:999px; font-size:9px; font-weight:800; }
     .sc-link-badge { color:var(--sc-color); border:1px solid var(--sc-color); }
     .sc-weight-badge { color:var(--gold); border:1px solid rgba(245,200,66,.35); background:rgba(245,200,66,.08); }
+    .sc-weight-note { margin-top:4px; font-size:10.5px; line-height:1.45; color:rgba(235,235,245,.5); }
+    .sc-weight-note span { color:rgba(235,235,245,.38); }
     @media(min-width:1100px){.sc-card.sc-nearest{transform:translateY(2px)}.sc-card.sc-nearest .sc-tip::after{content:' ↓ 对应图内同色情景带';color:var(--sc-color)}}
     .sc-card:hover { border-color: rgba(255,255,255,0.18); }
     .sc-card.active { border-color: var(--sc-color, rgba(255,255,255,0.18)); box-shadow: 0 0 0 1px var(--sc-color); }
@@ -2114,6 +2116,19 @@
     return f.applicable_date || String(f.updatedAt || a && a.meta && a.meta.updatedAt || '').slice(0, 10) || null;
   }
 
+  // Rule-based weights (forecast.weight_model) are scored, not calibrated. Older
+  // analyses without weight_model keep their original display unchanged.
+  function ruleWeightModel(a) {
+    var f = a && a.forecast || {};
+    return typeof f.weight_model === 'string' && f.weight_model ? f.weight_model : null;
+  }
+  function ruleWeightNoteHtml(a, sc) {
+    var f = a && a.forecast || {}, info = f.weight_model_info || {}, version = ruleWeightModel(a);
+    var n = Number.isFinite(info.scored_reviews) ? info.scored_reviews : 0;
+    var label = '规则打分 ' + String(version).replace(/^rule-weights-/, '') + '，未经回测校准，累计 ' + n + ' 次';
+    return '<div class="sc-weight-note" title="' + escapeHtml((sc.probability_basis || '') + '｜模型 ' + version + '；累计次数=已完成 Brier 复盘的交易日数') + '">' + escapeHtml(label) + (sc.probability_basis ? '<br><span>' + escapeHtml(sc.probability_basis) + '</span>' : '') + '</div>';
+  }
+
   function participationEvaluation(a) {
     var scenarios = a && a.forecast && a.forecast.scenarios || [];
     if (typeof MarketParticipation === 'undefined') return { status:'unavailable', issue:'参与度模块未加载', weights:{}, adjustments:{} };
@@ -2166,6 +2181,7 @@
 
   function scenarioParticipationHtml(sc, result) {
     if (!result || result.status !== 'available' || !Number.isFinite(result.adjustments && result.adjustments[sc.id])) return '';
+    if (result.already_in_base) return '<div class="sc-participation">参与度已计入规则权重（' + escapeHtml(result.as_of || '') + '），不再二次校正</div>';
     var delta = result.adjustments[sc.id], direction = sc.rr && sc.rr.direction === 'long' ? '偏多' : '偏空';
     return '<div class="sc-participation">参与度校正 <b>' + (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pct</b> · 宽度/权重/贡献对该' + direction + '情景' + (delta >= 0 ? '加权' : '降权') + '</div>';
   }
@@ -2198,7 +2214,8 @@
       card.style.setProperty('--sc-color', scenarioColor(sc));
       var outcome = r.condition === true ? '✓ 当天收盘条件满足' : r.condition === false ? '当天收盘条件未满足' : replay.status !== 'available' ? '历史结果数据暂不可用；情景方案保留' : '缺少冻结价格规则，不能判定';
       var entry = sc.rr && sc.rr.entry;
-      card.innerHTML = '<div class="sc-topline"><span class="sc-state-badge">'+outcome+'</span><span class="sc-prob">权重未校准</span></div>' +
+      var ruleWeighted = typeof ruleWeightModel === 'function' && !!ruleWeightModel(a) && Number.isFinite(sc.probability);
+      card.innerHTML = '<div class="sc-topline"><span class="sc-state-badge">'+outcome+'</span><span class="sc-prob">'+(ruleWeighted ? Math.round(sc.probability*100)+'% 权重' : '权重未校准')+'</span></div>' + (ruleWeighted ? ruleWeightNoteHtml(a, sc) : '') +
         '<div class="sc-name">'+escapeHtml(sc.name || sc.id)+'</div>' +
         '<p>冻结条件：' + escapeHtml(sc.trigger || '') + '</p>' +
         (Number.isFinite(entry) ? '<p>计划入场 ' + fmt(entry) + ' · <b>' + (replay.status !== 'available' ? '触价结果待核对' : r.entryTouched ? '日内曾触及（不代表成交）' : '当天未触及') + '</b></p>' : '<p>没有计划入场价，仅作条件观察。</p>') +
@@ -2381,7 +2398,7 @@
       var weightTitle = context.status === 'available' ? ('宽度/权重/贡献之后，再由夜盘方向有限校正；流动性和VHSI只控制可靠度。基础权重 '+Math.round((sc.probability||0)*100)+'%，不是历史胜率') : (participation.status === 'available' ? ('参与度校正权重；基础权重 ' + Math.round((sc.probability || 0) * 100) + '%，不是历史胜率') : '盘前基础权重；市场参与度数据未通过门禁，不是历史胜率');
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
-          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + (Number.isFinite(sc.probability) ? Math.round(effectiveWeight * 100) + '% 权重' : '权重未校准') + (isTopWeight?'<i class="sc-weight-badge">最高权重</i>':'') + '</span></div>' +
+          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + (Number.isFinite(sc.probability) ? Math.round(effectiveWeight * 100) + '% 权重' : '权重未校准') + (isTopWeight?'<i class="sc-weight-badge">'+(ruleWeightModel(a)?'主情景 · ':'')+'最高权重</i>':'') + '</span></div>' + (Number.isFinite(sc.probability) && ruleWeightModel(a) ? ruleWeightNoteHtml(a, sc) : '') +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 距离最近·非入场信号</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发前提：</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         numsHtml +

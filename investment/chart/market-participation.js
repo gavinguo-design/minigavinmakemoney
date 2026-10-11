@@ -63,6 +63,12 @@
     list.forEach(function (sc) { base[sc.id] = baseTotal ? sc.probability / baseTotal : 0; });
     if (!check.ok || !list.length || !baseTotal) return { status:'unavailable', issue:check.issue, base_weights:base, weights:base, adjustments:{}, evidence:null };
     var evidence = signal(snapshot), raw = {}, total = 0;
+    // Rule-scored base weights (rule-weights-v1) already contain this breadth
+    // signal; do not tilt them a second time.
+    if (list.some(function (sc) { return sc && sc.probability_includes_breadth === true; })) {
+      var zero = {}; list.forEach(function (sc) { zero[sc.id] = 0; });
+      return { status:'available', issue:null, already_in_base:true, base_weights:base, weights:base, adjustments:zero, evidence:evidence, as_of:snapshot.as_of, mode:snapshot.mode, metrics:snapshot.metrics, source:snapshot.source };
+    }
     list.forEach(function (sc) {
       var v = base[sc.id] * Math.exp(scenarioDirection(sc) * BETA * evidence.score);
       raw[sc.id] = v; total += v;

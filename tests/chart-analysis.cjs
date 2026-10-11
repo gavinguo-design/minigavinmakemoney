@@ -364,7 +364,7 @@ test('historical replay keeps the frozen map base-date anchor',()=>{
 });
 
 test('intraday fallback zones cover every price and retain open-ended gap guards',()=>{
-  const data=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/annotations.json'),'utf8'));
+  const data=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'./fixtures/annotations-2026-10-06.json'),'utf8'));
   const zones=data.intraday_playbook.zones;
   assert.equal(zones[0].range[1],null);
   assert.equal(zones.at(-1).range[0],null);
@@ -375,7 +375,7 @@ test('intraday fallback zones cover every price and retain open-ended gap guards
 
 
 test('generated evidence contract is populated from OHLCV, direction-aware, and referenced by status',()=>{
-  const annotations=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/annotations.json'),'utf8'));
+  const annotations=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'./fixtures/annotations-2026-10-06.json'),'utf8'));
   const status=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'../investment/chart/scenario_status.json'),'utf8'));
   const e=annotations.forecast.scenario_evidence;
   assert.equal(e.schema_version,'1.0'); assert.equal(e.timeframe,'1d');

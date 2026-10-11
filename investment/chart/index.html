@@ -1224,7 +1224,9 @@
     if(viewingDate) {
       var record=annotations&&annotations.archive_record;
       var originalDate=record&&record.original_analysis_date || MarketRules.analysisAvailability(annotations).date;
-      box.textContent=record&&record.kind==='carried_forward_snapshot'
+      box.textContent=annotations&&annotations.publication&&annotations.publication.kind==='retrospective_backfill'
+        ? '事后补录：'+viewingDate+' 分析仅使用 '+annotations.publication.baseline_date+' 及此前数据；实际生成于 '+annotations.publication.generated_at+'，不是当时已发布预测，不计入预测成绩。'
+        : record&&record.kind==='carried_forward_snapshot'
         ? '⚠ '+viewingDate+' 没有发布新剧本；这份归档沿用 '+originalDate+' 的分析，只供历史核对。顶部最新报价不会更新归档中的 A/B/C。'
         : '历史回放：当前查看 '+viewingDate+' 的存档'+(originalDate?'，原分析日期 '+originalDate:'')+'。顶部行情单独显示最新报价；切回在线分析才能查看当前发布状态。';
       box.classList.remove('hidden');
@@ -2248,7 +2250,14 @@
     scenarios.forEach(function (sc, idx) {
       // Hard admission gate: a scenario with invalid or sub-2:1 planned RR never
       // renders as a complete actionable card. It remains in the frozen record.
-      if (!scenarioRREligible(sc)) return;
+      if (!scenarioRREligible(sc)) {
+        var observation = document.createElement('div');
+        observation.className = 'sc-card-settled';
+        observation.style.setProperty('--sc-color', scenarioColor(sc));
+        observation.innerHTML = '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span><div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div><div class="sc-row">赔率不可执行 · 仅显示条件观察，不提供入场标尺</div>';
+        wrap.appendChild(observation);
+        return;
+      }
       var card = document.createElement('div');
       card.className = 'sc-card';
       card.setAttribute('data-idx', String(idx));
@@ -2284,7 +2293,7 @@
       var weightTitle = context.status === 'available' ? ('宽度/权重/贡献之后，再由夜盘方向有限校正；流动性和VHSI只控制可靠度。基础权重 '+Math.round((sc.probability||0)*100)+'%，不是历史胜率') : (participation.status === 'available' ? ('参与度校正权重；基础权重 ' + Math.round((sc.probability || 0) * 100) + '%，不是历史胜率') : '盘前基础权重；市场参与度数据未通过门禁，不是历史胜率');
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
-          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + Math.round(effectiveWeight * 100) + '% 权重' + (isTopWeight?'<i class="sc-weight-badge">最高权重</i>':'') + '</span></div>' +
+          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + (Number.isFinite(sc.probability) ? Math.round(effectiveWeight * 100) + '% 权重' : '权重未校准') + (isTopWeight?'<i class="sc-weight-badge">最高权重</i>':'') + '</span></div>' +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 距离最近·非入场信号</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发前提：</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         numsHtml +
@@ -2317,7 +2326,7 @@
       fallback.className = 'sc-fallback';
       fallback.innerHTML =
         '<div class="sc-fallback-title">收盘三分区完整覆盖' +
-          '<small>C &lt; 23,865 ｜ B 23,865–24,276 ｜ A ≥ 24,276</small></div>' +
+          '<small>' + (scenarios[1] && scenarios[1].price_rule ? 'C &lt; '+fmt(scenarios[1].price_rule.lower)+' ｜ B '+fmt(scenarios[1].price_rule.lower)+'–'+fmt(scenarios[1].price_rule.upper)+' ｜ A ≥ '+fmt(scenarios[1].price_rule.upper) : '以各卡冻结的收盘条件为准') + '</small></div>' +
         (highGap ? '<div class="sc-fallback-item"><b>高开 ≥ ' + fmt(highGap.range[0]) + '</b><br>不追多，空单离场；等待收盘确认，再按 A 或原区间评估。</div>' : '') +
         (lowGap ? '<div class="sc-fallback-item"><b>低开 &lt; ' + fmt(lowGap.range[1]) + '</b><br>不追空，空单止盈，多头不接飞刀；等待止跌或收复平台。</div>' : '');
       wrap.appendChild(fallback);
@@ -3576,10 +3585,11 @@
   }
 
   function fetchArchive(date) {
-    return fetch('archive/' + encodeURIComponent(date) + '.json?t=' + Date.now()).then(function (r) {
-      if (!r.ok) throw new Error('archive ' + r.status);
-      return r.json();
-    }).catch(function () { return null; });
+    return fetch('archive/supplements/index.json?t=' + Date.now()).then(function(r){ return r.ok?r.json():{}; }).catch(function(){return {};}).then(function(index){
+      var supplement=index[date];
+      var file=typeof supplement==='string' && /^supplements\/[0-9-]+\.json$/.test(supplement) ? supplement : encodeURIComponent(date)+'.json';
+      return fetch('archive/'+file+'?t='+Date.now()).then(function(r){if(!r.ok)throw new Error('archive '+r.status);return r.json();});
+    }).catch(function(){return null;});
   }
 
   // ---------- 次日预案草稿（next_day_draft，字段缺失则隐藏；与正式冻结情景严格隔离） ----------
@@ -3685,7 +3695,7 @@
     var banner = el('histBanner');
     if (!viewingDate) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
     banner.innerHTML =
-      (annotations && annotations.archive_record ? '<span>📅 <b>' + escapeHtml(viewingDate) + '</b> · ' + (annotations.archive_record.kind === 'recovered_snapshot' ? '历史版本补录' : annotations.archive_record.kind === 'carried_forward_snapshot' ? '沿用旧分析' : '当日冻结') + ' · 原分析冻结于 ' + escapeHtml(annotations.archive_record.original_analysis_date) + '。' + escapeHtml(annotations.archive_record.note) + '</span>' :
+      (annotations && annotations.archive_record ? '<span>📅 <b>' + escapeHtml(viewingDate) + '</b> · ' + (annotations.archive_record.kind === 'retrospective_backfill' ? '事后分析补录（不计预测成绩）' : annotations.archive_record.kind === 'recovered_snapshot' ? '历史版本补录' : annotations.archive_record.kind === 'carried_forward_snapshot' ? '沿用旧分析' : '当日冻结') + ' · 原分析冻结于 ' + escapeHtml(annotations.archive_record.original_analysis_date) + '。' + escapeHtml(annotations.archive_record.note) + '</span>' :
       '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(cnDate(viewingDate) + '（' + weekdayOf(viewingDate) + '）') + '</b> 冻结的分析 · 情景区域从当天K线展开，右侧叠加此后真实走势，预测 vs 现实直接对比</span>') +
       '<button class="hb-back" id="histBack" type="button">返回在线分析</button>';
     banner.classList.remove('hidden');

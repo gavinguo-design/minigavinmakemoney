@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const Context=require('../investment/chart/market-context.js');
-const annotations=require('../investment/chart/annotations.json');
+const annotations=require('./fixtures/annotations-2026-10-06.json');
 const source=fs.readFileSync(path.join(__dirname,'../functions/api/hsi-context.js'),'utf8');
 const loaded=import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 

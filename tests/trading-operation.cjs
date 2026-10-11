@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
 const TradingOperation = require('../investment/chart/trading-operation.js');
-const annotations = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, '../investment/chart/annotations.json'), 'utf8'));
+const annotations = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, './fixtures/annotations-2026-10-06.json'), 'utf8'));
 // A dated fixture keeps the October 6 decision tests stable when the live
 // participation snapshot advances to the next session.
 const participation = JSON.parse(fs.readFileSync(require('node:path').join(__dirname, 'fixtures/hsi-participation-2026-10-06.json'), 'utf8'));

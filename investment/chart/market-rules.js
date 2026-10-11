@@ -90,7 +90,7 @@
     if(!expected) return {status:'unknown',date:date||null,expected:null};
     var parsed=new Date(date+'T00:00:00Z');
     if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date) return {status:'missing',date:null,expected:expected};
-    return {status:date===expected?'current':date<expected?'stale':'future',date:date,expected:expected};
+    return {status:a && a.publication && a.publication.kind==='retrospective_backfill'?'backfill':date===expected?'current':date<expected?'stale':'future',date:date,expected:expected};
   }
   // Audit the published archive index only. Never manufacture a frozen analysis
   // from subsequently observed candles or mutate existing snapshots.

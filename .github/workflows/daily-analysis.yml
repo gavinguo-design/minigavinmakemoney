@@ -1,0 +1,56 @@
+name: Generate and review daily HSI analysis
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        options: [preopen, postclose]
+        default: preopen
+  push:
+    branches: [main]
+    paths: ['scripts/daily-analysis.cjs', 'scripts/publish-daily-analysis.cjs', 'scripts/check-daily-publication.cjs', 'tests/daily-analysis.cjs', '.github/workflows/daily-analysis.yml']
+  schedule:
+    # HKT 08:45 generation and 16:20 close review; script checks HKEX calendar.
+    - cron: '45 0 * * 1-5'
+    - cron: '5 1 * * 1-5'
+    - cron: '20,40 8 * * 1-5'
+permissions:
+  contents: write
+concurrency:
+  group: daily-analysis-publication
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/daily-analysis.cjs
+  publish:
+    needs: verify
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate generator contract
+        run: node --test tests/daily-analysis.cjs
+      - name: Generate or confirm completed close
+        env:
+          PHASE: ${{ inputs.phase || (github.event.schedule == '20,40 8 * * 1-5' && 'postclose' || 'preopen') }}
+        run: node scripts/publish-daily-analysis.cjs "$PHASE"
+      - name: Publish generated analysis
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add investment/chart/annotations.json investment/chart/scenario_status.json investment/chart/kline_futu.json investment/chart/daily-generated investment/chart/daily-reviews
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish daily HSI analysis or close review"
+          git pull --rebase origin main
+          git push origin HEAD:main

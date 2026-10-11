@@ -104,12 +104,12 @@ test('historical renderer produces three compact outcomes without pending signal
  const vm=require('node:vm'),html=fs.readFileSync(require.resolve('../investment/chart/index.html'),'utf8');
  const source=html.slice(html.indexOf('  function renderHistoricalResults('),html.indexOf('  function renderScenarioCards('));
  const nodes=[],classes=new Set(),wrap={classList:{add:c=>classes.add(c),remove:c=>classes.delete(c)},appendChild:n=>nodes.push(n)};
- const context={MarketRules:MR,historyDailyFeed:require('../investment/chart/kline_futu.json'),viewingDate:'2026-10-09',el:()=>({classList:{add(){}}}),document:{createElement:()=>({style:{setProperty(){}},innerHTML:''})},escapeHtml:s=>String(s),fmt:n=>n.toLocaleString('en-US'),scenarioColor:()=> '#00cc88',Number};
+ const context={MarketRules:MR,historyDailyFeed:require('../investment/chart/kline_futu.json'),viewingDate:'2026-10-09',el:()=>({classList:{add(){}}}),document:{createElement:()=>({addEventListener(){},querySelector(){return null;},style:{setProperty(){}},innerHTML:''})},escapeHtml:s=>String(s),fmt:n=>n.toLocaleString('en-US'),scenarioColor:()=> '#00cc88',Number};
  vm.createContext(context);vm.runInContext(source,context);
  const a=require('../investment/chart/archive/supplements/2026-10-09.json');context.renderHistoricalResults(a,a.forecast.scenarios,wrap);
  assert.equal(nodes.length,4);
  for(const card of nodes.slice(1)) for(const label of ['结构目标','结构失效','参与参考','方案赔率']) assert.ok(card.innerHTML.includes(label));assert.equal(classes.has('sc-history'),true);
- assert.match(nodes[0].innerHTML,/B 收盘条件满足/);assert.match(nodes[0].innerHTML,/24,211.35/);assert.match(nodes[2].innerHTML,/当天未触及/);assert.match(nodes[2].className,/sc-history-matched/);
+ assert.match(nodes[0].innerHTML,/B 收盘条件满足/);assert.match(nodes[0].innerHTML,/24,211.35/);assert.match(nodes[2].innerHTML,/当天未触及/);assert.match(nodes[2].className,/sc-history-matched/);for(const card of nodes.slice(1)){assert.match(card.className,/sc-card/);assert.match(card.innerHTML,/sc-topline/);assert.match(card.innerHTML,/sc-condition-details/);}
  assert.equal(nodes.every(n=>!n.innerHTML.includes('历史条件未回放')&&!n.innerHTML.includes('盈亏标尺')),true);
  nodes.length=0;context.historyDailyFeed=null;context.renderHistoricalResults(a,a.forecast.scenarios,wrap);
  assert.equal(nodes.length,4);for(const card of nodes.slice(1)){assert.match(card.innerHTML,/情景方案保留/);assert.match(card.innerHTML,/触价结果待核对/);assert.doesNotMatch(card.innerHTML,/当天未触及/);}

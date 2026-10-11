@@ -94,7 +94,7 @@ test('archive coverage exposes missing trading sessions and never invents snapsh
   assert.equal(JSON.stringify(dates),original);
 });
 test('the latest analysis selector and missing archive warning disclose the actual frozen date',()=>{
-  const box={textContent:'',classList:{toggle(){},add(){}}},caption={textContent:''},select={options:[{textContent:'最新'}]};
+  const box={textContent:'',classList:{toggle(){},add(){}}},caption={textContent:'',classList:{toggle(){}}},select={options:[{textContent:'最新'}]};
   const when=at('2026-10-08T16:30:00');
   const c=render('renderAnalysisAvailability',{
     MarketRules:{...MR,analysisAvailability:a=>MR.analysisAvailability(a,when),archiveCoverage:dates=>MR.archiveCoverage(dates,when)},

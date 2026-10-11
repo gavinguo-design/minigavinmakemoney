@@ -403,7 +403,7 @@
     .scenarios.sc-history { align-items: start; }
     .sc-history-summary { grid-column: 1 / -1; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; line-height: 1.7; }
     .sc-history-summary p { margin: 3px 0; color: var(--muted); font-size: 12px; }
-    .sc-history-result { border: 1px solid var(--border); border-top: 3px solid var(--sc-color); border-radius: 12px; padding: 14px; background: var(--card); min-width: 0; }
+    .sc-history-result { border: 1px solid var(--border); border-left: 3px solid var(--sc-color); border-radius: 12px; padding: 14px; background: var(--card); min-width: 0; }
     .sc-history-result h4 { margin: 0 0 10px; color: var(--sc-color); }
     .sc-history-result p { margin: 6px 0; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
     .sc-history-result.sc-history-matched { border-color: var(--sc-color); }
@@ -911,7 +911,7 @@
       <button class="cal-btn" id="calBtn" type="button" title="打开日历选择存档日期">📅</button>
       <span class="hist-selection" id="histSelection" aria-live="polite"></span>
       <div class="cal-panel hidden" id="calPanel"></div>
-      <span class="hist-note">历史存档为当日冻结快照，生成后不可修改（与预测留痕同一原则）· 选中某日：情景区域从那天的K线出发展开，此后已发生的真实K线叠加其上，预测 vs 现实一眼对比</span>
+
     </div>
     <div class="analysis-availability hidden" id="analysisAvailability" role="status"></div>
 
@@ -1231,6 +1231,7 @@
     var box=el('analysisAvailability');
     if(!box) return;
     if(viewingDate) {
+      if (annotations && annotations.publication && annotations.publication.kind==='retrospective_backfill') { box.textContent=''; box.classList.add('hidden'); return; }
       var record=annotations&&annotations.archive_record;
       var originalDate=record&&record.original_analysis_date || MarketRules.analysisAvailability(annotations).date;
       box.textContent=annotations&&annotations.publication&&annotations.publication.kind==='retrospective_backfill'
@@ -2175,18 +2176,24 @@
     wrap.appendChild(summary);
     scenarios.forEach(function(sc, index){
       var r = replay.scenarios[index] || {condition:null,entryTouched:null}, card = document.createElement('div');
-      card.className = 'sc-history-result' + (r.condition === true ? ' sc-history-matched' : '');
+      card.className = 'sc-card sc-history-result' + (r.condition === true ? ' sc-history-matched' : '');
       card.style.setProperty('--sc-color', scenarioColor(sc));
       var outcome = r.condition === true ? '✓ 当天收盘条件满足' : r.condition === false ? '当天收盘条件未满足' : replay.status !== 'available' ? '历史结果数据暂不可用；情景方案保留' : '缺少冻结价格规则，不能判定';
       var entry = sc.rr && sc.rr.entry;
-      card.innerHTML = '<h4>' + escapeHtml(sc.name || sc.id) + '</h4><b>' + outcome + '</b>' +
+      card.innerHTML = '<div class="sc-topline"><span class="sc-state-badge">'+outcome+'</span><span class="sc-prob">权重未校准</span></div>' +
+        '<div class="sc-name">'+escapeHtml(sc.name || sc.id)+'</div>' +
         '<p>冻结条件：' + escapeHtml(sc.trigger || '') + '</p>' +
         (Number.isFinite(entry) ? '<p>计划入场 ' + fmt(entry) + ' · <b>' + (replay.status !== 'available' ? '触价结果待核对' : r.entryTouched ? '日内曾触及（不代表成交）' : '当天未触及') + '</b></p>' : '<p>没有计划入场价，仅作条件观察。</p>') +
         '<p><b>方向：</b>'+escapeHtml(sc.direction==='long'?'偏多':'偏空')+' · <b>结构目标：</b>'+escapeHtml(sc.target||'未提供')+'</p>' +
         '<p><b>结构失效：</b>'+escapeHtml(sc.invalidation||'未提供')+'</p>' +
+        (typeof scenarioRulerHtml === 'function' ? '<div class="sc-ruler-holder">'+scenarioRulerHtml(sc, a.forecast.basePrice)+'</div>' : '') +
+        '<details class="sc-condition-details"><summary>参与参考与判断依据</summary>' +
         '<p><b>参与参考：</b>'+escapeHtml(sc.rr && sc.rr.entryHint || sc.note || '仅作条件观察')+'</p>' +
         '<p><b>方案赔率：</b>'+(sc.rr && Number.isFinite(sc.rr.entry) && Number.isFinite(sc.rr.target) && Number.isFinite(sc.rr.stop) && Math.abs(sc.rr.entry-sc.rr.stop)>0 ? (Math.abs(sc.rr.target-sc.rr.entry)/Math.abs(sc.rr.entry-sc.rr.stop)).toFixed(2)+':1（低于2:1不可执行；结构止损不等于灾难止损）' : '数据不足，不可执行')+'</p>' +
-        '<p>概率未校准；这是历史条件方案及结果核对，不是当前入场信号。</p>';
+        '<p>历史方案，仅供复盘。</p></details><div class="sc-tip">点击查看该情景区域</div>';
+      card.addEventListener('click', function(){ activeScenario = activeScenario === index ? -1 : index; applyScenarioVisibility(); });
+      var detail = card.querySelector('details');
+      if (detail) detail.addEventListener('click', function(e){e.stopPropagation();});
       wrap.appendChild(card);
     });
   }
@@ -3750,6 +3757,7 @@
   function renderHistSelection() {
     var caption=el('histSelection');
     if(!caption) return;
+    caption.classList.toggle('hidden',!!viewingDate);
     var date=viewingDate || MarketRules.analysisAvailability(latestAnnotations||annotations).date;
     var record=viewingDate && annotations && annotations.archive_record;
     caption.textContent=(viewingDate?'已选记录：':'当前分析：')+(viewingDate?date:MarketRules.analysisAvailability(latestAnnotations).status==='current'?date:'未发布')+
@@ -3760,10 +3768,13 @@
     renderHistSelection();
     var banner = el('histBanner');
     if (!viewingDate) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
-    banner.innerHTML =
-      (annotations && annotations.archive_record ? '<span>📅 <b>' + escapeHtml(viewingDate) + '</b> · ' + (annotations.archive_record.kind === 'retrospective_backfill' ? '事后分析补录（不计预测成绩）' : annotations.archive_record.kind === 'recovered_snapshot' ? '历史版本补录' : annotations.archive_record.kind === 'carried_forward_snapshot' ? '没有新分析，显示旧内容' : '当日冻结') + ' · 内容日期 ' + escapeHtml(annotations.archive_record.original_analysis_date) + '</span>' :
-      '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(cnDate(viewingDate) + '（' + weekdayOf(viewingDate) + '）') + '</b> 冻结的分析 · 情景区域从当天K线展开，右侧叠加此后真实走势，预测 vs 现实直接对比</span>') +
-      '<button class="hb-back" id="histBack" type="button">返回在线分析</button>';
+    var publication = annotations && annotations.publication;
+    var record = annotations && annotations.archive_record;
+    var backfill = publication && publication.kind === 'retrospective_backfill';
+    var label = backfill ? '事后补录，不计预测成绩' : record && record.kind === 'carried_forward_snapshot' ? '旧内容 · '+record.original_analysis_date : '历史分析';
+    banner.innerHTML = '<span><b>'+escapeHtml(cnDate(viewingDate))+'分析</b> · '+escapeHtml(label)+'</span>' +
+      (backfill ? '<details><summary>补录详情</summary><p>数据截至 '+escapeHtml(publication.baseline_date)+'；生成于 '+escapeHtml(publication.generated_at)+'。</p></details>' : '') +
+      '<button class="hb-back" id="histBack" type="button">当前分析</button>';
     banner.classList.remove('hidden');
     el('histBack').addEventListener('click', function () { switchToDate(''); });
   }

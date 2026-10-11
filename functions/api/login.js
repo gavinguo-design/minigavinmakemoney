@@ -2,7 +2,10 @@
 // Body: { username, password } → sets signed HttpOnly cookie (mg_auth, 30d).
 // Password is never stored in plaintext here — SHA-256 hash comparison only.
 
-const SECRET = 'mg-auth-06745e6f2f34d7a8d1e8f772e31cb09be7175a27bd84bf19b675598aa13a855e';
+// Prefer Cloudflare env secret MG_AUTH_SECRET; legacy constant is a temporary
+// fallback until the env var is set (it is public in git history — rotate!).
+const LEGACY_SECRET = 'mg-auth-06745e6f2f34d7a8d1e8f772e31cb09be7175a27bd84bf19b675598aa13a855e';
+let SECRET = LEGACY_SECRET;
 const COOKIE_NAME = 'mg_auth';
 const VALID_USERNAME = 'gavin';
 // sha256 hex of the account password
@@ -34,6 +37,7 @@ function json(obj, status = 200, extraHeaders = {}) {
 
 export async function onRequestPost(context) {
   const { request } = context;
+  SECRET = (context.env && context.env.MG_AUTH_SECRET) || LEGACY_SECRET;
 
   let body;
   try {

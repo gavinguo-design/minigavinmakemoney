@@ -1,0 +1,338 @@
+{
+  "$schema_note": "每日规则分析：confirmed pivots(width=2) + 既有可追溯结构目标。价格结构决定核心触发，环境只提供证据。",
+  "meta": {
+    "symbol": "^HSI",
+    "updatedAt": "2026-10-11T11:15:40.645Z",
+    "analysis_id": "HSI-20261008-structure-v1",
+    "latestClose": 24130.5,
+    "latestCloseDate": "2026-10-07",
+    "note": "事后补录，不是当时发布的预测",
+    "dataSources": "futu-opend"
+  },
+  "publication": {
+    "kind": "retrospective_backfill",
+    "session_date": "2026-10-08",
+    "generated_at": "2026-10-11T11:15:40.645Z",
+    "information_cutoff": "2026-10-08T08:45:00+08:00",
+    "baseline_date": "2026-10-07",
+    "source_sha256": "e75361d276522fc4e475681ce93a8f92269a5e6a14cdad7efeed61f8a9236dfd",
+    "source_snapshot": {
+      "kline_commit": "53b3c4463974c08aec454725955a901c0c4f071f",
+      "kline_committed_at": "2026-10-07T08:30:13Z"
+    },
+    "eligible_as_new_prediction": false,
+    "method": "confirmed-swing-structure-v1",
+    "probability_status": "uncalibrated"
+  },
+  "disclaimer": "条件式价格结构分析；权重尚未校准。补录不参与预测命中率、Brier或实时入场判断。",
+  "forecast": {
+    "applicable_date": "2026-10-08",
+    "updatedAt": "2026-10-11T11:15:40.645Z",
+    "baseDate": "2026-10-07",
+    "basePrice": 24130.5,
+    "bias": "neutral",
+    "biasLabel": "结构分歧 / 区间",
+    "summary": "2026-10-07 收盘 24,130.5；结构分歧 / 区间；未突破最近摆动边界。最近确认摆动边界 23,835.68–25,254.11。RSI14 37.3、ATR14 316.1、MA20 24,656.38。",
+    "horizon": "未来5个交易日，每日重新核验",
+    "horizonEndDate": "2026-10-15",
+    "horizonDesc": "未来5个交易日（按港股日历至 2026-10-15，不含发布当日）",
+    "reasoning": [
+      "2026-10-07 收盘 24,130.5；结构分歧 / 区间；未突破最近摆动边界。最近确认摆动边界 23,835.68–25,254.11。RSI14 37.3、ATR14 316.1、MA20 24,656.38。",
+      "A/B/C 分别覆盖 ≥上边界、两边界之间、<下边界；盘中穿越不算正式触发。",
+      "夜期、IV、南向资金无截止前可信快照时不可用，不用于推断。",
+      "环境证据：无符合截止时间的官方成分报告，标记不可用。"
+    ],
+    "targetUpper": 25578.27,
+    "targetLower": 23500,
+    "confidence": "未校准",
+    "scenarios": [
+      {
+        "id": "A",
+        "name": "A · 收复最近摆动高点",
+        "direction": "long",
+        "probability": null,
+        "color": "#00d87f",
+        "trigger": "收盘 ≥ 25,254.11；只看完整日K价格结构",
+        "price_rule": {
+          "operator": "gte",
+          "value": 25254.11
+        },
+        "invalidation": "收盘 < 24,071.41",
+        "rr": {
+          "entry": 25254.11,
+          "stop": 24071.41,
+          "target": 25578.27,
+          "direction": "long",
+          "entryHint": "条件确认之后再观察结构位回测；价格满足赔率不等于触发。"
+        },
+        "risk": {
+          "structural_invalidation": {
+            "price": 24071.41,
+            "confirmation": "completed_daily_close"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured"
+          }
+        },
+        "target": "25,578.27（已观察到的结构位）",
+        "holding_period": "每日重新核验，不承诺固定持仓天数",
+        "note": "规则生成的条件情景；未校准历史发生率，不提供概率百分比。",
+        "zone": {
+          "upperBound": [
+            {
+              "offset": 0,
+              "price": 24130.5
+            },
+            {
+              "offset": 5,
+              "price": 25578.27
+            }
+          ],
+          "lowerBound": [
+            {
+              "offset": 0,
+              "price": 24130.5
+            },
+            {
+              "offset": 5,
+              "price": 25254.11
+            }
+          ]
+        }
+      },
+      {
+        "id": "B",
+        "name": "B · 摆动区间内整理",
+        "direction": "short",
+        "probability": null,
+        "color": "#a78bfa",
+        "trigger": "收盘 ≥ 23,835.68 且 < 25,254.11；只看完整日K价格结构",
+        "price_rule": {
+          "operator": "range",
+          "lower": 23835.68,
+          "upper": 25254.11
+        },
+        "invalidation": "收盘 ≥ 25,578.27",
+        "rr": {
+          "entry": 25254.11,
+          "stop": 25578.27,
+          "target": 23500,
+          "direction": "short",
+          "entryHint": "条件确认之后再观察结构位回测；价格满足赔率不等于触发。"
+        },
+        "risk": {
+          "structural_invalidation": {
+            "price": 25578.27,
+            "confirmation": "completed_daily_close"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured"
+          }
+        },
+        "target": "23,500（已观察到的结构位）",
+        "holding_period": "每日重新核验，不承诺固定持仓天数",
+        "note": "规则生成的条件情景；未校准历史发生率，不提供概率百分比。",
+        "zone": {
+          "upperBound": [
+            {
+              "offset": 0,
+              "price": 24130.5
+            },
+            {
+              "offset": 5,
+              "price": 25254.11
+            }
+          ],
+          "lowerBound": [
+            {
+              "offset": 0,
+              "price": 24130.5
+            },
+            {
+              "offset": 5,
+              "price": 23500
+            }
+          ]
+        }
+      },
+      {
+        "id": "C",
+        "name": "C · 跌破最近摆动低点",
+        "direction": "short",
+        "probability": null,
+        "color": "#ff8c42",
+        "trigger": "收盘 < 23,835.68；只看完整日K价格结构",
+        "price_rule": {
+          "operator": "lt",
+          "value": 23835.68
+        },
+        "invalidation": "收盘 ≥ 24,266.92",
+        "rr": {
+          "entry": 23835.68,
+          "stop": 24266.92,
+          "target": 23500,
+          "direction": "short",
+          "entryHint": "条件确认之后再观察结构位回测；价格满足赔率不等于触发。"
+        },
+        "risk": {
+          "structural_invalidation": {
+            "price": 24266.92,
+            "confirmation": "completed_daily_close"
+          },
+          "disaster_stop": {
+            "price": null,
+            "status": "not_configured"
+          }
+        },
+        "target": "23,500（已观察到的结构位）",
+        "holding_period": "每日重新核验，不承诺固定持仓天数",
+        "note": "规则生成的条件情景；未校准历史发生率，不提供概率百分比。",
+        "zone": {
+          "upperBound": [
+            {
+              "offset": 0,
+              "price": 24130.5
+            },
+            {
+              "offset": 5,
+              "price": 23835.68
+            }
+          ],
+          "lowerBound": [
+            {
+              "offset": 0,
+              "price": 24130.5
+            },
+            {
+              "offset": 5,
+              "price": 23500
+            }
+          ]
+        }
+      }
+    ],
+    "card": {
+      "stateEmoji": "📋",
+      "stateLabel": "2026-10-08 事后补录分析",
+      "structureLine": "2026-10-07 收盘 24,130.5；结构分歧 / 区间；未突破最近摆动边界。最近确认摆动边界 23,835.68–25,254.11。RSI14 37.3、ATR14 316.1、MA20 24,656.38。",
+      "stateTone": "neutral",
+      "keyLines": [
+        {
+          "price": 23835.68,
+          "tag": "最近确认摆动低点",
+          "tf": "日线"
+        },
+        {
+          "price": 25254.11,
+          "tag": "最近确认摆动高点",
+          "tf": "日线"
+        }
+      ]
+    },
+    "scenario_evidence": {
+      "analysis_id": "HSI-20261008-structure-v1",
+      "last_bar": {
+        "date": "2026-10-07",
+        "open": 24172.29,
+        "high": 24266.92,
+        "low": 24071.41,
+        "close": 24130.5,
+        "turnover_yi": 947,
+        "time": "2026-10-07",
+        "completed": true
+      },
+      "timeframe": "1d",
+      "source": "futu-opend",
+      "scenarios": {}
+    }
+  },
+  "environment_evidence": {
+    "volume_ratio": {
+      "status": "available",
+      "value": 0.5202067643358987,
+      "basis": "previous_20_completed_sessions"
+    },
+    "participation": {
+      "status": "unavailable",
+      "as_of": null,
+      "metrics": null,
+      "source": null
+    },
+    "night_futures": {
+      "status": "unavailable"
+    },
+    "options_risk": {
+      "status": "unavailable"
+    },
+    "southbound": {
+      "status": "unavailable"
+    }
+  },
+  "intraday_playbook": {
+    "updatedAt": "2026-10-11T11:15:40.645Z",
+    "note": "仅用于区间定位，不是即时操作指令",
+    "zones": [
+      {
+        "range": [
+          25254.11,
+          null
+        ],
+        "stance": "修复观察",
+        "action": "等待A收盘确认"
+      },
+      {
+        "range": [
+          23835.68,
+          25254.11
+        ],
+        "stance": "区间观察",
+        "action": "等待B收盘确认"
+      },
+      {
+        "range": [
+          null,
+          23835.68
+        ],
+        "stance": "破位观察",
+        "action": "等待C收盘确认"
+      }
+    ]
+  },
+  "levels": [
+    {
+      "price": 23835.68,
+      "type": "support",
+      "label": "最近确认摆动低点",
+      "reason": "2026-10-05，确认于 2026-10-07"
+    },
+    {
+      "price": 25254.11,
+      "type": "resistance",
+      "label": "最近确认摆动高点",
+      "reason": "2026-09-22，确认于 2026-09-24"
+    },
+    {
+      "price": 23500,
+      "type": "support",
+      "label": "下方结构目标",
+      "reason": "截止日前的确认摆动低点或既有支撑"
+    },
+    {
+      "price": 25578.27,
+      "type": "resistance",
+      "label": "上方结构目标",
+      "reason": "截止日前的确认摆动高点或既有阻力"
+    }
+  ],
+  "markers": [],
+  "playbook": [],
+  "pathTree": null,
+  "archive_record": {
+    "kind": "retrospective_backfill",
+    "session_date": "2026-10-08",
+    "original_analysis_date": "2026-10-08",
+    "note": "使用10月7日及此前已完成数据独立重建；不计预测成绩。"
+  }
+}

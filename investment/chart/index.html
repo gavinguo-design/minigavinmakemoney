@@ -1238,7 +1238,7 @@
         : record&&record.kind==='carried_forward_snapshot'
         ? '⚠ '+viewingDate+' 没有新分析。下面显示的是 '+originalDate+' 的旧内容，仅供历史查看。'
         : '历史回放：当前查看 '+viewingDate+' 的存档'+(originalDate?'，原分析日期 '+originalDate:'')+'。顶部行情单独显示最新报价；切回在线分析才能查看当前发布状态。';
-      if (automaticHistory) box.textContent = '当前分析尚未发布；默认显示最近可用记录。' + box.textContent;
+      if (automaticHistory) box.textContent = '默认显示最近交易日的分析。' + box.textContent;
       box.classList.remove('hidden');
       return;
     }

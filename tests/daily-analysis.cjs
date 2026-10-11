@@ -142,3 +142,17 @@ test('postclose fails closed before writing a review or final status for invalid
   assert.equal(MR.replaySession(a,{...daily,updated_at:'2026-10-10T16:15:00+08:00'},'2026-10-09',Date.parse('2026-10-09T16:20:00+08:00')).status,'unavailable');
  } finally {fs.rmSync(tmp,{recursive:true});}
 });
+
+test('October 8 has independent reconstruction from the October 7 snapshot, never October 6 carryover',()=>{
+ const snapshot=require('./fixtures/hsi-preopen-2026-10-08.json');
+ const saved=require('../investment/chart/archive/supplements/2026-10-08.json');
+ const rebuilt=build({date:'2026-10-08',feed:snapshot,seed,generatedAt:saved.publication.generated_at,backfill:true,provenance:saved.publication.source_snapshot});
+ assert.equal(saved.forecast.baseDate,'2026-10-07');
+ assert.equal(saved.publication.information_cutoff,'2026-10-08T08:45:00+08:00');
+ assert.equal(saved.publication.eligible_as_new_prediction,false);
+ assert.deepEqual(saved.forecast,rebuilt.forecast);
+ assert.equal(saved.forecast.scenarios.length,3);
+ assert.notDeepEqual(saved.forecast.scenarios,require('../investment/chart/archive/supplements/2026-10-09.json').forecast.scenarios);
+ const index=require('../investment/chart/archive/supplements/index.json');
+ for(const date of ['2026-10-08','2026-10-09'])assert.equal(index[date],'supplements/'+date+'.json');
+});

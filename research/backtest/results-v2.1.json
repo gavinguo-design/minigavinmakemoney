@@ -1,0 +1,1272 @@
+{
+ "meta": {
+  "generated_by": "scripts/backtest-weights.cjs",
+  "repo_commit": "620552ffd59dde65db7164550ed51463a1b543cc",
+  "data_file": "research/backtest/data/hsi-daily-2024-06_2026-10.json",
+  "data_source": "yahoo-finance-v8-chart",
+  "data_candles_sha256": "9d743b690c800ae1b0b55f56abbc9004a4f3047a5f07ace4a3fe805fe8a60fa9",
+  "raw_response_sha256": "2361b360c767c9c84c1aa9ba973903878697baffba5fab6358135504827407a3",
+  "window": [
+   "2024-10-02",
+   "2026-10-09"
+  ],
+  "sessions": 498,
+  "skipped": [],
+  "breadth": "unavailable (no point-in-time history in repo); breadth factor = 0 for all models",
+  "southbound": "not used by any model; research/data/ not present at run time",
+  "note": "只评估、未调参。Brier 为三类求和形式（0–2，均匀 1/3 基准 = 0.667）。CI 为 10 日移动块 bootstrap 2000 次。",
+  "model": "rule-weights-v2.1"
+ },
+ "overall": {
+  "n": 498,
+  "rule-weights-v2.1": {
+   "brier": 0.4601,
+   "brier_ci": {
+    "lo": 0.4238,
+    "hi": 0.4952
+   },
+   "logloss": 0.7592,
+   "hit_rate": 0.6707
+  },
+  "uniform": {
+   "brier": 0.6667,
+   "brier_ci": {
+    "lo": 0.6667,
+    "hi": 0.6667
+   },
+   "logloss": 1.0986,
+   "hit_rate": 0.3333
+  },
+  "hist_freq": {
+   "brier": 0.5892,
+   "brier_ci": {
+    "lo": 0.5541,
+    "hi": 0.625
+   },
+   "logloss": 0.9855,
+   "hit_rate": 0.5572
+  },
+  "persistence": {
+   "brier": 0.4119,
+   "brier_ci": {
+    "lo": 0.3862,
+    "hi": 0.436
+   },
+   "logloss": 0.7469,
+   "hit_rate": 0.7851
+  },
+  "rule-weights-v1": {
+   "brier": 0.3818,
+   "brier_ci": {
+    "lo": 0.3519,
+    "hi": 0.4134
+   },
+   "logloss": 0.659,
+   "hit_rate": 0.7791
+  }
+ },
+ "split": {
+  "first_70": {
+   "range": [
+    "2024-10-02",
+    "2026-03-03"
+   ],
+   "n": 348,
+   "rule-weights-v2.1": {
+    "brier": 0.4616,
+    "brier_ci": {
+     "lo": 0.4185,
+     "hi": 0.5052
+    },
+    "logloss": 0.7624,
+    "hit_rate": 0.6753
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.576,
+    "brier_ci": {
+     "lo": 0.5363,
+     "hi": 0.6168
+    },
+    "logloss": 0.9564,
+    "hit_rate": 0.5618
+   },
+   "persistence": {
+    "brier": 0.4055,
+    "brier_ci": {
+     "lo": 0.3756,
+     "hi": 0.4354
+    },
+    "logloss": 0.7381,
+    "hit_rate": 0.7931
+   },
+   "rule-weights-v1": {
+    "brier": 0.3779,
+    "brier_ci": {
+     "lo": 0.3387,
+     "hi": 0.4168
+    },
+    "logloss": 0.6548,
+    "hit_rate": 0.7816
+   }
+  },
+  "last_30": {
+   "range": [
+    "2026-03-04",
+    "2026-10-09"
+   ],
+   "n": 150,
+   "rule-weights-v2.1": {
+    "brier": 0.4564,
+    "brier_ci": {
+     "lo": 0.4039,
+     "hi": 0.5109
+    },
+    "logloss": 0.7519,
+    "hit_rate": 0.66
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.6198,
+    "brier_ci": {
+     "lo": 0.5493,
+     "hi": 0.6922
+    },
+    "logloss": 1.053,
+    "hit_rate": 0.5467
+   },
+   "persistence": {
+    "brier": 0.4267,
+    "brier_ci": {
+     "lo": 0.3893,
+     "hi": 0.464
+    },
+    "logloss": 0.7672,
+    "hit_rate": 0.7667
+   },
+   "rule-weights-v1": {
+    "brier": 0.3908,
+    "brier_ci": {
+     "lo": 0.3475,
+     "hi": 0.4352
+    },
+    "logloss": 0.6686,
+    "hit_rate": 0.7733
+   }
+  }
+ },
+ "by_year": {
+  "2024": {
+   "n": 62,
+   "rule-weights-v2.1": {
+    "brier": 0.4993,
+    "brier_ci": {
+     "lo": 0.381,
+     "hi": 0.6101
+    },
+    "logloss": 0.8218,
+    "hit_rate": 0.6694
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.6269,
+    "brier_ci": {
+     "lo": 0.5363,
+     "hi": 0.7125
+    },
+    "logloss": 1.0415,
+    "hit_rate": 0.5081
+   },
+   "persistence": {
+    "brier": 0.4335,
+    "brier_ci": {
+     "lo": 0.3432,
+     "hi": 0.5239
+    },
+    "logloss": 0.7766,
+    "hit_rate": 0.7581
+   },
+   "rule-weights-v1": {
+    "brier": 0.3634,
+    "brier_ci": {
+     "lo": 0.2676,
+     "hi": 0.4623
+    },
+    "logloss": 0.6457,
+    "hit_rate": 0.8145
+   }
+  },
+  "2025": {
+   "n": 246,
+   "rule-weights-v2.1": {
+    "brier": 0.4565,
+    "brier_ci": {
+     "lo": 0.4089,
+     "hi": 0.5063
+    },
+    "logloss": 0.7521,
+    "hit_rate": 0.6626
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5785,
+    "brier_ci": {
+     "lo": 0.5334,
+     "hi": 0.624
+    },
+    "logloss": 0.9585,
+    "hit_rate": 0.5528
+   },
+   "persistence": {
+    "brier": 0.4026,
+    "brier_ci": {
+     "lo": 0.3668,
+     "hi": 0.4384
+    },
+    "logloss": 0.7341,
+    "hit_rate": 0.7967
+   },
+   "rule-weights-v1": {
+    "brier": 0.3813,
+    "brier_ci": {
+     "lo": 0.3329,
+     "hi": 0.4294
+    },
+    "logloss": 0.6564,
+    "hit_rate": 0.7724
+   }
+  },
+  "2026": {
+   "n": 190,
+   "rule-weights-v2.1": {
+    "brier": 0.4519,
+    "brier_ci": {
+     "lo": 0.4063,
+     "hi": 0.5008
+    },
+    "logloss": 0.7481,
+    "hit_rate": 0.6816
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5907,
+    "brier_ci": {
+     "lo": 0.5263,
+     "hi": 0.6618
+    },
+    "logloss": 1.0022,
+    "hit_rate": 0.5789
+   },
+   "persistence": {
+    "brier": 0.4168,
+    "brier_ci": {
+     "lo": 0.3832,
+     "hi": 0.4547
+    },
+    "logloss": 0.7537,
+    "hit_rate": 0.7789
+   },
+   "rule-weights-v1": {
+    "brier": 0.3884,
+    "brier_ci": {
+     "lo": 0.3513,
+     "hi": 0.4287
+    },
+    "logloss": 0.6666,
+    "hit_rate": 0.7763
+   }
+  }
+ },
+ "by_regime_v21": {
+  "range": {
+   "n": 166,
+   "rule-weights-v2.1": {
+    "brier": 0.5375,
+    "brier_ci": {
+     "lo": 0.4614,
+     "hi": 0.6117
+    },
+    "logloss": 0.8501,
+    "hit_rate": 0.4849
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.622,
+    "brier_ci": {
+     "lo": 0.5727,
+     "hi": 0.6721
+    },
+    "logloss": 1.0338,
+    "hit_rate": 0.5
+   },
+   "persistence": {
+    "brier": 0.4231,
+    "brier_ci": {
+     "lo": 0.3749,
+     "hi": 0.4761
+    },
+    "logloss": 0.7623,
+    "hit_rate": 0.7711
+   },
+   "rule-weights-v1": {
+    "brier": 0.386,
+    "brier_ci": {
+     "lo": 0.3369,
+     "hi": 0.4378
+    },
+    "logloss": 0.6661,
+    "hit_rate": 0.762
+   }
+  },
+  "trend": {
+   "n": 332,
+   "rule-weights-v2.1": {
+    "brier": 0.4214,
+    "brier_ci": {
+     "lo": 0.3926,
+     "hi": 0.4495
+    },
+    "logloss": 0.7138,
+    "hit_rate": 0.7636
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5728,
+    "brier_ci": {
+     "lo": 0.5294,
+     "hi": 0.6191
+    },
+    "logloss": 0.9614,
+    "hit_rate": 0.5858
+   },
+   "persistence": {
+    "brier": 0.4063,
+    "brier_ci": {
+     "lo": 0.3749,
+     "hi": 0.4352
+    },
+    "logloss": 0.7392,
+    "hit_rate": 0.7922
+   },
+   "rule-weights-v1": {
+    "brier": 0.3797,
+    "brier_ci": {
+     "lo": 0.3444,
+     "hi": 0.4153
+    },
+    "logloss": 0.6554,
+    "hit_rate": 0.7877
+   }
+  }
+ },
+ "by_regime_adx": {
+  "range": {
+   "n": 294,
+   "rule-weights-v2.1": {
+    "brier": 0.4528,
+    "brier_ci": {
+     "lo": 0.4112,
+     "hi": 0.4947
+    },
+    "logloss": 0.7513,
+    "hit_rate": 0.6718
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.6081,
+    "brier_ci": {
+     "lo": 0.5608,
+     "hi": 0.659
+    },
+    "logloss": 1.02,
+    "hit_rate": 0.5374
+   },
+   "persistence": {
+    "brier": 0.4114,
+    "brier_ci": {
+     "lo": 0.3788,
+     "hi": 0.4441
+    },
+    "logloss": 0.7462,
+    "hit_rate": 0.7857
+   },
+   "rule-weights-v1": {
+    "brier": 0.3872,
+    "brier_ci": {
+     "lo": 0.3497,
+     "hi": 0.4243
+    },
+    "logloss": 0.6657,
+    "hit_rate": 0.7687
+   }
+  },
+  "transition": {
+   "n": 121,
+   "rule-weights-v2.1": {
+    "brier": 0.4887,
+    "brier_ci": {
+     "lo": 0.4359,
+     "hi": 0.5379
+    },
+    "logloss": 0.7948,
+    "hit_rate": 0.6405
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5435,
+    "brier_ci": {
+     "lo": 0.4802,
+     "hi": 0.6164
+    },
+    "logloss": 0.9059,
+    "hit_rate": 0.6157
+   },
+   "persistence": {
+    "brier": 0.4317,
+    "brier_ci": {
+     "lo": 0.3788,
+     "hi": 0.4979
+    },
+    "logloss": 0.7741,
+    "hit_rate": 0.7603
+   },
+   "rule-weights-v1": {
+    "brier": 0.3952,
+    "brier_ci": {
+     "lo": 0.3341,
+     "hi": 0.452
+    },
+    "logloss": 0.6784,
+    "hit_rate": 0.7893
+   }
+  },
+  "trend": {
+   "n": 83,
+   "rule-weights-v2.1": {
+    "brier": 0.4442,
+    "brier_ci": {
+     "lo": 0.3629,
+     "hi": 0.5295
+    },
+    "logloss": 0.7356,
+    "hit_rate": 0.7108
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5888,
+    "brier_ci": {
+     "lo": 0.5101,
+     "hi": 0.6746
+    },
+    "logloss": 0.9795,
+    "hit_rate": 0.5422
+   },
+   "persistence": {
+    "brier": 0.3846,
+    "brier_ci": {
+     "lo": 0.3267,
+     "hi": 0.4424
+    },
+    "logloss": 0.7094,
+    "hit_rate": 0.8193
+   },
+   "rule-weights-v1": {
+    "brier": 0.343,
+    "brier_ci": {
+     "lo": 0.2815,
+     "hi": 0.4066
+    },
+    "logloss": 0.6067,
+    "hit_rate": 0.8012
+   }
+  }
+ },
+ "brier_diff_vs": {
+  "rule-weights-v2.1 - uniform": {
+   "mean": -0.2066,
+   "lo": -0.2428,
+   "hi": -0.1715
+  },
+  "rule-weights-v2.1 - hist_freq": {
+   "mean": -0.1291,
+   "lo": -0.173,
+   "hi": -0.0883
+  },
+  "rule-weights-v2.1 - persistence": {
+   "mean": 0.0482,
+   "lo": 0.0166,
+   "hi": 0.0811
+  },
+  "rule-weights-v2.1 - rule-weights-v1": {
+   "mean": 0.0783,
+   "lo": 0.0378,
+   "hi": 0.1195
+  }
+ },
+ "calibration": {
+  "rule-weights-v2.1": {
+   "bins": [
+    {
+     "bin": "0.1-0.2",
+     "n": 450,
+     "mean_pred": 0.1113,
+     "freq": 0.0178
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 231,
+     "mean_pred": 0.2175,
+     "freq": 0.1688
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 212,
+     "mean_pred": 0.3226,
+     "freq": 0.2736
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 147,
+     "mean_pred": 0.4238,
+     "freq": 0.551
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 232,
+     "mean_pred": 0.5263,
+     "freq": 0.681
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 123,
+     "mean_pred": 0.6142,
+     "freq": 0.6748
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 99,
+     "mean_pred": 0.7,
+     "freq": 0.7172
+    }
+   ],
+   "ece": 0.0853
+  },
+  "uniform": {
+   "bins": [
+    {
+     "bin": "0.3-0.4",
+     "n": 1494,
+     "mean_pred": 0.3333,
+     "freq": 0.3333
+    }
+   ],
+   "ece": 0
+  },
+  "hist_freq": {
+   "bins": [
+    {
+     "bin": "0.1-0.2",
+     "n": 388,
+     "mean_pred": 0.1523,
+     "freq": 0.1624
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 250,
+     "mean_pred": 0.2594,
+     "freq": 0.212
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 359,
+     "mean_pred": 0.3382,
+     "freq": 0.2925
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 213,
+     "mean_pred": 0.4683,
+     "freq": 0.5164
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 284,
+     "mean_pred": 0.5384,
+     "freq": 0.588
+    }
+   ],
+   "ece": 0.0378
+  },
+  "persistence": {
+   "bins": [
+    {
+     "bin": "0.2-0.3",
+     "n": 996,
+     "mean_pred": 0.2,
+     "freq": 0.1074
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 498,
+     "mean_pred": 0.6,
+     "freq": 0.7851
+    }
+   ],
+   "ece": 0.1234
+  },
+  "rule-weights-v1": {
+   "bins": [
+    {
+     "bin": "0.1-0.2",
+     "n": 465,
+     "mean_pred": 0.1071,
+     "freq": 0.0065
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 241,
+     "mean_pred": 0.2145,
+     "freq": 0.0996
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 169,
+     "mean_pred": 0.3204,
+     "freq": 0.2308
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 165,
+     "mean_pred": 0.4258,
+     "freq": 0.4061
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 197,
+     "mean_pred": 0.5228,
+     "freq": 0.7208
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 127,
+     "mean_pred": 0.615,
+     "freq": 0.8504
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 130,
+     "mean_pred": 0.7,
+     "freq": 0.8846
+    }
+   ],
+   "ece": 0.1243
+  }
+ },
+ "outcome_freq": {
+  "A": 0.2711,
+  "B": 0.5683,
+  "C": 0.1606
+ },
+ "manual_records": [
+  {
+   "id": "HSI-20260925-D-001",
+   "session": "2026-09-28",
+   "close": 24642.51,
+   "p": {
+    "A": 0.45,
+    "B": 0.35,
+    "C": 0.2
+   },
+   "outcome": "A",
+   "brier": 0.465,
+   "hit": 1,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.4,
+      "C": 0.5
+     },
+     "outcome": "B",
+     "brier": 0.62
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.14
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.2840466926070039,
+      "B": 0.5525291828793775,
+      "C": 0.16342412451361868
+     },
+     "outcome": "B",
+     "brier": 0.3076
+    }
+   },
+   "model_rules": {
+    "lower": 24357.69,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20260928-D-001",
+   "session": "2026-09-28",
+   "close": 24642.51,
+   "p": {
+    "A": 0.45,
+    "B": 0.35,
+    "C": 0.2
+   },
+   "outcome": "A",
+   "brier": 0.465,
+   "hit": 1,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.4,
+      "C": 0.5
+     },
+     "outcome": "B",
+     "brier": 0.62
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.14
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.2840466926070039,
+      "B": 0.5525291828793775,
+      "C": 0.16342412451361868
+     },
+     "outcome": "B",
+     "brier": 0.3076
+    }
+   },
+   "model_rules": {
+    "lower": 24357.69,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20260929-D-001",
+   "session": "2026-09-29",
+   "close": 24523.57,
+   "p": {
+    "A": 0.35,
+    "B": 0.45,
+    "C": 0.2
+   },
+   "outcome": "B",
+   "brier": 0.465,
+   "hit": 1,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.5,
+      "C": 0.4
+     },
+     "outcome": "B",
+     "brier": 0.42
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.14
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.283495145631068,
+      "B": 0.5533980582524272,
+      "C": 0.16310679611650486
+     },
+     "outcome": "B",
+     "brier": 0.3064
+    }
+   },
+   "model_rules": {
+    "lower": 24357.69,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20260930-D-001",
+   "session": "2026-09-30",
+   "close": 24613.27,
+   "p": {
+    "A": 0.25,
+    "B": 0.45,
+    "C": 0.3
+   },
+   "outcome": "none",
+   "brier": null,
+   "hit": null,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.45,
+      "C": 0.45
+     },
+     "outcome": "B",
+     "brier": 0.515
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.14
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.28294573643410853,
+      "B": 0.5542635658914729,
+      "C": 0.16279069767441862
+     },
+     "outcome": "B",
+     "brier": 0.3052
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20261002-D-001",
+   "session": "2026-10-02",
+   "close": 23972.29,
+   "p": {
+    "A": 0.35,
+    "B": 0.4,
+    "C": 0.25
+   },
+   "outcome": "C",
+   "brier": 0.845,
+   "hit": 0,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.5,
+      "C": 0.4
+     },
+     "outcome": "C",
+     "brier": 0.62
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "C",
+     "brier": 1.14
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "C",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "C",
+     "brier": 1.04
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.28239845261121854,
+      "B": 0.5551257253384912,
+      "C": 0.16247582205029013
+     },
+     "outcome": "C",
+     "brier": 1.0894
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20261005-D-001",
+   "session": "2026-10-05",
+   "close": 24040.34,
+   "p": {
+    "A": 0.45,
+    "B": 0.3,
+    "C": 0.25
+   },
+   "outcome": "A",
+   "brier": 0.455,
+   "hit": 1,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.2,
+      "C": 0.7
+     },
+     "outcome": "C",
+     "brier": 0.14
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.6,
+      "C": 0.3
+     },
+     "outcome": "C",
+     "brier": 0.86
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "C",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.2,
+      "B": 0.2,
+      "C": 0.6
+     },
+     "outcome": "C",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.28185328185328185,
+      "B": 0.5540540540540541,
+      "C": 0.1640926640926641
+     },
+     "outcome": "C",
+     "brier": 1.0852
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20261006-D-001",
+   "session": "2026-10-06",
+   "close": 24280.56,
+   "p": {
+    "A": 0.45,
+    "B": 0.2,
+    "C": 0.35
+   },
+   "outcome": "C",
+   "brier": 0.665,
+   "hit": 0,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.2,
+      "C": 0.7
+     },
+     "outcome": "B",
+     "brier": 1.14
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.6,
+      "C": 0.3
+     },
+     "outcome": "B",
+     "brier": 0.26
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.2,
+      "B": 0.2,
+      "C": 0.6
+     },
+     "outcome": "B",
+     "brier": 1.04
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.2813102119460501,
+      "B": 0.5529865125240848,
+      "C": 0.16570327552986513
+     },
+     "outcome": "B",
+     "brier": 0.3064
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "annotations-2026-10-06",
+   "session": "2026-10-06",
+   "close": 24280.56,
+   "p": {
+    "A": 0.35,
+    "B": 0.45,
+    "C": 0.2
+   },
+   "outcome": "A",
+   "brier": 0.665,
+   "hit": 0,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.2,
+      "C": 0.7
+     },
+     "outcome": "B",
+     "brier": 1.14
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.6,
+      "C": 0.3
+     },
+     "outcome": "B",
+     "brier": 0.26
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.2,
+      "B": 0.2,
+      "C": 0.6
+     },
+     "outcome": "B",
+     "brier": 1.04
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.2813102119460501,
+      "B": 0.5529865125240848,
+      "C": 0.16570327552986513
+     },
+     "outcome": "B",
+     "brier": 0.3064
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  }
+ ]
+}

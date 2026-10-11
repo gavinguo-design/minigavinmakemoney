@@ -11,7 +11,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
-  <script src="market-rules.js?v=3"></script>
+  <script src="market-rules.js?v=4"></script>
   <script src="market-participation.js?v=1"></script>
   <script src="market-context.js?v=1"></script>
   <script src="trading-operation.js?v=4"></script>
@@ -1236,7 +1236,7 @@
       box.textContent=annotations&&annotations.publication&&annotations.publication.kind==='retrospective_backfill'
         ? '事后补录：'+viewingDate+' 分析仅使用 '+annotations.publication.baseline_date+' 及此前数据；实际生成于 '+annotations.publication.generated_at+'，不是当时已发布预测，不计入预测成绩。'
         : record&&record.kind==='carried_forward_snapshot'
-        ? '⚠ '+viewingDate+' 没有发布新剧本；这份归档沿用 '+originalDate+' 的分析，只供历史核对。顶部最新报价不会更新归档中的 A/B/C。'
+        ? '⚠ '+viewingDate+' 没有新分析。下面显示的是 '+originalDate+' 的旧内容，仅供历史查看。'
         : '历史回放：当前查看 '+viewingDate+' 的存档'+(originalDate?'，原分析日期 '+originalDate:'')+'。顶部行情单独显示最新报价；切回在线分析才能查看当前发布状态。';
       if (automaticHistory) box.textContent = '当前分析尚未发布；默认显示最近可用记录。' + box.textContent;
       box.classList.remove('hidden');
@@ -2152,8 +2152,12 @@
   }
 
   function renderHistoricalResults(a, scenarios, wrap) {
-    var replay = MarketRules.replaySession(a, historyDailyFeed, viewingDate);
+    // 先显示方案，回放模块或数据不可用都不能阻止 A/B/C 卡片渲染。
     wrap.classList.remove('hidden');
+    var replay = {status:'unavailable',scenarios:[]};
+    try {
+      if (typeof MarketRules.replaySession === 'function') replay = MarketRules.replaySession(a, historyDailyFeed, viewingDate);
+    } catch (error) { console.warn('Historical outcome unavailable; retaining ABC plans', error); }
     wrap.classList.add('sc-history');
     el('probNote').classList.add('hidden');
     var summary = document.createElement('div');
@@ -3749,7 +3753,7 @@
     var date=viewingDate || MarketRules.analysisAvailability(latestAnnotations||annotations).date;
     var record=viewingDate && annotations && annotations.archive_record;
     caption.textContent=(viewingDate?'已选记录：':'当前分析：')+(viewingDate?date:MarketRules.analysisAvailability(latestAnnotations).status==='current'?date:'未发布')+
-      (record?' · 原分析冻结：'+record.original_analysis_date+(record.kind==='recovered_snapshot'?' · 历史版本补录':''):'');
+      (record && record.kind==='carried_forward_snapshot'?' · 没有新分析，内容来自 '+record.original_analysis_date:'');
   }
 
   function updateHistBanner() {
@@ -3757,7 +3761,7 @@
     var banner = el('histBanner');
     if (!viewingDate) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
     banner.innerHTML =
-      (annotations && annotations.archive_record ? '<span>📅 <b>' + escapeHtml(viewingDate) + '</b> · ' + (annotations.archive_record.kind === 'retrospective_backfill' ? '事后分析补录（不计预测成绩）' : annotations.archive_record.kind === 'recovered_snapshot' ? '历史版本补录' : annotations.archive_record.kind === 'carried_forward_snapshot' ? '沿用旧分析' : '当日冻结') + ' · 原分析冻结于 ' + escapeHtml(annotations.archive_record.original_analysis_date) + '。' + escapeHtml(annotations.archive_record.note) + '</span>' :
+      (annotations && annotations.archive_record ? '<span>📅 <b>' + escapeHtml(viewingDate) + '</b> · ' + (annotations.archive_record.kind === 'retrospective_backfill' ? '事后分析补录（不计预测成绩）' : annotations.archive_record.kind === 'recovered_snapshot' ? '历史版本补录' : annotations.archive_record.kind === 'carried_forward_snapshot' ? '没有新分析，显示旧内容' : '当日冻结') + ' · 内容日期 ' + escapeHtml(annotations.archive_record.original_analysis_date) + '</span>' :
       '<span>⏳ 正在查看 <b class="mono">' + escapeHtml(cnDate(viewingDate) + '（' + weekdayOf(viewingDate) + '）') + '</b> 冻结的分析 · 情景区域从当天K线展开，右侧叠加此后真实走势，预测 vs 现实直接对比</span>') +
       '<button class="hb-back" id="histBack" type="button">返回在线分析</button>';
     banner.classList.remove('hidden');

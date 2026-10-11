@@ -116,8 +116,8 @@ test('carryover archive keeps the missing-new-analysis warning visible instead o
     latestAnnotations:frozen,annotations:frozen,viewingDate:'2026-10-09',renderHistSelection(){},el:id=>id==='histSelect'?null:box
   });
   c.renderAnalysisAvailability();
-  assert.match(box.textContent,/2026-10-09 没有发布新剧本/);
-  assert.match(box.textContent,/沿用 2026-10-06 的分析/);
+  assert.match(box.textContent,/2026-10-09 没有新分析/);
+  assert.match(box.textContent,/2026-10-06 的旧内容/);
   assert.equal(JSON.stringify(frozen),original);
 });
 test('loading newer archive dates preserves online mode and does not automatically enter a carryover replay',async()=>{

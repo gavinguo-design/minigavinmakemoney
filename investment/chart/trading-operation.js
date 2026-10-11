@@ -214,10 +214,11 @@
     var date = mapDate(annotations);
     var f = annotations && annotations.forecast || {};
     var statusInfo = statusState(status, annotations, now);
-    var closeConfirmed = statusInfo.status === 'available' && hasCompleteDailyForStatus(status, bars);
+    var closeConfirmed = MarketRules.analysisAvailability(annotations, now).status === 'current' && statusInfo.status === 'available' && hasCompleteDailyForStatus(status, bars);
     var quoteState = MarketRules.quoteState(quote, now);
     var quoteStatus = quoteState === 'missing' ? 'missing' : (MarketRules.validQuote(quote, now) ? 'available' : 'stale');
-    var mapStatus = annotations && f && date ? 'available' : 'missing';
+    var availability = MarketRules.analysisAvailability(annotations, now);
+    var mapStatus = annotations && f && date ? (availability.status === 'current' ? 'available' : 'stale') : 'missing';
     var scenarioStatus = mapStatus === 'available' ? statusInfo.status : 'missing';
     var scenarios = scenarioRows(annotations, status, scenarioStatus, closeConfirmed);
     var participation = MarketParticipation && MarketParticipation.evaluate
@@ -233,8 +234,8 @@
     var gap = gapFallback(annotations);
     var currentSession = MarketRules.session(now);
     var observedGap = sessionGap(bars, currentSession.date);
-    var zone = quoteStatus === 'available' ? activeZone(annotations, quote && quote.price) : null;
-    var tactical = quoteStatus === 'available' ? tacticalWindow(annotations, quote && quote.price) : null;
+    var zone = mapStatus === 'available' && quoteStatus === 'available' ? activeZone(annotations, quote && quote.price) : null;
+    var tactical = mapStatus === 'available' && quoteStatus === 'available' ? tacticalWindow(annotations, quote && quote.price) : null;
     var intradayGuidance = mapStatus === 'available' && quoteStatus === 'available' && !!zone && (scenarioStatus !== 'available' || !closeConfirmed);
     var levels = f.card && f.card.keyLines || [];
     var riskUnsupported = scenarios.some(function (s) { return !s.disaster_stop || s.disaster_stop.status === 'not_configured' || s.disaster_stop.price == null; });
@@ -243,7 +244,7 @@
     var triggered = scenarios.filter(function (s) { return s.status === 'available' && s.state === 'triggered'; });
     var confirming = scenarios.filter(function (s) { return s.status === 'available' && s.state === 'confirming'; });
     var primary = triggered[0] || confirming[0] || scenarios.filter(function (s) { return s.status === 'available'; })[0] || null;
-    var decisionCode = intradayGuidance ? 'INTRADAY_GUIDANCE'
+    var decisionCode = mapStatus !== 'available' ? 'ANALYSIS_EXPIRED' : intradayGuidance ? 'INTRADAY_GUIDANCE'
       : scenarioStatus !== 'available' ? 'DATA_UNAVAILABLE'
       : !closeConfirmed ? 'WAIT_CLOSE'
       : !triggered.length ? 'WAIT_TRIGGER'
@@ -251,17 +252,18 @@
       : positionUnsupported ? 'PLAN_WITHOUT_SIZE'
       : 'PLAN_READY';
     var decisionLabels = {
-      INTRADAY_GUIDANCE: '盘中参考\u00b7待收盘', DATA_UNAVAILABLE: '数据待核对', WAIT_CLOSE: '等待收盘', WAIT_TRIGGER: '等待触发',
+      ANALYSIS_EXPIRED: '新剧本未发布·旧分析停用', INTRADAY_GUIDANCE: '盘中参考\u00b7待收盘', DATA_UNAVAILABLE: '数据待核对', WAIT_CLOSE: '等待收盘', WAIT_TRIGGER: '等待触发',
       TRIGGERED_RISK_INCOMPLETE: '已触发\u00b7风控未齐', PLAN_WITHOUT_SIZE: '计划成立\u00b7仓位未定', PLAN_READY: '计划要素齐全'
     };
     var actionState = decisionCode === 'PLAN_READY' ? 'observe_only' : 'no_trade';
     var noTrade = [];
+    if (mapStatus !== 'available') noTrade.push('适用交易日 '+availability.expected+' 的新剧本未发布；旧分析 '+(availability.date || '未知日期')+' 停用，不构成当前入场依据。');
     if (scenarioStatus !== 'available') noTrade.push(statusInfo.issue || '情景条件状态不可用。');
     if (!closeConfirmed) noTrade.push('未验证同日完整日K；盘中或孤立状态文件不能视为日线确认。');
     if (quoteStatus !== 'available') noTrade.push('当前报价' + (quoteState === 'missing' ? '缺失' : '已过期') + '，只观察，不以价格触及触发。');
     if (riskUnsupported) noTrade.push('独立灾难止损未配置；结构失效位不能替代灾难止损。');
     if (positionUnsupported) noTrade.push('未提供风险预算/仓位规模，不能给出或暗示仓位。');
-    var nextAction = decisionCode === 'INTRADAY_GUIDANCE' ? (zone.action || '按当前价格战区观察；正式情景等待收盘确认。')
+    var nextAction = decisionCode === 'ANALYSIS_EXPIRED' ? '等待适用交易日的新分析发布；旧权重、入场位和触发状态仅供历史核对。' : decisionCode === 'INTRADAY_GUIDANCE' ? (zone.action || '按当前价格战区观察；正式情景等待收盘确认。')
       : decisionCode === 'DATA_UNAVAILABLE' ? '先恢复同日情景状态与数据版本。'
       : decisionCode === 'WAIT_CLOSE' ? '等待同日完整日K与 close_final，盘中触及不算。'
       : decisionCode === 'WAIT_TRIGGER' ? '等待A/B/C核心条件按规则完成，不提前押方向。'
@@ -273,12 +275,13 @@
     var decision = {
       code: decisionCode,
       label: decisionLabels[decisionCode],
-      observation_label: (decisionCode === 'INTRADAY_GUIDANCE' || decisionCode === 'WAIT_CLOSE') ? (['closed','preopen'].indexOf(currentSession.phase) >= 0 && quoteState === 'last-close' ? '已收盘·确认数据待同步·不开仓' : '等收盘确认·不开仓')
+      analysis_availability: availability,
+      observation_label: decisionCode === 'ANALYSIS_EXPIRED' ? '旧剧本停用·不开仓' : (decisionCode === 'INTRADAY_GUIDANCE' || decisionCode === 'WAIT_CLOSE') ? (['closed','preopen'].indexOf(currentSession.phase) >= 0 && quoteState === 'last-close' ? '已收盘·确认数据待同步·不开仓' : '等收盘确认·不开仓')
         : decisionCode === 'WAIT_TRIGGER' ? '条件未触发·不开仓'
         : decisionCode === 'TRIGGERED_RISK_INCOMPLETE' ? '已触发·风控待补·不开仓'
         : decisionCode === 'PLAN_WITHOUT_SIZE' ? '已触发·仓位待定·不开仓'
         : decisionCode === 'DATA_UNAVAILABLE' ? '数据待核对·不开仓' : '仅供观察·不开仓',
-      headline: intradayGuidance ? ('盘中位于 ' + rangeText(zone.range) + (zone.stance ? ' \u00b7 ' + zone.stance : ''))
+      headline: decisionCode === 'ANALYSIS_EXPIRED' ? '新剧本未发布·旧分析停用' : intradayGuidance ? ('盘中位于 ' + rangeText(zone.range) + (zone.stance ? ' \u00b7 ' + zone.stance : ''))
         : primary ? (primary.id + '情景' + (primary.state === 'triggered' ? '已触发' : primary.state === 'confirming' ? '确认中' : '候选')) : '情景不可用',
       scenario_id: primary && primary.id || null,
       scenario_strength: primary && primary.strength || null,
@@ -286,13 +289,13 @@
       reference_price: Number.isFinite(f.basePrice) ? f.basePrice : null,
       current_zone: zone ? { range: zone.range, range_text: rangeText(zone.range), stance: zone.stance, action: zone.action, invalidation: zone.invalidation } : null,
       tactical_window: tactical,
-      key_level_distances: keyLevelDistances(quoteStatus === 'available' && quote ? quote.price : null, scenarios, annotations && annotations.intraday_playbook, gap.status === 'available' ? gap.data : null),
+      key_level_distances: mapStatus === 'available' ? keyLevelDistances(quoteStatus === 'available' && quote ? quote.price : null, scenarios, annotations && annotations.intraday_playbook, gap.status === 'available' ? gap.data : null) : [],
       session_gap: observedGap,
       market_session: currentSession.phase,
       gap_takeover: !!(intradayGuidance && observedGap.active && quote && MarketRules.hk(quote.ts * 1000).date === currentSession.date && ['open','lunch','closing'].indexOf(currentSession.phase) >= 0
         && (observedGap.direction === 'up' ? quote.price > observedGap.range[0] : quote.price < observedGap.range[1])),
       close_confirmed: closeConfirmed,
-      scenario_pointer: scenarioPointer(quoteStatus === 'available' && quote ? quote.price : null, scenarios, recentAtr(bars), closeConfirmed),
+      scenario_pointer: scenarioPointer(mapStatus === 'available' && quoteStatus === 'available' && quote ? quote.price : null, mapStatus === 'available' ? scenarios : [], recentAtr(bars), closeConfirmed),
       intraday_guidance: intradayGuidance,
       gap_fallback: gap.status === 'available' ? clone(gap.data) : null,
       plan: primary && primary.rr ? clone(primary.rr) : null,

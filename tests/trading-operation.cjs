@@ -257,3 +257,17 @@ test('structural invalidation remains distinct from an unavailable disaster stop
     assert.notEqual(scenario.structural_invalidation, scenario.disaster_stop);
   }
 });
+
+test('stale analysis cannot regain current guidance through fresh quotes or refreshed condition timestamps', () => {
+  const contract = TradingOperation.build(input({ now: at('2026-10-09T16:33:00'), quote:{price:24211.35,ts:at('2026-10-09T16:11:00')/1000}, scenarioStatus:{...freshStatus,updated_at:'2026-10-09T16:32:10+08:00'}, dailyBars:[completeBar,{...completeBar,time:'2026-10-09',close:24211.35}] }));
+  assert.equal(contract.decision.code,'ANALYSIS_EXPIRED');
+  assert.equal(contract.decision.close_confirmed,false);
+  assert.equal(contract.decision.intraday_guidance,false);
+  assert.equal(contract.decision.scenario_id,null);
+  assert.equal(contract.decision.plan,null);
+  assert.deepEqual(contract.decision.key_level_distances,[]);
+  assert.equal(contract.decision.scenario_pointer.top_weight,null);
+  assert.equal(contract.decision.tactical_window,null);
+  assert.equal(contract.action_state,'no_trade');
+  assert.equal(contract.decision.analysis_availability.expected,'2026-10-09');
+});

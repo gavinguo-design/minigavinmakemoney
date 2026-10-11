@@ -105,8 +105,40 @@ test('the latest analysis selector and missing archive warning disclose the actu
   c.renderAnalysisAvailability();
   assert.equal(caption.textContent,'当前在线分析冻结：2026-10-06');
   assert.equal(select.options[0].textContent,'当前在线分析（冻结 2026-10-06）');
-  assert.match(box.textContent,/2026-10-08 的分析尚未发布/);
+  assert.match(box.textContent,/2026-10-08 的新剧本尚未发布/);
   assert.match(box.textContent,/缺少分析归档：2026-10-07、2026-10-08/);
+});
+test('carryover archive keeps the missing-new-analysis warning visible instead of hiding it in history mode',()=>{
+  const box={textContent:'',classList:{remove(name){assert.equal(name,'hidden');}}};
+  const frozen={meta:{updatedAt:'2026-10-06T08:45:00+08:00'},archive_record:{kind:'carried_forward_snapshot',original_analysis_date:'2026-10-06'}};
+  const original=JSON.stringify(frozen);
+  const c=render('renderAnalysisAvailability',{
+    latestAnnotations:frozen,annotations:frozen,viewingDate:'2026-10-09',renderHistSelection(){},el:id=>id==='histSelect'?null:box
+  });
+  c.renderAnalysisAvailability();
+  assert.match(box.textContent,/2026-10-09 没有发布新剧本/);
+  assert.match(box.textContent,/沿用 2026-10-06 的分析/);
+  assert.equal(JSON.stringify(frozen),original);
+});
+test('loading newer archive dates preserves online mode and does not automatically enter a carryover replay',async()=>{
+  const switched=[];
+  const select={value:'',options:[{value:'',textContent:'当前在线分析'}],addEventListener(){},appendChild(opt){
+    this.options=this.options.filter(o=>o!==opt);this.options.push(opt);this.value=this.options[0].value;
+  }};
+  const control={classList:{remove(){}},addEventListener(){}};
+  const c=render('initHistCtrl',{
+    fetchArchiveIndex:()=>Promise.resolve(['2026-10-06','2026-10-09']),viewingDate:null,
+    archiveDates:[],archiveDateSet:{},latestAnnotations:{meta:{updatedAt:'2026-10-06T08:45:00+08:00'}},
+    renderAnalysisAvailability(){},weekdayOf:()=>'',switchToDate:d=>switched.push(d),
+    el:id=>id==='histSelect'?select:control,
+    document:{createElement:()=>({}),addEventListener(){}},
+  });
+  c.initHistCtrl();
+  await Promise.resolve();
+  assert.equal(select.value,'');
+  assert.equal(select.options[0].value,'2026-10-09');
+  assert.deepEqual(switched,[]);
+  assert.equal(c.viewingDate,null);
 });
 test('B and C share a short direction but have different structural boundaries; untriggered C is not called a stopped trade',()=>{
   const c=render('signalStateForScenario',{fmt:String});

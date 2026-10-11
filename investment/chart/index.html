@@ -1221,10 +1221,18 @@
     renderHistSelection();
     var box=el('analysisAvailability');
     if(!box) return;
-    if(viewingDate) { box.classList.add('hidden'); return; }
+    if(viewingDate) {
+      var record=annotations&&annotations.archive_record;
+      var originalDate=record&&record.original_analysis_date || MarketRules.analysisAvailability(annotations).date;
+      box.textContent=record&&record.kind==='carried_forward_snapshot'
+        ? '⚠ '+viewingDate+' 没有发布新剧本；这份归档沿用 '+originalDate+' 的分析，只供历史核对。顶部最新报价不会更新归档中的 A/B/C。'
+        : '历史回放：当前查看 '+viewingDate+' 的存档'+(originalDate?'，原分析日期 '+originalDate:'')+'。顶部行情单独显示最新报价；切回在线分析才能查看当前发布状态。';
+      box.classList.remove('hidden');
+      return;
+    }
     var coverage=MarketRules.archiveCoverage(archiveDates||[]);
     var lines=[];
-    if(state.status==='stale') lines.push('⚠ '+state.expected+' 的分析尚未发布；当前展示 '+state.date+' 冻结的旧分析。行情更新不会自动生成当天分析。');
+    if(state.status==='stale') lines.push('⚠ 最近适用交易日 '+state.expected+' 的新剧本尚未发布；当前 A/B/C 仍来自 '+state.date+' 的旧分析。行情和权重更新不等于剧本已更新。');
     else if(state.status==='missing') lines.push('⚠ 当天分析未提供有效冻结日期，暂不能确认为最新判断。');
     else if(state.status==='future') lines.push('⚠ 分析日期超前，需核对来源与适用日期。');
     else if(state.status==='unknown') lines.push('⚠ 交易日历超出支持范围，无法确认分析是否适用于今天。');
@@ -3788,6 +3796,7 @@
         sel.appendChild(opt);
       });
       sel.appendChild(sel.options[0]); // 日期最新的归档排第一，在线分析单独列在末尾
+      sel.value=viewingDate||''; // 默认保留在线模式；归档只能由用户主动选择。
       sel.addEventListener('change', function () { switchToDate(sel.value); });
       var calBtn = el('calBtn');
       calBtn.addEventListener('click', function (e) {
@@ -3809,10 +3818,8 @@
         if (!panel.contains(e.target) && e.target !== calBtn) hideCalPanel();
       });
       el('histCtrl').classList.remove('hidden');
-      // 归档日和原分析日是两个日期。在线分析已落后于最近归档时，
-      // 首屏选择最近归档并明确展示其原始分析日期，避免把旧分析当作今日新判断。
-      var onlineDate=MarketRules.analysisAvailability(latestAnnotations).date;
-      if(!viewingDate && onlineDate && dates[0]>onlineDate) switchToDate(dates[0]);
+      // 最新归档可能只是沿用旧分析，不能把归档日期当成新剧本日期。
+      // 保持在线模式，让分析未更新的提示常驻；历史回放需要主动选择。
     });
   }
 

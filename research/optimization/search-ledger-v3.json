@@ -6004,7 +6004,180 @@
    "status": "ok"
   }
  ],
- "holdout": null,
+ "holdout": {
+  "selected": "trans-e0.5-a0.5",
+  "desc": "转移表：前日区×距边界 ATR 分桶 [0.5]，向区先验平滑 α=0.5",
+  "fitted_on": "train+validation (398 rows), hyperparameters frozen from validation",
+  "params": {
+   "edges": [
+    0.5
+   ],
+   "alpha": 0.5,
+   "buckets": 8
+  },
+  "range": [
+   "2026-05-19",
+   "2026-10-09"
+  ],
+  "n": 100,
+  "selected_score": {
+   "n": 100,
+   "brier": 0.3729,
+   "hit": 0.77,
+   "logloss": 0.6569,
+   "ece": 0.068
+  },
+  "v1": {
+   "n": 100,
+   "brier": 0.4071,
+   "hit": 0.725,
+   "logloss": 0.6859,
+   "ece": 0.095
+  },
+  "persistence": {
+   "n": 100,
+   "brier": 0.44,
+   "hit": 0.75,
+   "logloss": 0.7855,
+   "ece": 0.1
+  },
+  "diff_vs_v1": {
+   "mean": -0.0342,
+   "lo": -0.1194,
+   "hi": 0.0541
+  },
+  "diff_vs_persistence": {
+   "mean": -0.0671,
+   "lo": -0.1545,
+   "hi": 0.0198
+  },
+  "sensitivity_train_only_fit": {
+   "score": {
+    "n": 100,
+    "brier": 0.3705,
+    "hit": 0.77,
+    "logloss": 0.6539,
+    "ece": 0.0587
+   },
+   "diff_vs_v1": {
+    "mean": -0.0366,
+    "lo": -0.1189,
+    "hi": 0.0481
+   }
+  },
+  "outcome_freq": {
+   "A": 0.16,
+   "B": 0.53,
+   "C": 0.31
+  },
+  "calibration": [
+   {
+    "bin": "0.0-0.1",
+    "n": 149,
+    "mean_pred": 0.05,
+    "freq": 0.0738
+   },
+   {
+    "bin": "0.1-0.2",
+    "n": 12,
+    "mean_pred": 0.1,
+    "freq": 0
+   },
+   {
+    "bin": "0.2-0.3",
+    "n": 12,
+    "mean_pred": 0.25,
+    "freq": 0.3333
+   },
+   {
+    "bin": "0.3-0.4",
+    "n": 6,
+    "mean_pred": 0.35,
+    "freq": 0.1667
+   },
+   {
+    "bin": "0.4-0.5",
+    "n": 21,
+    "mean_pred": 0.4,
+    "freq": 0.3333
+   },
+   {
+    "bin": "0.5-0.6",
+    "n": 21,
+    "mean_pred": 0.55,
+    "freq": 0.6667
+   },
+   {
+    "bin": "0.6-0.7",
+    "n": 6,
+    "mean_pred": 0.6,
+    "freq": 0.8333
+   },
+   {
+    "bin": "0.7-0.8",
+    "n": 12,
+    "mean_pred": 0.7,
+    "freq": 0.6667
+   },
+   {
+    "bin": "0.8-0.9",
+    "n": 12,
+    "mean_pred": 0.85,
+    "freq": 1
+   },
+   {
+    "bin": "0.9-1.0",
+    "n": 49,
+    "mean_pred": 0.9,
+    "freq": 0.7755
+   }
+  ],
+  "calibration_v1": [
+   {
+    "bin": "0.1-0.2",
+    "n": 94,
+    "mean_pred": 0.1027,
+    "freq": 0.0106
+   },
+   {
+    "bin": "0.2-0.3",
+    "n": 45,
+    "mean_pred": 0.2133,
+    "freq": 0.0889
+   },
+   {
+    "bin": "0.3-0.4",
+    "n": 35,
+    "mean_pred": 0.32,
+    "freq": 0.3429
+   },
+   {
+    "bin": "0.4-0.5",
+    "n": 37,
+    "mean_pred": 0.4297,
+    "freq": 0.4324
+   },
+   {
+    "bin": "0.5-0.6",
+    "n": 37,
+    "mean_pred": 0.523,
+    "freq": 0.6486
+   },
+   {
+    "bin": "0.6-0.7",
+    "n": 25,
+    "mean_pred": 0.616,
+    "freq": 0.8
+   },
+   {
+    "bin": "0.7-0.8",
+    "n": 27,
+    "mean_pred": 0.7,
+    "freq": 0.8519
+   }
+  ],
+  "evaluated_at": "2026-10-11T17:51:08.698Z"
+ },
  "selection": {
   "rule": "lowest validation Brier (prod-format) among candidates beating v1 on validation; tie-break = lower validation raw Brier; declared before holdout",
   "selected": "trans-e0.5-a0.5",

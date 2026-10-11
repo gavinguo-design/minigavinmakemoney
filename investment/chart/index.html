@@ -2127,7 +2127,7 @@
   function ruleWeightNoteHtml(a, sc) {
     var f = a && a.forecast || {}, info = f.weight_model_info || {}, version = ruleWeightModel(a);
     var n = Number.isFinite(info.scored_reviews) ? info.scored_reviews : 0;
-    var label = '规则打分 ' + String(version).replace(/^rule-weights-/, '') + '，未经回测校准，累计 ' + n + ' 次';
+    var label = f.weight_backfill ? ('事后补算 · 规则 ' + String(version).replace(/^rule-weights-/, '') + '（当天未冻结权重，不计入打分）') : ('规则打分 ' + String(version).replace(/^rule-weights-/, '') + '，未经回测校准，累计 ' + n + ' 次');
     return '<div class="sc-weight-note" title="' + escapeHtml((sc.probability_basis || '') + '｜模型 ' + version + '；累计次数=已完成 Brier 复盘的交易日数') + '">' + escapeHtml(label) + (sc.probability_basis ? '<br><span>' + escapeHtml(sc.probability_basis) + '</span>' : '') + '</div>';
   }
 
@@ -3700,7 +3700,23 @@
       var supplement=index[date];
       var file=typeof supplement==='string' && /^supplements\/[0-9-]+\.json$/.test(supplement) ? supplement : encodeURIComponent(date)+'.json';
       return fetch('archive/'+file+'?t='+Date.now()).then(function(r){if(!r.ok)throw new Error('archive '+r.status);return r.json();});
-    }).catch(function(){return null;});
+    }).then(function(a){ return a ? applyRuleWeightBackfill(a, date) : a; }).catch(function(){return null;});
+  }
+
+  // 历史冻结快照不改写；若当天没有冻结权重，用 rule-weights-backfill.json 的事后补算权重展示（明确标注、不计分）。
+  function applyRuleWeightBackfill(a, date) {
+    var f = a && a.forecast;
+    if (!f || !Array.isArray(f.scenarios) || f.scenarios.some(function(s){ return Number.isFinite(s.probability); })) return Promise.resolve(a);
+    return fetch('archive/rule-weights-backfill.json?t=' + Date.now()).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(bf){
+      var sess = bf && bf.sessions && bf.sessions[date];
+      if (!sess || !Array.isArray(sess.scenarios)) return a;
+      var byId = {}; sess.scenarios.forEach(function(s){ byId[s.id] = s; });
+      if (!f.scenarios.every(function(s){ return byId[s.id] && Number.isFinite(byId[s.id].probability); })) return a;
+      f.scenarios.forEach(function(s){ s.probability = byId[s.id].probability; s.probability_basis = byId[s.id].probability_basis || ''; });
+      f.weight_model = bf.weight_model || 'rule-weights-v2';
+      f.weight_backfill = { computed_at: bf.computed_at || null, eligible_for_scoring: false };
+      return a;
+    });
   }
 
   // ---------- 次日预案草稿（next_day_draft，字段缺失则隐藏；与正式冻结情景严格隔离） ----------

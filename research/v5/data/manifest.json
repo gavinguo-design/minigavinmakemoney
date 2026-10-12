@@ -1,0 +1,38 @@
+{
+ "retrieved_at": "2026-10-12T05:48:28.813488Z",
+ "source": "Futu OpenD request_history_kline (quote only)",
+ "series": {
+  "VHSI": {
+   "code": "HK.800125",
+   "ktype": "K_DAY",
+   "note": "恒指波幅指数 VHSI 日线（HKT 交易日）",
+   "n": 3223,
+   "first": "2013-09-04 00:00:00",
+   "last": "2026-10-09 00:00:00",
+   "rows_sha256": "b83626a65d9b0332b99c53d792da006c4a289c672a0379c8dfedfd72a0e7ce6c"
+  },
+  "HSIF60": {
+   "code": "HK.HSImain",
+   "ktype": "K_60M",
+   "note": "恒指期货主连 60 分钟线（含夜盘，time_key = HKT 钟点，K 线结束时刻）",
+   "n": 33370,
+   "first": "2018-10-08 10:15:00",
+   "last": "2026-10-10 03:00:00",
+   "rows_sha256": "71d831970ad0c4891b609657e01c9f958e6f76c04887a90e34ea5bc04cda502a"
+  },
+  "CUS60": {
+   "code": "HK.CUSmain",
+   "ktype": "K_60M",
+   "note": "港交所美元兑人民币(香港)期货主连 60 分钟线（CNH 代理）",
+   "n": 32624,
+   "first": "2019-07-24 00:15:00",
+   "last": "2026-10-10 03:00:00",
+   "rows_sha256": "8fed4b898794743747a48a81f78585c3e009b278bb9f35c91724f4c4f93d28e5"
+  }
+ },
+ "unavailable": {
+  "VHSI futures (HK.VHSImain)": "unknown code in Futu",
+  "stooq": "all requests return a JS proof-of-work page (no CSV) from this host",
+  "Yahoo CNH=X / USDCNH=X": "single row only"
+ }
+}

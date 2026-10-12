@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-12T13:00:06+08:00",
+  "updated_at": "2026-10-12T13:30:06+08:00",
   "judgment_mode": "intraday_preview",
   "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；最终打勾以收盘定案为准，不构成操作信号",
   "analysis_id": "HSI-20261012-structure-v1",
@@ -8,16 +8,16 @@
   "stale_reason": null,
   "conditions_stale": false,
   "metrics": {
-    "price": 24240.51,
+    "price": 24241.8,
     "open": 24434.93,
     "high": 24455.95,
-    "low": 24234.19,
+    "low": 24193.3,
     "prev_close": 24211.35,
-    "update_time": "2026-10-12 13:00:06",
+    "update_time": "2026-10-12 13:30:06",
     "volume_ratio": 1.14,
-    "today_turnover_yi": 861.6,
-    "ref_turnover_yi": 756.9,
-    "southbound_net_yi": 31.4
+    "today_turnover_yi": 972.2,
+    "ref_turnover_yi": 853.0,
+    "southbound_net_yi": 36.6
   },
   "scenarios": [
     {
@@ -35,7 +35,7 @@
           "role": "core",
           "label": "收盘 ≥ 24,354.11；只看完整日K价格结构",
           "met": false,
-          "value_text": "现价 24,240.51 vs ≥ 24,354.11"
+          "value_text": "现价 24,241.80 vs ≥ 24,354.11"
         },
         {
           "id": "volume_ratio",
@@ -49,7 +49,7 @@
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": true,
-          "value_text": "南向净买 +31.4 亿"
+          "value_text": "南向净买 +36.6 亿"
         }
       ]
     },
@@ -68,7 +68,7 @@
           "role": "core",
           "label": "收盘 ≥ 23,835.68 且 < 24,354.11；只看完整日K价格结构",
           "met": true,
-          "value_text": "现价 24,240.51 vs [23,835.68, 24,354.11)"
+          "value_text": "现价 24,241.80 vs [23,835.68, 24,354.11)"
         },
         {
           "id": "volume_ratio",
@@ -82,7 +82,7 @@
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": true,
-          "value_text": "南向净买 +31.4 亿"
+          "value_text": "南向净买 +36.6 亿"
         }
       ]
     },
@@ -101,7 +101,7 @@
           "role": "core",
           "label": "收盘 < 23,835.68；只看完整日K价格结构",
           "met": false,
-          "value_text": "现价 24,240.51 vs < 23,835.68"
+          "value_text": "现价 24,241.80 vs < 23,835.68"
         },
         {
           "id": "volume_ratio",
@@ -115,7 +115,7 @@
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": true,
-          "value_text": "南向净买 +31.4 亿"
+          "value_text": "南向净买 +36.6 亿"
         }
       ]
     }

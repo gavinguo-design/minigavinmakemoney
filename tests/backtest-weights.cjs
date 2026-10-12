@@ -58,5 +58,5 @@ test('full run is deterministic, covers the window and every day has one outcome
 
 test('Yahoo snapshot matches repository Futu candles on the overlap', () => {
   const futu = require('../investment/chart/kline_futu.json').candles, m = new Map(data.candles.map(c => [c.date, c]));
-  for (const c of futu) for (const f of ['open', 'high', 'low', 'close']) assert.ok(Math.abs(m.get(c.date)[f] - c[f]) <= 1, c.date + f);
+  for (const c of futu) if (m.has(c.date)) for (const f of ['open', 'high', 'low', 'close']) assert.ok(Math.abs(m.get(c.date)[f] - c[f]) <= 1, c.date + f);
 });

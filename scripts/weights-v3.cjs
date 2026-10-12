@@ -1,8 +1,9 @@
-// rule-weights-v3 (PRODUCTION since 2026-10-12, approved by 潮伟哥): multinomial logistic recalibration of v1.
+// rule-weights-v3 (production 2026-10-12 only; from 2026-10-13 SHADOW + fail-closed FALLBACK for rule-weights-v4): multinomial logistic recalibration of v1.
 // Frozen coefficients = the exact model evaluated once on the 2026-05-18..2026-10-09 holdout in c692d60
 // (scripts/optimize-weights.cjs, train-only fit 2024-10-02..2025-12-15, L2 lambda=0.01 chosen by 5-fold CV on train).
 // Inputs: completed daily bars strictly before the session (same contract as scoreScenarioWeights) + that session's lower/upper.
-// Wired into daily-analysis.cjs build(); v1 is still computed alongside as a shadow for comparison.
+// Wired into daily-analysis.cjs productionWeights(): always computed as shadow; used for publication only when v4's
+// pre-open overnight inputs are unavailable (annotated as weight_model_info.fallback).
 'use strict';
 const DA = require('./daily-analysis.cjs');
 const TA = require('../investment/chart/technical-analysis.js');

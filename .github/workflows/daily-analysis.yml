@@ -8,7 +8,7 @@ on:
         default: preopen
   push:
     branches: [main]
-    paths: ['scripts/daily-analysis.cjs', 'scripts/publish-daily-analysis.cjs', 'scripts/check-daily-publication.cjs', 'tests/**', 'investment/chart/index.html', 'investment/chart/market-rules.js', '.github/workflows/daily-analysis.yml']
+    paths: ['scripts/daily-analysis.cjs', 'scripts/publish-daily-analysis.cjs', 'scripts/weights-v3.cjs', 'scripts/v4-weights.cjs', 'scripts/v4-preopen-data.cjs', 'research/v4/model-v4.json', 'scripts/check-daily-publication.cjs', 'tests/**', 'investment/chart/index.html', 'investment/chart/market-rules.js', '.github/workflows/daily-analysis.yml']
   schedule:
     # HKT 08:45 generation and 16:20 close review; script checks HKEX calendar.
     - cron: '45 0 * * 1-5'
@@ -28,6 +28,11 @@ jobs:
         with:
           node-version: '22'
       - run: node --test tests/*.cjs
+      # Connectivity probe for rule-weights-v4 overnight inputs from a GitHub runner (read-only; never publishes).
+      # Non-blocking: production preopen falls back to v3 with an annotation if these are unavailable at 08:45.
+      - name: Probe v4 overnight inputs (Yahoo)
+        continue-on-error: true
+        run: node scripts/v4-preopen-data.cjs | head -c 4000
   publish:
     needs: verify
     if: github.event_name != 'push'

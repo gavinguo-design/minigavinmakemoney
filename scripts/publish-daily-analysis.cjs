@@ -23,7 +23,7 @@ function exclusive(file,data) {
   const body=JSON.stringify(data,null,2)+'\n';fs.mkdirSync(path.dirname(file),{recursive:true});
   try {fs.writeFileSync(file,body,{flag:'wx'});}catch(e){if(e.code!=='EEXIST')throw e;}
 }
-async function run({now=Date.now(),phase='preopen',projectRoot=root}={}) {
+async function run({now=Date.now(),phase='preopen',projectRoot=root,fetchOvernight=require('./v4-preopen-data.cjs').fetchOvernight}={}) {
   const dir=path.join(projectRoot,'investment/chart');
   const read=name=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
   const today=MR.hk(now).date;
@@ -61,13 +61,17 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root}={}) {
   }
   const existing=read('annotations.json');
   if(existing.forecast.applicable_date===today && existing.publication?.kind==='daily_rule_analysis') {console.log('Already generated; preserve frozen same-day analysis');return;}
-  const a=build({date:today,feed,seed:existing,participation:read('hsi-participation.json'),generatedAt:new Date(now).toISOString(),scoredReviews:countScoredReviews(path.join(dir,'daily-reviews'))});
+  // rule-weights-v4 needs the overnight US/FX snapshot. fetchOvernight never throws; any failure is passed to
+  // build(), which falls back to v3 and annotates the reason (fail-closed, no blanks/imputation).
+  let overnight;try{overnight=await fetchOvernight({now});}catch(e){overnight={status:'unavailable',fetched_at:new Date(now).toISOString(),errors:[e.message],series:{}};}
+  if(overnight.status!=='available')console.error('Overnight inputs unavailable, v3 fallback: '+(overnight.errors||[]).join('; '));
+  const a=build({date:today,feed,seed:existing,participation:read('hsi-participation.json'),overnight,generatedAt:new Date(now).toISOString(),scoredReviews:countScoredReviews(path.join(dir,'daily-reviews'))});
   // This prepublication ledger is separate from genuine archive snapshots.
   exclusive(path.join(dir,'daily-generated',today+'.json'),a);
   fs.writeFileSync(path.join(dir,'annotations.json'),JSON.stringify(a,null,2)+'\n');
   const status={updated_at:new Date(now).toISOString(),judgment_mode:'intraday_preview',conditions_date:today,analysis_id:a.meta.analysis_id,data_stale:false,conditions_stale:false,scenarios:a.forecast.scenarios.map(s=>({id:s.id,name_prefix:s.id,triggered:false,core_met:0,core_total:1,confirm_met:0,confirm_total:0,conditions:[{id:'daily_price_structure',role:'core',label:s.trigger,met:null}]}))};
   fs.writeFileSync(path.join(dir,'scenario_status.json'),JSON.stringify(status,null,2)+'\n');
-  console.log(JSON.stringify({generated:today,baseline:expected,analysis_id:a.meta.analysis_id}));
+  console.log(JSON.stringify({generated:today,baseline:expected,analysis_id:a.meta.analysis_id,weight_model:a.forecast.weight_model||null,fallback:a.forecast.weight_model_info?.fallback||null}));
 }
 module.exports={run,brierScore};
 if(require.main===module)run({phase:process.argv[2]||'preopen',now:process.env.ANALYSIS_NOW?MR.timestamp(process.env.ANALYSIS_NOW):Date.now()}).catch(e=>{console.error(e.message);process.exitCode=1;});

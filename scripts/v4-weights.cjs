@@ -1,4 +1,6 @@
-// rule-weights-v4 CANDIDATE (research only; NOT wired into daily-analysis/build, production stays v3).
+// rule-weights-v4 (PRODUCTION from the 2026-10-13 pre-open, approved by 潮伟哥 2026-10-12 13:40).
+// Wired into daily-analysis.cjs productionWeights(); v3 (and v1) are computed alongside as shadows.
+// If any overnight input is missing/stale/inconsistent, build() falls back to v3 and annotates the fallback.
 // Model: multinomial LR on v3's 8 features + pre-open overnight information + price-structure distances.
 // Frozen coefficients/standardisation: research/v4/model-v4.json (fit on 2014-03..2025-12 sessions, see research/v4/report.md).
 // Point-in-time contract (cutoff = session 08:45 HKT):
@@ -17,6 +19,8 @@ const KEYS = ['A', 'B', 'C'];
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const SPEC = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'research/v4/model-v4.json'), 'utf8'));
 const WEIGHT_MODEL_V4_CANDIDATE = Object.freeze({version: SPEC.version, features: SPEC.features, W: SPEC.W, standardize: SPEC.standardize, bounds: SPEC.bounds, lambda: SPEC.lambda, trained_on: SPEC.trained_on});
+// Production identity of the frozen candidate: identical coefficients/standardisation, production version label.
+const WEIGHT_MODEL_V4 = Object.freeze({...WEIGHT_MODEL_V4_CANDIDATE, version: 'rule-weights-v4', source: 'research/v4/model-v4.json (' + SPEC.version + ', commit 30e9c81)'});
 const OVN = ['EWH', 'GSPC', 'IXIC', 'FXI', 'KWEB', 'CNY'];
 
 function lastBefore(rows, day) { let r = null; for (const x of rows) { if (x.date < day) r = x; else break; } return r; }
@@ -46,7 +50,7 @@ function featuresV4({bars, lower, upper, cutoff, overnight}) {
   return {x, v3};
 }
 
-function scoreScenarioWeightsV4({bars, lower, upper, cutoff, overnight, model = WEIGHT_MODEL_V4_CANDIDATE}) {
+function scoreScenarioWeightsV4({bars, lower, upper, cutoff, overnight, model = WEIGHT_MODEL_V4}) {
   const cutoffMs = MR.timestamp(cutoff);
   if (!bars?.length || !(lower < upper) || !Number.isFinite(cutoffMs)) throw Error('Invalid weight inputs');
   if (bars.some(b => MR.timestamp(b.date + 'T16:10:00+08:00') > cutoffMs)) throw Error('Weight inputs after cutoff');
@@ -57,4 +61,4 @@ function scoreScenarioWeightsV4({bars, lower, upper, cutoff, overnight, model = 
   return {version: model.version, probabilities: {A: p[0], B: p[1], C: p[2]}, raw, features: x};
 }
 
-module.exports = {WEIGHT_MODEL_V4_CANDIDATE, scoreScenarioWeightsV4, featuresV4};
+module.exports = {WEIGHT_MODEL_V4, WEIGHT_MODEL_V4_CANDIDATE, OVERNIGHT_SERIES: Object.freeze([...OVN, 'VIX']), scoreScenarioWeightsV4, featuresV4};

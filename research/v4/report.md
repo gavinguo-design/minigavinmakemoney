@@ -1,6 +1,8 @@
-# A/B/C 权重 v4 研究报告（候选，未上线）
+# A/B/C 权重 v4 研究报告
 
-> 2026-10-12 HKT 夜间。分支 `candidate/weights-v4`，**不合并 main，生产仍为 rule-weights-v3**。
+> **上线状态（2026-10-12 13:40 潮伟哥批准）**：冻结系数原样上线为 `rule-weights-v4`，自 2026-10-13 盘前生效；v3、v1 作为影子写入 `weight_model_info.shadow`。盘前隔夜数据（Yahoo v8 chart：EWH/FXI/KWEB/^GSPC/^IXIC/^VIX/CNY=X + ^HSI 成交量）任一缺失、过期、日期不一致或晚于截止时间，即回退 v3 并在 `weight_model_info.fallback`/probability_basis/reasoning 标注（`scripts/v4-preopen-data.cjs`、`scripts/daily-analysis.cjs`）。2026-10-12 已发布的 v3 剧本不改写。下文为上线前研究原文。
+>
+> 2026-10-12 HKT 夜间。分支 `candidate/weights-v4`（研究时未合并 main，生产为 rule-weights-v3）。
 > 复现：`python3 scripts/v4-fetch-data.py` → `node scripts/v4-generate.cjs` → `python3 scripts/v4-features.py` → `python3 scripts/v4-walkforward.py` → `python3 scripts/v4-freeze.py`；测试 `node tests/v4-generate.cjs && node tests/v4-weights.cjs`。
 
 ## 1. 数据扩展

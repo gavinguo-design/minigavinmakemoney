@@ -71,9 +71,12 @@ test('preopen publishes in an isolated repository, retries preserve the same fre
  try {
   const latest=require('./fixtures/hsi-close-2026-10-09.json');
   for(const [name,value] of [['annotations.json',seed],['kline_futu.json',latest],['hsi-participation.json',{}]])fs.writeFileSync(path.join(dir,name),JSON.stringify(value));
-  await run({projectRoot:tmp,now:Date.parse('2026-10-12T08:46:00+08:00')});
+  // Overnight inputs are injected (no network in tests); the second run must not even consult them.
+  let calls=0;const ovn=require('./fixtures/overnight-2026-10-12.json'),fetchOvernight=async({now})=>{calls++;return {...ovn,fetched_at:new Date(now).toISOString()};};
+  await run({projectRoot:tmp,now:Date.parse('2026-10-12T08:46:00+08:00'),fetchOvernight});
   const frozen=fs.readFileSync(path.join(dir,'annotations.json'),'utf8');
-  await run({projectRoot:tmp,now:Date.parse('2026-10-12T09:05:00+08:00')});
+  await run({projectRoot:tmp,now:Date.parse('2026-10-12T09:05:00+08:00'),fetchOvernight:async()=>{throw Error('frozen day must not refetch');}});
+  assert.equal(calls,1);
   assert.equal(fs.readFileSync(path.join(dir,'annotations.json'),'utf8'),frozen);
   const a=JSON.parse(frozen);assert.equal(a.forecast.baseDate,'2026-10-09');assert.equal(a.forecast.applicable_date,'2026-10-12');
   await assert.rejects(run({projectRoot:tmp,phase:'postclose',now:Date.parse('2026-10-12T16:20:00+08:00')}),/Missing completed/);
@@ -84,7 +87,7 @@ test('preopen publishes in an isolated repository, retries preserve the same fre
   const status=JSON.parse(fs.readFileSync(path.join(dir,'scenario_status.json'),'utf8'));assert.equal(status.analysis_id,a.meta.analysis_id);assert.equal(status.scenarios.filter(s=>s.triggered).length,1);
   const review=JSON.parse(fs.readFileSync(path.join(dir,'daily-reviews/2026-10-12.json'),'utf8'));assert.equal(review.bar.date,'2026-10-12');
   const p=a.forecast.scenarios.map(s=>s.probability),o=review.verdicts.map(v=>v.met?1:0);assert.deepEqual(o,[1,0,0]);
-  assert.equal(review.brier,Math.round(p.reduce((s,v,i)=>s+(v-o[i])**2,0)*10000)/10000);assert.equal(review.brier_status,'scored');assert.equal(review.weight_model,'rule-weights-v3');
+  assert.equal(review.brier,Math.round(p.reduce((s,v,i)=>s+(v-o[i])**2,0)*10000)/10000);assert.equal(review.brier_status,'scored');assert.equal(review.weight_model,'rule-weights-v4');
  } finally {fs.rmSync(tmp,{recursive:true});}
 });
 
@@ -162,6 +165,7 @@ test('October 8 has independent reconstruction from the October 7 snapshot, neve
 test('rule weights: sum to 1, bounded, 0.05 grid, deterministic, versioned and published as rule_based_uncalibrated',()=>{
  const {scoreScenarioWeights,WEIGHT_MODEL}=require('../scripts/daily-analysis.cjs');
  const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('./fixtures/hsi-participation-2026-10-09.json');
+ // v3 path (no overnight snapshot -> annotated fallback); the v4 path is covered by the production-default test below.
  const live={date:'2026-10-12',feed:close,seed,participation:part,generatedAt:'2026-10-12T08:45:30+08:00'};
  const a=build(live),b=build(live),p=a.forecast.scenarios.map(s=>s.probability);
  assert.deepEqual(a,b);assert.equal(WEIGHT_MODEL.version,'rule-weights-v1');
@@ -207,7 +211,11 @@ test('chart shows rule weights with version note and keeps legacy null cards as 
  const vm=require('node:vm'),src=html.slice(html.indexOf('  function ruleWeightModel('),html.indexOf('  function participationEvaluation('));
  const ctx={escapeHtml:s=>String(s),Number};vm.createContext(ctx);vm.runInContext(src,ctx);
  const a=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('./fixtures/hsi-participation-2026-10-09.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
- assert.equal(ctx.ruleWeightModel(a),'rule-weights-v3');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/模型 v3（两年回测，保留集优于 v1；实盘已打分 0 次）/);
+ assert.equal(ctx.ruleWeightModel(a),'rule-weights-v3');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/模型 v3 · v4 回退（盘前隔夜数据不可用；实盘已打分 0 次）/);
+ const a4=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('./fixtures/hsi-participation-2026-10-09.json'),overnight:require('./fixtures/overnight-2026-10-12.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
+ assert.equal(ctx.ruleWeightModel(a4),'rule-weights-v4');assert.match(ctx.ruleWeightNoteHtml(a4,a4.forecast.scenarios[0]),/模型 v4（含盘前隔夜美股\/ETF；2016–2025 滚动回测 10\/10 年优于重训 v3；实盘已打分 0 次）/);
+ // Legacy v3 analyses (published 2026-10-12, no fallback field) keep their original label.
+ const legacy=structuredClone(a);delete legacy.forecast.weight_model_info.fallback;assert.match(ctx.ruleWeightNoteHtml(legacy,legacy.forecast.scenarios[0]),/模型 v3（两年回测，保留集优于 v1；实盘已打分 0 次）/);
  assert.equal(ctx.ruleWeightModel(build(args)),null);
  const MP=require('../investment/chart/market-participation.js'),ev=MP.evaluate(require('./fixtures/hsi-participation-2026-10-09.json'),a.forecast.scenarios,'2026-10-09');
  assert.equal(ev.already_in_base,true);assert.deepEqual(Object.values(ev.weights).map(v=>Math.round(v*100)),a.forecast.scenarios.map(s=>Math.round(s.probability*100)));assert.equal(ctx.ruleWeightModel(seed),null);
@@ -247,4 +255,91 @@ test('v2.1 sakata new values count chronologically', () => {
  assert.deepEqual(sakataNewValues([b(100),b(85),b(80),b(75)],105,90),{up:0,down:3});
  assert.deepEqual(sakataNewValues([b(100),b(75),b(80),b(85)],105,90),{up:0,down:1});
  assert.deepEqual(sakataNewValues([b(110),b(120),b(85)],105,90),{up:0,down:1});
+});
+
+test('rule-weights-v4 is the production default; v3/v1 are recorded as shadows',()=>{
+ const V4=require('../scripts/v4-weights.cjs'),V3=require('../scripts/weights-v3.cjs');
+ const close=require('./fixtures/hsi-close-2026-10-09.json'),part=require('./fixtures/hsi-participation-2026-10-09.json'),ovn=require('./fixtures/overnight-2026-10-12.json');
+ const live={date:'2026-10-12',feed:close,seed,participation:part,overnight:ovn,generatedAt:'2026-10-12T08:45:30+08:00'};
+ const a=build(live),b=build(live),p=a.forecast.scenarios.map(s=>s.probability);
+ assert.deepEqual(a,b);assert.equal(a.forecast.weight_model,'rule-weights-v4');assert.equal(a.forecast.weight_model_info.version,'rule-weights-v4');
+ assert.equal(a.forecast.weight_model_info.fallback,null);
+ assert.equal(Math.round(p.reduce((s,v)=>s+v,0)*100),100);for(const v of p){assert.ok(v>=0.1-1e-9&&v<=0.85+1e-9);assert.equal(Math.abs(v*20-Math.round(v*20))<1e-9,true);}
+ assert.equal(a.forecast.scenarios.every(s=>s.probability_locked===true&&s.probability_model==='rule-weights-v4'&&/逻辑回归 v4/.test(s.probability_basis)&&/盘前隔夜/.test(s.probability_basis)),true);
+ // shadows: v3 and v1 computed on the same completed bars, exactly as their own scorers produce them
+ const bars=close.candles.filter(x=>x.date<'2026-10-12').map(x=>({...x,time:x.date})),[lower,upper]=[a.forecast.scenarios[1].price_rule.lower,a.forecast.scenarios[1].price_rule.upper];
+ const v3=V3.scoreScenarioWeightsV3({bars,lower,upper,cutoff:'2026-10-12T08:45:30+08:00'}).probabilities;
+ assert.deepEqual(a.forecast.weight_model_info.shadow['rule-weights-v3'],v3);assert.deepEqual(a.forecast.weight_model_info.factors.shadow_v3,v3);
+ assert.deepEqual(a.forecast.weight_model_info.shadow['rule-weights-v1'],{A:0.3,B:0.5,C:0.2});
+ assert.deepEqual(a.forecast.weight_model_info.coefficients.W,V4.WEIGHT_MODEL_V4.W);
+ assert.equal(a.environment_evidence.overnight.status,'available');assert.equal(a.environment_evidence.overnight.us_close_date,'2026-10-09');
+ assert.match(a.forecast.reasoning.join('\n'),/权重模型：v4/);assert.match(a.disclaimer,/rule-weights-v4/);
+ // build() == direct v4 scorer on the same inputs (futu OHLC + Yahoo HSI volume)
+ const vol=new Map(ovn.series.HSI.map(r=>[r.date,r.volume]));
+ const direct=V4.scoreScenarioWeightsV4({bars:bars.map(x=>({...x,volume:vol.get(x.date)})),lower,upper,cutoff:'2026-10-12T08:45:30+08:00',overnight:ovn.series});
+ assert.deepEqual(Object.values(a.forecast.scenarios.map(s=>s.probability)),[direct.probabilities.A,direct.probabilities.B,direct.probabilities.C]);
+ // participation display never re-tilts locked v4 weights
+ const MP=require('../investment/chart/market-participation.js'),ev=MP.evaluate(part,a.forecast.scenarios,'2026-10-09');assert.equal(ev.already_in_base,true);
+ // v4 reproduces the frozen research reference for a historical session through the production build()
+ const spec=require('../research/v4/model-v4.json'),ref=spec.reference_2026.find(r=>r.date==='2026-10-09');
+ const h=build({date:'2026-10-09',feed:require('./fixtures/hsi-preopen-2026-10-09.json'),seed:null,overnight:{...ovn,fetched_at:'2026-10-09T08:44:00+08:00'},generatedAt:'2026-10-09T08:45:30+08:00'});
+ assert.equal(h.forecast.weight_model,'rule-weights-v4');assert.deepEqual(h.forecast.scenarios.map(s=>s.probability),ref.p);
+});
+
+test('v4 fails closed to v3 with annotations when overnight inputs are missing, late, stale or inconsistent',()=>{
+ const V3=require('../scripts/weights-v3.cjs');
+ const close=require('./fixtures/hsi-close-2026-10-09.json'),ovn=require('./fixtures/overnight-2026-10-12.json');
+ const live={date:'2026-10-12',feed:close,seed,participation:null,generatedAt:'2026-10-12T08:45:30+08:00'};
+ const bars=close.candles.filter(x=>x.date<'2026-10-12').map(x=>({...x,time:x.date}));
+ const drop=(k,f)=>({...ovn,series:{...ovn.series,[k]:f(ovn.series[k])}});
+ const cases=[
+  [null,/未提供盘前隔夜数据/],
+  [{status:'unavailable',fetched_at:'2026-10-12T08:44:00+08:00',errors:['EWH (EWH) unavailable: HTTP 429'],series:{}},/拉取失败.*HTTP 429/],
+  [{...ovn,fetched_at:'2026-10-12T08:50:00+08:00'},/晚于信息截止/],
+  [drop('EWH',()=>[]),/缺少隔夜序列 EWH/],
+  [drop('VIX',()=>undefined),/缺少隔夜序列 VIX/],
+  [drop('CNY',r=>r.filter(x=>x.date<'2026-10-01')),/USD\/CNY 已过期/],
+  [drop('FXI',r=>r.filter(x=>x.date<'2026-10-09')),/最新收盘日期不一致/],
+  [{...ovn,series:Object.fromEntries(Object.entries(ovn.series).map(([k,v])=>[k,k==='HSI'?v:v.filter(x=>x.date<'2026-10-01')]))},/已过期/],
+  [drop('HSI',r=>r.map(x=>x.date==='2026-10-08'?{...x,volume:null}:x)),/成交量不完整/],
+  [drop('HSI',r=>r.map(x=>x.date==='2026-10-09'?{...x,close:x.close*1.01}:x)),/收盘与生产K线不一致/],
+  [drop('EWH',r=>r.map(x=>x.date==='2026-10-09'?{...x,close:NaN}:x)),/最新收盘日期不一致/],
+ ];
+ const v3=V3.scoreScenarioWeightsV3({bars,lower:23835.68,upper:24354.11,cutoff:'2026-10-12T08:45:30+08:00'}).probabilities;
+ for(const [overnight,re] of cases){
+  const a=build({...live,overnight}),info=a.forecast.weight_model_info;
+  assert.equal(a.forecast.weight_model,'rule-weights-v3');assert.deepEqual(info.fallback.intended,'rule-weights-v4');assert.equal(info.fallback.used,'rule-weights-v3');assert.match(info.fallback.reason,re);
+  assert.deepEqual(Object.fromEntries(a.forecast.scenarios.map(s=>[s.id,s.probability])),v3);
+  assert.equal(a.forecast.scenarios.every(s=>/已回退 v3/.test(s.probability_basis)),true);
+  assert.match(a.forecast.reasoning.join('\n'),/回退 v3，不用空值或插值/);assert.equal(a.environment_evidence.overnight.status,'unavailable');
+  assert.match(a.disclaimer,/已回退/);assert.equal(info.shadow['rule-weights-v1'].B,0.5);
+ }
+ // overnight rows dated on/after the session (US data not yet closed at 08:45) never change a v4 result
+ const base=build({...live,overnight:ovn});
+ const poisoned={...ovn,series:Object.fromEntries(Object.entries(ovn.series).map(([k,v])=>[k,[...v,{date:'2026-10-12',close:1e9,volume:1}]]))};
+ assert.deepEqual(build({...live,overnight:poisoned}).forecast.scenarios,base.forecast.scenarios);
+});
+
+test('preopen publisher falls back to v3 (not a failure) when the overnight fetch fails',async()=>{
+ const os=require('node:os'),path=require('node:path'),{run}=require('../scripts/publish-daily-analysis.cjs');
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'daily-ovn-')),dir=path.join(tmp,'investment/chart');fs.mkdirSync(dir,{recursive:true});
+ const err=console.error;console.error=()=>{};
+ try {
+  for(const [name,value] of [['annotations.json',seed],['kline_futu.json',require('./fixtures/hsi-close-2026-10-09.json')],['hsi-participation.json',{}]])fs.writeFileSync(path.join(dir,name),JSON.stringify(value));
+  await run({projectRoot:tmp,now:Date.parse('2026-10-12T08:46:00+08:00'),fetchOvernight:async()=>{throw Error('network down');}});
+  const a=JSON.parse(fs.readFileSync(path.join(dir,'annotations.json'),'utf8'));
+  assert.equal(a.forecast.weight_model,'rule-weights-v3');assert.match(a.forecast.weight_model_info.fallback.reason,/network down/);
+  assert.equal(Math.round(a.forecast.scenarios.reduce((s,x)=>s+x.probability,0)*100),100);
+ } finally {console.error=err;fs.rmSync(tmp,{recursive:true});}
+});
+
+test('overnight fetcher normalises Yahoo bars like the research fetch and reports failures without throwing',async()=>{
+ const P=require('../scripts/v4-preopen-data.cjs');
+ const chart=(ts,close)=>({chart:{result:[{timestamp:ts,indicators:{quote:[{open:close,high:close,low:close,close,volume:close.map(()=>5)}]}}]}});
+ // 2026-10-09 13:30Z (09:30 ET) -> US date 2026-10-09; null close dropped, never filled
+ const rows=P.normalise(chart([1791552600,1791639000],[22.06,null]),-5,false);assert.deepEqual(rows,[{date:'2026-10-09',close:22.06}]);
+ const ok=await P.fetchOvernight({now:Date.parse('2026-10-12T08:44:00+08:00'),fetchImpl:async()=>({ok:true,json:async()=>chart([1791552600],[10])})});
+ assert.equal(ok.status,'available');assert.deepEqual(Object.keys(ok.series).sort(),['CNY','EWH','FXI','GSPC','HSI','IXIC','KWEB','VIX']);
+ const bad=await P.fetchOvernight({fetchImpl:async(u)=>u.includes('KWEB')?{ok:false,status:404}:{ok:true,json:async()=>chart([1791552600],[10])}});
+ assert.equal(bad.status,'unavailable');assert.equal(bad.errors.length,1);assert.match(bad.errors[0],/KWEB/);assert.equal(bad.series.KWEB,undefined);
 });

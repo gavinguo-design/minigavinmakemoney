@@ -1,5 +1,5 @@
-// v4 candidate tests: JS parity with the Python freeze on every 2026 session, no-future guards,
-// production default unchanged (v3), and point-in-time overnight handling.
+// v4 tests: JS parity with the Python freeze on every 2026 session, no-future guards,
+// production identity (rule-weights-v4 = frozen candidate coefficients), and point-in-time overnight handling.
 'use strict';
 const assert = require('node:assert'), fs = require('node:fs'), path = require('node:path');
 const root = path.join(__dirname, '..');
@@ -33,7 +33,9 @@ assert.deepStrictEqual(a.probabilities, b.probabilities);
 assert.throws(() => BT.withCalendar(dates, () => V4.scoreScenarioWeightsV4({bars: [...bars, {...hsi[i], time: hsi[i].date}], lower: s.lower, upper: s.upper, cutoff: ref.date + 'T08:45:00+08:00', overnight})), /after cutoff/);
 // missing series -> throws (caller must fall back to v3), never imputes
 assert.throws(() => BT.withCalendar(dates, () => V4.scoreScenarioWeightsV4({bars, lower: s.lower, upper: s.upper, cutoff: ref.date + 'T08:45:00+08:00', overnight: {...overnight, EWH: []}})), /Missing overnight/);
-// production untouched: build() still uses v3
+// production identity: v4 is wired into build() with the frozen candidate coefficients; v3 stays importable as shadow/fallback
 assert.strictEqual(require('../scripts/weights-v3.cjs').WEIGHT_MODEL_V3.version, 'rule-weights-v3');
-assert(!fs.readFileSync(path.join(root, 'scripts/daily-analysis.cjs'), 'utf8').includes('v4-weights'));
+assert.strictEqual(V4.WEIGHT_MODEL_V4.version, 'rule-weights-v4');
+assert.deepStrictEqual(V4.WEIGHT_MODEL_V4.W, spec.W); assert.deepStrictEqual(V4.WEIGHT_MODEL_V4.standardize, spec.standardize);
+assert(fs.readFileSync(path.join(root, 'scripts/daily-analysis.cjs'), 'utf8').includes('v4-weights'));
 console.log('v4-weights ok', n, 'sessions, max raw diff', maxRaw.toExponential(2));

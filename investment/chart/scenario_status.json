@@ -1,119 +1,61 @@
 {
- "updated_at": "2026-10-09T16:33:46+08:00",
- "judgment_mode": "close_final",
- "judgment_mode_note": "收盘定案：close_gte/close_lt 类条件已用收盘价确认",
- "data_stale": false,
- "stale_reason": null,
- "conditions_date": "2026-10-06",
- "conditions_stale": false,
- "metrics": {
-  "price": 24211.35,
-  "open": 23941.26,
-  "high": 24224.05,
-  "low": 23941.26,
-  "prev_close": 23785.79,
-  "update_time": "2026-10-09 16:00:00",
-  "volume_ratio": 1.62,
-  "today_turnover_yi": 2092.0,
-  "ref_turnover_yi": 1288.3,
-  "southbound_net_yi": 2.9
- },
- "scenarios": [
-  {
-   "name_prefix": "A",
-   "triggered": true,
-   "core_met": 2,
-   "core_total": 2,
-   "confirm_met": 0,
-   "confirm_total": 1,
-   "strength": "弱",
-   "met_count": 2,
-   "total": 3,
-   "conditions": [
+  "updated_at": "2026-10-12T01:17:11.975Z",
+  "judgment_mode": "intraday_preview",
+  "conditions_date": "2026-10-12",
+  "analysis_id": "HSI-20261012-structure-v1",
+  "data_stale": false,
+  "conditions_stale": false,
+  "scenarios": [
     {
-     "id": "no_reclaim_24276",
-     "label": "收盘未收复多空分界（收盘收于 24,276 之下，收盘确认）",
-     "role": "core",
-     "met": true,
-     "value_text": ""
+      "id": "A",
+      "name_prefix": "A",
+      "triggered": false,
+      "core_met": 0,
+      "core_total": 1,
+      "confirm_met": 0,
+      "confirm_total": 0,
+      "conditions": [
+        {
+          "id": "daily_price_structure",
+          "role": "core",
+          "label": "收盘 ≥ 24,354.11；只看完整日K价格结构",
+          "met": null
+        }
+      ]
     },
     {
-     "id": "hold_23865",
-     "label": "收盘未跌破 10/2 低点（收盘收于 23,865 之上，收盘确认）",
-     "role": "core",
-     "met": true,
-     "value_text": ""
+      "id": "B",
+      "name_prefix": "B",
+      "triggered": false,
+      "core_met": 0,
+      "core_total": 1,
+      "confirm_met": 0,
+      "confirm_total": 0,
+      "conditions": [
+        {
+          "id": "daily_price_structure",
+          "role": "core",
+          "label": "收盘 ≥ 23,835.68 且 < 24,354.11；只看完整日K价格结构",
+          "met": null
+        }
+      ]
     },
     {
-     "id": "weak_vol",
-     "label": "缩量反抽（量比 < 1.0，弱反抽更可靠=空点确认强度高）",
-     "role": "confirm",
-     "met": false,
-     "value_text": ""
+      "id": "C",
+      "name_prefix": "C",
+      "triggered": false,
+      "core_met": 0,
+      "core_total": 1,
+      "confirm_met": 0,
+      "confirm_total": 0,
+      "conditions": [
+        {
+          "id": "daily_price_structure",
+          "role": "core",
+          "label": "收盘 < 23,835.68；只看完整日K价格结构",
+          "met": null
+        }
+      ]
     }
-   ]
-  },
-  {
-   "name_prefix": "B",
-   "triggered": false,
-   "core_met": 0,
-   "core_total": 1,
-   "confirm_met": 0,
-   "confirm_total": 1,
-   "strength": null,
-   "met_count": 0,
-   "total": 2,
-   "conditions": [
-    {
-     "id": "break_23865",
-     "label": "收盘跌破 23,865（10/2低点，收盘确认；10/5盘中23,835.68一过不算）＝下探激活看 23,500–23,250",
-     "role": "core",
-     "met": false,
-     "value_text": ""
-    },
-    {
-     "id": "vol_down",
-     "label": "放量下跌（量比 ≥ 1.1 且收盘低于昨收，加速确认）",
-     "role": "confirm",
-     "met": false,
-     "value_text": "量比 1.62 · 昨收 23,786 → 现价 24,211"
-    }
-   ]
-  },
-  {
-   "name_prefix": "C",
-   "triggered": false,
-   "core_met": 0,
-   "core_total": 1,
-   "confirm_met": 1,
-   "confirm_total": 2,
-   "strength": null,
-   "met_count": 1,
-   "total": 3,
-   "conditions": [
-    {
-     "id": "reclaim_24276",
-     "label": "收盘收复 24,276 多空分界（收盘确认，破位剧本降级）",
-     "role": "core",
-     "met": false,
-     "value_text": ""
-    },
-    {
-     "id": "strong_vol",
-     "label": "放量收阳强确认（量比 ≥ 1.3 且收盘高于今日开盘；薄市平量收复为弱确认）",
-     "role": "confirm",
-     "met": true,
-     "value_text": ""
-    },
-    {
-     "id": "southbound",
-     "label": "南向资金确认（净买 ≥ 30 亿；10/1–10/7 南向通道关闭期间此条件不可用）",
-     "role": "confirm",
-     "met": false,
-     "value_text": "南向净买 +2.9 亿"
-    }
-   ]
-  }
- ],
- "note": "波段节奏（決策点=盘前09:15+收盘 16:10后）。判定口径：core 收盘确认条件全满足=情景触发；confirm 量能/资金只决确认强度。盘中运行标记 intraday_preview（近似预览，不构成操作信号）；16:10后标记 close_final（收盘确认）。"
+  ]
 }

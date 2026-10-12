@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-12T11:00:07+08:00",
+  "updated_at": "2026-10-12T11:30:11+08:00",
   "judgment_mode": "intraday_preview",
   "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；最终打勾以收盘定案为准，不构成操作信号",
   "analysis_id": "HSI-20261012-structure-v1",
@@ -8,16 +8,16 @@
   "stale_reason": null,
   "conditions_stale": false,
   "metrics": {
-    "price": 24285.55,
+    "price": 24266.33,
     "open": 24434.93,
     "high": 24455.95,
-    "low": 24280.05,
+    "low": 24259.77,
     "prev_close": 24211.35,
-    "update_time": "2026-10-12 11:00:08",
-    "volume_ratio": 1.18,
-    "today_turnover_yi": 718.9,
-    "ref_turnover_yi": 610.3,
-    "southbound_net_yi": 26.7
+    "update_time": "2026-10-12 11:30:12",
+    "volume_ratio": 1.16,
+    "today_turnover_yi": 807.5,
+    "ref_turnover_yi": 698.3,
+    "southbound_net_yi": 29.2
   },
   "scenarios": [
     {
@@ -35,21 +35,21 @@
           "role": "core",
           "label": "收盘 ≥ 24,354.11；只看完整日K价格结构",
           "met": false,
-          "value_text": "现价 24,285.55 vs ≥ 24,354.11"
+          "value_text": "现价 24,266.33 vs ≥ 24,354.11"
         },
         {
           "id": "volume_ratio",
           "role": "confirm",
           "label": "放量确认（量比 ≥ 1.1）",
           "met": true,
-          "value_text": "量比 1.18"
+          "value_text": "量比 1.16"
         },
         {
           "id": "southbound",
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": false,
-          "value_text": "南向净买 +26.7 亿"
+          "value_text": "南向净买 +29.2 亿"
         }
       ]
     },
@@ -68,21 +68,21 @@
           "role": "core",
           "label": "收盘 ≥ 23,835.68 且 < 24,354.11；只看完整日K价格结构",
           "met": true,
-          "value_text": "现价 24,285.55 vs [23,835.68, 24,354.11)"
+          "value_text": "现价 24,266.33 vs [23,835.68, 24,354.11)"
         },
         {
           "id": "volume_ratio",
           "role": "confirm",
           "label": "放量确认（量比 ≥ 1.1）",
           "met": true,
-          "value_text": "量比 1.18"
+          "value_text": "量比 1.16"
         },
         {
           "id": "southbound",
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": false,
-          "value_text": "南向净买 +26.7 亿"
+          "value_text": "南向净买 +29.2 亿"
         }
       ]
     },
@@ -101,21 +101,21 @@
           "role": "core",
           "label": "收盘 < 23,835.68；只看完整日K价格结构",
           "met": false,
-          "value_text": "现价 24,285.55 vs < 23,835.68"
+          "value_text": "现价 24,266.33 vs < 23,835.68"
         },
         {
           "id": "volume_ratio",
           "role": "confirm",
           "label": "放量确认（量比 ≥ 1.1）",
           "met": true,
-          "value_text": "量比 1.18"
+          "value_text": "量比 1.16"
         },
         {
           "id": "southbound",
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": false,
-          "value_text": "南向净买 +26.7 亿"
+          "value_text": "南向净买 +29.2 亿"
         }
       ]
     }

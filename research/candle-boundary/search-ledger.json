@@ -1,0 +1,551 @@
+{
+ "protocol": "research/candle-boundary/preregistration.md",
+ "note": "every attempt incl. non-significant; primary = merged bear@upper & bull@lower at k=0.5 (+ v4 increment)",
+ "attempts": [
+  {
+   "id": "merged_bear@upper_k0.5",
+   "role": "PRIMARY",
+   "n_event": 32,
+   "n_control": 442,
+   "rate_event": 0.4375,
+   "rate_control": 0.5633484162895928,
+   "diff": -0.12584841628959276,
+   "newcombe_ci": [
+    -0.28819988389932094,
+    0.04969044276787632
+   ],
+   "fisher_p": 0.19812972392504294
+  },
+  {
+   "id": "adj_logit_upper_k0.5",
+   "role": "secondary",
+   "coef_event": -0.3245176158451907,
+   "ci": [
+    -1.1041830798155474,
+    0.4551478481251662
+   ],
+   "p": 0.4146120082235265,
+   "coef_dist": -2.868044401331894,
+   "odds_ratio": 0.7228759734664649,
+   "n": 474
+  },
+  {
+   "id": "r3_upper_k0.5",
+   "role": "secondary",
+   "n_event": 32,
+   "rate_event": 0.375,
+   "rate_control": 0.38235294117647056,
+   "diff": -0.007352941176470562,
+   "newcombe_ci": [
+    -0.16014524300506017,
+    0.17065386421627776
+   ],
+   "fisher_p": 1.0
+  },
+  {
+   "id": "ret_atr_upper_k0.5",
+   "role": "secondary",
+   "mean_event": -0.12652530652407548,
+   "mean_control": -0.0036511988830243165,
+   "diff": -0.12287410764105117,
+   "ci": [
+    -0.406544423376748,
+    0.16079620809464568
+   ],
+   "welch_p": 0.4016883413809682,
+   "mannwhitney_p": 0.5641524114798196,
+   "pos_rate_event": 0.40625,
+   "pos_rate_control": 0.497737556561086
+  },
+  {
+   "id": "merged_bull@lower_k0.5",
+   "role": "PRIMARY",
+   "n_event": 28,
+   "n_control": 385,
+   "rate_event": 0.5357142857142857,
+   "rate_control": 0.5194805194805194,
+   "diff": 0.016233766233766267,
+   "newcombe_ci": [
+    -0.16811455595035849,
+    0.19240446759114657
+   ],
+   "fisher_p": 1.0
+  },
+  {
+   "id": "adj_logit_lower_k0.5",
+   "role": "secondary",
+   "coef_event": 0.14005985069957905,
+   "ci": [
+    -0.6951843900816185,
+    0.9753040914807766
+   ],
+   "p": 0.7424073199046157,
+   "coef_dist": 2.925010409576245,
+   "odds_ratio": 1.1503426456090389,
+   "n": 413
+  },
+  {
+   "id": "r3_lower_k0.5",
+   "role": "secondary",
+   "n_event": 28,
+   "rate_event": 0.35714285714285715,
+   "rate_control": 0.3307291666666667,
+   "diff": 0.026413690476190466,
+   "newcombe_ci": [
+    -0.13132180233843413,
+    0.21641660469637714
+   ],
+   "fisher_p": 0.8360473958278256
+  },
+  {
+   "id": "ret_atr_lower_k0.5",
+   "role": "secondary",
+   "mean_event": -0.08327355510150193,
+   "mean_control": -0.02127050920610941,
+   "diff": -0.06200304589539252,
+   "ci": [
+    -0.3501625122794242,
+    0.22615642048863915
+   ],
+   "welch_p": 0.6761167509107916,
+   "mannwhitney_p": 0.7115564426178688,
+   "pos_rate_event": 0.4642857142857143,
+   "pos_rate_control": 0.4649350649350649
+  },
+  {
+   "id": "merged_bear@upper_k0.25",
+   "role": "sensitivity",
+   "n_event": 16,
+   "n_control": 219,
+   "rate_event": 0.25,
+   "rate_control": 0.5205479452054794,
+   "diff": -0.2705479452054794,
+   "newcombe_ci": [
+    -0.43245300645389295,
+    -0.01684373676815476
+   ],
+   "fisher_p": 0.0411724639870224
+  },
+  {
+   "id": "adj_logit_upper_k0.25",
+   "role": "secondary",
+   "coef_event": -1.1227513628948504,
+   "ci": [
+    -2.3131503545963805,
+    0.06764762880667963
+   ],
+   "p": 0.06451303198503985,
+   "coef_dist": -3.446352107894882,
+   "odds_ratio": 0.32538331433959755,
+   "n": 235
+  },
+  {
+   "id": "r3_upper_k0.25",
+   "role": "secondary",
+   "n_event": 16,
+   "rate_event": 0.25,
+   "rate_control": 0.3242009132420091,
+   "diff": -0.07420091324200911,
+   "newcombe_ci": [
+    -0.2358341142814137,
+    0.1776701831789212
+   ],
+   "fisher_p": 0.7817933352383106
+  },
+  {
+   "id": "ret_atr_upper_k0.25",
+   "role": "secondary",
+   "mean_event": -0.4106343486504676,
+   "mean_control": -0.039331350398312134,
+   "diff": -0.37130299825215546,
+   "ci": [
+    -0.834288490815077,
+    0.09168249431076614
+   ],
+   "welch_p": 0.13517061930790977,
+   "mannwhitney_p": 0.06222569598371855,
+   "pos_rate_event": 0.25,
+   "pos_rate_control": 0.5068493150684932
+  },
+  {
+   "id": "merged_bull@lower_k0.25",
+   "role": "sensitivity",
+   "n_event": 14,
+   "n_control": 183,
+   "rate_event": 0.42857142857142855,
+   "rate_control": 0.4644808743169399,
+   "diff": -0.03590944574551136,
+   "newcombe_ci": [
+    -0.2624991947632914,
+    0.2196131323827355
+   ],
+   "fisher_p": 1.0
+  },
+  {
+   "id": "adj_logit_lower_k0.25",
+   "role": "secondary",
+   "coef_event": -0.11710776925876064,
+   "ci": [
+    -1.2413921075694603,
+    1.0071765690519392
+   ],
+   "p": 0.8382303190964269,
+   "coef_dist": 3.1454471521472467,
+   "odds_ratio": 0.8894893283922701,
+   "n": 197
+  },
+  {
+   "id": "r3_lower_k0.25",
+   "role": "secondary",
+   "n_event": 14,
+   "rate_event": 0.2857142857142857,
+   "rate_control": 0.2857142857142857,
+   "diff": 0.0,
+   "newcombe_ci": [
+    -0.18228239136199714,
+    0.2677413503070341
+   ],
+   "fisher_p": 1.0
+  },
+  {
+   "id": "ret_atr_lower_k0.25",
+   "role": "secondary",
+   "mean_event": -0.18371698736296757,
+   "mean_control": -0.05335585395783147,
+   "diff": -0.1303611334051361,
+   "ci": [
+    -0.5920951755264832,
+    0.33137290871621095
+   ],
+   "welch_p": 0.5884006361766374,
+   "mannwhitney_p": 0.590963072833345,
+   "pos_rate_event": 0.42857142857142855,
+   "pos_rate_control": 0.4371584699453552
+  },
+  {
+   "id": "merged_bear@upper_k1.0",
+   "role": "sensitivity",
+   "n_event": 62,
+   "n_control": 890,
+   "rate_event": 0.5967741935483871,
+   "rate_control": 0.5853932584269663,
+   "diff": 0.011380935121420799,
+   "newcombe_ci": [
+    -0.11692557480089708,
+    0.128985741046987
+   ],
+   "fisher_p": 0.8946724259396289
+  },
+  {
+   "id": "adj_logit_upper_k1.0",
+   "role": "secondary",
+   "coef_event": 0.09960148750353381,
+   "ci": [
+    -0.5328426372459271,
+    0.7320456122529947
+   ],
+   "p": 0.7575696947490743,
+   "coef_dist": -2.7001239251928273,
+   "odds_ratio": 1.104730581399725,
+   "n": 952
+  },
+  {
+   "id": "r3_upper_k1.0",
+   "role": "secondary",
+   "n_event": 62,
+   "rate_event": 0.4838709677419355,
+   "rate_control": 0.4191011235955056,
+   "diff": 0.06476984414642989,
+   "newcombe_ci": [
+    -0.059385112708841656,
+    0.19056271881842657
+   ],
+   "fisher_p": 0.35283241067450954
+  },
+  {
+   "id": "ret_atr_upper_k1.0",
+   "role": "secondary",
+   "mean_event": -0.045373310022021614,
+   "mean_control": -0.02019102564795102,
+   "diff": -0.025182284374070593,
+   "ci": [
+    -0.209124502513646,
+    0.15875993376550485
+   ],
+   "welch_p": 0.7892339036963915,
+   "mannwhitney_p": 0.94344699093337,
+   "pos_rate_event": 0.43548387096774194,
+   "pos_rate_control": 0.48651685393258426
+  },
+  {
+   "id": "merged_bull@lower_k1.0",
+   "role": "sensitivity",
+   "n_event": 60,
+   "n_control": 815,
+   "rate_event": 0.5833333333333334,
+   "rate_control": 0.5828220858895705,
+   "diff": 0.0005112474437628522,
+   "newcombe_ci": [
+    -0.12988793657704148,
+    0.12146058952310244
+   ],
+   "fisher_p": 1.0
+  },
+  {
+   "id": "adj_logit_lower_k1.0",
+   "role": "secondary",
+   "coef_event": 0.17798262641349083,
+   "ci": [
+    -0.43889437690923927,
+    0.7948596297362209
+   ],
+   "p": 0.5717315170474937,
+   "coef_dist": 2.170678305603505,
+   "odds_ratio": 1.1948045630140418,
+   "n": 875
+  },
+  {
+   "id": "r3_lower_k1.0",
+   "role": "secondary",
+   "n_event": 60,
+   "rate_event": 0.4,
+   "rate_control": 0.3972939729397294,
+   "diff": 0.0027060270602706216,
+   "newcombe_ci": [
+    -0.11656106432505069,
+    0.13330389950340515
+   ],
+   "fisher_p": 1.0
+  },
+  {
+   "id": "ret_atr_lower_k1.0",
+   "role": "secondary",
+   "mean_event": 0.001042054260995435,
+   "mean_control": -0.02337415139423737,
+   "diff": 0.024416205655232805,
+   "ci": [
+    -0.18711240707397644,
+    0.23594481838444206
+   ],
+   "welch_p": 0.8216986123243973,
+   "mannwhitney_p": 0.7405964335263373,
+   "pos_rate_event": 0.5166666666666667,
+   "pos_rate_control": 0.49570552147239266
+  },
+  {
+   "id": "single_upper:bearEngulf_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 2,
+   "rate_event": 0.0,
+   "rate_control": 0.5633484162895928,
+   "diff": -0.5633484162895928,
+   "newcombe_ci": [
+    -0.6088435619828527,
+    0.09591943438141215
+   ],
+   "fisher_p": 0.19233115734244402,
+   "holm_p": 1,
+   "bh_q": 0.7845733373823262
+  },
+  {
+   "id": "single_upper:darkCloud_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 3,
+   "rate_event": 0.3333333333333333,
+   "rate_control": 0.5633484162895928,
+   "diff": -0.23001508295625944,
+   "newcombe_ci": [
+    -0.5056371960476225,
+    0.23135008415846892
+   ],
+   "fisher_p": 0.5839471373369463,
+   "holm_p": 1,
+   "bh_q": 1
+  },
+  {
+   "id": "single_upper:eveningStar_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 3,
+   "rate_event": 1.0,
+   "rate_control": 0.5633484162895928,
+   "diff": 0.43665158371040724,
+   "newcombe_ci": [
+    -0.12668555274820958,
+    0.4832383745682165
+   ],
+   "fisher_p": 0.2615244457941087,
+   "holm_p": 1,
+   "bh_q": 0.7845733373823262
+  },
+  {
+   "id": "single_upper:shootingStar_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 5,
+   "rate_event": 0.4,
+   "rate_control": 0.5633484162895928,
+   "diff": -0.16334841628959273,
+   "newcombe_ci": [
+    -0.4493691079242001,
+    0.20885433343203935
+   ],
+   "fisher_p": 0.6577726843368412,
+   "holm_p": 1,
+   "bh_q": 1
+  },
+  {
+   "id": "single_upper:hangingMan_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 10,
+   "rate_event": 0.3,
+   "rate_control": 0.5633484162895928,
+   "diff": -0.26334841628959277,
+   "newcombe_ci": [
+    -0.46086804947486915,
+    0.043431345465087534
+   ],
+   "fisher_p": 0.11577432198532898,
+   "holm_p": 1,
+   "bh_q": 0.7845733373823262
+  },
+  {
+   "id": "single_upper:doji_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 9,
+   "rate_event": 0.5555555555555556,
+   "rate_control": 0.5633484162895928,
+   "diff": -0.007792860734037177,
+   "newcombe_ci": [
+    -0.3002573575490959,
+    0.2520828674934927
+   ],
+   "fisher_p": 1.0,
+   "holm_p": 1,
+   "bh_q": 1
+  },
+  {
+   "id": "single_lower:bullEngulf_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 3,
+   "rate_event": 1.0,
+   "rate_control": 0.5194805194805194,
+   "diff": 0.48051948051948057,
+   "newcombe_ci": [
+    -0.08315235857810455,
+    0.5303717607549121
+   ],
+   "fisher_p": 0.24968033245424753,
+   "holm_p": 1,
+   "bh_q": 0.7845733373823262
+  },
+  {
+   "id": "single_lower:piercing_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 2,
+   "rate_event": 0.5,
+   "rate_control": 0.5194805194805194,
+   "diff": -0.01948051948051943,
+   "newcombe_ci": [
+    -0.42795569029417874,
+    0.38904144303313737
+   ],
+   "fisher_p": 1.0,
+   "holm_p": 1,
+   "bh_q": 1
+  },
+  {
+   "id": "single_lower:morningStar_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 0,
+   "rate_event": null,
+   "rate_control": null,
+   "diff": null,
+   "newcombe_ci": null,
+   "fisher_p": 1.0,
+   "holm_p": 1,
+   "bh_q": 1
+  },
+  {
+   "id": "single_lower:hammer_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 6,
+   "rate_event": 0.5,
+   "rate_control": 0.5194805194805194,
+   "diff": -0.01948051948051943,
+   "newcombe_ci": [
+    -0.33575665527644677,
+    0.29685604615609074
+   ],
+   "fisher_p": 1.0,
+   "holm_p": 1,
+   "bh_q": 1
+  },
+  {
+   "id": "single_lower:invHammer_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 5,
+   "rate_event": 0.4,
+   "rate_control": 0.5194805194805194,
+   "diff": -0.11948051948051941,
+   "newcombe_ci": [
+    -0.4061598680939114,
+    0.2531450401132726
+   ],
+   "fisher_p": 0.6753370917066172,
+   "holm_p": 1,
+   "bh_q": 1
+  },
+  {
+   "id": "single_lower:doji_k0.5",
+   "role": "single-pattern (descriptive)",
+   "n_event": 12,
+   "rate_event": 0.5,
+   "rate_control": 0.5194805194805194,
+   "diff": -0.01948051948051943,
+   "newcombe_ci": [
+    -0.2706189744176018,
+    0.2317340347016506
+   ],
+   "fisher_p": 1.0,
+   "holm_p": 1,
+   "bh_q": 1
+  },
+  {
+   "id": "v4_increment:v4+rev_at_boundary",
+   "role": "PRIMARY-v4",
+   "n_boundary_days": 693,
+   "brier_base": 0.44272727272727275,
+   "brier_cand": 0.4448484848484849,
+   "delta_ci": [
+    0.0021212121212121206,
+    -0.00112927191679049,
+    0.005688405797101448
+   ],
+   "years_won": 4,
+   "passes_gate": false,
+   "event_days_delta": [
+    0.03568181818181817,
+    -0.016250000000000018,
+    0.0737719298245614
+   ]
+  },
+  {
+   "id": "v4_increment:v4+rev_any_position(variant)",
+   "role": "variant",
+   "n_boundary_days": 693,
+   "brier_base": 0.44272727272727275,
+   "brier_cand": 0.4441341991341991,
+   "delta_ci": [
+    0.0014069264069264064,
+    -0.0011253776435045306,
+    0.003748180494905384
+   ],
+   "years_won": 3,
+   "passes_gate": false,
+   "event_days_delta": [
+    0.010340909090909102,
+    -0.0170408163265306,
+    0.04083333333333334
+   ]
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+  "session_date": "2026-10-14",
+  "analysis_id": "HSI-20261014-structure-v1",
+  "kind": "price_structure_close_review",
+  "generated_at": "2026-10-14T09:13:07.456Z",
+  "bar": {
+    "date": "2026-10-14",
+    "open": 24282.25,
+    "high": 24524.63,
+    "low": 24115,
+    "close": 24314.17,
+    "turnover_yi": 1934.8
+  },
+  "verdicts": [
+    {
+      "id": "A",
+      "met": false
+    },
+    {
+      "id": "B",
+      "met": true
+    },
+    {
+      "id": "C",
+      "met": false
+    }
+  ],
+  "probability_status": "rule_based_uncalibrated",
+  "weight_model": "rule-weights-v3",
+  "probabilities": {
+    "A": 0.25,
+    "B": 0.65,
+    "C": 0.1
+  },
+  "brier": 0.195,
+  "brier_status": "scored",
+  "brier_rule": "多类Brier Σ(p_i-o_i)^2，成立情景 o=1"
+}

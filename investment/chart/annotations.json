@@ -2,20 +2,20 @@
   "$schema_note": "每日规则分析：confirmed pivots(width=2) + 既有可追溯结构目标。价格结构决定核心触发，环境只提供证据。",
   "meta": {
     "symbol": "^HSI",
-    "updatedAt": "2026-10-13T01:13:21.522Z",
-    "analysis_id": "HSI-20261013-structure-v1",
-    "latestClose": 24271.2,
-    "latestCloseDate": "2026-10-12",
+    "updatedAt": "2026-10-14T01:13:13.547Z",
+    "analysis_id": "HSI-20261014-structure-v1",
+    "latestClose": 24345.22,
+    "latestCloseDate": "2026-10-13",
     "note": "自动生成的每日价格结构分析",
     "dataSources": "futu-opend"
   },
   "publication": {
     "kind": "daily_rule_analysis",
-    "session_date": "2026-10-13",
-    "generated_at": "2026-10-13T01:13:21.522Z",
-    "information_cutoff": "2026-10-13T01:13:21.522Z",
-    "baseline_date": "2026-10-12",
-    "source_sha256": "dacae2fc6dfb536e413b53732301f0a1b45d6c5d8b5d5d2ebcaf7d239739afba",
+    "session_date": "2026-10-14",
+    "generated_at": "2026-10-14T01:13:13.547Z",
+    "information_cutoff": "2026-10-14T01:13:13.547Z",
+    "baseline_date": "2026-10-13",
+    "source_sha256": "c63517b1e174c7bc83c41bb858fd940a56739be1f1682d45aa301315a3695337",
     "source_snapshot": {},
     "eligible_as_new_prediction": true,
     "method": "confirmed-swing-structure-v1",
@@ -23,22 +23,22 @@
   },
   "disclaimer": "条件式价格结构分析；权重为 rule-weights-v3（v4 盘前隔夜数据不可用，已回退；逻辑回归，回测保留集优于v1，样本有限）。补录不参与预测命中率、Brier或实时入场判断。",
   "forecast": {
-    "applicable_date": "2026-10-13",
-    "updatedAt": "2026-10-13T01:13:21.522Z",
-    "baseDate": "2026-10-12",
-    "basePrice": 24271.2,
+    "applicable_date": "2026-10-14",
+    "updatedAt": "2026-10-14T01:13:13.547Z",
+    "baseDate": "2026-10-13",
+    "basePrice": 24345.22,
     "bias": "bearish",
     "biasLabel": "高点降低 / 低点降低",
-    "summary": "2026-10-12 收盘 24,271.2；高点降低 / 低点降低；未突破最近摆动边界。最近确认摆动边界 23,737.14–24,354.11。RSI14 43.5、ATR14 326.09、MA20 24,518.04。",
+    "summary": "2026-10-13 收盘 24,345.22；高点降低 / 低点降低；未突破最近摆动边界。最近确认摆动边界 23,737.14–24,354.11。RSI14 45.1、ATR14 328.33、MA20 24,489.42。",
     "horizon": "未来5个交易日，每日重新核验",
-    "horizonEndDate": "2026-10-21",
-    "horizonDesc": "未来5个交易日（按港股日历至 2026-10-21，不含发布当日）",
+    "horizonEndDate": "2026-10-22",
+    "horizonDesc": "未来5个交易日（按港股日历至 2026-10-22，不含发布当日）",
     "reasoning": [
-      "2026-10-12 收盘 24,271.2；高点降低 / 低点降低；未突破最近摆动边界。最近确认摆动边界 23,737.14–24,354.11。RSI14 43.5、ATR14 326.09、MA20 24,518.04。",
+      "2026-10-13 收盘 24,345.22；高点降低 / 低点降低；未突破最近摆动边界。最近确认摆动边界 23,737.14–24,354.11。RSI14 45.1、ATR14 328.33、MA20 24,489.42。",
       "A/B/C 分别覆盖 ≥上边界、两边界之间、<下边界；盘中穿越不算正式触发。",
       "夜期、IV、南向资金无截止前可信快照时不可用，不用于推断。",
-      "权重模型：v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-12，IXIC 2026-10-12，FXI 2026-10-12，KWEB 2026-10-09）），本次回退 v3，不用空值或插值。",
-      "环境证据：2026-10-12 官方成分报告上涨家数占比 36.8%、上涨权重占比 62.0%、净点数贡献 59.9；只描述环境，不改变价格触发。"
+      "权重模型：v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-13，IXIC 2026-10-13，FXI 2026-10-12，KWEB 2026-10-12）），本次回退 v3，不用空值或插值。",
+      "环境证据：2026-10-13 官方成分报告上涨家数占比 65.3%、上涨权重占比 62.5%、净点数贡献 74.02；只描述环境，不改变价格触发。"
     ],
     "targetUpper": 24444,
     "targetLower": 23500,
@@ -48,8 +48,8 @@
         "id": "A",
         "name": "A · 收复最近摆动高点",
         "direction": "long",
-        "probability": 0.2,
-        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-12，IXIC 2026-10-12，FXI 2026-10-12，KWEB 2026-10-09）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 87%、ADX14 21.6、趋势结构；不含宽度/南向（回测无增量）。",
+        "probability": 0.25,
+        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-13，IXIC 2026-10-13，FXI 2026-10-12，KWEB 2026-10-12）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 99%、ADX14 21.8、趋势结构；不含宽度/南向（回测无增量）。",
         "probability_locked": true,
         "probability_model": "rule-weights-v3",
         "color": "#00d87f",
@@ -58,17 +58,17 @@
           "operator": "gte",
           "value": 24354.11
         },
-        "invalidation": "收盘 < 24,193.3",
+        "invalidation": "收盘 < 23,987.77",
         "rr": {
           "entry": 24354.11,
-          "stop": 24193.3,
+          "stop": 23987.77,
           "target": 24444,
           "direction": "long",
           "entryHint": "条件确认之后再观察结构位回测；价格满足赔率不等于触发。"
         },
         "risk": {
           "structural_invalidation": {
-            "price": 24193.3,
+            "price": 23987.77,
             "confirmation": "completed_daily_close"
           },
           "disaster_stop": {
@@ -83,7 +83,7 @@
           "upperBound": [
             {
               "offset": 0,
-              "price": 24271.2
+              "price": 24345.22
             },
             {
               "offset": 5,
@@ -93,7 +93,7 @@
           "lowerBound": [
             {
               "offset": 0,
-              "price": 24271.2
+              "price": 24345.22
             },
             {
               "offset": 5,
@@ -106,8 +106,8 @@
         "id": "B",
         "name": "B · 摆动区间内整理",
         "direction": "short",
-        "probability": 0.7,
-        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-12，IXIC 2026-10-12，FXI 2026-10-12，KWEB 2026-10-09）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 87%、ADX14 21.6、趋势结构；不含宽度/南向（回测无增量）。",
+        "probability": 0.65,
+        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-13，IXIC 2026-10-13，FXI 2026-10-12，KWEB 2026-10-12）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 99%、ADX14 21.8、趋势结构；不含宽度/南向（回测无增量）。",
         "probability_locked": true,
         "probability_model": "rule-weights-v3",
         "color": "#a78bfa",
@@ -142,7 +142,7 @@
           "upperBound": [
             {
               "offset": 0,
-              "price": 24271.2
+              "price": 24345.22
             },
             {
               "offset": 5,
@@ -152,7 +152,7 @@
           "lowerBound": [
             {
               "offset": 0,
-              "price": 24271.2
+              "price": 24345.22
             },
             {
               "offset": 5,
@@ -166,7 +166,7 @@
         "name": "C · 跌破最近摆动低点",
         "direction": "short",
         "probability": 0.1,
-        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-12，IXIC 2026-10-12，FXI 2026-10-12，KWEB 2026-10-09）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 87%、ADX14 21.6、趋势结构；不含宽度/南向（回测无增量）。",
+        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-13，IXIC 2026-10-13，FXI 2026-10-12，KWEB 2026-10-12）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 99%、ADX14 21.8、趋势结构；不含宽度/南向（回测无增量）。",
         "probability_locked": true,
         "probability_model": "rule-weights-v3",
         "color": "#ff8c42",
@@ -175,17 +175,17 @@
           "operator": "lt",
           "value": 23737.14
         },
-        "invalidation": "收盘 ≥ 24,455.95",
+        "invalidation": "收盘 ≥ 24,345.22",
         "rr": {
           "entry": 23737.14,
-          "stop": 24455.95,
+          "stop": 24345.22,
           "target": 23500,
           "direction": "short",
           "entryHint": "条件确认之后再观察结构位回测；价格满足赔率不等于触发。"
         },
         "risk": {
           "structural_invalidation": {
-            "price": 24455.95,
+            "price": 24345.22,
             "confirmation": "completed_daily_close"
           },
           "disaster_stop": {
@@ -200,7 +200,7 @@
           "upperBound": [
             {
               "offset": 0,
-              "price": 24271.2
+              "price": 24345.22
             },
             {
               "offset": 5,
@@ -210,7 +210,7 @@
           "lowerBound": [
             {
               "offset": 0,
-              "price": 24271.2
+              "price": 24345.22
             },
             {
               "offset": 5,
@@ -224,18 +224,18 @@
     "weight_model_info": {
       "version": "rule-weights-v3",
       "calibration": "回测保留集验证（n≈100），未经实盘校准；本次为 v4 数据缺失时的回退",
-      "scored_reviews": 1,
+      "scored_reviews": 2,
       "shadow": {
         "rule-weights-v1": {
-          "A": 0.35,
-          "B": 0.5,
-          "C": 0.15
+          "A": 0.45,
+          "B": 0.45,
+          "C": 0.1
         }
       },
       "fallback": {
         "intended": "rule-weights-v4",
         "used": "rule-weights-v3",
-        "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-12，IXIC 2026-10-12，FXI 2026-10-12，KWEB 2026-10-09）"
+        "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-13，IXIC 2026-10-13，FXI 2026-10-12，KWEB 2026-10-12）"
       },
       "coefficients": {
         "W": [
@@ -282,47 +282,47 @@
         ]
       },
       "factors": {
-        "baseline_date": "2026-10-12",
-        "close": 24271.2,
+        "baseline_date": "2026-10-13",
+        "close": 24345.22,
         "lower": 23737.14,
         "upper": 24354.11,
-        "atr14": 326.09,
-        "position": 0.87,
+        "atr14": 328.33,
+        "position": 0.99,
         "breadth_status": "not_used",
         "logits": {
-          "A": 0.11,
+          "A": 0.6,
           "B": 0.5,
-          "C": -0.78
+          "C": -1.25
         },
         "v1": {
-          "A": 0.35,
-          "B": 0.5,
-          "C": 0.15
+          "A": 0.45,
+          "B": 0.45,
+          "C": 0.1
         },
         "prev_zone": "B",
-        "adx14": 21.6,
+        "adx14": 21.8,
         "regime": "trend",
         "features": {
           "bias": 1,
-          "v1_logodds_A_vs_B": -0.3567,
-          "v1_logodds_C_vs_B": -1.204,
-          "position_z": 0.7312,
-          "adx14_norm": 0.08,
+          "v1_logodds_A_vs_B": 0,
+          "v1_logodds_C_vs_B": -1.5041,
+          "position_z": 0.9712,
+          "adx14_norm": 0.09,
           "prev_zone_A": 0,
           "prev_zone_C": 0,
           "v2_regime_range": 0
         },
         "breadth": null,
         "shadow_v1": {
-          "A": 0.35,
-          "B": 0.5,
-          "C": 0.15
+          "A": 0.45,
+          "B": 0.45,
+          "C": 0.1
         }
       },
       "raw_probabilities": {
-        "A": 0.21,
-        "B": 0.76,
-        "C": 0.03
+        "A": 0.3,
+        "B": 0.69,
+        "C": 0.02
       }
     },
     "weight_factors": [
@@ -330,10 +330,10 @@
         "name": "logistic_v3",
         "raw": {
           "bias": 1,
-          "v1_logodds_A_vs_B": -0.3567,
-          "v1_logodds_C_vs_B": -1.204,
-          "position_z": 0.7312,
-          "adx14_norm": 0.08,
+          "v1_logodds_A_vs_B": 0,
+          "v1_logodds_C_vs_B": -1.5041,
+          "position_z": 0.9712,
+          "adx14_norm": 0.09,
           "prev_zone_A": 0,
           "prev_zone_C": 0,
           "v2_regime_range": 0
@@ -344,8 +344,8 @@
     ],
     "card": {
       "stateEmoji": "📋",
-      "stateLabel": "2026-10-13 每日结构分析",
-      "structureLine": "2026-10-12 收盘 24,271.2；高点降低 / 低点降低；未突破最近摆动边界。最近确认摆动边界 23,737.14–24,354.11。RSI14 43.5、ATR14 326.09、MA20 24,518.04。",
+      "stateLabel": "2026-10-14 每日结构分析",
+      "structureLine": "2026-10-13 收盘 24,345.22；高点降低 / 低点降低；未突破最近摆动边界。最近确认摆动边界 23,737.14–24,354.11。RSI14 45.1、ATR14 328.33、MA20 24,489.42。",
       "stateTone": "neutral",
       "keyLines": [
         {
@@ -361,15 +361,15 @@
       ]
     },
     "scenario_evidence": {
-      "analysis_id": "HSI-20261013-structure-v1",
+      "analysis_id": "HSI-20261014-structure-v1",
       "last_bar": {
-        "date": "2026-10-12",
-        "open": 24434.93,
-        "high": 24455.95,
-        "low": 24193.3,
-        "close": 24271.2,
-        "turnover_yi": 1626.3,
-        "time": "2026-10-12",
+        "date": "2026-10-13",
+        "open": 24172.09,
+        "high": 24345.22,
+        "low": 23987.77,
+        "close": 24345.22,
+        "turnover_yi": 1875.7,
+        "time": "2026-10-13",
         "completed": true
       },
       "timeframe": "1d",
@@ -380,38 +380,38 @@
   "environment_evidence": {
     "volume_ratio": {
       "status": "available",
-      "value": 0.9182843784937494,
+      "value": 1.0791544887579687,
       "basis": "previous_20_completed_sessions"
     },
     "participation": {
       "status": "available",
-      "as_of": "2026-10-12",
+      "as_of": "2026-10-13",
       "metrics": {
-        "advances": 35,
-        "declines": 58,
+        "advances": 62,
+        "declines": 31,
         "unchanged": 2,
-        "equal_name_breadth": 0.36842105,
-        "weighted_breadth": 0.61958588,
-        "declining_weight_share": 0.36681004,
-        "net_point_contribution": 59.9,
-        "gross_absolute_point_contribution": 321.52,
-        "contribution_direction": 0.18630256,
-        "top_five_absolute_contribution_share": 0.42703409,
-        "concentration_hhi": 0.05132587
+        "equal_name_breadth": 0.65263158,
+        "weighted_breadth": 0.62506251,
+        "declining_weight_share": 0.36923692,
+        "net_point_contribution": 74.02,
+        "gross_absolute_point_contribution": 276.56,
+        "contribution_direction": 0.26764536,
+        "top_five_absolute_contribution_share": 0.3497252,
+        "concentration_hhi": 0.03978434
       },
       "source": {
         "name": "Hang Seng Indexes Constituent Daily Performance",
         "kind": "official_daily_constituent_report",
-        "url": "https://www.hsi.com.hk/api/wsit-hsi-ddoc-ea-public-website-proxy/v1/content/gcs/download?resource=/public-website/webapp/contents/en/indexes/report/hsi/con_12Oct26.pdf",
+        "url": "https://www.hsi.com.hk/api/wsit-hsi-ddoc-ea-public-website-proxy/v1/content/gcs/download?resource=/public-website/webapp/contents/en/indexes/report/hsi/con_13Oct26.pdf",
         "file": "hsi-constituents.pdf",
-        "sha256": "7cb43642b8315b2dd90fc1db143a6d483dae8e5fca953e371880d755a1c32232"
+        "sha256": "293a789cd11ec742ad534600be9673630dda498b1aa4dca2e7163e4a3e05bdaa"
       }
     },
     "overnight": {
       "status": "unavailable",
-      "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-12，IXIC 2026-10-12，FXI 2026-10-12，KWEB 2026-10-09）",
+      "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-13，IXIC 2026-10-13，FXI 2026-10-12，KWEB 2026-10-12）",
       "source": "yahoo-finance-v8-chart",
-      "fetched_at": "2026-10-13T01:13:21.522Z"
+      "fetched_at": "2026-10-14T01:13:13.547Z"
     },
     "night_futures": {
       "status": "unavailable"
@@ -424,7 +424,7 @@
     }
   },
   "intraday_playbook": {
-    "updatedAt": "2026-10-13T01:13:21.522Z",
+    "updatedAt": "2026-10-14T01:13:13.547Z",
     "note": "仅用于区间定位，不是即时操作指令",
     "zones": [
       {

@@ -1,0 +1,2244 @@
+{
+ "meta": {
+  "generated_by": "scripts/backtest-weights.cjs",
+  "repo_commit": "fca85b4836e21db0c9ca0acdc4eb2d8ebc1a25ff",
+  "data_file": "research/backtest/data/hsi-daily-2024-06_2026-10.json",
+  "data_source": "yahoo-finance-v8-chart",
+  "data_candles_sha256": "9d743b690c800ae1b0b55f56abbc9004a4f3047a5f07ace4a3fe805fe8a60fa9",
+  "raw_response_sha256": "2361b360c767c9c84c1aa9ba973903878697baffba5fab6358135504827407a3",
+  "window": [
+   "2024-10-02",
+   "2026-10-09"
+  ],
+  "sessions": 498,
+  "skipped": [],
+  "breadth": "unavailable (no point-in-time history in repo); breadth factor = 0 for all models",
+  "southbound": "not used by any model; research/data/ not present at run time",
+  "baselines": {
+   "uniform": "1/3 each",
+   "hist_freq": "expanding outcome frequency (+1), outcomes < t",
+   "persistence": "PRIMARY: expanding empirical transition P(o_t|o_{t-1}) with +1 smoothing, pairs realised < t",
+   "persistence_fixed": "legacy 0.6/0.2/0.2 on o_{t-1} (kept for comparability)"
+  },
+  "v3_raw_note": "rule-weights-v3_raw = unbounded/unrounded v3 softmax (same frozen W); scoring-only comparison, production keeps [0.10,0.85] step 0.05 (SF-P0-2 needs walk-forward before any change). v3 W was fitted on 2024-10-02..2025-12-15, so that span is in-sample for v3.",
+  "note": "只评估、未调参。Brier 为三类求和形式（0–2，均匀 1/3 基准 = 0.667）。CI 为 10 日移动块 bootstrap 2000 次。BSS = 1 − BS_model/BS_ref。Murphy: BS = REL − RES + UNC（按 0.05 档分组）。",
+  "model": "rule-weights-v3"
+ },
+ "overall": {
+  "n": 498,
+  "rule-weights-v3": {
+   "brier": 0.2894,
+   "brier_ci": {
+    "lo": 0.25,
+    "hi": 0.3308
+   },
+   "logloss": 0.5373,
+   "hit_rate": 0.8193
+  },
+  "rule-weights-v3_raw": {
+   "brier": 0.2668,
+   "brier_ci": {
+    "lo": 0.2226,
+    "hi": 0.3123
+   },
+   "logloss": 0.4465,
+   "hit_rate": 0.8213
+  },
+  "uniform": {
+   "brier": 0.6667,
+   "brier_ci": {
+    "lo": 0.6667,
+    "hi": 0.6667
+   },
+   "logloss": 1.0986,
+   "hit_rate": 0.3333
+  },
+  "hist_freq": {
+   "brier": 0.5892,
+   "brier_ci": {
+    "lo": 0.5541,
+    "hi": 0.625
+   },
+   "logloss": 0.9855,
+   "hit_rate": 0.5572
+  },
+  "persistence": {
+   "brier": 0.3537,
+   "brier_ci": {
+    "lo": 0.3156,
+    "hi": 0.39
+   },
+   "logloss": 0.6147,
+   "hit_rate": 0.7851
+  },
+  "persistence_fixed": {
+   "brier": 0.4119,
+   "brier_ci": {
+    "lo": 0.3862,
+    "hi": 0.436
+   },
+   "logloss": 0.7469,
+   "hit_rate": 0.7851
+  },
+  "rule-weights-v1": {
+   "brier": 0.3818,
+   "brier_ci": {
+    "lo": 0.3519,
+    "hi": 0.4134
+   },
+   "logloss": 0.659,
+   "hit_rate": 0.7791
+  },
+  "rule-weights-v2.1": {
+   "brier": 0.4601,
+   "brier_ci": {
+    "lo": 0.4238,
+    "hi": 0.4952
+   },
+   "logloss": 0.7592,
+   "hit_rate": 0.6707
+  }
+ },
+ "split": {
+  "first_70": {
+   "range": [
+    "2024-10-02",
+    "2026-03-03"
+   ],
+   "n": 348,
+   "rule-weights-v3": {
+    "brier": 0.2805,
+    "brier_ci": {
+     "lo": 0.2313,
+     "hi": 0.3286
+    },
+    "logloss": 0.5254,
+    "hit_rate": 0.829
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2567,
+    "brier_ci": {
+     "lo": 0.2024,
+     "hi": 0.3104
+    },
+    "logloss": 0.4319,
+    "hit_rate": 0.8276
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.576,
+    "brier_ci": {
+     "lo": 0.5363,
+     "hi": 0.6168
+    },
+    "logloss": 0.9564,
+    "hit_rate": 0.5618
+   },
+   "persistence": {
+    "brier": 0.3456,
+    "brier_ci": {
+     "lo": 0.3001,
+     "hi": 0.3925
+    },
+    "logloss": 0.6045,
+    "hit_rate": 0.7931
+   },
+   "persistence_fixed": {
+    "brier": 0.4055,
+    "brier_ci": {
+     "lo": 0.3756,
+     "hi": 0.4354
+    },
+    "logloss": 0.7381,
+    "hit_rate": 0.7931
+   },
+   "rule-weights-v1": {
+    "brier": 0.3779,
+    "brier_ci": {
+     "lo": 0.3387,
+     "hi": 0.4168
+    },
+    "logloss": 0.6548,
+    "hit_rate": 0.7816
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4616,
+    "brier_ci": {
+     "lo": 0.4185,
+     "hi": 0.5052
+    },
+    "logloss": 0.7624,
+    "hit_rate": 0.6753
+   }
+  },
+  "last_30": {
+   "range": [
+    "2026-03-04",
+    "2026-10-09"
+   ],
+   "n": 150,
+   "rule-weights-v3": {
+    "brier": 0.3101,
+    "brier_ci": {
+     "lo": 0.2403,
+     "hi": 0.3767
+    },
+    "logloss": 0.5651,
+    "hit_rate": 0.7967
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2902,
+    "brier_ci": {
+     "lo": 0.2149,
+     "hi": 0.3636
+    },
+    "logloss": 0.4805,
+    "hit_rate": 0.8067
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.6198,
+    "brier_ci": {
+     "lo": 0.5493,
+     "hi": 0.6922
+    },
+    "logloss": 1.053,
+    "hit_rate": 0.5467
+   },
+   "persistence": {
+    "brier": 0.3727,
+    "brier_ci": {
+     "lo": 0.3111,
+     "hi": 0.4313
+    },
+    "logloss": 0.6385,
+    "hit_rate": 0.7667
+   },
+   "persistence_fixed": {
+    "brier": 0.4267,
+    "brier_ci": {
+     "lo": 0.3893,
+     "hi": 0.464
+    },
+    "logloss": 0.7672,
+    "hit_rate": 0.7667
+   },
+   "rule-weights-v1": {
+    "brier": 0.3908,
+    "brier_ci": {
+     "lo": 0.3475,
+     "hi": 0.4352
+    },
+    "logloss": 0.6686,
+    "hit_rate": 0.7733
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4564,
+    "brier_ci": {
+     "lo": 0.4039,
+     "hi": 0.5109
+    },
+    "logloss": 0.7519,
+    "hit_rate": 0.66
+   }
+  }
+ },
+ "by_year": {
+  "2024": {
+   "n": 62,
+   "rule-weights-v3": {
+    "brier": 0.2626,
+    "brier_ci": {
+     "lo": 0.1374,
+     "hi": 0.4038
+    },
+    "logloss": 0.4995,
+    "hit_rate": 0.8387
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2355,
+    "brier_ci": {
+     "lo": 0.099,
+     "hi": 0.3862
+    },
+    "logloss": 0.3947,
+    "hit_rate": 0.8387
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.6269,
+    "brier_ci": {
+     "lo": 0.5363,
+     "hi": 0.7125
+    },
+    "logloss": 1.0415,
+    "hit_rate": 0.5081
+   },
+   "persistence": {
+    "brier": 0.4119,
+    "brier_ci": {
+     "lo": 0.2695,
+     "hi": 0.5495
+    },
+    "logloss": 0.7162,
+    "hit_rate": 0.7581
+   },
+   "persistence_fixed": {
+    "brier": 0.4335,
+    "brier_ci": {
+     "lo": 0.3432,
+     "hi": 0.5239
+    },
+    "logloss": 0.7766,
+    "hit_rate": 0.7581
+   },
+   "rule-weights-v1": {
+    "brier": 0.3634,
+    "brier_ci": {
+     "lo": 0.2676,
+     "hi": 0.4623
+    },
+    "logloss": 0.6457,
+    "hit_rate": 0.8145
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4993,
+    "brier_ci": {
+     "lo": 0.381,
+     "hi": 0.6101
+    },
+    "logloss": 0.8218,
+    "hit_rate": 0.6694
+   }
+  },
+  "2025": {
+   "n": 246,
+   "rule-weights-v3": {
+    "brier": 0.2915,
+    "brier_ci": {
+     "lo": 0.2326,
+     "hi": 0.3521
+    },
+    "logloss": 0.5403,
+    "hit_rate": 0.8232
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2692,
+    "brier_ci": {
+     "lo": 0.2032,
+     "hi": 0.3367
+    },
+    "logloss": 0.4506,
+    "hit_rate": 0.8211
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5785,
+    "brier_ci": {
+     "lo": 0.5334,
+     "hi": 0.624
+    },
+    "logloss": 0.9585,
+    "hit_rate": 0.5528
+   },
+   "persistence": {
+    "brier": 0.3371,
+    "brier_ci": {
+     "lo": 0.2846,
+     "hi": 0.3896
+    },
+    "logloss": 0.5886,
+    "hit_rate": 0.7967
+   },
+   "persistence_fixed": {
+    "brier": 0.4026,
+    "brier_ci": {
+     "lo": 0.3668,
+     "hi": 0.4384
+    },
+    "logloss": 0.7341,
+    "hit_rate": 0.7967
+   },
+   "rule-weights-v1": {
+    "brier": 0.3813,
+    "brier_ci": {
+     "lo": 0.3329,
+     "hi": 0.4294
+    },
+    "logloss": 0.6564,
+    "hit_rate": 0.7724
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4565,
+    "brier_ci": {
+     "lo": 0.4089,
+     "hi": 0.5063
+    },
+    "logloss": 0.7521,
+    "hit_rate": 0.6626
+   }
+  },
+  "2026": {
+   "n": 190,
+   "rule-weights-v3": {
+    "brier": 0.2954,
+    "brier_ci": {
+     "lo": 0.2364,
+     "hi": 0.359
+    },
+    "logloss": 0.5459,
+    "hit_rate": 0.8079
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2738,
+    "brier_ci": {
+     "lo": 0.209,
+     "hi": 0.3454
+    },
+    "logloss": 0.4582,
+    "hit_rate": 0.8158
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5907,
+    "brier_ci": {
+     "lo": 0.5263,
+     "hi": 0.6618
+    },
+    "logloss": 1.0022,
+    "hit_rate": 0.5789
+   },
+   "persistence": {
+    "brier": 0.3562,
+    "brier_ci": {
+     "lo": 0.2991,
+     "hi": 0.414
+    },
+    "logloss": 0.6154,
+    "hit_rate": 0.7789
+   },
+   "persistence_fixed": {
+    "brier": 0.4168,
+    "brier_ci": {
+     "lo": 0.3832,
+     "hi": 0.4547
+    },
+    "logloss": 0.7537,
+    "hit_rate": 0.7789
+   },
+   "rule-weights-v1": {
+    "brier": 0.3884,
+    "brier_ci": {
+     "lo": 0.3513,
+     "hi": 0.4287
+    },
+    "logloss": 0.6666,
+    "hit_rate": 0.7763
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4519,
+    "brier_ci": {
+     "lo": 0.4063,
+     "hi": 0.5008
+    },
+    "logloss": 0.7481,
+    "hit_rate": 0.6816
+   }
+  }
+ },
+ "by_regime_v21": {
+  "range": {
+   "n": 166,
+   "rule-weights-v3": {
+    "brier": 0.3274,
+    "brier_ci": {
+     "lo": 0.2633,
+     "hi": 0.3922
+    },
+    "logloss": 0.5901,
+    "hit_rate": 0.7741
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.3051,
+    "brier_ci": {
+     "lo": 0.2334,
+     "hi": 0.376
+    },
+    "logloss": 0.4996,
+    "hit_rate": 0.7771
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.622,
+    "brier_ci": {
+     "lo": 0.5727,
+     "hi": 0.6721
+    },
+    "logloss": 1.0338,
+    "hit_rate": 0.5
+   },
+   "persistence": {
+    "brier": 0.3771,
+    "brier_ci": {
+     "lo": 0.3049,
+     "hi": 0.4556
+    },
+    "logloss": 0.6533,
+    "hit_rate": 0.7711
+   },
+   "persistence_fixed": {
+    "brier": 0.4231,
+    "brier_ci": {
+     "lo": 0.3749,
+     "hi": 0.4761
+    },
+    "logloss": 0.7623,
+    "hit_rate": 0.7711
+   },
+   "rule-weights-v1": {
+    "brier": 0.386,
+    "brier_ci": {
+     "lo": 0.3369,
+     "hi": 0.4378
+    },
+    "logloss": 0.6661,
+    "hit_rate": 0.762
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.5375,
+    "brier_ci": {
+     "lo": 0.4614,
+     "hi": 0.6117
+    },
+    "logloss": 0.8501,
+    "hit_rate": 0.4849
+   }
+  },
+  "trend": {
+   "n": 332,
+   "rule-weights-v3": {
+    "brier": 0.2704,
+    "brier_ci": {
+     "lo": 0.2188,
+     "hi": 0.3181
+    },
+    "logloss": 0.511,
+    "hit_rate": 0.8419
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2476,
+    "brier_ci": {
+     "lo": 0.1916,
+     "hi": 0.3004
+    },
+    "logloss": 0.42,
+    "hit_rate": 0.8434
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5728,
+    "brier_ci": {
+     "lo": 0.5294,
+     "hi": 0.6191
+    },
+    "logloss": 0.9614,
+    "hit_rate": 0.5858
+   },
+   "persistence": {
+    "brier": 0.342,
+    "brier_ci": {
+     "lo": 0.2938,
+     "hi": 0.3892
+    },
+    "logloss": 0.5954,
+    "hit_rate": 0.7922
+   },
+   "persistence_fixed": {
+    "brier": 0.4063,
+    "brier_ci": {
+     "lo": 0.3749,
+     "hi": 0.4352
+    },
+    "logloss": 0.7392,
+    "hit_rate": 0.7922
+   },
+   "rule-weights-v1": {
+    "brier": 0.3797,
+    "brier_ci": {
+     "lo": 0.3444,
+     "hi": 0.4153
+    },
+    "logloss": 0.6554,
+    "hit_rate": 0.7877
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4214,
+    "brier_ci": {
+     "lo": 0.3926,
+     "hi": 0.4495
+    },
+    "logloss": 0.7138,
+    "hit_rate": 0.7636
+   }
+  }
+ },
+ "by_regime_adx": {
+  "range": {
+   "n": 294,
+   "rule-weights-v3": {
+    "brier": 0.3085,
+    "brier_ci": {
+     "lo": 0.259,
+     "hi": 0.3607
+    },
+    "logloss": 0.5656,
+    "hit_rate": 0.8078
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2886,
+    "brier_ci": {
+     "lo": 0.2332,
+     "hi": 0.346
+    },
+    "logloss": 0.4849,
+    "hit_rate": 0.8095
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.6081,
+    "brier_ci": {
+     "lo": 0.5608,
+     "hi": 0.659
+    },
+    "logloss": 1.02,
+    "hit_rate": 0.5374
+   },
+   "persistence": {
+    "brier": 0.3564,
+    "brier_ci": {
+     "lo": 0.3051,
+     "hi": 0.4077
+    },
+    "logloss": 0.6261,
+    "hit_rate": 0.7857
+   },
+   "persistence_fixed": {
+    "brier": 0.4114,
+    "brier_ci": {
+     "lo": 0.3788,
+     "hi": 0.4441
+    },
+    "logloss": 0.7462,
+    "hit_rate": 0.7857
+   },
+   "rule-weights-v1": {
+    "brier": 0.3872,
+    "brier_ci": {
+     "lo": 0.3497,
+     "hi": 0.4243
+    },
+    "logloss": 0.6657,
+    "hit_rate": 0.7687
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4528,
+    "brier_ci": {
+     "lo": 0.4112,
+     "hi": 0.4947
+    },
+    "logloss": 0.7513,
+    "hit_rate": 0.6718
+   }
+  },
+  "transition": {
+   "n": 121,
+   "rule-weights-v3": {
+    "brier": 0.2783,
+    "brier_ci": {
+     "lo": 0.2051,
+     "hi": 0.3523
+    },
+    "logloss": 0.5174,
+    "hit_rate": 0.814
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2526,
+    "brier_ci": {
+     "lo": 0.1745,
+     "hi": 0.3307
+    },
+    "logloss": 0.42,
+    "hit_rate": 0.8182
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5435,
+    "brier_ci": {
+     "lo": 0.4802,
+     "hi": 0.6164
+    },
+    "logloss": 0.9059,
+    "hit_rate": 0.6157
+   },
+   "persistence": {
+    "brier": 0.3738,
+    "brier_ci": {
+     "lo": 0.2836,
+     "hi": 0.4744
+    },
+    "logloss": 0.6301,
+    "hit_rate": 0.7603
+   },
+   "persistence_fixed": {
+    "brier": 0.4317,
+    "brier_ci": {
+     "lo": 0.3788,
+     "hi": 0.4979
+    },
+    "logloss": 0.7741,
+    "hit_rate": 0.7603
+   },
+   "rule-weights-v1": {
+    "brier": 0.3952,
+    "brier_ci": {
+     "lo": 0.3341,
+     "hi": 0.452
+    },
+    "logloss": 0.6784,
+    "hit_rate": 0.7893
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4887,
+    "brier_ci": {
+     "lo": 0.4359,
+     "hi": 0.5379
+    },
+    "logloss": 0.7948,
+    "hit_rate": 0.6405
+   }
+  },
+  "trend": {
+   "n": 83,
+   "rule-weights-v3": {
+    "brier": 0.238,
+    "brier_ci": {
+     "lo": 0.1437,
+     "hi": 0.349
+    },
+    "logloss": 0.4661,
+    "hit_rate": 0.8675
+   },
+   "rule-weights-v3_raw": {
+    "brier": 0.2101,
+    "brier_ci": {
+     "lo": 0.1025,
+     "hi": 0.3356
+    },
+    "logloss": 0.3492,
+    "hit_rate": 0.8675
+   },
+   "uniform": {
+    "brier": 0.6667,
+    "brier_ci": {
+     "lo": 0.6667,
+     "hi": 0.6667
+    },
+    "logloss": 1.0986,
+    "hit_rate": 0.3333
+   },
+   "hist_freq": {
+    "brier": 0.5888,
+    "brier_ci": {
+     "lo": 0.5101,
+     "hi": 0.6746
+    },
+    "logloss": 0.9795,
+    "hit_rate": 0.5422
+   },
+   "persistence": {
+    "brier": 0.3149,
+    "brier_ci": {
+     "lo": 0.2263,
+     "hi": 0.4066
+    },
+    "logloss": 0.5518,
+    "hit_rate": 0.8193
+   },
+   "persistence_fixed": {
+    "brier": 0.3846,
+    "brier_ci": {
+     "lo": 0.3267,
+     "hi": 0.4424
+    },
+    "logloss": 0.7094,
+    "hit_rate": 0.8193
+   },
+   "rule-weights-v1": {
+    "brier": 0.343,
+    "brier_ci": {
+     "lo": 0.2815,
+     "hi": 0.4066
+    },
+    "logloss": 0.6067,
+    "hit_rate": 0.8012
+   },
+   "rule-weights-v2.1": {
+    "brier": 0.4442,
+    "brier_ci": {
+     "lo": 0.3629,
+     "hi": 0.5295
+    },
+    "logloss": 0.7356,
+    "hit_rate": 0.7108
+   }
+  }
+ },
+ "brier_diff_vs": {
+  "rule-weights-v3 - rule-weights-v3_raw": {
+   "mean": 0.0226,
+   "lo": 0.0174,
+   "hi": 0.0275
+  },
+  "rule-weights-v3 - uniform": {
+   "mean": -0.3773,
+   "lo": -0.4167,
+   "hi": -0.3359
+  },
+  "rule-weights-v3 - hist_freq": {
+   "mean": -0.2998,
+   "lo": -0.3506,
+   "hi": -0.2482
+  },
+  "rule-weights-v3 - persistence": {
+   "mean": -0.0643,
+   "lo": -0.0875,
+   "hi": -0.0418
+  },
+  "rule-weights-v3 - persistence_fixed": {
+   "mean": -0.1225,
+   "lo": -0.1466,
+   "hi": -0.0984
+  },
+  "rule-weights-v3 - rule-weights-v1": {
+   "mean": -0.0924,
+   "lo": -0.1147,
+   "hi": -0.0695
+  },
+  "rule-weights-v3 - rule-weights-v2.1": {
+   "mean": -0.1707,
+   "lo": -0.2108,
+   "hi": -0.1309
+  }
+ },
+ "calibration": {
+  "rule-weights-v3": {
+   "bins": [
+    {
+     "bin": "0.1-0.2",
+     "n": 830,
+     "mean_pred": 0.1044,
+     "freq": 0.0422,
+     "freq_wilson95": [
+      0.0305,
+      0.0581
+     ]
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 82,
+     "mean_pred": 0.222,
+     "freq": 0.2927,
+     "freq_wilson95": [
+      0.2053,
+      0.3987
+     ]
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 60,
+     "mean_pred": 0.3292,
+     "freq": 0.4,
+     "freq_wilson95": [
+      0.2857,
+      0.5263
+     ]
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 28,
+     "mean_pred": 0.4143,
+     "freq": 0.3214,
+     "freq_wilson95": [
+      0.1793,
+      0.5066
+     ]
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 55,
+     "mean_pred": 0.5318,
+     "freq": 0.6545,
+     "freq_wilson95": [
+      0.5225,
+      0.7664
+     ]
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 61,
+     "mean_pred": 0.6295,
+     "freq": 0.5902,
+     "freq_wilson95": [
+      0.465,
+      0.7046
+     ]
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 119,
+     "mean_pred": 0.7307,
+     "freq": 0.7899,
+     "freq_wilson95": [
+      0.7082,
+      0.8535
+     ]
+    },
+    {
+     "bin": "0.8-0.9",
+     "n": 259,
+     "mean_pred": 0.8,
+     "freq": 0.9266,
+     "freq_wilson95": [
+      0.8883,
+      0.9525
+     ]
+    }
+   ],
+   "ece": 0.0758
+  },
+  "rule-weights-v3_raw": {
+   "bins": [
+    {
+     "bin": "0.0-0.1",
+     "n": 682,
+     "mean_pred": 0.0341,
+     "freq": 0.0132,
+     "freq_wilson95": [
+      0.007,
+      0.0249
+     ]
+    },
+    {
+     "bin": "0.1-0.2",
+     "n": 158,
+     "mean_pred": 0.1413,
+     "freq": 0.1899,
+     "freq_wilson95": [
+      0.1364,
+      0.2581
+     ]
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 74,
+     "mean_pred": 0.2483,
+     "freq": 0.2703,
+     "freq_wilson95": [
+      0.1823,
+      0.3809
+     ]
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 54,
+     "mean_pred": 0.355,
+     "freq": 0.3889,
+     "freq_wilson95": [
+      0.2704,
+      0.5221
+     ]
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 29,
+     "mean_pred": 0.4298,
+     "freq": 0.3448,
+     "freq_wilson95": [
+      0.1994,
+      0.5266
+     ]
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 41,
+     "mean_pred": 0.5608,
+     "freq": 0.7073,
+     "freq_wilson95": [
+      0.5552,
+      0.8239
+     ]
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 60,
+     "mean_pred": 0.649,
+     "freq": 0.55,
+     "freq_wilson95": [
+      0.4249,
+      0.6691
+     ]
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 85,
+     "mean_pred": 0.7578,
+     "freq": 0.7412,
+     "freq_wilson95": [
+      0.6391,
+      0.8224
+     ]
+    },
+    {
+     "bin": "0.8-0.9",
+     "n": 175,
+     "mean_pred": 0.848,
+     "freq": 0.8629,
+     "freq_wilson95": [
+      0.804,
+      0.9061
+     ]
+    },
+    {
+     "bin": "0.9-1.0",
+     "n": 136,
+     "mean_pred": 0.9388,
+     "freq": 0.9706,
+     "freq_wilson95": [
+      0.9268,
+      0.9885
+     ]
+    }
+   ],
+   "ece": 0.0322
+  },
+  "uniform": {
+   "bins": [
+    {
+     "bin": "0.3-0.4",
+     "n": 1494,
+     "mean_pred": 0.3333,
+     "freq": 0.3333,
+     "freq_wilson95": [
+      0.3099,
+      0.3576
+     ]
+    }
+   ],
+   "ece": 0
+  },
+  "hist_freq": {
+   "bins": [
+    {
+     "bin": "0.1-0.2",
+     "n": 388,
+     "mean_pred": 0.1523,
+     "freq": 0.1624,
+     "freq_wilson95": [
+      0.129,
+      0.2023
+     ]
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 250,
+     "mean_pred": 0.2594,
+     "freq": 0.212,
+     "freq_wilson95": [
+      0.1659,
+      0.2668
+     ]
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 359,
+     "mean_pred": 0.3382,
+     "freq": 0.2925,
+     "freq_wilson95": [
+      0.2478,
+      0.3415
+     ]
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 213,
+     "mean_pred": 0.4683,
+     "freq": 0.5164,
+     "freq_wilson95": [
+      0.4496,
+      0.5827
+     ]
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 284,
+     "mean_pred": 0.5384,
+     "freq": 0.588,
+     "freq_wilson95": [
+      0.53,
+      0.6437
+     ]
+    }
+   ],
+   "ece": 0.0378
+  },
+  "persistence": {
+   "bins": [
+    {
+     "bin": "0.0-0.1",
+     "n": 447,
+     "mean_pred": 0.0476,
+     "freq": 0.0425,
+     "freq_wilson95": [
+      0.0274,
+      0.0654
+     ]
+    },
+    {
+     "bin": "0.1-0.2",
+     "n": 356,
+     "mean_pred": 0.1381,
+     "freq": 0.132,
+     "freq_wilson95": [
+      0.1008,
+      0.1711
+     ]
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 193,
+     "mean_pred": 0.2262,
+     "freq": 0.2124,
+     "freq_wilson95": [
+      0.1606,
+      0.2755
+     ]
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 3,
+     "mean_pred": 0.5463,
+     "freq": 1,
+     "freq_wilson95": [
+      0.4385,
+      1
+     ]
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 15,
+     "mean_pred": 0.6655,
+     "freq": 0.8667,
+     "freq_wilson95": [
+      0.6212,
+      0.9626
+     ]
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 365,
+     "mean_pred": 0.765,
+     "freq": 0.7863,
+     "freq_wilson95": [
+      0.7414,
+      0.8253
+     ]
+    },
+    {
+     "bin": "0.8-0.9",
+     "n": 115,
+     "mean_pred": 0.8094,
+     "freq": 0.7652,
+     "freq_wilson95": [
+      0.68,
+      0.8333
+     ]
+    }
+   ],
+   "ece": 0.0163
+  },
+  "persistence_fixed": {
+   "bins": [
+    {
+     "bin": "0.2-0.3",
+     "n": 996,
+     "mean_pred": 0.2,
+     "freq": 0.1074,
+     "freq_wilson95": [
+      0.0897,
+      0.1282
+     ]
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 498,
+     "mean_pred": 0.6,
+     "freq": 0.7851,
+     "freq_wilson95": [
+      0.747,
+      0.819
+     ]
+    }
+   ],
+   "ece": 0.1234
+  },
+  "rule-weights-v1": {
+   "bins": [
+    {
+     "bin": "0.1-0.2",
+     "n": 465,
+     "mean_pred": 0.1071,
+     "freq": 0.0065,
+     "freq_wilson95": [
+      0.0022,
+      0.0188
+     ]
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 241,
+     "mean_pred": 0.2145,
+     "freq": 0.0996,
+     "freq_wilson95": [
+      0.0678,
+      0.1439
+     ]
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 169,
+     "mean_pred": 0.3204,
+     "freq": 0.2308,
+     "freq_wilson95": [
+      0.1737,
+      0.2999
+     ]
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 165,
+     "mean_pred": 0.4258,
+     "freq": 0.4061,
+     "freq_wilson95": [
+      0.3341,
+      0.4823
+     ]
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 197,
+     "mean_pred": 0.5228,
+     "freq": 0.7208,
+     "freq_wilson95": [
+      0.6544,
+      0.7788
+     ]
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 127,
+     "mean_pred": 0.615,
+     "freq": 0.8504,
+     "freq_wilson95": [
+      0.7781,
+      0.9021
+     ]
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 130,
+     "mean_pred": 0.7,
+     "freq": 0.8846,
+     "freq_wilson95": [
+      0.8183,
+      0.9288
+     ]
+    }
+   ],
+   "ece": 0.1243
+  },
+  "rule-weights-v2.1": {
+   "bins": [
+    {
+     "bin": "0.1-0.2",
+     "n": 450,
+     "mean_pred": 0.1113,
+     "freq": 0.0178,
+     "freq_wilson95": [
+      0.009,
+      0.0347
+     ]
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 231,
+     "mean_pred": 0.2175,
+     "freq": 0.1688,
+     "freq_wilson95": [
+      0.126,
+      0.2225
+     ]
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 212,
+     "mean_pred": 0.3226,
+     "freq": 0.2736,
+     "freq_wilson95": [
+      0.218,
+      0.3372
+     ]
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 147,
+     "mean_pred": 0.4238,
+     "freq": 0.551,
+     "freq_wilson95": [
+      0.4703,
+      0.6291
+     ]
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 232,
+     "mean_pred": 0.5263,
+     "freq": 0.681,
+     "freq_wilson95": [
+      0.6185,
+      0.7376
+     ]
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 123,
+     "mean_pred": 0.6142,
+     "freq": 0.6748,
+     "freq_wilson95": [
+      0.5878,
+      0.7512
+     ]
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 99,
+     "mean_pred": 0.7,
+     "freq": 0.7172,
+     "freq_wilson95": [
+      0.6216,
+      0.7965
+     ]
+    }
+   ],
+   "ece": 0.0853
+  }
+ },
+ "skill": {
+  "rule-weights-v3": {
+   "uniform": {
+    "bss": 0.5659,
+    "lo": 0.5039,
+    "hi": 0.625
+   },
+   "hist_freq": {
+    "bss": 0.5088,
+    "lo": 0.4343,
+    "hi": 0.5809
+   },
+   "persistence": {
+    "bss": 0.1819,
+    "lo": 0.1178,
+    "hi": 0.2483
+   },
+   "persistence_fixed": {
+    "bss": 0.2974,
+    "lo": 0.2309,
+    "hi": 0.3684
+   }
+  },
+  "rule-weights-v3_raw": {
+   "uniform": {
+    "bss": 0.5998,
+    "lo": 0.5316,
+    "hi": 0.6661
+   },
+   "hist_freq": {
+    "bss": 0.5472,
+    "lo": 0.4657,
+    "hi": 0.6243
+   },
+   "persistence": {
+    "bss": 0.2458,
+    "lo": 0.1714,
+    "hi": 0.3263
+   },
+   "persistence_fixed": {
+    "bss": 0.3523,
+    "lo": 0.2747,
+    "hi": 0.4351
+   }
+  },
+  "rule-weights-v1": {
+   "uniform": {
+    "bss": 0.4273,
+    "lo": 0.3799,
+    "hi": 0.4722
+   },
+   "hist_freq": {
+    "bss": 0.352,
+    "lo": 0.2719,
+    "hi": 0.4222
+   },
+   "persistence": {
+    "bss": -0.0793,
+    "lo": -0.1786,
+    "hi": -0.0004
+   },
+   "persistence_fixed": {
+    "bss": 0.0731,
+    "lo": 0.0164,
+    "hi": 0.1244
+   }
+  },
+  "rule-weights-v2.1": {
+   "uniform": {
+    "bss": 0.3099,
+    "lo": 0.2573,
+    "hi": 0.3643
+   },
+   "hist_freq": {
+    "bss": 0.2192,
+    "lo": 0.1531,
+    "hi": 0.2829
+   },
+   "persistence": {
+    "bss": -0.3006,
+    "lo": -0.4303,
+    "hi": -0.1839
+   },
+   "persistence_fixed": {
+    "bss": -0.117,
+    "lo": -0.1996,
+    "hi": -0.0394
+   }
+  }
+ },
+ "murphy": {
+  "rule-weights-v3": {
+   "brier": 0.2894,
+   "reliability": 0.0336,
+   "resolution": 0.322,
+   "uncertainty": 0.5778,
+   "residual": 0,
+   "bin_width": 0.05
+  },
+  "rule-weights-v3_raw": {
+   "brier": 0.2668,
+   "reliability": 0.0237,
+   "resolution": 0.3343,
+   "uncertainty": 0.5778,
+   "residual": -0.0005,
+   "bin_width": 0.05
+  },
+  "uniform": {
+   "brier": 0.6667,
+   "reliability": 0.0889,
+   "resolution": 0,
+   "uncertainty": 0.5778,
+   "residual": 0,
+   "bin_width": 0.05
+  },
+  "hist_freq": {
+   "brier": 0.5892,
+   "reliability": 0.0206,
+   "resolution": 0.0089,
+   "uncertainty": 0.5778,
+   "residual": -0.0002,
+   "bin_width": 0.05
+  },
+  "persistence": {
+   "brier": 0.3537,
+   "reliability": 0.0131,
+   "resolution": 0.2383,
+   "uncertainty": 0.5778,
+   "residual": 0.0011,
+   "bin_width": 0.05
+  },
+  "persistence_fixed": {
+   "brier": 0.4119,
+   "reliability": 0.0642,
+   "resolution": 0.2301,
+   "uncertainty": 0.5778,
+   "residual": 0,
+   "bin_width": 0.05
+  },
+  "rule-weights-v1": {
+   "brier": 0.3818,
+   "reliability": 0.1159,
+   "resolution": 0.3119,
+   "uncertainty": 0.5778,
+   "residual": 0,
+   "bin_width": 0.05
+  },
+  "rule-weights-v2.1": {
+   "brier": 0.4601,
+   "reliability": 0.0497,
+   "resolution": 0.1674,
+   "uncertainty": 0.5778,
+   "residual": 0,
+   "bin_width": 0.05
+  }
+ },
+ "outcome_freq": {
+  "A": 0.2711,
+  "B": 0.5683,
+  "C": 0.1606
+ },
+ "manual_records": [
+  {
+   "id": "HSI-20260925-D-001",
+   "session": "2026-09-28",
+   "close": 24642.51,
+   "p": {
+    "A": 0.45,
+    "B": 0.35,
+    "C": 0.2
+   },
+   "outcome": "A",
+   "brier": 0.465,
+   "hit": 1,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.4,
+      "C": 0.5
+     },
+     "outcome": "B",
+     "brier": 0.62
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.14
+    },
+    "rule-weights-v3": {
+     "p": {
+      "A": 0.1,
+      "B": 0.65,
+      "C": 0.25
+     },
+     "outcome": "B",
+     "brier": 0.195
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.11578947368421053,
+      "B": 0.8070175438596491,
+      "C": 0.07719298245614035
+     },
+     "outcome": "B",
+     "brier": 0.0566
+    },
+    "persistence_fixed": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.2840466926070039,
+      "B": 0.5525291828793775,
+      "C": 0.16342412451361868
+     },
+     "outcome": "B",
+     "brier": 0.3076
+    }
+   },
+   "model_rules": {
+    "lower": 24357.69,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20260928-D-001",
+   "session": "2026-09-28",
+   "close": 24642.51,
+   "p": {
+    "A": 0.45,
+    "B": 0.35,
+    "C": 0.2
+   },
+   "outcome": "A",
+   "brier": 0.465,
+   "hit": 1,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.4,
+      "C": 0.5
+     },
+     "outcome": "B",
+     "brier": 0.62
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.14
+    },
+    "rule-weights-v3": {
+     "p": {
+      "A": 0.1,
+      "B": 0.65,
+      "C": 0.25
+     },
+     "outcome": "B",
+     "brier": 0.195
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.11578947368421053,
+      "B": 0.8070175438596491,
+      "C": 0.07719298245614035
+     },
+     "outcome": "B",
+     "brier": 0.0566
+    },
+    "persistence_fixed": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.2840466926070039,
+      "B": 0.5525291828793775,
+      "C": 0.16342412451361868
+     },
+     "outcome": "B",
+     "brier": 0.3076
+    }
+   },
+   "model_rules": {
+    "lower": 24357.69,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20260929-D-001",
+   "session": "2026-09-29",
+   "close": 24523.57,
+   "p": {
+    "A": 0.35,
+    "B": 0.45,
+    "C": 0.2
+   },
+   "outcome": "B",
+   "brier": 0.465,
+   "hit": 1,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.5,
+      "C": 0.4
+     },
+     "outcome": "B",
+     "brier": 0.42
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.14
+    },
+    "rule-weights-v3": {
+     "p": {
+      "A": 0.1,
+      "B": 0.8,
+      "C": 0.1
+     },
+     "outcome": "B",
+     "brier": 0.06
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.11538461538461539,
+      "B": 0.8076923076923077,
+      "C": 0.07692307692307693
+     },
+     "outcome": "B",
+     "brier": 0.0562
+    },
+    "persistence_fixed": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.283495145631068,
+      "B": 0.5533980582524272,
+      "C": 0.16310679611650486
+     },
+     "outcome": "B",
+     "brier": 0.3064
+    }
+   },
+   "model_rules": {
+    "lower": 24357.69,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20260930-D-001",
+   "session": "2026-09-30",
+   "close": 24613.27,
+   "p": {
+    "A": 0.25,
+    "B": 0.45,
+    "C": 0.3
+   },
+   "outcome": "none",
+   "brier": null,
+   "hit": null,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.45,
+      "C": 0.45
+     },
+     "outcome": "B",
+     "brier": 0.515
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.14
+    },
+    "rule-weights-v3": {
+     "p": {
+      "A": 0.1,
+      "B": 0.75,
+      "C": 0.15
+     },
+     "outcome": "B",
+     "brier": 0.095
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.11498257839721254,
+      "B": 0.8083623693379791,
+      "C": 0.07665505226480836
+     },
+     "outcome": "B",
+     "brier": 0.0558
+    },
+    "persistence_fixed": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "B",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.28294573643410853,
+      "B": 0.5542635658914729,
+      "C": 0.16279069767441862
+     },
+     "outcome": "B",
+     "brier": 0.3052
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20261002-D-001",
+   "session": "2026-10-02",
+   "close": 23972.29,
+   "p": {
+    "A": 0.35,
+    "B": 0.4,
+    "C": 0.25
+   },
+   "outcome": "C",
+   "brier": 0.845,
+   "hit": 0,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.5,
+      "C": 0.4
+     },
+     "outcome": "C",
+     "brier": 0.62
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.7,
+      "C": 0.2
+     },
+     "outcome": "C",
+     "brier": 1.14
+    },
+    "rule-weights-v3": {
+     "p": {
+      "A": 0.1,
+      "B": 0.8,
+      "C": 0.1
+     },
+     "outcome": "C",
+     "brier": 1.46
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "C",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.11458333333333333,
+      "B": 0.8090277777777778,
+      "C": 0.0763888888888889
+     },
+     "outcome": "C",
+     "brier": 1.5207
+    },
+    "persistence_fixed": {
+     "p": {
+      "A": 0.2,
+      "B": 0.6,
+      "C": 0.2
+     },
+     "outcome": "C",
+     "brier": 1.04
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.28239845261121854,
+      "B": 0.5551257253384912,
+      "C": 0.16247582205029013
+     },
+     "outcome": "C",
+     "brier": 1.0894
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20261005-D-001",
+   "session": "2026-10-05",
+   "close": 24040.34,
+   "p": {
+    "A": 0.45,
+    "B": 0.3,
+    "C": 0.25
+   },
+   "outcome": "A",
+   "brier": 0.455,
+   "hit": 1,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.2,
+      "C": 0.7
+     },
+     "outcome": "C",
+     "brier": 0.14
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.6,
+      "C": 0.3
+     },
+     "outcome": "C",
+     "brier": 0.86
+    },
+    "rule-weights-v3": {
+     "p": {
+      "A": 0.1,
+      "B": 0.15,
+      "C": 0.75
+     },
+     "outcome": "C",
+     "brier": 0.095
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "C",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.011627906976744186,
+      "B": 0.2558139534883721,
+      "C": 0.7325581395348837
+     },
+     "outcome": "C",
+     "brier": 0.1371
+    },
+    "persistence_fixed": {
+     "p": {
+      "A": 0.2,
+      "B": 0.2,
+      "C": 0.6
+     },
+     "outcome": "C",
+     "brier": 0.24
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.28185328185328185,
+      "B": 0.5540540540540541,
+      "C": 0.1640926640926641
+     },
+     "outcome": "C",
+     "brier": 1.0852
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "HSI-20261006-D-001",
+   "session": "2026-10-06",
+   "close": 24280.56,
+   "p": {
+    "A": 0.45,
+    "B": 0.2,
+    "C": 0.35
+   },
+   "outcome": "C",
+   "brier": 0.665,
+   "hit": 0,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.2,
+      "C": 0.7
+     },
+     "outcome": "B",
+     "brier": 1.14
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.6,
+      "C": 0.3
+     },
+     "outcome": "B",
+     "brier": 0.26
+    },
+    "rule-weights-v3": {
+     "p": {
+      "A": 0.1,
+      "B": 0.15,
+      "C": 0.75
+     },
+     "outcome": "B",
+     "brier": 1.295
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.011494252873563218,
+      "B": 0.25287356321839083,
+      "C": 0.735632183908046
+     },
+     "outcome": "B",
+     "brier": 1.0995
+    },
+    "persistence_fixed": {
+     "p": {
+      "A": 0.2,
+      "B": 0.2,
+      "C": 0.6
+     },
+     "outcome": "B",
+     "brier": 1.04
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.2813102119460501,
+      "B": 0.5529865125240848,
+      "C": 0.16570327552986513
+     },
+     "outcome": "B",
+     "brier": 0.3064
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  },
+  {
+   "id": "annotations-2026-10-06",
+   "session": "2026-10-06",
+   "close": 24280.56,
+   "p": {
+    "A": 0.35,
+    "B": 0.45,
+    "C": 0.2
+   },
+   "outcome": "A",
+   "brier": 0.665,
+   "hit": 0,
+   "prob_sum": 1,
+   "models_same_day": {
+    "rule-weights-v1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.2,
+      "C": 0.7
+     },
+     "outcome": "B",
+     "brier": 1.14
+    },
+    "rule-weights-v2.1": {
+     "p": {
+      "A": 0.1,
+      "B": 0.6,
+      "C": 0.3
+     },
+     "outcome": "B",
+     "brier": 0.26
+    },
+    "rule-weights-v3": {
+     "p": {
+      "A": 0.1,
+      "B": 0.15,
+      "C": 0.75
+     },
+     "outcome": "B",
+     "brier": 1.295
+    },
+    "uniform": {
+     "p": {
+      "A": 0.3333333333333333,
+      "B": 0.3333333333333333,
+      "C": 0.3333333333333333
+     },
+     "outcome": "B",
+     "brier": 0.6667
+    },
+    "persistence": {
+     "p": {
+      "A": 0.011494252873563218,
+      "B": 0.25287356321839083,
+      "C": 0.735632183908046
+     },
+     "outcome": "B",
+     "brier": 1.0995
+    },
+    "persistence_fixed": {
+     "p": {
+      "A": 0.2,
+      "B": 0.2,
+      "C": 0.6
+     },
+     "outcome": "B",
+     "brier": 1.04
+    },
+    "hist_freq": {
+     "p": {
+      "A": 0.2813102119460501,
+      "B": 0.5529865125240848,
+      "C": 0.16570327552986513
+     },
+     "outcome": "B",
+     "brier": 0.3064
+    }
+   },
+   "model_rules": {
+    "lower": 24275.56,
+    "upper": 25254.11
+   }
+  }
+ ]
+}

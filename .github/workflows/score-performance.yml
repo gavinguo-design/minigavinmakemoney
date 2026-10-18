@@ -1,0 +1,43 @@
+name: Audit forward prediction performance
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/score-performance.cjs'
+      - 'tests/performance.cjs'
+      - 'investment/chart/daily-generated/**'
+      - 'investment/chart/daily-reviews/**'
+      - 'investment/chart/kline_futu.json'
+      - 'investment/chart/predictions/log.json'
+      - 'investment/chart/trades.json'
+      - '.github/workflows/score-performance.yml'
+  schedule:
+    # 18:10 HKT: independent of successful forecast generation, so missing days remain visible.
+    - cron: '10 10 * * 1-5'
+permissions:
+  contents: write
+concurrency:
+  group: daily-analysis-publication
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/performance.cjs tests/chart-analysis.cjs
+      - name: Recompute from frozen evidence and publish
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git pull --rebase origin main
+          node scripts/score-performance.cjs
+          git add investment/chart/predictions/performance.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Audit forward prediction performance"
+          git push origin HEAD:main

@@ -104,7 +104,7 @@ test('the latest analysis selector and missing archive warning disclose the actu
   vm.runInContext(extract('renderHistSelection'),c);
   c.renderAnalysisAvailability();
   assert.equal(caption.textContent,'当前分析：未发布');
-  assert.equal(select.options[0].textContent,'当前分析（未发布）');
+  assert.equal(select.options[0].textContent,'在线状态（2026-10-08 未发布）');
   assert.match(box.textContent,/2026-10-08 的新剧本尚未发布/);
   assert.match(box.textContent,/缺少分析归档：2026-10-07、2026-10-08/);
 });
@@ -128,13 +128,12 @@ test('loading newer archive dates preserves online mode and does not automatical
   const control={classList:{remove(){}},addEventListener(){}};
   const c=render('initHistCtrl',{
     fetchArchiveIndex:()=>Promise.resolve(['2026-10-06','2026-10-09']),viewingDate:null,
-    archiveDates:[],archiveDateSet:{},latestAnnotations:{meta:{updatedAt:'2026-10-06T08:45:00+08:00'}},
+    archiveDates:[],archiveDateSet:{},historyControlsBound:false,latestAnnotations:{meta:{updatedAt:'2026-10-06T08:45:00+08:00'}},
     selectDefaultAnalysis(){},renderAnalysisAvailability(){},weekdayOf:()=>'',switchToDate:d=>switched.push(d),
     el:id=>id==='histSelect'?select:control,
     document:{createElement:()=>({}),addEventListener(){}},
   });
-  c.initHistCtrl();
-  await Promise.resolve();
+  await c.initHistCtrl();
   assert.equal(select.value,'');
   assert.equal(select.options[0].value,'2026-10-09');
   assert.deepEqual(switched,[]);
@@ -421,7 +420,7 @@ test('refresh defaults to October 9 history when live analysis is October 6, the
     MarketRules:{...MR,analysisAvailability:a=>MR.analysisAvailability(a,when)},
     latestAnnotations:{meta:{updatedAt:'2026-10-06T08:45:00+08:00'}},
     archiveDates:['2026-10-09','2026-10-08','2026-10-06'],viewingDate:null,
-    switchToDate:(d,automatic)=>switched.push([d,automatic]),applyAnnotations:a=>applied.push(a)
+    switchToDate:(d,automatic)=>switched.push([d,automatic]),applyAnnotations:a=>applied.push(a),renderAnalysisAvailability(){}
   });
   await c.selectDefaultAnalysis();assert.deepEqual(switched,[['2026-10-09',true]]);
   c.viewingDate='2026-10-08';c.automaticHistory=false;
@@ -429,7 +428,27 @@ test('refresh defaults to October 9 history when live analysis is October 6, the
   c.automaticHistory=true;c.latestAnnotations={meta:{updatedAt:'2026-10-09T08:45:00+08:00'}};
   await c.selectDefaultAnalysis();assert.deepEqual(switched[1],['',true]);
   c.viewingDate=null;c.latestAnnotations={meta:{updatedAt:'2026-10-06T08:45:00+08:00'}};c.archiveDates=['2026-10-06'];
-  await c.selectDefaultAnalysis();assert.equal(switched.length,2);assert.equal(applied.length,1);
+  await c.selectDefaultAnalysis();assert.deepEqual(switched[2],['2026-10-06',true]);
+});
+test('default selection skips the October 16 carryover, manual refresh returns to newest and background refresh preserves choice',async()=>{
+  const switched=[];
+  const c=render('selectDefaultAnalysis',{
+    MarketRules:{...MR,analysisAvailability:a=>MR.analysisAvailability(a,at('2026-10-18T18:00:00'))},
+    latestAnnotations:{meta:{updatedAt:'2026-10-15T08:45:00+08:00'}},archiveDates:['2026-10-16','2026-10-15','2026-10-14'],viewingDate:null,
+    switchToDate:async(d,automatic)=>{switched.push([d,automatic]);return d!=='2026-10-16';},applyAnnotations(){},renderAnalysisAvailability(){}
+  });
+  await c.selectDefaultAnalysis();assert.deepEqual(switched,[['2026-10-16',true],['2026-10-15',true]]);
+  c.viewingDate='2026-10-14';c.automaticHistory=false;await c.selectDefaultAnalysis();assert.equal(switched.length,2);
+  await c.selectDefaultAnalysis(true);assert.equal(switched.length,4);assert.deepEqual(switched[3],['2026-10-15',true]);
+});
+test('superseded automatic date request stops fallback instead of overwriting a newer manual choice',async()=>{
+  const switched=[];
+  const c=render('selectDefaultAnalysis',{
+    MarketRules:{...MR,analysisAvailability:()=>({status:'stale',expected:'2026-10-16'})},latestAnnotations:{},
+    archiveDates:['2026-10-16','2026-10-15'],viewingDate:null,
+    switchToDate:async d=>{switched.push(d);return null;},applyAnnotations(){}
+  });
+  await c.selectDefaultAnalysis();assert.deepEqual(switched,['2026-10-16']);
 });
 test('expired online analysis never renders its narrative, levels or plan, while a manual archive preserves them',()=>{
   const original={meta:{analysis_id:'old',updatedAt:'2026-10-06T08:45:00+08:00'},forecast:{summary:'old guidance'},levels:[{price:1}]};

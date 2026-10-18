@@ -8,7 +8,7 @@ on:
         default: preopen
   push:
     branches: [main]
-    paths: ['scripts/daily-analysis.cjs', 'scripts/publish-daily-analysis.cjs', 'scripts/weights-v3.cjs', 'scripts/v4-weights.cjs', 'scripts/v4-preopen-data.cjs', 'research/v4/model-v4.json', 'scripts/check-daily-publication.cjs', 'tests/**', 'investment/chart/index.html', 'investment/chart/market-rules.js', '.github/workflows/daily-analysis.yml']
+    paths: ['scripts/daily-analysis.cjs', 'scripts/publish-daily-analysis.cjs', 'scripts/score-performance.cjs', 'scripts/weights-v3.cjs', 'scripts/v4-weights.cjs', 'scripts/v4-preopen-data.cjs', 'research/v4/model-v4.json', 'scripts/check-daily-publication.cjs', 'tests/**', 'investment/chart/index.html', 'investment/chart/track/**', 'investment/chart/market-rules.js', '.github/workflows/daily-analysis.yml']
   schedule:
     # HKT 08:45 generation and 16:20 close review; script checks HKEX calendar.
     - cron: '45 0 * * 1-5'
@@ -58,4 +58,14 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Publish daily HSI analysis or close review"
           git pull --rebase origin main
+          git push origin HEAD:main
+      # Bot commits do not trigger another Actions workflow. Recompute explicitly
+      # after the forecast/review commit exists so publication evidence is verifiable.
+      - name: Refresh forward performance ledger
+        run: |
+          git pull --rebase origin main
+          node scripts/score-performance.cjs
+          git add investment/chart/predictions/performance.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Refresh forward prediction scorecard"
           git push origin HEAD:main

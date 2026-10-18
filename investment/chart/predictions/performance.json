@@ -1,0 +1,683 @@
+{
+  "schema_version": 1,
+  "policy": "forward-scorecard-v1",
+  "generated_at": "2026-10-18T15:54:25.387Z",
+  "through_session": "2026-10-16",
+  "market_data_updated_at": "2026-10-16T16:30:14+08:00",
+  "notes": {
+    "outcome": "仅核算发布当日收盘落点：A 上边界及以上，B 区间内，C 下边界以下；不代表当日涨跌方向或逐日曲线。",
+    "baselines": "同一批样本；固定 B 和前收盘所在区均为 100% 单类基准，均分基准为各 1/3。并列最高按 1/并列数计命中分。",
+    "interpretation": "展示全部可核验样本及分母，小样本仅描述事实，不据此宣称稳定优势。",
+    "observation": "价格触及与收盘条件分开记录，不推定交易触发或成交；未验证收益保持空值。"
+  },
+  "coverage": {
+    "start": "2026-10-12",
+    "expected": 5,
+    "scored": 4,
+    "missing_forecasts": [
+      "2026-10-16"
+    ],
+    "excluded": [],
+    "missing_market_data": [],
+    "review_issues": []
+  },
+  "summary": {
+    "model": {
+      "n": 4,
+      "hit_credit": 4,
+      "hit_rate": 1,
+      "mean_brier": 0.15625
+    },
+    "baselines": {
+      "always_b": {
+        "n": 4,
+        "hit_credit": 4,
+        "hit_rate": 1,
+        "mean_brier": 0
+      },
+      "previous_close_zone": {
+        "n": 4,
+        "hit_credit": 4,
+        "hit_rate": 1,
+        "mean_brier": 0
+      },
+      "uniform": {
+        "n": 4,
+        "hit_credit": 1.333333,
+        "hit_rate": 0.333333,
+        "mean_brier": 0.666667
+      }
+    },
+    "by_version": {
+      "rule-weights-v3": {
+        "n": 4,
+        "hit_credit": 4,
+        "hit_rate": 1,
+        "mean_brier": 0.15625
+      }
+    }
+  },
+  "sessions": [
+    {
+      "date": "2026-10-12",
+      "analysis_id": "HSI-20261012-structure-v1",
+      "forecast_file": "investment/chart/daily-generated/2026-10-12.json",
+      "forecast_sha256": "5e194ac9e01e091a2e447ffcf9bc8cf9248ae194c86269420fcb4cb59a3c84a8",
+      "publication_proof": {
+        "commit": "80c504d46a46c909bc1cd1ebf68af847a8ba26d7",
+        "committed_at": "2026-10-12T01:17:12Z",
+        "sha256": "5e194ac9e01e091a2e447ffcf9bc8cf9248ae194c86269420fcb4cb59a3c84a8"
+      },
+      "model": "rule-weights-v3",
+      "fallback": null,
+      "probabilities": {
+        "A": 0.15,
+        "B": 0.75,
+        "C": 0.1
+      },
+      "rules": {
+        "A": {
+          "operator": "gte",
+          "value": 24354.11
+        },
+        "B": {
+          "operator": "range",
+          "lower": 23835.68,
+          "upper": 24354.11
+        },
+        "C": {
+          "operator": "lt",
+          "value": 23835.68
+        }
+      },
+      "status": "scored",
+      "close": 24271.2,
+      "actual": "B",
+      "result": {
+        "brier": 0.095,
+        "top": [
+          "B"
+        ],
+        "top_hit_credit": 1
+      },
+      "baselines": {
+        "always_b": {
+          "brier": 0,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 1
+        },
+        "previous_close_zone": {
+          "brier": 0,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 1
+        },
+        "uniform": {
+          "brier": 0.666667,
+          "top": [
+            "A",
+            "B",
+            "C"
+          ],
+          "top_hit_credit": 0.3333333333333333
+        }
+      },
+      "review_status": "verified",
+      "price_observations": [
+        {
+          "id": "A",
+          "target": 24444,
+          "target_touched_same_session": true,
+          "close_condition_met": false
+        },
+        {
+          "id": "B",
+          "target": 23500,
+          "target_touched_same_session": false,
+          "close_condition_met": true
+        },
+        {
+          "id": "C",
+          "target": 23500,
+          "target_touched_same_session": false,
+          "close_condition_met": false
+        }
+      ],
+      "trade_result": "unverified"
+    },
+    {
+      "date": "2026-10-13",
+      "analysis_id": "HSI-20261013-structure-v1",
+      "forecast_file": "investment/chart/daily-generated/2026-10-13.json",
+      "forecast_sha256": "48f158e64bd81b9662e477beec7eb24c9f20e06e687e60267a3ce047c251299e",
+      "publication_proof": {
+        "commit": "f221c4fb7020c980b4fb167ece888e8a8c131fa4",
+        "committed_at": "2026-10-13T01:13:22Z",
+        "sha256": "48f158e64bd81b9662e477beec7eb24c9f20e06e687e60267a3ce047c251299e"
+      },
+      "model": "rule-weights-v3",
+      "fallback": {
+        "intended": "rule-weights-v4",
+        "used": "rule-weights-v3",
+        "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-12，IXIC 2026-10-12，FXI 2026-10-12，KWEB 2026-10-09）"
+      },
+      "probabilities": {
+        "A": 0.2,
+        "B": 0.7,
+        "C": 0.1
+      },
+      "rules": {
+        "A": {
+          "operator": "gte",
+          "value": 24354.11
+        },
+        "B": {
+          "operator": "range",
+          "lower": 23737.14,
+          "upper": 24354.11
+        },
+        "C": {
+          "operator": "lt",
+          "value": 23737.14
+        }
+      },
+      "status": "scored",
+      "close": 24345.22,
+      "actual": "B",
+      "result": {
+        "brier": 0.14,
+        "top": [
+          "B"
+        ],
+        "top_hit_credit": 1
+      },
+      "baselines": {
+        "always_b": {
+          "brier": 0,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 1
+        },
+        "previous_close_zone": {
+          "brier": 0,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 1
+        },
+        "uniform": {
+          "brier": 0.666667,
+          "top": [
+            "A",
+            "B",
+            "C"
+          ],
+          "top_hit_credit": 0.3333333333333333
+        }
+      },
+      "review_status": "verified",
+      "price_observations": [
+        {
+          "id": "A",
+          "target": 24444,
+          "target_touched_same_session": false,
+          "close_condition_met": false
+        },
+        {
+          "id": "B",
+          "target": 23500,
+          "target_touched_same_session": false,
+          "close_condition_met": true
+        },
+        {
+          "id": "C",
+          "target": 23500,
+          "target_touched_same_session": false,
+          "close_condition_met": false
+        }
+      ],
+      "trade_result": "unverified"
+    },
+    {
+      "date": "2026-10-14",
+      "analysis_id": "HSI-20261014-structure-v1",
+      "forecast_file": "investment/chart/daily-generated/2026-10-14.json",
+      "forecast_sha256": "f4c3fa996a9338f53daa33831a2db1263268a59970e40dc2b3afabf69b7ea5cc",
+      "publication_proof": {
+        "commit": "78fa65fe02b377f95544e57bcbabc2cb9ad4266f",
+        "committed_at": "2026-10-14T01:13:13Z",
+        "sha256": "f4c3fa996a9338f53daa33831a2db1263268a59970e40dc2b3afabf69b7ea5cc"
+      },
+      "model": "rule-weights-v3",
+      "fallback": {
+        "intended": "rule-weights-v4",
+        "used": "rule-weights-v3",
+        "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-12，GSPC 2026-10-13，IXIC 2026-10-13，FXI 2026-10-12，KWEB 2026-10-12）"
+      },
+      "probabilities": {
+        "A": 0.25,
+        "B": 0.65,
+        "C": 0.1
+      },
+      "rules": {
+        "A": {
+          "operator": "gte",
+          "value": 24354.11
+        },
+        "B": {
+          "operator": "range",
+          "lower": 23737.14,
+          "upper": 24354.11
+        },
+        "C": {
+          "operator": "lt",
+          "value": 23737.14
+        }
+      },
+      "status": "scored",
+      "close": 24314.17,
+      "actual": "B",
+      "result": {
+        "brier": 0.195,
+        "top": [
+          "B"
+        ],
+        "top_hit_credit": 1
+      },
+      "baselines": {
+        "always_b": {
+          "brier": 0,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 1
+        },
+        "previous_close_zone": {
+          "brier": 0,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 1
+        },
+        "uniform": {
+          "brier": 0.666667,
+          "top": [
+            "A",
+            "B",
+            "C"
+          ],
+          "top_hit_credit": 0.3333333333333333
+        }
+      },
+      "review_status": "verified",
+      "price_observations": [
+        {
+          "id": "A",
+          "target": 24444,
+          "target_touched_same_session": true,
+          "close_condition_met": false
+        },
+        {
+          "id": "B",
+          "target": 23500,
+          "target_touched_same_session": false,
+          "close_condition_met": true
+        },
+        {
+          "id": "C",
+          "target": 23500,
+          "target_touched_same_session": false,
+          "close_condition_met": false
+        }
+      ],
+      "trade_result": "unverified"
+    },
+    {
+      "date": "2026-10-15",
+      "analysis_id": "HSI-20261015-structure-v1",
+      "forecast_file": "investment/chart/daily-generated/2026-10-15.json",
+      "forecast_sha256": "863d43b9ed7fbb248e01235cfeaddc107bcfacea05c3785aadb1f6a4196949b3",
+      "publication_proof": {
+        "commit": "e11010c88dadd9629aebdc0677cee7c094954151",
+        "committed_at": "2026-10-15T01:12:54Z",
+        "sha256": "863d43b9ed7fbb248e01235cfeaddc107bcfacea05c3785aadb1f6a4196949b3"
+      },
+      "model": "rule-weights-v3",
+      "fallback": {
+        "intended": "rule-weights-v4",
+        "used": "rule-weights-v3",
+        "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-14，GSPC 2026-10-14，IXIC 2026-10-14，FXI 2026-10-14，KWEB 2026-10-13）"
+      },
+      "probabilities": {
+        "A": 0.25,
+        "B": 0.65,
+        "C": 0.1
+      },
+      "rules": {
+        "A": {
+          "operator": "gte",
+          "value": 24354.11
+        },
+        "B": {
+          "operator": "range",
+          "lower": 23737.14,
+          "upper": 24354.11
+        },
+        "C": {
+          "operator": "lt",
+          "value": 23737.14
+        }
+      },
+      "status": "scored",
+      "close": 24062.72,
+      "actual": "B",
+      "result": {
+        "brier": 0.195,
+        "top": [
+          "B"
+        ],
+        "top_hit_credit": 1
+      },
+      "baselines": {
+        "always_b": {
+          "brier": 0,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 1
+        },
+        "previous_close_zone": {
+          "brier": 0,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 1
+        },
+        "uniform": {
+          "brier": 0.666667,
+          "top": [
+            "A",
+            "B",
+            "C"
+          ],
+          "top_hit_credit": 0.3333333333333333
+        }
+      },
+      "review_status": "verified",
+      "price_observations": [
+        {
+          "id": "A",
+          "target": 24444,
+          "target_touched_same_session": false,
+          "close_condition_met": false
+        },
+        {
+          "id": "B",
+          "target": 23500,
+          "target_touched_same_session": false,
+          "close_condition_met": true
+        },
+        {
+          "id": "C",
+          "target": 23500,
+          "target_touched_same_session": false,
+          "close_condition_met": false
+        }
+      ],
+      "trade_result": "unverified"
+    },
+    {
+      "date": "2026-10-16",
+      "status": "missing_forecast",
+      "reason": "当日未发布正式预测；不补造，不计为命中。"
+    }
+  ],
+  "legacy": [
+    {
+      "id": "HSI-20260925-D-001",
+      "created_at": "2026-09-25T19:45:00+08:00",
+      "original_status": "部分命中",
+      "original_outcome": {
+        "settledAt": "2026-10-02T16:45:00+08:00",
+        "priceAtHorizon": 23972.29,
+        "hitScenario": "B（跌破24276后的回调路径·下看24000）；C触发条件（连破24,276/24,000）同日满足",
+        "directionHit": true,
+        "conditionTriggered": [
+          "10/2 收盘跌破 24,276（主情景失效位，收盘 23,972.29）",
+          "10/2 收盘跌破 24,000（同日）"
+        ],
+        "mfe": 644.8,
+        "mae": 257.1,
+        "pnlPct": -2.19,
+        "note": "提前结算：invalidCondition『收盘跌破24,276→主情景失效』于第4个交易日（10/2）收盘确认触发。主判断『24,276–24,650弱势震荡』区间框架失效（10/2跳空低开513点后收盘23,972单日连破三关），但中性偏空方向与情景B下行路径命中——B目标24,000当日到达并击穿（盘中低点23,865.33），故记部分命中而非完全失效。MFE 644.8点（按偏空方向：基准24,510.1→10/2低点23,865.33）/ MAE 257.1点（9/28高点24,767.22−基准）；pnlPct=−2.19%为基准价→结算日收盘涨跌幅。rr快照验证：做多R/R 0.6『不划算→观望』正确——做多触发条件（收盘站回24,650）整个跟踪期始终未满足。10/2量比0.90缩量下跌，南向假期关闭无确认。"
+      },
+      "declared_end": "2026-10-13",
+      "calendar_end": "2026-10-08",
+      "calendar_status": "mismatch",
+      "main_scenarios": [
+        "A · 守住24276后的震荡修复路径"
+      ],
+      "status": "expired_audited",
+      "direction_hit": null,
+      "main_scenario_hit": null,
+      "net_pnl": null,
+      "reason": "旧情景含文字条件，不纳入每日 A/B/C 命中率；行情涨跌幅不是交易收益。",
+      "close": 24345.22,
+      "market_change_pct": -0.672702,
+      "path_complete": true,
+      "reference_levels": {
+        "target": 24650,
+        "invalidation": 24276,
+        "target_touched": true,
+        "invalidation_touched": true,
+        "meaning": "全窗口价格触及，仅为观察；不推定入场、止损成交或先后顺序"
+      }
+    },
+    {
+      "id": "HSI-20260928-D-001",
+      "created_at": "2026-09-28T08:45:00+08:00",
+      "original_status": "部分命中",
+      "original_outcome": {
+        "settledAt": "2026-10-02T16:45:00+08:00",
+        "priceAtHorizon": 23972.29,
+        "hitScenario": "B（跌破24276后的回调路径·下看24000）；C触发条件（连破24,276/24,000）同日满足",
+        "directionHit": true,
+        "conditionTriggered": [
+          "10/2 收盘跌破 24,276（主情景失效位，收盘 23,972.29）",
+          "10/2 收盘跌破 24,000（同日）"
+        ],
+        "mfe": 644.8,
+        "mae": 257.1,
+        "pnlPct": -2.19,
+        "note": "提前结算（盘前冻结版，与 HSI-20260925-D-001 同框架）：invalidCondition『收盘跌破24,276→主情景失效』于10/2收盘确认触发。『24,276–24,650弱势震荡』区间框架失效，但中性偏空方向与情景B下行路径命中（B目标24,000当日到达并击穿，盘中低点23,865.33），记部分命中。MFE 644.8点 / MAE 257.1点（口径同25日版：基准24,510.1，偏空方向）；pnlPct=−2.19%（基准→结算收盘）。rr快照验证：做多R/R 0.6『不划算→开盘观望』正确，站回24,650触发条件整个跟踪期未满足，强势条件未误触发。10/2量比0.90缩量下跌，南向假期关闭。"
+      },
+      "declared_end": "2026-10-14",
+      "calendar_end": "2026-10-09",
+      "calendar_status": "mismatch",
+      "main_scenarios": [
+        "A · 守住24276后的震荡修复路径"
+      ],
+      "status": "expired_audited",
+      "direction_hit": null,
+      "main_scenario_hit": null,
+      "net_pnl": null,
+      "reason": "旧情景含文字条件，不纳入每日 A/B/C 命中率；行情涨跌幅不是交易收益。",
+      "close": 24314.17,
+      "market_change_pct": -0.799385,
+      "path_complete": true,
+      "reference_levels": {
+        "target": 24650,
+        "invalidation": 24276,
+        "target_touched": true,
+        "invalidation_touched": true,
+        "meaning": "全窗口价格触及，仅为观察；不推定入场、止损成交或先后顺序"
+      }
+    },
+    {
+      "id": "HSI-20260929-D-001",
+      "created_at": "2026-09-29T08:50:00+08:00",
+      "original_status": "部分命中",
+      "original_outcome": {
+        "settledAt": "2026-10-02T16:45:00+08:00",
+        "priceAtHorizon": 23972.29,
+        "hitScenario": "B（缺口上沿受阻回落路径·下看24276→24000）：核心条件9/29已确认，T1 24,276 / T2 24,000 于10/2同日连破",
+        "directionHit": true,
+        "conditionTriggered": [
+          "9/29 B核心条件 rej_gap 收盘确认（触及24,648上方后收盘收于其下）",
+          "10/2 收盘跌破 24,276（主情景失效位）",
+          "10/2 收盘跌破 24,000（同日）"
+        ],
+        "mfe": 777.2,
+        "mae": 6.1,
+        "pnlPct": -2.72,
+        "note": "提前结算：invalidCondition『收盘跌破24,276→主情景失效』于10/2收盘确认触发。最高概率情景B（0.45）核心条件9/29已收盘确认，10/2跳空破位一日连破24,537/24,276/24,000三关，B下行路径兑现至T2 24,000并击穿（盘中低点23,865.33）；但『24,000附近获支撑后企稳』未确认（收盘23,972已低于24,000）、9/30曾收复极性位中断B重复确认链、A剧本9/29作废，综合记部分命中。MFE 777.2点（基准24,642.51→10/2低点23,865.33）/ MAE 仅6.1点（9/29高点24,648.64−基准，几乎无不利偏移）；pnlPct=−2.72%（基准→结算收盘）。10/2量比0.90缩量下跌（low_vol无量确认未达标），南向假期关闭。"
+      },
+      "declared_end": "2026-10-15",
+      "calendar_end": "2026-10-12",
+      "calendar_status": "mismatch",
+      "main_scenarios": [
+        "B · 缺口上沿受阻回落路径（下看24276→24000）"
+      ],
+      "status": "expired_audited",
+      "direction_hit": null,
+      "main_scenario_hit": null,
+      "net_pnl": null,
+      "reason": "旧情景含文字条件，不纳入每日 A/B/C 命中率；行情涨跌幅不是交易收益。",
+      "close": 24062.72,
+      "market_change_pct": -2.352804,
+      "path_complete": true,
+      "reference_levels": {
+        "target": 25060,
+        "invalidation": 24537,
+        "target_touched": false,
+        "invalidation_touched": true,
+        "meaning": "全窗口价格触及，仅为观察；不推定入场、止损成交或先后顺序"
+      }
+    },
+    {
+      "id": "HSI-20260930-D-001",
+      "created_at": "2026-09-30T08:50:00+08:00",
+      "original_status": "进行中",
+      "original_outcome": null,
+      "declared_end": "2026-10-16",
+      "calendar_end": "2026-10-13",
+      "calendar_status": "mismatch",
+      "main_scenarios": [
+        "B · 极性位承压下探路径（测试24276→若失守看24000）"
+      ],
+      "status": "expired_audited",
+      "direction_hit": null,
+      "main_scenario_hit": null,
+      "net_pnl": null,
+      "reason": "旧情景含文字条件，不纳入每日 A/B/C 命中率；行情涨跌幅不是交易收益。",
+      "close": 24186.83,
+      "market_change_pct": -1.373128,
+      "path_complete": true,
+      "reference_levels": {
+        "target": 24000,
+        "invalidation": 24648,
+        "target_touched": true,
+        "invalidation_touched": false,
+        "meaning": "全窗口价格触及，仅为观察；不推定入场、止损成交或先后顺序"
+      }
+    },
+    {
+      "id": "HSI-20261002-D-001",
+      "created_at": "2026-10-02T08:45:00+08:00",
+      "original_status": "进行中",
+      "original_outcome": null,
+      "declared_end": "2026-10-15",
+      "calendar_end": "2026-10-14",
+      "calendar_status": "mismatch",
+      "main_scenarios": [
+        "B · 24648受阻回落、重新失守极性位路径（测试24276→若失守看24000）"
+      ],
+      "status": "expired_audited",
+      "direction_hit": null,
+      "main_scenario_hit": null,
+      "net_pnl": null,
+      "reason": "旧情景含文字条件，不纳入每日 A/B/C 命中率；行情涨跌幅不是交易收益。",
+      "close": 24062.72,
+      "market_change_pct": -2.236802,
+      "path_complete": true,
+      "reference_levels": {
+        "target": 24000,
+        "invalidation": 24648,
+        "target_touched": true,
+        "invalidation_touched": false,
+        "meaning": "全窗口价格触及，仅为观察；不推定入场、止损成交或先后顺序"
+      }
+    },
+    {
+      "id": "HSI-20261005-D-001",
+      "created_at": "2026-10-05T08:45:00+08:00",
+      "original_status": "进行中",
+      "original_outcome": null,
+      "declared_end": "2026-10-12",
+      "calendar_end": "2026-10-12",
+      "calendar_status": "mismatch",
+      "main_scenarios": [
+        "A · 弱反抽·空点确认（基准）"
+      ],
+      "status": "expired_audited",
+      "direction_hit": false,
+      "main_scenario_hit": null,
+      "net_pnl": null,
+      "reason": "旧情景含文字条件，不纳入每日 A/B/C 命中率；行情涨跌幅不是交易收益。",
+      "close": 24271.2,
+      "market_change_pct": 1.246898,
+      "path_complete": true,
+      "reference_levels": {
+        "target": 23500,
+        "invalidation": 24444,
+        "target_touched": false,
+        "invalidation_touched": true,
+        "meaning": "全窗口价格触及，仅为观察；不推定入场、止损成交或先后顺序"
+      }
+    },
+    {
+      "id": "HSI-20261006-D-001",
+      "created_at": "2026-10-06T08:45:00+08:00",
+      "original_status": "进行中",
+      "original_outcome": null,
+      "declared_end": "2026-10-13",
+      "calendar_end": "2026-10-13",
+      "calendar_status": "mismatch",
+      "main_scenarios": [
+        "A · 弱反抽延续·空点确认（基准）"
+      ],
+      "status": "expired_audited",
+      "direction_hit": false,
+      "main_scenario_hit": null,
+      "net_pnl": null,
+      "reason": "旧情景含文字条件，不纳入每日 A/B/C 命中率；行情涨跌幅不是交易收益。",
+      "close": 24345.22,
+      "market_change_pct": 1.268202,
+      "path_complete": true,
+      "reference_levels": {
+        "target": 23500,
+        "invalidation": 24444,
+        "target_touched": false,
+        "invalidation_touched": true,
+        "meaning": "全窗口价格触及，仅为观察；不推定入场、止损成交或先后顺序"
+      }
+    }
+  ],
+  "trades": {
+    "recorded": 1,
+    "open": 1,
+    "closed": 0,
+    "verified_net_pnl": null,
+    "status": "unverified",
+    "reason": "尚无统一核验的开平仓成交、产品乘数、费用及预测关联；不以指数涨跌或 MFE/MAE 代替净收益。"
+  },
+  "input_sha256": {
+    "kline_futu.json": "e13277cf9c198967a7530a10912719dda96f7b87b5e34011d423188c03ca13dc",
+    "predictions/log.json": "923f0fd07e75973b4a8d36eda7425c16469cf6db04d4070f391c6b74b3193837",
+    "trades.json": "b2c3d997f111c0d815c9e2a2fea38863548a7926c11dfc4e72c91f245ba99e85"
+  }
+}

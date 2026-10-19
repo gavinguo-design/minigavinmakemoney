@@ -12,7 +12,7 @@ const H = JSON.parse(fs.readFileSync(path.join(root, 'research/v4/data/HSI.json'
 const lines = fs.readFileSync(path.join(root, 'research/v4/predictions.csv'), 'utf8').trim().split('\n'), head = lines[0].split(',');
 const col = KEYS.map(k => head.indexOf(K + '_' + k)); if (col.some(c => c < 0)) throw Error('missing v4 columns');
 const pred = new Map(lines.slice(1).map(l => { const x = l.split(','); return [x[0], col.map(c => x[c])]; }));
-const round = (raw, b) => DA.boundedRound(raw, b), bounds = {min: 0.10, max: 0.85, step: 0.05};
+const round = (raw, b) => DA.boundedRound(raw, b), bounds = G.RW_BOUNDS; // = v4 published format (round1 C5)
 const rows = [];
 for (const s of S) {
   if (s.date < '2016-01-01') continue;
@@ -29,7 +29,7 @@ const q = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.floo
 const r6 = v => Math.round(v * 1e6) / 1e6;
 const stats = {n: wf.length, mean: r6(sk.reduce((a, b) => a + b, 0) / sk.length), mdd: r6(mdd), roll60_p1: r6(q(roll, 0.01)), roll60_p5: r6(q(roll, 0.05)), roll60_p50: r6(q(roll, 0.5)), roll60_min: r6(Math.min(...roll)), frac_roll60_below0: r6(roll.filter(v => v < 0).length / roll.length)};
 const out = {generated_by: 'scripts/rw-guard-seed.cjs', model: K + ' (= production rule-weights-v4 spec)', rw: G.RW_VERSION, window: [rows[0].date, rows.at(-1).date], n: rows.length,
-  note: 'v4 = frozen walk-forward predictions (fit on years < Y), RW = zero-parameter Gaussian random walk; both through production boundedRound. 2026 rows are out-of-sample reference. Live reviews supersede these rows by date.',
+  note: 'v4 = frozen walk-forward predictions (fit on years < Y), RW = zero-parameter Gaussian random walk; both through the v4 published format boundedRound [0.03,0.95]/0.01. 2026 rows are out-of-sample reference. Live reviews supersede these rows by date.',
   wf_stats_2016_2025: stats, rows};
 fs.writeFileSync(path.join(root, 'research/v4/rw-guard-seed.json'), JSON.stringify(out) + '\n');
 console.log(JSON.stringify({n: rows.length, window: out.window, stats}, null, 1));

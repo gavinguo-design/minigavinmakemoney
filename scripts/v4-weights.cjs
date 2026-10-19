@@ -20,7 +20,12 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const SPEC = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'research/v4/model-v4.json'), 'utf8'));
 const WEIGHT_MODEL_V4_CANDIDATE = Object.freeze({version: SPEC.version, features: SPEC.features, W: SPEC.W, standardize: SPEC.standardize, bounds: SPEC.bounds, lambda: SPEC.lambda, trained_on: SPEC.trained_on});
 // Production identity of the frozen candidate: identical coefficients/standardisation, production version label.
-const WEIGHT_MODEL_V4 = Object.freeze({...WEIGHT_MODEL_V4_CANDIDATE, version: 'rule-weights-v4', source: 'research/v4/model-v4.json (' + SPEC.version + ', commit 30e9c81)'});
+// Round1 C5 (2026-10-19): published bounds widened from the research [0.10,0.85]/0.05 to [0.03,0.95]/0.01 — walk-forward
+// 2017–2025 Brier 0.2558 -> 0.2281 (ΔBrier year-block CI [-0.0297,-0.0258], 9/9 years), 2026 0.2762 -> 0.2544
+// (research/v4/c5-bounds-recal.json). Expanding-window recalibration on top did not help (0.2294) and is not used.
+// Same frozen W/standardisation; only the output format changes.
+const BOUNDS_V4 = Object.freeze({min: 0.03, max: 0.95, step: 0.01});
+const WEIGHT_MODEL_V4 = Object.freeze({...WEIGHT_MODEL_V4_CANDIDATE, bounds: BOUNDS_V4, version: 'rule-weights-v4', source: 'research/v4/model-v4.json (' + SPEC.version + ', commit 30e9c81); bounds round1 C5'});
 const OVN = ['EWH', 'GSPC', 'IXIC', 'FXI', 'KWEB', 'CNY'];
 
 function lastBefore(rows, day) { let r = null; for (const x of rows) { if (x.date < day) r = x; else break; } return r; }
@@ -61,4 +66,4 @@ function scoreScenarioWeightsV4({bars, lower, upper, cutoff, overnight, model = 
   return {version: model.version, probabilities: {A: p[0], B: p[1], C: p[2]}, raw, features: x};
 }
 
-module.exports = {WEIGHT_MODEL_V4, WEIGHT_MODEL_V4_CANDIDATE, OVERNIGHT_SERIES: Object.freeze([...OVN, 'VIX']), scoreScenarioWeightsV4, featuresV4};
+module.exports = {BOUNDS_V4, WEIGHT_MODEL_V4, WEIGHT_MODEL_V4_CANDIDATE, OVERNIGHT_SERIES: Object.freeze([...OVN, 'VIX']), scoreScenarioWeightsV4, featuresV4};

@@ -264,7 +264,7 @@ test('rule-weights-v4 is the production default; v3/v1 are recorded as shadows',
  const a=build(live),b=build(live),p=a.forecast.scenarios.map(s=>s.probability);
  assert.deepEqual(a,b);assert.equal(a.forecast.weight_model,'rule-weights-v4');assert.equal(a.forecast.weight_model_info.version,'rule-weights-v4');
  assert.equal(a.forecast.weight_model_info.fallback,null);
- assert.equal(Math.round(p.reduce((s,v)=>s+v,0)*100),100);for(const v of p){assert.ok(v>=0.1-1e-9&&v<=0.85+1e-9);assert.equal(Math.abs(v*20-Math.round(v*20))<1e-9,true);}
+ assert.equal(Math.round(p.reduce((s,v)=>s+v,0)*100),100);for(const v of p){assert.ok(v>=0.03-1e-9&&v<=0.95+1e-9);assert.equal(Math.abs(v*100-Math.round(v*100))<1e-9,true);} // round1 C5 bounds
  assert.equal(a.forecast.scenarios.every(s=>s.probability_locked===true&&s.probability_model==='rule-weights-v4'&&/逻辑回归 v4/.test(s.probability_basis)&&/盘前隔夜/.test(s.probability_basis)),true);
  // shadows: v3 and v1 computed on the same completed bars, exactly as their own scorers produce them
  const bars=close.candles.filter(x=>x.date<'2026-10-12').map(x=>({...x,time:x.date})),[lower,upper]=[a.forecast.scenarios[1].price_rule.lower,a.forecast.scenarios[1].price_rule.upper];
@@ -283,7 +283,10 @@ test('rule-weights-v4 is the production default; v3/v1 are recorded as shadows',
  // v4 reproduces the frozen research reference for a historical session through the production build()
  const spec=require('../research/v4/model-v4.json'),ref=spec.reference_2026.find(r=>r.date==='2026-10-09');
  const h=build({date:'2026-10-09',feed:require('./fixtures/hsi-preopen-2026-10-09.json'),seed:null,overnight:{...ovn,fetched_at:'2026-10-09T08:44:00+08:00'},generatedAt:'2026-10-09T08:45:30+08:00'});
- assert.equal(h.forecast.weight_model,'rule-weights-v4');assert.deepEqual(h.forecast.scenarios.map(s=>s.probability),ref.p);
+ assert.equal(h.forecast.weight_model,'rule-weights-v4');
+ // round1 C5: same frozen raw output as the research reference, published on [0.03,0.95]/0.01
+ const hr=h.forecast.weight_model_info.raw_probabilities;['A','B','C'].forEach((k,j)=>assert.ok(Math.abs(hr[k]-ref.raw[j])<0.006,k));
+ assert.deepEqual(h.forecast.scenarios.map(s=>s.probability),require('../scripts/daily-analysis.cjs').boundedRound(ref.raw,V4.BOUNDS_V4));
 });
 
 test('v4 fails closed to v3 with annotations when overnight inputs are missing, late, stale or inconsistent',()=>{

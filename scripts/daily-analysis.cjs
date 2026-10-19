@@ -130,20 +130,22 @@ function productionWeights(args) {
 // Round1 B1: RW reference is always published next to the production model, and the Pardo stop line
 // (scripts/rw-guard.cjs) swaps the published probabilities to the zero-parameter random walk when v4's rolling
 // 60-session Brier skill vs RW breaks the walk-forward red line. v4/v3/v1 stay recorded as shadows in every case.
+// research/v4/rw-guard-seed.json (2016–2025, n=2434, both in the published 0.03–0.95/0.01 format; BSS year-block CI).
+const RW_WF=Object.freeze({rw:'0.2435',v4:'0.2314',bss:'+0.050 [+0.017,+0.084]（年块），9/10 年胜'});
 function applyRwGuard(w,{bars,lower,upper,session,guardHistory}){
   const G=require('./rw-guard.cjs');
-  const rw=G.rwGauss({bars,lower,upper,round:boundedRound});
+  const rw=G.rwGauss({bars,lower,upper,round:boundedRound});  // bounds = G.RW_BOUNDS (= v4 published format)
   const guard=guardHistory?G.evaluateGuard(guardHistory,session):{status:'unavailable',use:'v4',reason:'停用线历史未提供（研究重放/补录）'};
   const reference={version:G.RW_VERSION,probabilities:rw.probabilities,sigma60:Math.round(rw.sigma60*1e6)/1e6,
     formula:'σ=基准日前60日对数收益标准差；P(A)=1−Φ(ln(上边界/收盘)/σ)，P(C)=Φ(ln(下边界/收盘)/σ)，P(B)=其余；同生产取整',
-    walkforward:'2016–2025（n=2434）：RW-高斯 Brier 0.2675；v4 0.2585，BSS +0.034 [+0.004,+0.064]（年块），7/10 年胜'};
+    walkforward:'2016–2025（n=2434，生产展示格式 0.03–0.95/0.01）：RW-高斯 Brier '+RW_WF.rw+'；v4 '+RW_WF.v4+'，BSS '+RW_WF.bss};
   const guardInfo={...guard,model_compared:'rule-weights-v4'};
   const shadowAll={...(w.shadow||{}),[G.RW_VERSION]:rw.probabilities};
   if(w.version!=='rule-weights-v4'||guard.use!=='rw') return {...w,shadow:shadowAll,rw_reference:reference,rw_guard:guardInfo,active_model:w.version};
   const common='随机游走基准（停用线触发：'+guard.reason+'）。v4 本应发布 A '+Math.round(w.probabilities.A*100)+'% / B '+Math.round(w.probabilities.B*100)+'% / C '+Math.round(w.probabilities.C*100)+'%，已降为影子；σ60 '+(rw.sigma60*100).toFixed(2)+'%';
   return {...w,version:G.RW_VERSION,probabilities:rw.probabilities,raw:{A:r2(rw.raw[0]),B:r2(rw.raw[1]),C:r2(rw.raw[2])},basis:{A:common+'。',B:common+'。',C:common+'。'},
     shadow:{...shadowAll,'rule-weights-v4':w.probabilities},fallback:{intended:'rule-weights-v4',used:G.RW_VERSION,reason:'停用线：'+guard.reason,kind:'rw_guard'},
-    rw_reference:reference,rw_guard:guardInfo,active_model:G.RW_VERSION,calibration:'零参数随机游走；2016–2025 walk-forward Brier 0.2675',
+    rw_reference:reference,rw_guard:guardInfo,active_model:G.RW_VERSION,calibration:'零参数随机游走；2016–2025 walk-forward Brier '+RW_WF.rw,
     weight_factors:[{name:'random_walk_gauss',raw:{sigma60:rw.sigma60,base_close:rw.base_close},contribution:null,citation:'gap-list-fpp P0-1 / gap-list-pardo PD-P0-3'}],model:null};
 }
 // Round1 C2 card admission gate (live builds only): RR after cost, required vs historical target-first hit rate.

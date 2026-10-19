@@ -3,7 +3,7 @@
 //
 // * rwGauss(): zero-parameter random walk. sigma = sd (ddof=1) of the last 60 daily log returns ending at the
 //   baseline close c0 (completed bars strictly before the session). P(A)=1-Phi(ln(upper/c0)/sigma),
-//   P(C)=Phi(ln(lower/c0)/sigma), P(B)=rest. Published through the production boundedRound [0.10,0.85]/0.05.
+//   P(C)=Phi(ln(lower/c0)/sigma), P(B)=rest. Published through boundedRound with the v4 format [0.03,0.95]/0.01.
 //   Identical to scripts/backtest-weights.cjs rwBaselines().rw_gauss and scripts/v4-walkforward.py rw_baselines().
 // * evaluateGuard(): skill_t = Brier_RW,t − Brier_v4,t on scored sessions strictly before the session (both
 //   probabilities frozen at publication; v4 is kept as a shadow when RW is active, so the guard never goes blind).
@@ -19,10 +19,11 @@ const KEYS = ['A', 'B', 'C'];
 const RW_VERSION = 'rw-gauss-v1';
 const GUARD = Object.freeze({
   window: 60, red_consecutive: 10, resume_consecutive: 10, dd_multiple: 2,
-  wf: Object.freeze({n: 2434, mean: 0.009045, mdd: 6.6, roll60_p1: -0.041167, roll60_p5: -0.026917, roll60_p50: 0.0075, source: 'v4 frozen walk-forward vs rw_gauss 2016–2025 (research/v4/rw-guard-seed.json stats)'}),
+  wf: Object.freeze({n: 2434, mean: 0.012084, mdd: 4.0522, roll60_p1: -0.03831, roll60_p5: -0.026693, roll60_p50: 0.009687, source: 'v4 frozen walk-forward vs rw_gauss 2016–2025 (research/v4/rw-guard-seed.json stats)'}),
 });
 function normCdf(x) { const t = 1 / (1 + 0.2316419 * Math.abs(x)), d = 0.3989422804014327 * Math.exp(-x * x / 2), p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429)))); return x >= 0 ? 1 - p : p; }
-function rwGauss({bars, lower, upper, round, bounds = {min: 0.10, max: 0.85, step: 0.05}, win = 60}) {
+const RW_BOUNDS = Object.freeze({min: 0.03, max: 0.95, step: 0.01}); // same published format as v4 (round1 C5)
+function rwGauss({bars, lower, upper, round, bounds = RW_BOUNDS, win = 60}) {
   if (!Array.isArray(bars) || bars.length < win + 1 || !(lower < upper)) throw Error('Insufficient history for RW');
   const c = bars.slice(-(win + 1)).map(b => b.close);
   if (!c.every(v => Number.isFinite(v) && v > 0)) throw Error('Invalid closes for RW');
@@ -74,4 +75,4 @@ function guardHistory({seed = null, reviews = []} = {}) {
   const by = new Map(); for (const r of out) if (!by.has(r.date) || r.source === 'live_review') by.set(r.date, r);
   return [...by.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
-module.exports = {RW_VERSION, GUARD, normCdf, rwGauss, evaluateGuard, guardHistory, brier};
+module.exports = {RW_BOUNDS, RW_VERSION, GUARD, normCdf, rwGauss, evaluateGuard, guardHistory, brier};

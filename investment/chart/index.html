@@ -1242,7 +1242,7 @@
       box.textContent=annotations&&annotations.publication&&annotations.publication.kind==='retrospective_backfill'
         ? '事后补录：'+viewingDate+' 分析仅使用 '+annotations.publication.baseline_date+' 及此前数据；实际生成于 '+annotations.publication.generated_at+'，不是当时已发布预测，不计入预测成绩。'
         : record&&record.kind==='carried_forward_snapshot'
-        ? '⚠ '+viewingDate+' 没有新分析。下面显示的是 '+originalDate+' 的旧内容，仅供历史查看。'
+        ? '⚠ '+viewingDate+' 当天没有发布分析，下面是上一份（'+originalDate+'）的分析，只供参考，不作为当天的交易依据。'
         : '历史回放：当前查看 '+viewingDate+' 的存档'+(originalDate?'，原分析日期 '+originalDate:'')+'。顶部行情单独显示最新报价；切回在线分析才能查看当前发布状态。';
       if (automaticHistory) box.textContent = '默认显示最近已发布分析（'+viewingDate+'）。'+(state.expected>viewingDate?' '+state.expected+' 的新分析尚未发布。':'')+' 历史内容不作为当前交易信号。';
       box.classList.remove('hidden');
@@ -3892,7 +3892,7 @@
     var publication = annotations && annotations.publication;
     var record = annotations && annotations.archive_record;
     var backfill = publication && publication.kind === 'retrospective_backfill';
-    var label = backfill ? '事后补录，不计预测成绩' : record && record.kind === 'carried_forward_snapshot' ? '旧内容 · '+record.original_analysis_date : '历史分析';
+    var label = backfill ? '事后补录，不计预测成绩' : record && record.kind === 'carried_forward_snapshot' ? '当天未发布 · 显示 '+record.original_analysis_date+' 的分析' : '历史分析';
     banner.innerHTML = '<span><b>'+escapeHtml(cnDate(viewingDate))+'分析</b> · '+escapeHtml(label)+'</span>' +
       (backfill ? '<details><summary>补录详情</summary><p>数据截至 '+escapeHtml(publication.baseline_date)+'；生成于 '+escapeHtml(publication.generated_at)+'。</p></details>' : '') +
       '<button class="hb-back" id="histBack" type="button">当前分析</button>';

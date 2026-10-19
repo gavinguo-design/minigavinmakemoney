@@ -211,11 +211,11 @@ test('chart shows rule weights with version note and keeps legacy null cards as 
  const vm=require('node:vm'),src=html.slice(html.indexOf('  function ruleWeightModel('),html.indexOf('  function participationEvaluation('));
  const ctx={escapeHtml:s=>String(s),Number};vm.createContext(ctx);vm.runInContext(src,ctx);
  const a=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('./fixtures/hsi-participation-2026-10-09.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
- assert.equal(ctx.ruleWeightModel(a),'rule-weights-v3');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/模型 v3 · v4 回退（盘前隔夜数据不可用；实盘已打分 0 次）/);
+ assert.equal(ctx.ruleWeightModel(a),'rule-weights-v3');assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/隔夜数据缺失，权重仅供参考/);assert.doesNotMatch(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[0]),/>[^<]*v4 回退/);
  const a4=build({date:'2026-10-12',feed:require('./fixtures/hsi-close-2026-10-09.json'),seed,participation:require('./fixtures/hsi-participation-2026-10-09.json'),overnight:require('./fixtures/overnight-2026-10-12.json'),generatedAt:'2026-10-12T08:45:30+08:00'});
- assert.equal(ctx.ruleWeightModel(a4),'rule-weights-v4');assert.match(ctx.ruleWeightNoteHtml(a4,a4.forecast.scenarios[0]),/模型 v4（含盘前隔夜美股\/ETF；2016–2025 滚动回测 10\/10 年优于重训 v3；实盘已打分 0 次）/);
+ assert.equal(ctx.ruleWeightModel(a4),'rule-weights-v4');assert.equal(ctx.ruleWeightNoteHtml(a4,a4.forecast.scenarios[0]),'');
  // Legacy v3 analyses (published 2026-10-12, no fallback field) keep their original label.
- const legacy=structuredClone(a);delete legacy.forecast.weight_model_info.fallback;assert.match(ctx.ruleWeightNoteHtml(legacy,legacy.forecast.scenarios[0]),/模型 v3（两年回测，保留集优于 v1；实盘已打分 0 次）/);
+ const legacy=structuredClone(a);delete legacy.forecast.weight_model_info.fallback;assert.equal(ctx.ruleWeightNoteHtml(legacy,legacy.forecast.scenarios[0]),'');
  assert.equal(ctx.ruleWeightModel(build(args)),null);
  const MP=require('../investment/chart/market-participation.js'),ev=MP.evaluate(require('./fixtures/hsi-participation-2026-10-09.json'),a.forecast.scenarios,'2026-10-09');
  assert.equal(ev.already_in_base,true);assert.deepEqual(Object.values(ev.weights).map(v=>Math.round(v*100)),a.forecast.scenarios.map(s=>Math.round(s.probability*100)));assert.equal(ctx.ruleWeightModel(seed),null);
@@ -363,11 +363,11 @@ test('round1 A1: live A/C cards are display-only with T+1 close-zone probability
 });
 test('round1 A1: chart renders display-only A/C as observation cards and no longer says 具备可执行赔率',()=>{
  const html=fs.readFileSync(require.resolve('../investment/chart/index.html'),'utf8');
- assert.match(html,/if \(scenarioDisplayOnly\(sc\) \|\| !scenarioRREligible\(sc\)\)/);assert.match(html,/仅展示·不推荐执行/);assert.match(html,/次日收盘落在哪个区间/);
+ assert.match(html,/if \(scenarioDisplayOnly\(sc\) \|\| !scenarioRREligible\(sc\)\)/);assert.match(html,/仅供观察，不建议操作/);
  const vm=require('node:vm'),start=html.indexOf('  function scenarioDisplayOnly('),src=html.slice(start,html.indexOf('  function fmtRatio(',start));
  const ctx={escapeHtml:s=>String(s)};vm.createContext(ctx);vm.runInContext(src,ctx);
  assert.equal(ctx.scenarioDisplayOnly({execution_status:'display_only'}),true);assert.equal(ctx.scenarioDisplayOnly({}),false);
- assert.equal(ctx.probabilityDefinitionHtml({}),'');assert.match(ctx.probabilityDefinitionHtml({probability_definition:'x'}),/次日收盘落在哪个区间/);
+ assert.equal(ctx.probabilityDefinitionHtml({}),'');assert.equal(ctx.probabilityDefinitionHtml({probability_definition:'x'}),'');
  assert.doesNotMatch(MR.rr(100,130,90,'long').verdict,/具备可执行/);assert.equal(MR.rr(100,130,90,'long').executable,true);
 });
 
@@ -423,5 +423,5 @@ test('round1 C2: cost-adjusted card gate (0.15R) with required vs historical hit
  const ctx={escapeHtml:s=>String(s),Number,Math,Array,computeRR:rr=>MR.rr(rr.entry,rr.target,rr.stop,rr.direction)};vm.createContext(ctx);vm.runInContext(src,ctx);
  const sc={rr:{entry:100,target:70,stop:110,direction:'short',cost_gate:{status:'available',passes:false,rr_net:2.5,cost_r:.15,required_hit:.29,historical_hit:.27,historical_n:909,historical_wilson95:[.25,.3]}}};
  assert.equal(ctx.scenarioRREligible(sc),false);sc.rr.cost_gate.passes=true;assert.equal(ctx.scenarioRREligible(sc),true);
- assert.match(ctx.costGateHtml(sc),/需要命中率 <b>29%<\/b> \/ 历史实际 <b>27%<\/b>/);delete sc.rr.cost_gate;assert.equal(ctx.scenarioRREligible(sc),true);assert.equal(ctx.costGateHtml(sc),'');
+ assert.match(ctx.costGateHtml(sc),/扣成本后赔率达标/);assert.match(ctx.costGateHtml(sc),/title="[^"]*n=909/);delete sc.rr.cost_gate;assert.equal(ctx.scenarioRREligible(sc),true);assert.equal(ctx.costGateHtml(sc),'');
 });

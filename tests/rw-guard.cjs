@@ -56,7 +56,7 @@ test('chart: model label says which model is used and shows RW reference/guard s
  const src=html.slice(html.indexOf('  function ruleWeightModel('),html.indexOf('  function participationEvaluation('));
  const ctx={escapeHtml:s=>String(s),Number,Math};vm.createContext(ctx);vm.runInContext(src,ctx);
  const a=DA.build(live);a.forecast.weight_model_info.rw_guard={status:'green',use:'v4',reason:'ok',roll60:.01,thresholds:{red_roll60:-.04}};
- assert.match(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[1]),/当前用：模型 v4/);assert.match(ctx.rwGuardNoteHtml(a,a.forecast.scenarios[1]),/随机游走对照 \d+% · 🟢/);
+ assert.equal(ctx.ruleWeightNoteHtml(a,a.forecast.scenarios[1]),'');assert.equal(ctx.rwGuardNoteHtml(a,a.forecast.scenarios[1]),'');
  const hist=[...mk(80,true,'2026-04-01'),...mk(80,false,'2026-06-20')].filter(r=>r.date<'2026-10-12'),r=DA.build({...live,guardHistory:hist});
- assert.match(ctx.ruleWeightNoteHtml(r,r.forecast.scenarios[1]),/当前用：随机游走基准/);assert.match(ctx.rwGuardNoteHtml(r,r.forecast.scenarios[1]),/停用线触发/);
+ assert.match(ctx.ruleWeightNoteHtml(r,r.forecast.scenarios[1]),/模型近期失准，已改用保守权重/);
 });

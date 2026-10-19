@@ -395,3 +395,12 @@ test('round1 A4: disaster stop shadow mode — 2.5σ and turtle 2N computed, but
  assert.equal(op.sections.find(s=>s.id==='risk_controls').data.scenarios.every(s=>s.disaster_stop_status==='unavailable'),true);
  for(const sc of build(args).forecast.scenarios)assert.equal(sc.risk.disaster_stop_shadow,undefined);
 });
+
+test('round1 B2: target rule v2 (>=1R, beyond last close) is available but production default stays v1',()=>{
+ const close=require('./fixtures/hsi-close-2026-10-09.json'),live={date:'2026-10-12',feed:close,seed,participation:null,generatedAt:'2026-10-12T08:45:30+08:00'};
+ const a=build(live),b=build({...live,targetRule:'v1'});assert.deepEqual(a.forecast.scenarios.map(s=>s.rr),b.forecast.scenarios.map(s=>s.rr));
+ assert.equal(a.forecast.scenarios.every(s=>s.rr.target_rule===undefined),true);
+ const v2=build({...live,targetRule:'v2'}),last=close.candles.at(-1).close;
+ for(const s of v2.forecast.scenarios){const r=s.rr;assert.equal(r.target_rule.version,'target-v2');if(r.target==null)continue;
+  const risk=Math.abs(r.entry-r.stop);if(r.direction==='long'){assert.ok(r.target-r.entry>=risk);assert.ok(r.target>last);}else{assert.ok(r.entry-r.target>=risk);assert.ok(r.target<last);}}
+});

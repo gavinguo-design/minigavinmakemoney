@@ -182,7 +182,7 @@ const DISPLAY_ONLY=Object.freeze(['A','C']);
 const PROBABILITY_DEFINITION='次日收盘落在哪个区间（T+1 收盘落区：A ≥ 上边界 / B 区间内 / C < 下边界）；不是 5 日内先到目标的概率，也不是胜率。';
 const EXECUTION_NOTE={A:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），A 扣 0.15R 成本后 E[R] −0.23R [−0.46,+0.02]；触发后 63% 次日开盘已越过目标。',
   C:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），C 扣 0.15R 成本后 E[R] −0.07R [−0.33,+0.21]；卡片赔率≥2 的 C 为 −0.39R [−0.68,−0.08]。赔率≥2:1 不等于可执行。'};
-function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, riskShadow=!backfill, rwGuard=!backfill, guardHistory=null, scoredReviews=0}) {
+function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, riskShadow=!backfill, rwGuard=!backfill, guardHistory=null, targetRule='v1', scoredReviews=0}) {
   if (MR.tradingDay(date)!==true) throw Error('Unsupported/non-trading analysis date');
   const cutoff = backfill ? date+'T08:45:00+08:00' : (generatedAt || new Date().toISOString());
   if (!backfill && (MR.hk(MR.timestamp(cutoff)).date!==date || MR.timestamp(cutoff)>=MR.timestamp(date+'T09:30:00+08:00'))) throw Error('Preopen publication missed; use explicit backfill');
@@ -203,6 +203,18 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
   const below=[...pivots.lows.map(p=>p.price),...known.filter(l=>l.type==='support').map(l=>l.price)].filter(p=>p<Math.min(lower,last.low));
   const above=[...pivots.highs.map(p=>p.price),...known.filter(l=>l.type==='resistance').map(l=>l.price)].filter(p=>p>upper);
   const downTarget=below.length?Math.max(...below):null, upTarget=above.length?Math.min(...above):null;
+  // Round1 B2 target rule v2 — NOT ENABLED (targetRule defaults to 'v1'): the 2016–2025 triple-barrier rerun
+  // (data/books/tb-backtest-v2.md) was worse for C and card-RR≥2 A/C, so production keeps v1. Kept for research.
+  // Rule v2 (tb-backtest-abc: 63% of A triggers opened beyond a too-close target). The structural
+  // stop/invalidation levels are unchanged; only the profit target is chosen as the nearest observed structure level
+  // that is (a) at least 1R from the planned entry and (b) still beyond the last completed close. None -> no target.
+  // A card whose trigger close is already beyond its target is void (rr.target_rule.void_if_trigger_close_beyond).
+  const pickTarget=(dir,entry,stop)=>{
+    if(targetRule!=='v2')return dir==='long'?upTarget:downTarget;
+    const risk=Math.abs(entry-stop);if(!(risk>0))return null;
+    const c=dir==='long'?[...new Set(above)].sort((a,b)=>a-b).filter(p=>p-entry>=risk&&p>last.close):[...new Set(below)].sort((a,b)=>b-a).filter(p=>entry-p>=risk&&p<last.close);
+    return c.length?c[0]:null;
+  };
   const time=generatedAt||new Date().toISOString();
   if (!backfill && MR.timestamp(time)>=MR.timestamp(date+'T09:30:00+08:00')) throw Error('Preopen publication missed; use explicit backfill');
   const id='HSI-'+date.replaceAll('-','')+'-structure-v1';
@@ -217,13 +229,13 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
   const scenarios=['A','B','C'].map((key,i)=>{
     const dir=i===0?'long':'short', entry=i===2?lower:upper;
     const stop=i===0?last.low:i===1?(upTarget||upper):last.high;
-    const target=i===0?upTarget:downTarget;
+    const target=pickTarget(dir,entry,stop);
     const trigger=i===0?'收盘 ≥ '+fmt(upper):i===1?'收盘 ≥ '+fmt(lower)+' 且 < '+fmt(upper):'收盘 < '+fmt(lower);
     return {id:key,name:key+' · '+['收复最近摆动高点','摆动区间内整理','跌破最近摆动低点'][i],direction:dir,probability:weights?weights.probabilities[key]:null,...(weights?{probability_basis:weights.basis[key],...(weights.factors.breadth_status==='available'?{probability_includes_breadth:true}:{}),...(weights.factors.breadth_status==='not_used'?{probability_locked:true,probability_model:weights.version}:{})}:{}),
       ...(executionPolicy?{execution_status:DISPLAY_ONLY.includes(key)?'display_only':'plan_candidate',...(DISPLAY_ONLY.includes(key)?{execution_note:EXECUTION_NOTE[key]}:{}),...(weights?{probability_definition:PROBABILITY_DEFINITION}:{})}:{}),
       color:['#00d87f','#a78bfa','#ff8c42'][i],trigger:trigger+'；只看完整日K价格结构',price_rule:priceRules[key],
       invalidation:(dir==='long'?'收盘 < ':'收盘 ≥ ')+fmt(stop),
-      rr:{entry,stop,target,direction:dir,entryHint:'条件确认之后再观察结构位回测；价格满足赔率不等于触发。'},
+      rr:{entry,stop,target,direction:dir,entryHint:'条件确认之后再观察结构位回测；价格满足赔率不等于触发。',...(targetRule==='v2'?{target_rule:{version:'target-v2',min_distance_r:1,beyond_last_close:last.close,void_if_trigger_close_beyond:target,structural_target:dir==='long'?upTarget:downTarget,note:'目标取距入场 ≥1R 且尚未被价格越过的最近结构位；触发收盘已越过目标则该卡作废'}}:{})},
       risk:{structural_invalidation:{price:stop,confirmation:'completed_daily_close'},disaster_stop:{price:null,status:'not_configured'},...(riskShadow?{disaster_stop_shadow:disasterStopShadow({direction:dir,structural:stop,entry,atr14,ewma,n20,close:last.close})}:{})},
       target:target==null?'缺少已观察到的目标结构，赔率不可用':fmt(target)+'（已观察到的结构位）',
       holding_period:'每日重新核验，不承诺固定持仓天数',note:weights?(rwActive?'规则生成的条件情景；v4 触发停用线，本次权重为零参数随机游走（次日收盘落区），不是历史胜率。':weights.fallback?'规则生成的条件情景；v4 盘前数据不可用，权重回退为 '+weights.version+' 模型输出（两年回测、约100天保留集验证），不是历史胜率。':'规则生成的条件情景；权重为 '+weights.version+' 模型输出，经 2016–2025 逐年滚动回测（n=2434）验证，未经实盘校准，不是历史胜率。'):'规则生成的条件情景；未校准历史发生率，不提供概率百分比。',

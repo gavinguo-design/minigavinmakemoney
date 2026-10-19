@@ -625,6 +625,9 @@
     .sc-link-badge,.sc-weight-badge { display:inline-block; margin-left:5px; padding:2px 5px; border-radius:999px; font-size:9px; font-weight:800; }
     .sc-link-badge { color:var(--sc-color); border:1px solid var(--sc-color); }
     .sc-weight-badge { color:var(--gold); border:1px solid rgba(245,200,66,.35); background:rgba(245,200,66,.08); }
+    .sc-prob-def { margin-left:6px; font-size:10.5px; color:rgba(235,235,245,.5); border:1px solid rgba(235,235,245,.18); border-radius:6px; padding:0 5px; white-space:nowrap; }
+    .sc-display-only b { color: #f5a623; }
+    .sc-display-only span { font-size:11px; color:rgba(235,235,245,.45); }
     .sc-weight-note { margin-top:4px; font-size:10.5px; line-height:1.45; color:rgba(235,235,245,.5); }
     .sc-weight-note span { color:rgba(235,235,245,.38); }
     @media(min-width:1100px){.sc-card.sc-nearest{transform:translateY(2px)}.sc-card.sc-nearest .sc-tip::after{content:' ↓ 对应图内同色情景带';color:var(--sc-color)}}
@@ -929,7 +932,7 @@
     </details>
     <!-- 入场距离、展示权重和正式触发分别表达。 -->
     <div class="scenarios hidden" id="scenarioCards"></div>
-    <p class="prob-note hidden" id="probNote">ℹ︎ 卡片与状态条使用同一校正权重；宽度、权重贡献与市场环境通过数据校验后参与有限校正。权重不是历史胜率；满足2:1价格条件也不代表已经触发入场。</p>
+    <p class="prob-note hidden" id="probNote">ℹ︎ 卡片与状态条使用同一校正权重；宽度、权重贡献与市场环境通过数据校验后参与有限校正。权重口径 = 次日收盘落在哪个区间（不是 5 日内先到目标的概率，也不是胜率）。A、C 剧本按回测仅展示、不推荐执行；满足2:1价格条件也不代表可执行或已触发入场。</p>
 
     <!-- Interval tabs -->
     <div class="tabs" id="tabs">
@@ -1369,6 +1372,15 @@
   function scenarioRREligible(sc) {
     var stat = computeRR(sc && sc.rr);
     return !!stat && stat.ratio >= 2;
+  }
+
+  // Round1 A1: generator marks A/C as display-only (三重屏障回测无正期望). Legacy cards without the field are unchanged.
+  function scenarioDisplayOnly(sc) {
+    return !!sc && sc.execution_status === 'display_only';
+  }
+
+  function probabilityDefinitionHtml(sc) {
+    return sc && sc.probability_definition ? '<span class="sc-prob-def" title="' + escapeHtml(sc.probability_definition) + '">次日收盘落在哪个区间</span>' : '';
   }
 
   function fmtRatio(r) {
@@ -2363,12 +2375,13 @@
     scenarios.forEach(function (sc, idx) {
       // Hard admission gate: a scenario with invalid or sub-2:1 planned RR never
       // renders as a complete actionable card. It remains in the frozen record.
-      if (!scenarioRREligible(sc)) {
+      if (scenarioDisplayOnly(sc) || !scenarioRREligible(sc)) {
+        var displayOnly = scenarioDisplayOnly(sc);
         var observation = document.createElement('div');
         observation.className = 'sc-card-settled';
         observation.style.setProperty('--sc-color', scenarioColor(sc));
         observation.setAttribute('data-idx', idx);
-        observation.innerHTML = (Number.isFinite(sc.probability) ? '<div class="sc-topline"><span class="sc-prob" title="盘前基础权重，不是历史胜率；赔率未达2:1不提供入场">' + Math.round((effectiveById[sc.id] || 0) * 100) + '% 权重</span></div>' : '') + '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span>' + scenarioBadgeHtml(sc, refPx) + '<div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div><div class="sc-row">赔率不可执行 · 仅显示条件观察，不提供入场标尺</div><div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>';
+        observation.innerHTML = (Number.isFinite(sc.probability) ? '<div class="sc-topline"><span class="sc-prob" title="' + (displayOnly ? '盘前基础权重，不是历史胜率；该剧本仅展示、不推荐执行' : '盘前基础权重，不是历史胜率；赔率未达2:1不提供入场') + '">' + Math.round((effectiveById[sc.id] || 0) * 100) + '% 权重</span>' + probabilityDefinitionHtml(sc) + '</div>' : '') + '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span>' + scenarioBadgeHtml(sc, refPx) + '<div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div>' + (displayOnly ? '<div class="sc-row sc-display-only"><b>仅展示·不推荐执行</b> · 不提供入场标尺' + (sc.execution_note ? '<br><span>' + escapeHtml(sc.execution_note) + '</span>' : '') + '</div>' : '<div class="sc-row">赔率不可执行 · 仅显示条件观察，不提供入场标尺</div>') + '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>';
         wrap.appendChild(observation);
         return;
       }
@@ -2407,7 +2420,7 @@
       var weightTitle = context.status === 'available' ? ('宽度/权重/贡献之后，再由夜盘方向有限校正；流动性和VHSI只控制可靠度。基础权重 '+Math.round((sc.probability||0)*100)+'%，不是历史胜率') : (participation.status === 'available' ? ('参与度校正权重；基础权重 ' + Math.round((sc.probability || 0) * 100) + '%，不是历史胜率') : '盘前基础权重；市场参与度数据未通过门禁，不是历史胜率');
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
-          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + (Number.isFinite(sc.probability) ? Math.round(effectiveWeight * 100) + '% 权重' : '权重未校准') + (isTopWeight?'<i class="sc-weight-badge">'+(ruleWeightModel(a)?'主情景 · ':'')+'最高权重</i>':'') + '</span></div>' + (Number.isFinite(sc.probability) && ruleWeightModel(a) ? ruleWeightNoteHtml(a, sc) : '') +
+          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + (Number.isFinite(sc.probability) ? Math.round(effectiveWeight * 100) + '% 权重' : '权重未校准') + (isTopWeight?'<i class="sc-weight-badge">'+(ruleWeightModel(a)?'主情景 · ':'')+'最高权重</i>':'') + '</span>' + probabilityDefinitionHtml(sc) + '</div>' + (Number.isFinite(sc.probability) && ruleWeightModel(a) ? ruleWeightNoteHtml(a, sc) : '') +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 距离最近·非入场信号</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发前提：</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         numsHtml +

@@ -343,3 +343,27 @@ test('overnight fetcher normalises Yahoo bars like the research fetch and report
  const bad=await P.fetchOvernight({fetchImpl:async(u)=>u.includes('KWEB')?{ok:false,status:404}:{ok:true,json:async()=>chart([1791552600],[10])}});
  assert.equal(bad.status,'unavailable');assert.equal(bad.errors.length,1);assert.match(bad.errors[0],/KWEB/);assert.equal(bad.series.KWEB,undefined);
 });
+
+test('round1 A1: live A/C cards are display-only with T+1 close-zone probability definition; backfills unchanged',()=>{
+ const DA=require('../scripts/daily-analysis.cjs'),close=require('./fixtures/hsi-close-2026-10-09.json');
+ const live=build({date:'2026-10-12',feed:close,seed,participation:null,generatedAt:'2026-10-12T08:45:30+08:00'});
+ const by=Object.fromEntries(live.forecast.scenarios.map(s=>[s.id,s]));
+ assert.equal(by.A.execution_status,'display_only');assert.equal(by.C.execution_status,'display_only');assert.equal(by.B.execution_status,'plan_candidate');
+ assert.match(by.A.execution_note,/仅展示·不推荐执行/);assert.match(by.C.execution_note,/−0\.39R/);assert.equal(by.B.execution_note,undefined);
+ for(const s of live.forecast.scenarios)assert.match(s.probability_definition,/次日收盘落在哪个区间/);
+ assert.deepEqual(live.forecast.execution_policy.display_only,['A','C']);assert.equal(live.forecast.probability_definition,DA.PROBABILITY_DEFINITION);
+ // probabilities/levels themselves are unchanged by the policy
+ const off=build({date:'2026-10-12',feed:close,seed,participation:null,generatedAt:'2026-10-12T08:45:30+08:00',executionPolicy:false});
+ assert.deepEqual(off.forecast.scenarios.map(s=>[s.probability,s.rr,s.price_rule]),live.forecast.scenarios.map(s=>[s.probability,s.rr,s.price_rule]));
+ for(const s of build(args).forecast.scenarios){assert.equal(s.execution_status,undefined);assert.equal(s.probability_definition,undefined);}
+ assert.equal(build(args).forecast.execution_policy,undefined);
+});
+test('round1 A1: chart renders display-only A/C as observation cards and no longer says 具备可执行赔率',()=>{
+ const html=fs.readFileSync(require.resolve('../investment/chart/index.html'),'utf8');
+ assert.match(html,/if \(scenarioDisplayOnly\(sc\) \|\| !scenarioRREligible\(sc\)\)/);assert.match(html,/仅展示·不推荐执行/);assert.match(html,/次日收盘落在哪个区间/);
+ const vm=require('node:vm'),start=html.indexOf('  function scenarioDisplayOnly('),src=html.slice(start,html.indexOf('  function fmtRatio(',start));
+ const ctx={escapeHtml:s=>String(s)};vm.createContext(ctx);vm.runInContext(src,ctx);
+ assert.equal(ctx.scenarioDisplayOnly({execution_status:'display_only'}),true);assert.equal(ctx.scenarioDisplayOnly({}),false);
+ assert.equal(ctx.probabilityDefinitionHtml({}),'');assert.match(ctx.probabilityDefinitionHtml({probability_definition:'x'}),/次日收盘落在哪个区间/);
+ assert.doesNotMatch(MR.rr(100,130,90,'long').verdict,/具备可执行/);assert.equal(MR.rr(100,130,90,'long').executable,true);
+});

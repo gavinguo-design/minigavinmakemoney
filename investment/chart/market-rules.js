@@ -267,7 +267,7 @@
     var ratio=reward/risk, grade=ratio>=2?'good':ratio>=1?'mid':'bad';
     return {dir:short?'short':'long',entry:entry,reward:reward,risk:risk,ratio:ratio,grade:grade,
       executable:ratio>=2,status:ratio>=2?'executable':'insufficient_rr',
-      emoji:grade==='good'?'🟢':grade==='mid'?'🟡':'🔴',verdict:ratio>=2?'具备可执行赔率':'不具备可执行赔率'};
+      emoji:grade==='good'?'🟢':grade==='mid'?'🟡':'🔴',verdict:ratio>=2?'赔率≥2:1（仅价格条件，不代表可执行）':'赔率<2:1'};
   }
   function chaseBoundary(direction,stop,target,minRR) {
     minRR=Number.isFinite(minRR)?minRR:2;

@@ -128,7 +128,14 @@ function productionWeights(args) {
     model:V3.WEIGHT_MODEL_V3};
 }
 const fmt = n => n.toLocaleString('en-US', {maximumFractionDigits:2});
-function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, scoredReviews=0}) {
+// Execution policy (round1 A1, 2026-10-19; tb-backtest-abc.md): A and C are display-only. With the real card levels,
+// 2016–2025 triple-barrier E[R] after 0.15R cost: A −0.23R [−0.46,+0.02]; C −0.07R [−0.33,+0.21]; card RR≥2 C −0.39R [−0.68,−0.08].
+// Live builds only (executionPolicy=!backfill) so frozen backfills/supplements stay byte-for-byte reproducible.
+const DISPLAY_ONLY=Object.freeze(['A','C']);
+const PROBABILITY_DEFINITION='次日收盘落在哪个区间（T+1 收盘落区：A ≥ 上边界 / B 区间内 / C < 下边界）；不是 5 日内先到目标的概率，也不是胜率。';
+const EXECUTION_NOTE={A:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），A 扣 0.15R 成本后 E[R] −0.23R [−0.46,+0.02]；触发后 63% 次日开盘已越过目标。',
+  C:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），C 扣 0.15R 成本后 E[R] −0.07R [−0.33,+0.21]；卡片赔率≥2 的 C 为 −0.39R [−0.68,−0.08]。赔率≥2:1 不等于可执行。'};
+function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, scoredReviews=0}) {
   if (MR.tradingDay(date)!==true) throw Error('Unsupported/non-trading analysis date');
   const cutoff = backfill ? date+'T08:45:00+08:00' : (generatedAt || new Date().toISOString());
   if (!backfill && (MR.hk(MR.timestamp(cutoff)).date!==date || MR.timestamp(cutoff)>=MR.timestamp(date+'T09:30:00+08:00'))) throw Error('Preopen publication missed; use explicit backfill');
@@ -162,6 +169,7 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
     const target=i===0?upTarget:downTarget;
     const trigger=i===0?'收盘 ≥ '+fmt(upper):i===1?'收盘 ≥ '+fmt(lower)+' 且 < '+fmt(upper):'收盘 < '+fmt(lower);
     return {id:key,name:key+' · '+['收复最近摆动高点','摆动区间内整理','跌破最近摆动低点'][i],direction:dir,probability:weights?weights.probabilities[key]:null,...(weights?{probability_basis:weights.basis[key],...(weights.factors.breadth_status==='available'?{probability_includes_breadth:true}:{}),...(weights.factors.breadth_status==='not_used'?{probability_locked:true,probability_model:weights.version}:{})}:{}),
+      ...(executionPolicy?{execution_status:DISPLAY_ONLY.includes(key)?'display_only':'plan_candidate',...(DISPLAY_ONLY.includes(key)?{execution_note:EXECUTION_NOTE[key]}:{}),...(weights?{probability_definition:PROBABILITY_DEFINITION}:{})}:{}),
       color:['#00d87f','#a78bfa','#ff8c42'][i],trigger:trigger+'；只看完整日K价格结构',price_rule:priceRules[key],
       invalidation:(dir==='long'?'收盘 < ':'收盘 ≥ ')+fmt(stop),
       rr:{entry,stop,target,direction:dir,entryHint:'条件确认之后再观察结构位回测；价格满足赔率不等于触发。'},
@@ -182,7 +190,7 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
     forecast:{applicable_date:date,updatedAt:time,baseDate:last.date,basePrice:last.close,bias:summary.structure.direction<0?'bearish':summary.structure.direction>0?'bullish':'neutral',biasLabel:summary.structure.label,
       summary:narrative,horizon:'未来5个交易日，每日重新核验',horizonEndDate:MR.horizon(date,5).end,horizonDesc:MR.horizon(date,5).description,
       reasoning:[narrative,'A/B/C 分别覆盖 ≥上边界、两边界之间、<下边界；盘中穿越不算正式触发。','夜期、IV、南向资金无截止前可信快照时不可用，不用于推断。',...(weights?[weights.fallback?'权重模型：v4 盘前隔夜数据不可用（'+weights.fallback.reason+'），本次回退 v3，不用空值或插值。':'权重模型：v4，使用截至美股 '+weights.overnight.us_close_date+' 收盘的隔夜数据（Yahoo），v3/v1 作为影子同时记录。']:[]),participantOK?'环境证据：'+participation.as_of+' 官方成分报告上涨家数占比 '+(participation.metrics.equal_name_breadth*100).toFixed(1)+'%、上涨权重占比 '+(participation.metrics.weighted_breadth*100).toFixed(1)+'%、净点数贡献 '+fmt(participation.metrics.net_point_contribution)+'；只描述环境，不改变价格触发。':'环境证据：无符合截止时间的官方成分报告，标记不可用。'],
-      targetUpper:upTarget,targetLower:downTarget,confidence:'未校准',scenarios,
+      targetUpper:upTarget,targetLower:downTarget,confidence:'未校准',...(executionPolicy?{probability_definition:PROBABILITY_DEFINITION,execution_policy:{display_only:[...DISPLAY_ONLY],source:'tb-backtest-abc（三重屏障，真实卡片价位，2016–2025）',decided:'2026-10-19'}}:{}),scenarios,
       ...(weights?{weight_model:weights.version,weight_model_info:{version:weights.version,calibration:weights.calibration,scored_reviews:scoredReviews,shadow:weights.shadow,fallback:weights.fallback,coefficients:weights.model?{W:weights.model.W,features:weights.model.features,...(weights.model.standardize?{standardize:weights.model.standardize,source:weights.model.source}:{})}:WEIGHT_MODEL.coefficients,factors:weights.factors,raw_probabilities:weights.raw},weight_factors:weights.weight_factors}: {}),
       card:{stateEmoji:'📋',stateLabel:backfill?date+' 事后补录分析':date+' 每日结构分析',structureLine:narrative,stateTone:'neutral',keyLines:[{price:lower,tag:'最近确认摆动低点',tf:'日线'},{price:upper,tag:'最近确认摆动高点',tf:'日线'}]},
       scenario_evidence:{analysis_id:id,last_bar:{...last,completed:true},timeframe:'1d',source:feed.source,scenarios:{}}},
@@ -190,4 +198,4 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
     intraday_playbook:{updatedAt:time,note:'仅用于区间定位，不是即时操作指令',zones:[{range:[upper,null],stance:'修复观察',action:'等待A收盘确认'},{range:[lower,upper],stance:'区间观察',action:'等待B收盘确认'},{range:[null,lower],stance:'破位观察',action:'等待C收盘确认'}]},
     levels:[{price:lower,type:'support',label:'最近确认摆动低点',reason:pivots.lows.at(-1).time+'，确认于 '+pivots.lows.at(-1).confirmedAt},{price:upper,type:'resistance',label:'最近确认摆动高点',reason:pivots.highs.at(-1).time+'，确认于 '+pivots.highs.at(-1).confirmedAt},...(downTarget==null?[]:[{price:downTarget,type:'support',label:'下方结构目标',reason:'截止日前的确认摆动低点或既有支撑'}]),...(upTarget==null?[]:[{price:upTarget,type:'resistance',label:'上方结构目标',reason:'截止日前的确认摆动高点或既有阻力'}])],markers:[],playbook:[],pathTree:null};
 }
-module.exports={build,prepareOvernight,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};
+module.exports={DISPLAY_ONLY,PROBABILITY_DEFINITION,build,prepareOvernight,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};

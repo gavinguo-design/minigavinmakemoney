@@ -4118,8 +4118,14 @@
     }
     if (tf.bucket) tags.push('<span class="mirror-tag bucket">状态桶：' + tf.bucket + '</span>');
     if (tags.length) html += '<div class="mirror-label">' + tags.join('') + '</div>';
+    // Round1 C4: mirror v2 output (k/n + Wilson 95% + base rate). Legacy v1 files keep the original rendering below.
+    var v2 = m.mirror_v2 && Number.isFinite(stats.up_count) && Number.isFinite(stats.n);
+    if (v2) {
+      html += mirrorV2Html(m);
+    } else {
     if (n < 10) html += '<div class="mirror-warn">⚠️ 样本量偏少（N=' + n + '），统计参考意义有限</div>';
-    if (n > 0) {
+    }
+    if (!v2 && n > 0) {
       var prob = (stats.next_1d_up_prob === null || stats.next_1d_up_prob === undefined) ? null : Math.round(stats.next_1d_up_prob * 100);
       html += '<div class="mirror-stats">' +
         '<div class="mirror-stat"><div class="k">次日上涨概率</div><div class="v">' + (prob === null ? '--' : '<span class="' + (prob >= 50 ? 'up' : 'down') + '">' + prob + '%</span>') + '</div></div>' +
@@ -4160,6 +4166,24 @@
         renderMirror(m);
       });
     }
+  }
+  function mirrorV2Html(m) {
+    var st = m.stats || {}, v = m.mirror_v2 || {}, n = st.n, k = st.up_count, w = st.next_1d_up_wilson95;
+    var pct = function (x) { return Number.isFinite(x) ? Math.round(x * 100) + '%' : '--'; };
+    var base = Number.isFinite(st.unconditional_up_rate) ? pct(st.unconditional_up_rate) + '（' + (st.unconditional_n || '?') + ' 日）' : '--';
+    if (!n) return '<div class="mirror-warn">⚠️ 无足够相似样本（n=0），不给次日上涨比例</div><div class="mirror-stats"><div class="mirror-stat"><div class="k">基准：全样本次日上涨率</div><div class="v">' + base + '</div></div></div>';
+    var insufficient = m.insufficient_sample === true || v.insufficient_sample === true;
+    var head = '<div class="mirror-stat"><div class="k">同类样本次日上涨</div><div class="v">' + k + '/' + n + ' 上涨</div></div>' +
+      '<div class="mirror-stat"><div class="k">Wilson 95% 区间</div><div class="v">' + (Array.isArray(w) ? pct(w[0]) + '–' + pct(w[1]) : '--') + '</div></div>' +
+      '<div class="mirror-stat"><div class="k">基准：全样本次日上涨率</div><div class="v">' + base + '</div></div>';
+    if (insufficient) return '<div class="mirror-warn">⚠️ 样本不足（n=' + n + '<' + ((v.params && v.params.min_sample) || 20) + '），仅作叙事参考，不显示中位数</div><div class="mirror-stats">' + head + '</div>';
+    var dt = st.detrended && Number.isFinite(st.detrended.up_count) ? '<div class="mirror-note">去趋势口径（扣除样本期平均日收益）：' + st.detrended.up_count + '/' + n + ' 上涨 · 基准 ' + pct(st.detrended.unconditional_up_rate) + '</div>' : '';
+    var overlap = Array.isArray(w) && Number.isFinite(st.unconditional_up_rate) && w[0] <= st.unconditional_up_rate && st.unconditional_up_rate <= w[1];
+    return (overlap ? '<div class="mirror-warn">Wilson 区间覆盖基准上涨率：与「随便哪天」没有可区分的差异</div>' : '') +
+      '<div class="mirror-stats">' + head +
+      '<div class="mirror-stat"><div class="k">次日中位</div><div class="v">' + mirrorPct(st.next_1d_median) + '</div></div>' +
+      '<div class="mirror-stat"><div class="k">3日中位</div><div class="v">' + mirrorPct(st.next_3d_median) + '</div></div>' +
+      '<div class="mirror-stat"><div class="k">5日中位</div><div class="v">' + mirrorPct(st.next_5d_median) + '</div></div></div>' + dt;
   }
   var mirrorData = null;
   function refreshMirror() {

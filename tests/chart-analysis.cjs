@@ -484,3 +484,14 @@ test('two-point scenario envelopes curve across sessions without changing frozen
  assert.equal(c.zonePoints(original).upper,original.zone.upperBound);
  assert.match(html,/情景范围 · 非逐日预测/);
 });
+
+test('round1 C4: mirror v2 card shows k/n + Wilson + base rate and degrades when insufficient; v1 files unchanged',()=>{
+ const src=html.slice(html.indexOf('  function mirrorPct('),html.indexOf('  var mirrorData = null;'));
+ const box={innerHTML:'',classList:{add(){},remove(){}}};
+ const ctx=vm.createContext({document:{getElementById:id=>id==='mirrorCard'?box:null},Number,Math,Array,String});vm.runInContext(src+';this.renderMirror=renderMirror;',ctx);
+ const base={sample_count:25,today_features:{},matches:[],mirror_v2:{params:{min_sample:20}},stats:{n:25,up_count:15,next_1d_up_wilson95:[0.407,0.766],unconditional_up_rate:0.514,unconditional_n:4900,next_1d_median:0.3,next_3d_median:0.5,next_5d_median:0.8,next_1d_up_prob:0.6}};
+ ctx.renderMirror(base);assert.match(box.innerHTML,/15\/25 上涨/);assert.match(box.innerHTML,/41%–77%/);assert.match(box.innerHTML,/51%（4900 日）/);assert.match(box.innerHTML,/覆盖基准上涨率/);assert.doesNotMatch(box.innerHTML,/次日上涨概率/);
+ ctx.renderMirror({...base,sample_count:8,insufficient_sample:true,stats:{...base.stats,n:8,up_count:5}});assert.match(box.innerHTML,/样本不足（n=8&lt;20|样本不足（n=8<20/);assert.doesNotMatch(box.innerHTML,/次日中位/);
+ ctx.renderMirror({...base,sample_count:0,insufficient_sample:true,stats:{...base.stats,n:0,up_count:0,next_1d_up_wilson95:null}});assert.match(box.innerHTML,/无足够相似样本/);
+ ctx.renderMirror({sample_count:12,today_features:{},matches:[],stats:{next_1d_up_prob:0.58}});assert.match(box.innerHTML,/次日上涨概率/);assert.match(box.innerHTML,/58%/);
+});

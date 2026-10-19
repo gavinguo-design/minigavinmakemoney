@@ -89,3 +89,23 @@ test('Yahoo snapshot matches repository Futu candles on the overlap', () => {
   const futu = require('../investment/chart/kline_futu.json').candles, m = new Map(data.candles.map(c => [c.date, c]));
   for (const c of futu) if (m.has(c.date)) for (const f of ['open', 'high', 'low', 'close']) assert.ok(Math.abs(m.get(c.date)[f] - c[f]) <= 1, c.date + f);
 });
+
+test('random-walk baselines: analytic Gaussian zone probabilities from past returns only, rounded like production', () => {
+  const closes = [100]; for (let i = 0; i < 300; i++) closes.push(closes.at(-1) * Math.exp((i % 2 ? 1 : -1) * 0.01 + (i % 7 - 3) * 0.001));
+  const rw = BT.rwBaselines(closes, 99, 101);
+  for (const k of ['rw_gauss', 'rw_emp', 'rw_gauss_raw']) assert.ok(Math.abs(rw[k].A + rw[k].B + rw[k].C - 1) < 1e-9, k);
+  for (const k of ['rw_gauss', 'rw_emp']) for (const z of ['A', 'B', 'C']) { assert.ok(rw[k][z] >= 0.1 - 1e-9 && rw[k][z] <= 0.85 + 1e-9); assert.ok(Math.abs(rw[k][z] * 20 - Math.round(rw[k][z] * 20)) < 1e-9); }
+  // analytic check against the formula
+  const r = []; for (let i = 1; i < closes.length; i++) r.push(Math.log(closes[i] / closes[i - 1]));
+  const x = r.slice(-60), m = x.reduce((a, b) => a + b, 0) / 60, s = Math.sqrt(x.reduce((a, b) => a + (b - m) ** 2, 0) / 59), c0 = closes.at(-1);
+  assert.ok(Math.abs(rw.rw_gauss_raw.A - (1 - BT.normCdf(Math.log(101 / c0) / s))) < 1e-12);
+  assert.ok(Math.abs(rw.rw_gauss_raw.C - BT.normCdf(Math.log(99 / c0) / s)) < 1e-12);
+  assert.ok(Math.abs(BT.normCdf(1.959964) - 0.975) < 1e-6);
+  // appending future closes after the baseline is impossible by construction; truncating history changes nothing but the window
+  assert.deepEqual(BT.rwBaselines(closes.slice(), 99, 101), rw);
+  assert.equal(BT.rwBaselines(closes.slice(0, 30), 99, 101), null);
+  const {rows} = BT.runBacktest({data, start: '2025-06-02', end: '2025-06-20'});
+  for (const row of rows) for (const k of BT.RW_BASELINES) assert.ok(row.p[k]);
+  const sk = BT.rwSkillTable(rows, ['rule-weights-v3']);
+  assert.equal(sk['rule-weights-v3'].rw_gauss.ci, 'year-block');
+});

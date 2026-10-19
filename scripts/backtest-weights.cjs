@@ -130,6 +130,36 @@ function baselines(prevOutcomes) {
   return {uniform: {A: 1 / 3, B: 1 / 3, C: 1 / 3}, hist_freq: freq, persistence: emp, persistence_fixed: fixed};
 }
 
+// Random-walk baselines (FPP P0-1; gap-list-fpp.md). Zero parameters, only returns realised before t:
+// sigma = sd (ddof=1) of the last 60 daily log returns ending at the baseline close c0 (= last completed bar before t).
+// rw_gauss: P(A)=1-Phi(ln(upper/c0)/sigma), P(C)=Phi(ln(lower/c0)/sigma), P(B)=1-P(A)-P(C).
+// rw_emp:   same partition on the last <=250 past returns rescaled to sigma (sd60/sd_window), i.e. empirical shape.
+// Published through the production output format (boundedRound [0.10,0.85] step 0.05), same as FPP's table and as
+// the B1 fallback would publish; rw_gauss_raw keeps the unrounded Gaussian probabilities as an extra reference.
+function normCdf(x) { const t = 1 / (1 + 0.2316419 * Math.abs(x)), d = 0.3989422804014327 * Math.exp(-x * x / 2), p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429)))); return x >= 0 ? 1 - p : p; }
+function sd(a) { const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); }
+function rwBaselines(pastCloses, lower, upper, {win = 60, empWin = 250} = {}) {
+  const r = []; for (let i = 1; i < pastCloses.length; i++) r.push(Math.log(pastCloses[i] / pastCloses[i - 1]));
+  if (r.length < win || !(lower < upper)) return null;
+  const c0 = pastCloses.at(-1), s60 = sd(r.slice(-win)), zu = Math.log(upper / c0), zl = Math.log(lower / c0);
+  const gA = 1 - normCdf(zu / s60), gC = normCdf(zl / s60);
+  const w = r.slice(-empWin), sw = sd(w), e = w.map(x => x / sw * s60);
+  const eA = e.filter(x => x >= zu).length / e.length, eC = e.filter(x => x < zl).length / e.length;
+  const g = [gA, Math.max(0, 1 - gA - gC), gC], em = [eA, Math.max(0, 1 - eA - eC), eC], obj = a => ({A: a[0], B: a[1], C: a[2]}), b = DA.WEIGHT_MODEL_V1.bounds;
+  return {rw_gauss: obj(DA.boundedRound(g, {...b, max: 0.85})), rw_emp: obj(DA.boundedRound(em, {...b, max: 0.85})), rw_gauss_raw: obj(g), rw_sigma60: s60, rw_emp_n: e.length};
+}
+
+// BSS with calendar-year block bootstrap (resample whole years; FPP P0-1 / Pardo use year blocks).
+function bssYear(rows, m, ref, {reps = 4000, seed = 20261012} = {}) {
+  if (!rows.length) return null;
+  const ys = [...new Set(rows.map(r => r.date.slice(0, 4)))].sort(), g = ys.map(y => rows.filter(r => r.date.startsWith(y)).map(r => [brier(r.p[m], r.outcome), brier(r.p[ref], r.outcome)]));
+  const tot = rows.reduce((s, r) => [s[0] + brier(r.p[m], r.outcome), s[1] + brier(r.p[ref], r.outcome)], [0, 0]), R = rng(seed), v = [];
+  for (let k = 0; k < reps; k++) { let a = 0, b = 0; for (let j = 0; j < ys.length; j++) for (const [x, y] of g[Math.floor(R() * ys.length)]) { a += x; b += y; } v.push(1 - a / b); }
+  v.sort((x, y) => x - y);
+  return {bss: r4(1 - tot[0] / tot[1]), lo: r4(v[Math.floor(0.025 * reps)]), hi: r4(v[Math.ceil(0.975 * reps) - 1]), years: ys.length,
+    years_won: g.filter(x => x.reduce((s, [a, b]) => s + a - b, 0) < 0).length, ci: 'year-block'};
+}
+
 // Brier skill score vs a reference: 1 - BS_model / BS_ref (paired moving-block bootstrap CI).
 function bss(rows, m, ref, {reps = 2000, block = 10, seed = 20261012} = {}) {
   const n = rows.length; if (!n) return null;
@@ -202,7 +232,9 @@ function runBacktest({data = loadData(), start = START, end = END} = {}) {
     const outcome = judgeOutcome(g.rules, byDate.get(date).close);
     if (date >= start) {
       const past = candles.filter(b => b.date < date), a = adx(past);
-      const p = {...Object.fromEntries(Object.entries(g.models).map(([k, v]) => [k, v.p])), [V3_RAW]: g.models['rule-weights-v3'].raw, ...baselines(outcomes)};
+      const rw = rwBaselines(past.map(b => b.close), g.lower, g.upper);
+      if (!rw) throw Error('Insufficient history for RW baseline at ' + date);
+      const p = {...Object.fromEntries(Object.entries(g.models).map(([k, v]) => [k, v.p])), [V3_RAW]: g.models['rule-weights-v3'].raw, ...baselines(outcomes), rw_gauss: rw.rw_gauss, rw_emp: rw.rw_emp, rw_gauss_raw: rw.rw_gauss_raw};
       rows.push({date, baseline: g.baseline, base_close: g.base_close, close: byDate.get(date).close, lower: g.lower, upper: g.upper, outcome, p,
         raw: Object.fromEntries(Object.entries(g.models).map(([k, v]) => [k, v.raw])), v2_regime: g.models['rule-weights-v2.1']?.regime || null,
         adx14: a == null ? null : Math.round(a * 10) / 10, regime: a == null ? 'unknown' : a >= 25 ? 'trend' : a < 20 ? 'range' : 'transition'});
@@ -212,7 +244,12 @@ function runBacktest({data = loadData(), start = START, end = END} = {}) {
   return {rows, skipped};
 }
 
-const BASELINES = ['uniform', 'hist_freq', 'persistence', 'persistence_fixed'];
+const BASELINES = ['uniform', 'hist_freq', 'persistence', 'persistence_fixed', 'rw_gauss', 'rw_emp', 'rw_gauss_raw'];
+const RW_BASELINES = ['rw_gauss', 'rw_emp', 'rw_gauss_raw'];
+// BSS vs random walk with year-block CI (and the 10-day block CI from skillTable for comparison).
+function rwSkillTable(rows, models, opts = {}) {
+  return Object.fromEntries(models.filter(m => rows.length && rows[0].p[m]).map(m => [m, Object.fromEntries(RW_BASELINES.map(b => [b, bssYear(rows, m, b, opts)]))]));
+}
 // BSS of each model vs uniform / hist_freq / empirical persistence (primary) / legacy fixed persistence.
 function skillTable(rows, models, opts = {}) {
   const refs = BASELINES.filter(b => rows.length && rows[0].p[b]);
@@ -228,6 +265,7 @@ function evaluate(rows, models, opts = {}) {
     brier_diff_vs: Object.fromEntries(models.filter(m => m !== primary).map(m => [primary + ' - ' + m, diffCI(rows, primary, m, opts)])),
     calibration: Object.fromEntries(models.map(m => [m, calibration(rows, m)])),
     skill: skillTable(rows, models.filter(m => !BASELINES.includes(m)), opts),
+    skill_vs_rw_year_block: rwSkillTable(rows, models.filter(m => !BASELINES.includes(m))),
     murphy: Object.fromEntries(models.map(m => [m, murphy(rows, m)])),
     outcome_freq: Object.fromEntries(KEYS.map(k => [k, r4(rows.filter(r => r.outcome === k).length / rows.length)]))
   };
@@ -249,7 +287,7 @@ function scoreManual(rows, candles, file = path.join(OUT_DIR, 'manual-rules.json
   });
 }
 
-module.exports = {bss, murphy, wilson, skillTable, BASELINES, V3_RAW, v3Unrounded, scoreManual, loadData, withCalendar, generateDay, judgeOutcome, adx, brier, logloss, hit, baselines, blockBootstrap, calibration, summarize, runBacktest, evaluate, KEYS};
+module.exports = {rwBaselines, normCdf, bssYear, rwSkillTable, RW_BASELINES, bss, murphy, wilson, skillTable, BASELINES, V3_RAW, v3Unrounded, scoreManual, loadData, withCalendar, generateDay, judgeOutcome, adx, brier, logloss, hit, baselines, blockBootstrap, calibration, summarize, runBacktest, evaluate, KEYS};
 
 if (require.main === module) {
   const data = loadData(), {rows, skipped} = runBacktest({data});
@@ -259,7 +297,7 @@ if (require.main === module) {
     data_file: path.relative(root, DATA_FILE), data_source: data.source, data_candles_sha256: data.candles_sha256, raw_response_sha256: data.raw_response_sha256,
     window: [rows[0].date, rows.at(-1).date], sessions: rows.length, skipped, breadth: 'unavailable (no point-in-time history in repo); breadth factor = 0 for all models',
     southbound: 'not used by any model; research/data/ not present at run time',
-    baselines: {uniform: '1/3 each', hist_freq: 'expanding outcome frequency (+1), outcomes < t', persistence: 'PRIMARY: expanding empirical transition P(o_t|o_{t-1}) with +1 smoothing, pairs realised < t', persistence_fixed: 'legacy 0.6/0.2/0.2 on o_{t-1} (kept for comparability)'},
+    baselines: {rw_gauss: 'random walk, Gaussian: sigma = sd of last 60 log returns before t, P(zone of close_t | c_{t-1}) analytic (FPP P0-1), production boundedRound [0.10,0.85]/0.05', rw_emp: 'random walk, empirical: last <=250 returns before t rescaled to sigma60, production rounding', rw_gauss_raw: 'rw_gauss without rounding', uniform: '1/3 each', hist_freq: 'expanding outcome frequency (+1), outcomes < t', persistence: 'PRIMARY: expanding empirical transition P(o_t|o_{t-1}) with +1 smoothing, pairs realised < t', persistence_fixed: 'legacy 0.6/0.2/0.2 on o_{t-1} (kept for comparability)'},
     v3_raw_note: 'rule-weights-v3_raw = unbounded/unrounded v3 softmax (same frozen W); scoring-only comparison, production keeps [0.10,0.85] step 0.05 (SF-P0-2 needs walk-forward before any change). v3 W was fitted on 2024-10-02..2025-12-15, so that span is in-sample for v3.',
     note: '只评估、未调参。Brier 为三类求和形式（0–2，均匀 1/3 基准 = 0.667）。CI 为 10 日移动块 bootstrap 2000 次。BSS = 1 − BS_model/BS_ref。Murphy: BS = REL − RES + UNC（按 0.05 档分组）。'};
   for (const m of models.filter(x => x !== V3_RAW)) {
@@ -270,8 +308,8 @@ if (require.main === module) {
   }
   // Skill / calibration summary for all models (v3 holdout window = 2026-05-18..2026-10-09 is out-of-sample for v3).
   const hold = rows.filter(r => r.date >= '2026-05-18'), all = [...models, ...base];
-  const skill = {meta, overall: {n: rows.length, brier: Object.fromEntries(all.map(m => [m, r4(rows.reduce((s, r) => s + brier(r.p[m], r.outcome), 0) / rows.length)])), bss: skillTable(rows, models), murphy: Object.fromEntries(all.map(m => [m, murphy(rows, m)]))},
-    v3_oos_holdout: {range: [hold[0].date, hold.at(-1).date], n: hold.length, brier: Object.fromEntries(all.map(m => [m, r4(hold.reduce((s, r) => s + brier(r.p[m], r.outcome), 0) / hold.length)])), bss: skillTable(hold, models), murphy: Object.fromEntries(all.map(m => [m, murphy(hold, m)]))},
+  const skill = {meta, overall: {n: rows.length, brier: Object.fromEntries(all.map(m => [m, r4(rows.reduce((s, r) => s + brier(r.p[m], r.outcome), 0) / rows.length)])), bss: skillTable(rows, models), bss_vs_rw_year_block: rwSkillTable(rows, models), murphy: Object.fromEntries(all.map(m => [m, murphy(rows, m)]))},
+    v3_oos_holdout: {range: [hold[0].date, hold.at(-1).date], n: hold.length, brier: Object.fromEntries(all.map(m => [m, r4(hold.reduce((s, r) => s + brier(r.p[m], r.outcome), 0) / hold.length)])), bss: skillTable(hold, models), bss_vs_rw_year_block: rwSkillTable(hold, models), murphy: Object.fromEntries(all.map(m => [m, murphy(hold, m)]))},
     calibration_curves: Object.fromEntries(all.map(m => [m, calibration(rows, m)])),
     calibration_curves_v3_holdout: Object.fromEntries(all.map(m => [m, calibration(hold, m)]))};
   fs.writeFileSync(path.join(OUT_DIR, 'skill-calibration.json'), JSON.stringify(skill, null, 1) + '\n');
@@ -279,5 +317,5 @@ if (require.main === module) {
   const header = [...cols, ...all.flatMap(m => KEYS.map(k => m + '_' + k)), ...all.map(m => m + '_brier')];
   const lines = [header.join(',')].concat(rows.map(r => [...cols.map(c => r[c] ?? ''), ...all.flatMap(m => KEYS.map(k => r4(r.p[m][k]))), ...all.map(m => r4(brier(r.p[m], r.outcome)))].join(',')));
   fs.writeFileSync(path.join(OUT_DIR, 'daily-ledger.csv'), lines.join('\n') + '\n');
-  console.log(JSON.stringify({sessions: rows.length, models, bss_overall: skill.overall.bss, bss_v3_holdout: skill.v3_oos_holdout.bss}, null, 1));
+  console.log(JSON.stringify({sessions: rows.length, models, bss_overall: skill.overall.bss, bss_v3_holdout: skill.v3_oos_holdout.bss, bss_vs_rw_year_block: skill.overall.bss_vs_rw_year_block, holdout_bss_vs_rw_year_block: skill.v3_oos_holdout.bss_vs_rw_year_block}, null, 1));
 }

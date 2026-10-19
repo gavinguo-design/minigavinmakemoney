@@ -34,6 +34,70 @@ P_fixed['persistence'] = np.where(np.eye(3)[prevz] == 1, 0.6, 0.2)  # same as ba
 prev_out = np.array([y[i - 1] if i else 1 for i in range(len(y))])
 P_fixed['persistence_outcome'] = np.where(np.eye(3)[prev_out] == 1, 0.6, 0.2)
 
+# Random-walk baselines (FPP P0-1, gap-list-fpp.md). Zero parameters; only returns realised up to the baseline close
+# (the last completed session before t): sigma = sd(ddof=1) of the last 60 daily log returns ending at the baseline.
+# rw_gauss: P(A)=1-Phi(ln(upper/c0)/sigma), P(C)=Phi(ln(lower/c0)/sigma), P(B)=rest.
+# rw_emp:   empirical shape = last 250 returns rescaled to sigma60. Sessions with <250 past returns -> NaN.
+# Same formula as scripts/backtest-weights.cjs rwBaselines(); probabilities pass through round_all() like every model.
+def rw_baselines():
+    import math
+    H = json.load(open(os.path.join(D, 'HSI.json')))['rows']; idx = {r['date']: i for i, r in enumerate(H)}
+    C = np.array([r['close'] for r in H], float); R = np.diff(np.log(C))
+    Phi = lambda x: 0.5 * (1 + math.erf(x / math.sqrt(2)))
+    G = np.full((len(S), 3), np.nan); E = np.full((len(S), 3), np.nan)
+    for n, s in enumerate(S):
+        i = idx.get(s['baseline'])
+        if i is None or i < 251: continue
+        past = R[i - 250:i]; sd = past[-60:].std(ddof=1); c0 = C[i]
+        if abs(c0 - s['base_close']) / c0 > 1e-6: raise ValueError('baseline close mismatch ' + s['date'])
+        zu, zl = math.log(s['upper'] / c0), math.log(s['lower'] / c0)
+        a, c = 1 - Phi(zu / sd), Phi(zl / sd); G[n] = [a, max(0.0, 1 - a - c), c]
+        e = past / past.std(ddof=1) * sd; a, c = (e >= zu).mean(), (e < zl).mean(); E[n] = [a, max(0.0, 1 - a - c), c]
+    return {'rw_gauss': G, 'rw_emp': E}
+
+RW = rw_baselines()
+RW_REFS = ('rw_gauss', 'rw_emp')
+
+def rw_skill(preds, wf, br):
+    """BSS = 1 - B_model/B_RW (rounded probs), year-block CI of the paired ΔBrier and of BSS, years won."""
+    out = {}
+    for k in preds:
+        if k in RW_REFS: continue
+        row = {}
+        for ref in RW_REFS:
+            m = wf & ~np.isnan(br[k]) & ~np.isnan(br[ref]); d = br[k][m] - br[ref][m]; yrs = years[m]
+            rs = np.random.default_rng(20261012); uy = sorted(set(yrs)); gm = [br[k][m][yrs == u] for u in uy]; gr = [br[ref][m][yrs == u] for u in uy]; bs = []
+            for _ in range(4000):
+                pick = rs.integers(0, len(uy), len(uy)); bs.append(1 - np.concatenate([gm[i] for i in pick]).mean() / np.concatenate([gr[i] for i in pick]).mean())
+            bs = np.sort(bs)
+            row[ref] = {'n': int(m.sum()), 'brier_model': float(br[k][m].mean()), 'brier_rw': float(br[ref][m].mean()),
+                        'bss': float(1 - br[k][m].mean() / br[ref][m].mean()), 'bss_year_block_ci': [float(bs[int(0.025 * 4000)]), float(bs[int(np.ceil(0.975 * 4000)) - 1])],
+                        'delta_brier_year_block_ci': L.year_block_ci(d, yrs), 'years_won': int(sum(d[yrs == Y].mean() < 0 for Y in uy)), 'n_years': len(uy),
+                        'passes_rw_gate': bool(L.year_block_ci(d, yrs)[2] < 0)}
+        out[k] = row
+    return out
+
+def rw_report():
+    """Score the frozen research/v4/predictions.csv against the RW baselines without refitting or overwriting frozen outputs."""
+    import csv
+    rows = {r['date']: r for r in csv.DictReader(open(os.path.join(ROOT, 'research/v4/predictions.csv')))}
+    names = sorted({c[:-2] for c in next(iter(rows.values())).keys() if c[-2:] in ('_A', '_B', '_C')})
+    preds = {k: np.array([[float(rows[d][k + '_' + c]) if d in rows and rows[d][k + '_' + c] != '' else np.nan for c in L.KEYS] for d in dates]) for k in names}
+    preds.update(RW)
+    wf = (years >= 2016) & (years <= 2025) & ~np.isnan(RW['rw_emp']).any(1)
+    br = {k: np.where(np.isnan(P).any(1), np.nan, L.brier_rows(L.round_all(np.nan_to_num(P, nan=1/3)), y)) for k, P in preds.items()}
+    res = rw_skill(preds, wf, br)
+    out = {'generated_by': 'scripts/v4-walkforward.py --rw-report', 'source_predictions': 'research/v4/predictions.csv (frozen walk-forward output, not refitted)',
+           'window': '2016-2025 walk-forward', 'n_wf': int(wf.sum()),
+           'rw_brier': {r: float(np.nanmean(br[r][wf])) for r in RW_REFS},
+           'note': 'Brier = 3-class sum after production round_all [0.10,0.85]/0.05. BSS = 1 - B_model/B_RW. Year-block bootstrap 4000 reps. Gate (FPP P0-1): ΔBrier vs RW year-block CI upper < 0.',
+           'results': res}
+    json.dump(out, open(os.path.join(ROOT, 'research/v4/rw-baseline.json'), 'w'), indent=1, default=float)
+    for k in sorted(res, key=lambda k: res[k]['rw_gauss']['brier_model']):
+        g, e = res[k]['rw_gauss'], res[k]['rw_emp']
+        print(f"{k:42s} B={g['brier_model']:.4f} BSSg={g['bss']:+.4f} [{g['bss_year_block_ci'][0]:+.4f},{g['bss_year_block_ci'][1]:+.4f}] won {g['years_won']}/{g['n_years']} | BSSe={e['bss']:+.4f} [{e['bss_year_block_ci'][0]:+.4f},{e['bss_year_block_ci'][1]:+.4f}] won {e['years_won']}/{e['n_years']}")
+    return out
+
 EVAL_YEARS = list(range(2016, 2026))
 LAMS = [0.001, 0.003, 0.01, 0.03, 0.1, 0.3]
 NON_SCALED = {'bias', 'prev_zone_A', 'prev_zone_C', 'v2_regime_range'}
@@ -130,11 +194,14 @@ def metrics(P, mask):
             'logloss': float(L.logloss_rows(Pr, yy).mean()), 'hit': float(L.hit_rows(Pr, yy).mean()), 'ece': float(L.ece(Pr, yy))}
 
 if __name__ == '__main__':
+    if '--rw-report' in sys.argv:
+        rw_report(); sys.exit(0)
     preds, meta = run(CANDIDATES)
     for k in ('v1', 'v21', 'v3', 'persistence', 'persistence_outcome'): preds[k + ('_frozen' if k == 'v3' else '')] = P_fixed[k].astype(float)
+    preds.update(RW)
     # fixed models are already rounded production outputs; round_all is idempotent on them
     wf = (years >= 2016) & (years <= 2025); ref = years == 2026; ref_oos = dates >= '2026-05-18'
-    ok_all = np.all([~np.isnan(P).any(1) for P in preds.values()], 0)
+    ok_all = np.all([~np.isnan(P).any(1) for P in preds.values()], 0)  # includes RW: rw_emp needs 250 past returns
     wf &= ok_all; ref &= ok_all; ref_oos &= ok_all
     base = 'v3_retrain_lam0.01'
     res = {}
@@ -159,6 +226,9 @@ if __name__ == '__main__':
     nested_res = {'picks': {str(k): v for k, v in picks.items()}, 'brier_nested_2018_2025': float(nested[nm].mean()), 'brier_v3_retrain_2018_2025': float(br[base][nm].mean()),
                   'delta_year_block_ci': L.year_block_ci(dn, years[nm]), 'years_won': int(sum(dn[years[nm] == Y].mean() < 0 for Y in EVAL_YEARS[2:])), 'n_years': len(EVAL_YEARS[2:])}
     print('NESTED', nested_res)
+    rw = rw_skill(preds, wf, br)
+    for k in res:
+        if k in rw: res[k]['vs_rw'] = rw[k]
     for k in res:
         if k != 'v3_retrain_cvlam':
             d = br[k] - br['v3_retrain_cvlam']; res[k]['vs_v3_retrain_cvlam'] = {'wf_year_block_ci': L.year_block_ci(d[wf], years[wf]), 'years_won': int(sum(d[wf & (years == Y)].mean() < 0 for Y in EVAL_YEARS))}
@@ -172,7 +242,9 @@ if __name__ == '__main__':
         ledger.append({'id': k, 'kind': meta.get(k, {}).get('kind', 'fixed'), 'features': meta.get(k, {}).get('features'), 'params': meta.get(k, {}).get('params'),
                        'wf_brier': round(w['brier'], 4), 'wf_logloss': round(w['logloss'], 4), 'wf_hit': round(w['hit'], 4), 'wf_ece': round(w['ece'], 4),
                        'delta_vs_v3_retrain': None if not v else [round(x, 4) for x in v['wf_year_block_ci']], 'years_won': None if not v else v['years_won'],
-                       'passes_gate': bool(v and v['wf_year_block_ci'][2] < 0 and v['years_won'] >= 7), 'phase': 2 if k.startswith('P2:') else 1})
+                       'passes_gate': bool(v and v['wf_year_block_ci'][2] < 0 and v['years_won'] >= 7), 'phase': 2 if k.startswith('P2:') else 1,
+                       'bss_vs_rw_gauss': None if k in RW_REFS else round(res[k]['vs_rw']['rw_gauss']['bss'], 4), 'bss_vs_rw_emp': None if k in RW_REFS else round(res[k]['vs_rw']['rw_emp']['bss'], 4),
+                       'passes_rw_gate': None if k in RW_REFS else res[k]['vs_rw']['rw_emp']['passes_rw_gate'] and res[k]['vs_rw']['rw_gauss']['passes_rw_gate']})
     json.dump({'protocol': 'walk-forward expanding window, eval 2016..2025, gate: year-block CI of ΔBrier vs retrained v3 < 0 AND >=7/10 years won; 2026 not used for selection',
                'attempts': ledger}, open(os.path.join(ROOT, 'research/v4/search-ledger.json'), 'w'), indent=1)
     for e in sorted(ledger, key=lambda e: e['wf_brier']): print(e['id'], e['wf_brier'], e['wf_hit'], e['wf_ece'], e['delta_vs_v3_retrain'], e['years_won'], e['passes_gate'])

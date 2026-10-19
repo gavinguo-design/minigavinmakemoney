@@ -258,3 +258,14 @@ Brier 差值（对照 − v1，负 = 更好；10 日移动块 bootstrap 95% CI�
 - v3 样本外保留集（2026-05-18~10-09，n=101）：v3 0.3441 vs 经验持续 0.3919 → BSS **+0.122 [0.017, 0.259]**；v3_raw 0.3261 → +0.168。
 - 注：v3 W 拟合于 2024-10-02~2025-12-15，全样本数字含样本内，以保留集为准。
 <!-- SKILL-P0:END -->
+
+<!-- RW-BASELINE:BEGIN -->
+## 10. 随机游走基准（2026-10-19，round1 A3，gap-list-fpp P0-1）
+- `baselines()` 新增 `rw_gauss`（σ=基准日前 60 日对数收益 sd，解析计算 P(次日收盘落 A/B/C)）、`rw_emp`（前 ≤250 日收益按 σ60 缩放的经验分布），只用 t 之前数据，经生产 boundedRound [0.10,0.85]/0.05；`rw_gauss_raw` 为未取整对照。
+- `skill-calibration.json` 新增 `bss_vs_rw_year_block`（年块 bootstrap）。**注意：本回测只有 2024-10~2026-10 共 3 个日历年，年块 CI 退化（保留集只有 1 年，CI 宽度为 0），不能用来下结论**；10 日块 CI 在 `bss.*.rw_gauss`。
+- 本回测（10 日块 CI）：v3 BSS vs RW-高斯 全样本 +0.011 [−0.023, +0.047]，保留集 +0.017 [−0.036, +0.073]；v1 全样本 −0.304、v3_raw +0.089。
+- 2016–2025 walk-forward 的正式 RW 对比见 `research/v4/rw-baseline.json`（`python3 scripts/v4-walkforward.py --rw-report`，只读 frozen predictions.csv，不重训、不覆盖 v4 冻结产物）：
+  - RW-高斯 Brier 0.2675，RW-经验 0.2657（n=2434）。
+  - v4（v3+overnight+struct+imp）：BSS vs RW-高斯 **+0.034 [+0.004, +0.064]**，7/10 年；vs RW-经验 **+0.027 [−0.003, +0.055]**，8/10 年（CI 跨 0）。
+  - v3 冻结（生产回退）：BSS vs RW-高斯 **−0.038 [−0.058, −0.018]**，1/10 年；vs RW-经验 −0.045 [−0.058, −0.033]，0/10 年。
+<!-- RW-BASELINE:END -->

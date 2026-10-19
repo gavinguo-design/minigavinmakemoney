@@ -1,0 +1,15 @@
+{
+ "generated_by": "scripts/manual-adjustments.cjs score",
+ "ledger_entries": 0,
+ "scored_sessions": 0,
+ "summary": {
+  "manual": null,
+  "model": null,
+  "rw_same_sessions": null,
+  "manual_on_rw_sessions": null,
+  "n_rw": 0
+ },
+ "note": "同一交易日多次人工改动只取 08:45 截止前最后一次（effective），其余 superseded；截止后记录（late）不计分。人工规则与模型规则不同时，各自按自己的规则判定结局。",
+ "entries": [],
+ "rows": []
+}

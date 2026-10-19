@@ -367,3 +367,31 @@ test('round1 A1: chart renders display-only A/C as observation cards and no long
  assert.equal(ctx.probabilityDefinitionHtml({}),'');assert.match(ctx.probabilityDefinitionHtml({probability_definition:'x'}),/次日收盘落在哪个区间/);
  assert.doesNotMatch(MR.rr(100,130,90,'long').verdict,/具备可执行/);assert.equal(MR.rr(100,130,90,'long').executable,true);
 });
+
+test('round1 A4: disaster stop shadow mode — 2.5σ and turtle 2N computed, but disaster_stop stays not_configured',()=>{
+ const DA=require('../scripts/daily-analysis.cjs'),TO=require('../investment/chart/trading-operation.js');
+ const sh=DA.disasterStopShadow({direction:'long',structural:24000,entry:24300,atr14:300,ewma:0.01,n20:250,close:24300});
+ assert.equal(sh.status,'shadow');assert.equal(sh.published,false);
+ const s=sh.versions.sigma_2_5,t=sh.versions.turtle_2n;
+ assert.equal(s.sigma_source,'ATR14');assert.equal(s.price,24000-2.5*300);assert.equal(t.price,24300-2*250);
+ assert.equal(s.position_sizing.units_per_10k_risk,Math.round(10000/(24300-23250)*10000));assert.equal(s.position_sizing.point_value_hkd,1/10000);
+ assert.equal(s.position_sizing.futures_contracts_per_10k_risk,Math.round(10000/1050/50*1000)/1000);assert.match(s.position_sizing.futures_note,/50 港元/);
+ const sh2=DA.disasterStopShadow({direction:'short',structural:24500,entry:24000,atr14:200,ewma:0.012,n20:220,close:24000});
+ assert.equal(sh2.versions.sigma_2_5.sigma_source,'EWMA');assert.equal(sh2.versions.sigma_2_5.price,24500+2.5*288);assert.equal(sh2.versions.turtle_2n.price,24000+440);
+ assert.equal(DA.disasterStopShadow({direction:'long',structural:1,entry:2,atr14:null,ewma:.01,n20:null,close:2}).versions.turtle_2n.status,'insufficient_input');
+ // Turtle N uses completed bars only and the documented recursion
+ const bars=[{high:11,low:9,close:10}];for(let i=1;i<30;i++)bars.push({high:10+i%3,low:9-i%2,close:10});
+ const tr=bars.slice(1).map((b,i)=>Math.max(b.high-b.low,Math.abs(b.high-bars[i].close),Math.abs(b.low-bars[i].close)));let N=tr.slice(0,20).reduce((a,b)=>a+b,0)/20;for(let i=20;i<tr.length;i++)N=(19*N+tr[i])/20;
+ assert.ok(Math.abs(DA.turtleN(bars)-N)<1e-12);assert.equal(DA.turtleN(bars.slice(0,10)),null);
+ const close=require('./fixtures/hsi-close-2026-10-09.json');
+ const live=build({date:'2026-10-12',feed:close,seed,participation:null,generatedAt:'2026-10-12T08:45:30+08:00'});
+ for(const sc of live.forecast.scenarios){
+  assert.deepEqual(sc.risk.disaster_stop,{price:null,status:'not_configured'});assert.equal(sc.risk.position_sizing,undefined);
+  const v=sc.risk.disaster_stop_shadow.versions,si=sc.risk.structural_invalidation.price;
+  if(sc.direction==='long'){assert.ok(v.sigma_2_5.price<si);assert.ok(v.turtle_2n.price<sc.rr.entry);}else{assert.ok(v.sigma_2_5.price>si);assert.ok(v.turtle_2n.price>sc.rr.entry);}
+ }
+ // decision contract unchanged: risk is still unsupported
+ const op=TO.build({annotations:live,scenarioStatus:null,now:Date.parse('2026-10-12T08:50:00+08:00')});
+ assert.equal(op.sections.find(s=>s.id==='risk_controls').data.scenarios.every(s=>s.disaster_stop_status==='unavailable'),true);
+ for(const sc of build(args).forecast.scenarios)assert.equal(sc.risk.disaster_stop_shadow,undefined);
+});

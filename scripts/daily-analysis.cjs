@@ -128,6 +128,34 @@ function productionWeights(args) {
     model:V3.WEIGHT_MODEL_V3};
 }
 const fmt = n => n.toLocaleString('en-US', {maximumFractionDigits:2});
+// Disaster stop — SHADOW MODE (round1 A4, 2026-10-19; replaces the published version of 98868fb). Both candidate rules are
+// computed and written to risk.disaster_stop_shadow, but risk.disaster_stop stays {price:null,status:'not_configured'} so the
+// trading-operation decision code (TRIGGERED_RISK_INCOMPLETE) and all page copy are unchanged until a rule is validated.
+//   sigma_2_5 (gap-list P0-3 / qt G3): structural invalidation ∓ 2.5 × max(ATR14, EWMA(λ=0.94) daily σ × close).
+//   turtle_2n (海龟法则): planned entry ∓ 2 × N, N = ATR20 with Turtle smoothing N_t = (19·N_{t−1} + TR_t)/20.
+// Sizing is written for CBBC (牛熊证) by default: HKD per unit per index point = 1 / entitlement ratio (configurable).
+// HSI futures (大期) = 50 HKD/pt and mini (小期) = 10 HKD/pt are kept as notes. Not a position recommendation.
+const RISK_CONFIG=Object.freeze({instrument:'CBBC 牛熊证（恒指）',entitlement_ratio:10000,point_value_hkd:1/10000,risk_unit_hkd:10000,disaster_k:2.5,turtle_n:20,turtle_mult:2,ewma_lambda:0.94,ewma_seed:20,
+  futures_note:'恒指期货（大期）每点 50 港元、小型恒指（小期）每点 10 港元；改 point_value_hkd 即可换算。'});
+function ewmaSigma(bars,lambda=RISK_CONFIG.ewma_lambda,seed=RISK_CONFIG.ewma_seed){const r=[];for(let i=1;i<bars.length;i++)r.push(Math.log(bars[i].close/bars[i-1].close));if(r.length<seed+1)return null;let v=r.slice(0,seed).reduce((s,x)=>s+x*x,0)/seed;for(let i=seed;i<r.length;i++)v=lambda*v+(1-lambda)*r[i]*r[i];return Math.sqrt(v);}
+// Turtle N: seed with the simple mean of the first n true ranges, then N=((n−1)·N+TR)/n. Completed bars only.
+function turtleN(bars,n=RISK_CONFIG.turtle_n){const tr=[];for(let i=1;i<bars.length;i++){const b=bars[i],p=bars[i-1];tr.push(Math.max(b.high-b.low,Math.abs(b.high-p.close),Math.abs(b.low-p.close)));}if(tr.length<n)return null;let N=tr.slice(0,n).reduce((s,x)=>s+x,0)/n;for(let i=n;i<tr.length;i++)N=((n-1)*N+tr[i])/n;return N;}
+function sizing(entry,price,cfg=RISK_CONFIG){const dist=Math.abs(entry-price);return {units_per_10k_risk:dist>0?Math.round(cfg.risk_unit_hkd/dist/cfg.point_value_hkd):null,risk_unit_hkd:cfg.risk_unit_hkd,point_value_hkd:cfg.point_value_hkd,entitlement_ratio:cfg.entitlement_ratio,instrument:cfg.instrument,entry_to_stop_points:r2(dist),
+  formula:'10000 ÷ |entry − stop| ÷ 每单位每点港元（牛熊证 = 1/换股比率）',futures_note:cfg.futures_note,
+  futures_contracts_per_10k_risk:dist>0?Math.round(cfg.risk_unit_hkd/dist/50*1000)/1000:null,
+  note:'每 1 万港元风险预算可持有的牛熊证单位数（按换股比率 '+cfg.entitlement_ratio+'，未取整到每手、未含成本/滑点/收回价距离），不是仓位建议。'};}
+function disasterStopShadow({direction,structural,entry,atr14,ewma,n20,close,cfg=RISK_CONFIG}){
+  const sign=direction==='long'?-1:1,side=direction==='long'?'多头':'空头';
+  let sigma25={price:null,status:'insufficient_input'};
+  if([structural,entry,atr14,ewma,close].every(Number.isFinite)){const ewmaPts=ewma*close,sigma=Math.max(atr14,ewmaPts),src=atr14>=ewmaPts?'ATR14':'EWMA',price=Math.round((structural+sign*cfg.disaster_k*sigma)*100)/100;
+    sigma25={price,method:'structural_invalidation '+(sign<0?'−':'+')+' '+cfg.disaster_k+'σ',sigma_points:r2(sigma),sigma_source:src,atr14:r2(atr14),ewma_sigma_points:r2(ewmaPts),ewma_lambda:cfg.ewma_lambda,
+      basis:side+'：结构失效位 '+fmt(structural)+(sign<0?' − ':' + ')+cfg.disaster_k+'σ；σ = max(ATR14 '+fmt(r2(atr14))+', EWMA 日波动×收盘 '+fmt(r2(ewmaPts))+') = '+fmt(r2(sigma))+' 点（取 '+src+'）',position_sizing:sizing(entry,price,cfg)};}
+  let turtle={price:null,status:'insufficient_input'};
+  if([entry,n20].every(Number.isFinite)&&n20>0){const price=Math.round((entry+sign*cfg.turtle_mult*n20)*100)/100;
+    turtle={price,method:'entry '+(sign<0?'−':'+')+' '+cfg.turtle_mult+'N',n_points:r2(n20),n_window:cfg.turtle_n,basis:side+'：计划入场 '+fmt(entry)+(sign<0?' − ':' + ')+cfg.turtle_mult+'×N（N = ATR'+cfg.turtle_n+' 海龟平滑 = '+fmt(r2(n20))+' 点）',
+      structural_inside:direction==='long'?price<structural:price>structural,position_sizing:sizing(entry,price,cfg)};}
+  return {status:'shadow',published:false,validated:false,note:'影子模式：两种灾难止损只记录、不发布；risk.disaster_stop 仍为 not_configured，决策码与页面文案不变。待样本外验证后再选定。',versions:{sigma_2_5:sigma25,turtle_2n:turtle}};
+}
 // Execution policy (round1 A1, 2026-10-19; tb-backtest-abc.md): A and C are display-only. With the real card levels,
 // 2016–2025 triple-barrier E[R] after 0.15R cost: A −0.23R [−0.46,+0.02]; C −0.07R [−0.33,+0.21]; card RR≥2 C −0.39R [−0.68,−0.08].
 // Live builds only (executionPolicy=!backfill) so frozen backfills/supplements stay byte-for-byte reproducible.
@@ -135,7 +163,7 @@ const DISPLAY_ONLY=Object.freeze(['A','C']);
 const PROBABILITY_DEFINITION='次日收盘落在哪个区间（T+1 收盘落区：A ≥ 上边界 / B 区间内 / C < 下边界）；不是 5 日内先到目标的概率，也不是胜率。';
 const EXECUTION_NOTE={A:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），A 扣 0.15R 成本后 E[R] −0.23R [−0.46,+0.02]；触发后 63% 次日开盘已越过目标。',
   C:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），C 扣 0.15R 成本后 E[R] −0.07R [−0.33,+0.21]；卡片赔率≥2 的 C 为 −0.39R [−0.68,−0.08]。赔率≥2:1 不等于可执行。'};
-function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, scoredReviews=0}) {
+function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, riskShadow=!backfill, scoredReviews=0}) {
   if (MR.tradingDay(date)!==true) throw Error('Unsupported/non-trading analysis date');
   const cutoff = backfill ? date+'T08:45:00+08:00' : (generatedAt || new Date().toISOString());
   if (!backfill && (MR.hk(MR.timestamp(cutoff)).date!==date || MR.timestamp(cutoff)>=MR.timestamp(date+'T09:30:00+08:00'))) throw Error('Preopen publication missed; use explicit backfill');
@@ -162,6 +190,8 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
   // Retrospective reconstructions keep probability null unless explicitly requested,
   // so frozen supplements remain byte-for-byte reproducible.
   const weights=ruleWeights?productionWeights({bars,lower,upper,participation,overnight,cutoff,dataUpdatedAt:feed.updated_at}):null;
+  // Frozen backfills carry no shadow block (byte-for-byte reproducible supplements).
+  const atr14=summary.atr,ewma=riskShadow?ewmaSigma(bars):null,n20=riskShadow?turtleN(bars):null;
   const priceRules={A:{operator:'gte',value:upper},B:{operator:'range',lower,upper},C:{operator:'lt',value:lower}};
   const scenarios=['A','B','C'].map((key,i)=>{
     const dir=i===0?'long':'short', entry=i===2?lower:upper;
@@ -173,7 +203,7 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
       color:['#00d87f','#a78bfa','#ff8c42'][i],trigger:trigger+'；只看完整日K价格结构',price_rule:priceRules[key],
       invalidation:(dir==='long'?'收盘 < ':'收盘 ≥ ')+fmt(stop),
       rr:{entry,stop,target,direction:dir,entryHint:'条件确认之后再观察结构位回测；价格满足赔率不等于触发。'},
-      risk:{structural_invalidation:{price:stop,confirmation:'completed_daily_close'},disaster_stop:{price:null,status:'not_configured'}},
+      risk:{structural_invalidation:{price:stop,confirmation:'completed_daily_close'},disaster_stop:{price:null,status:'not_configured'},...(riskShadow?{disaster_stop_shadow:disasterStopShadow({direction:dir,structural:stop,entry,atr14,ewma,n20,close:last.close})}:{})},
       target:target==null?'缺少已观察到的目标结构，赔率不可用':fmt(target)+'（已观察到的结构位）',
       holding_period:'每日重新核验，不承诺固定持仓天数',note:weights?(weights.fallback?'规则生成的条件情景；v4 盘前数据不可用，权重回退为 '+weights.version+' 模型输出（两年回测、约100天保留集验证），不是历史胜率。':'规则生成的条件情景；权重为 '+weights.version+' 模型输出，经 2016–2025 逐年滚动回测（n=2434）验证，未经实盘校准，不是历史胜率。'):'规则生成的条件情景；未校准历史发生率，不提供概率百分比。',
       zone:target==null?{}:{upperBound:[{offset:0,price:last.close},{offset:5,price:Math.max(entry,target)}],lowerBound:[{offset:0,price:last.close},{offset:5,price:Math.min(entry,target)}]}};
@@ -198,4 +228,4 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
     intraday_playbook:{updatedAt:time,note:'仅用于区间定位，不是即时操作指令',zones:[{range:[upper,null],stance:'修复观察',action:'等待A收盘确认'},{range:[lower,upper],stance:'区间观察',action:'等待B收盘确认'},{range:[null,lower],stance:'破位观察',action:'等待C收盘确认'}]},
     levels:[{price:lower,type:'support',label:'最近确认摆动低点',reason:pivots.lows.at(-1).time+'，确认于 '+pivots.lows.at(-1).confirmedAt},{price:upper,type:'resistance',label:'最近确认摆动高点',reason:pivots.highs.at(-1).time+'，确认于 '+pivots.highs.at(-1).confirmedAt},...(downTarget==null?[]:[{price:downTarget,type:'support',label:'下方结构目标',reason:'截止日前的确认摆动低点或既有支撑'}]),...(upTarget==null?[]:[{price:upTarget,type:'resistance',label:'上方结构目标',reason:'截止日前的确认摆动高点或既有阻力'}])],markers:[],playbook:[],pathTree:null};
 }
-module.exports={DISPLAY_ONLY,PROBABILITY_DEFINITION,build,prepareOvernight,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};
+module.exports={RISK_CONFIG,ewmaSigma,turtleN,disasterStopShadow,DISPLAY_ONLY,PROBABILITY_DEFINITION,build,prepareOvernight,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};

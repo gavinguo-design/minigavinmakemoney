@@ -569,6 +569,18 @@
 
     .prob-note { font-size: 11px; color: var(--muted); margin: 6px 4px 12px; }
 
+    /* 规律研究结论卡（research-board.json） */
+    .rb { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 13px 15px; margin-bottom: 14px; }
+    .rb-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap; }
+    .rb-title { font-size:15px; font-weight:800; }
+    .rb-meta { font-size:10.5px; color:var(--muted); }
+    .rb-sum { margin-top:6px; font-size:12.5px; color:rgba(235,235,245,.85); }
+    .rb-list { margin-top:8px; }
+    .rb-row { display:flex; align-items:baseline; gap:8px; padding:5px 0; border-top:1px dashed var(--border); font-size:12px; }
+    .rb-row .n { flex:1; color:rgba(235,235,245,.85); }
+    .rb-row .v { font-weight:700; white-space:nowrap; }
+    .rb-row .v.useful { color:#30d158; } .rb-row .v.weak, .rb-row .v.watch, .rb-row .v.rule { color:var(--gold); } .rb-row .v.no { color:var(--muted); }
+    .rb-cav { margin-top:8px; font-size:10.5px; color:var(--muted); line-height:1.5; }
     /* 历史镜像卡片（historical_mirror.json，cron 每小时更新） */
     .mirror { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 13px 15px; margin-bottom: 14px; }
     .mirror-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
@@ -1047,6 +1059,9 @@
 
     <!-- 历史镜像（historical_mirror.json，fetch 失败整卡隐藏） -->
     <div class="mirror hidden" id="mirrorCard"></div>
+
+    <!-- 规律研究结论（research-board.json，fetch 失败整卡隐藏） -->
+    <div class="rb hidden" id="researchBoard"></div>
 
     <footer>
       <span id="disclaimerText">标注由 miniGG 维护 · 行情数据仅供参考，不构成投资建议</span><br/>
@@ -4107,6 +4122,24 @@
 
   // 首次报价及轮询；获取或渲染失败也继续，返回页面时立即重新验证。
   fetchRealtime().then(applyRealtime).catch(function () {}).finally(scheduleRealtime);
+
+  // ---------- 规律研究结论卡（research-board.json；失败整卡隐藏） ----------
+  function renderResearchBoard(d) {
+    var box = document.getElementById('researchBoard');
+    if (!box) return;
+    if (!d || !Array.isArray(d.items) || !d.items.length) { box.classList.add('hidden'); return; }
+    var html = '<div class="rb-head"><span class="rb-title">🔬 ' + escapeHtml(d.title || '规律研究结论') + '</span><span class="rb-meta">更新 ' + escapeHtml(d.updated_at || '--') + '</span></div>' +
+      (d.summary ? '<div class="rb-sum">' + escapeHtml(d.summary) + '</div>' : '') + '<div class="rb-list">';
+    d.items.forEach(function (it) {
+      html += '<div class="rb-row" title="' + escapeHtml(it.detail || '') + '"><span class="n">' + escapeHtml(it.name || '') + '</span><span class="v ' + escapeHtml(it.status || '') + '">' + escapeHtml(it.verdict || '') + '</span></div>';
+    });
+    html += '</div>' + (Array.isArray(d.caveats) && d.caveats.length ? '<div class="rb-cav">' + d.caveats.map(function (c) { return '· ' + escapeHtml(c); }).join('<br>') + '</div>' : '');
+    box.innerHTML = html; box.classList.remove('hidden');
+  }
+  function loadResearchBoard() {
+    return fetch('research-board.json?t=' + Date.now(), {cache:'no-store'}).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }).then(renderResearchBoard);
+  }
+  if (typeof document !== 'undefined' && document.getElementById && document.getElementById('researchBoard')) { try { loadResearchBoard(); } catch (e) {} }
 
   // ---------- 历史镜像卡片（historical_mirror.json，cron 每小时更新） ----------
   // 今日盘面特征 vs 历史同状态交易日的后续走势统计；fetch 失败/文件不存在整卡隐藏

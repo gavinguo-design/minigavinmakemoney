@@ -19,6 +19,19 @@ function countScoredReviews(dir) {
   try {return fs.readdirSync(dir).filter(f=>/^\d{4}-\d{2}-\d{2}\.json$/.test(f)).filter(f=>{try{return Number.isFinite(JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')).brier);}catch(e){return false;}}).length;}
   catch(e){return 0;}
 }
+// Round1 B1: Pardo stop-line history = frozen research replay (research/v4/rw-guard-seed.json) + live close reviews.
+function loadGuardHistory(projectRoot,reviewDir) {
+  const G=require('./rw-guard.cjs');let seed=null;
+  try {seed=JSON.parse(fs.readFileSync(path.join(projectRoot,'research/v4/rw-guard-seed.json'),'utf8'));}catch(e){seed=null;}
+  let reviews=[];try{reviews=fs.readdirSync(reviewDir).filter(f=>/^\d{4}-\d{2}-\d{2}\.json$/.test(f)).map(f=>{try{return JSON.parse(fs.readFileSync(path.join(reviewDir,f),'utf8'));}catch(e){return null;}}).filter(Boolean);}catch(e){}
+  return seed||reviews.length?G.guardHistory({seed,reviews}):null;
+}
+// Probabilities of every model published on the card (active + shadows incl. RW), frozen at publication.
+function modelProbabilities(a) {
+  const f=a.forecast||{},info=f.weight_model_info||{},out={...(info.shadow||{})};
+  if(f.weight_model)out[f.weight_model]=Object.fromEntries((f.scenarios||[]).map(s=>[s.id,s.probability??null]));
+  return out;
+}
 function exclusive(file,data) {
   const body=JSON.stringify(data,null,2)+'\n';fs.mkdirSync(path.dirname(file),{recursive:true});
   try {fs.writeFileSync(file,body,{flag:'wx'});}catch(e){if(e.code!=='EEXIST')throw e;}
@@ -39,7 +52,7 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root,fetchOvernig
     const bar=feed.candles.find(b=>b.date===today);
     const verdicts=replay.scenarios.map(s=>({id:s.id,met:s.condition}));
     if(verdicts.some(v=>v.met===null))throw Error('Missing frozen price rule');
-    const record={session_date:today,analysis_id:a.meta.analysis_id,kind:'price_structure_close_review',generated_at:new Date(now).toISOString(),bar,verdicts,probability_status:a.publication?.probability_status||'uncalibrated',weight_model:a.forecast.weight_model||null,probabilities:Object.fromEntries(a.forecast.scenarios.map(s=>[s.id,s.probability??null])),...brierScore(a.forecast.scenarios,verdicts)};
+    const record={session_date:today,analysis_id:a.meta.analysis_id,kind:'price_structure_close_review',generated_at:new Date(now).toISOString(),bar,verdicts,probability_status:a.publication?.probability_status||'uncalibrated',weight_model:a.forecast.weight_model||null,probabilities:Object.fromEntries(a.forecast.scenarios.map(s=>[s.id,s.probability??null])),model_probabilities:modelProbabilities(a),...brierScore(a.forecast.scenarios,verdicts)};
     exclusive(path.join(dir,'daily-reviews',today+'.json'),record);
     const status={updated_at:new Date(now).toISOString(),judgment_mode:'close_final',analysis_id:a.meta.analysis_id,conditions_date:today,data_stale:false,conditions_stale:false,metrics:{price:bar.close},scenarios:verdicts.map(v=>({id:v.id,name_prefix:v.id,triggered:v.met,core_met:v.met?1:0,core_total:1,confirm_met:0,confirm_total:0,strength:'价格确认·环境未定',conditions:[{id:'daily_price_structure',role:'core',label:a.forecast.scenarios.find(s=>s.id===v.id).trigger,met:v.met}]}))};
     fs.writeFileSync(path.join(dir,'scenario_status.json'),JSON.stringify(status,null,2)+'\n');return;
@@ -65,13 +78,13 @@ async function run({now=Date.now(),phase='preopen',projectRoot=root,fetchOvernig
   // build(), which falls back to v3 and annotates the reason (fail-closed, no blanks/imputation).
   let overnight;try{overnight=await fetchOvernight({now});}catch(e){overnight={status:'unavailable',fetched_at:new Date(now).toISOString(),errors:[e.message],series:{}};}
   if(overnight.status!=='available')console.error('Overnight inputs unavailable, v3 fallback: '+(overnight.errors||[]).join('; '));
-  const a=build({date:today,feed,seed:existing,participation:read('hsi-participation.json'),overnight,generatedAt:new Date(now).toISOString(),scoredReviews:countScoredReviews(path.join(dir,'daily-reviews'))});
+  const a=build({date:today,feed,seed:existing,participation:read('hsi-participation.json'),overnight,generatedAt:new Date(now).toISOString(),guardHistory:loadGuardHistory(projectRoot,path.join(dir,'daily-reviews')),scoredReviews:countScoredReviews(path.join(dir,'daily-reviews'))});
   // This prepublication ledger is separate from genuine archive snapshots.
   exclusive(path.join(dir,'daily-generated',today+'.json'),a);
   fs.writeFileSync(path.join(dir,'annotations.json'),JSON.stringify(a,null,2)+'\n');
   const status={updated_at:new Date(now).toISOString(),judgment_mode:'intraday_preview',conditions_date:today,analysis_id:a.meta.analysis_id,data_stale:false,conditions_stale:false,scenarios:a.forecast.scenarios.map(s=>({id:s.id,name_prefix:s.id,triggered:false,core_met:0,core_total:1,confirm_met:0,confirm_total:0,conditions:[{id:'daily_price_structure',role:'core',label:s.trigger,met:null}]}))};
   fs.writeFileSync(path.join(dir,'scenario_status.json'),JSON.stringify(status,null,2)+'\n');
-  console.log(JSON.stringify({generated:today,baseline:expected,analysis_id:a.meta.analysis_id,weight_model:a.forecast.weight_model||null,fallback:a.forecast.weight_model_info?.fallback||null}));
+  console.log(JSON.stringify({generated:today,baseline:expected,analysis_id:a.meta.analysis_id,weight_model:a.forecast.weight_model||null,fallback:a.forecast.weight_model_info?.fallback||null,rw_guard:a.forecast.weight_model_info?.rw_guard?{status:a.forecast.weight_model_info.rw_guard.status,use:a.forecast.weight_model_info.rw_guard.use,roll60:a.forecast.weight_model_info.rw_guard.roll60}:null}));
 }
-module.exports={run,brierScore};
+module.exports={run,brierScore,loadGuardHistory,modelProbabilities};
 if(require.main===module)run({phase:process.argv[2]||'preopen',now:process.env.ANALYSIS_NOW?MR.timestamp(process.env.ANALYSIS_NOW):Date.now()}).catch(e=>{console.error(e.message);process.exitCode=1;});

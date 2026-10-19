@@ -2142,11 +2142,22 @@
     var short = String(version).replace(/^rule-weights-/, '');
     var fallback = info.fallback && info.fallback.used ? info.fallback : null;
     var label = f.weight_backfill ? ('事后补算 · 规则 ' + short + '（当天未冻结权重，不计入打分）')
-      : short === 'v4' ? ('模型 v4（含盘前隔夜美股/ETF；2016–2025 滚动回测 10/10 年优于重训 v3；实盘已打分 ' + n + ' 次）')
+      : short === 'v4' ? ((info.rw_guard ? '当前用：' : '') + '模型 v4（含盘前隔夜美股/ETF；2016–2025 滚动回测 10/10 年优于重训 v3；实盘已打分 ' + n + ' 次）')
       : (short === 'v3' && fallback) ? ('模型 v3 · v4 回退（盘前隔夜数据不可用；实盘已打分 ' + n + ' 次）')
       : short === 'v3' ? ('模型 v3（两年回测，保留集优于 v1；实盘已打分 ' + n + ' 次）')
+      : short === 'rw-gauss-v1' ? ('当前用：随机游走基准（v4 触发停用线，已降为影子；实盘已打分 ' + n + ' 次）')
       : ('规则打分 ' + short + '，未经回测校准，累计 ' + n + ' 次');
     return '<div class="sc-weight-note" title="' + escapeHtml((sc.probability_basis || '') + '｜模型 ' + version + '；累计次数=已完成 Brier 复盘的交易日数') + '">' + escapeHtml(label) + (sc.probability_basis ? '<br><span>' + escapeHtml(sc.probability_basis) + '</span>' : '') + '</div>';
+  }
+
+  // Round1 B1: RW reference + Pardo stop-line status, shown under the weight note when the analysis carries them.
+  function rwGuardNoteHtml(a, sc) {
+    var info = a && a.forecast && a.forecast.weight_model_info || {}, ref = info.rw_reference, g = info.rw_guard;
+    if (!ref || !ref.probabilities || !sc) return '';
+    var p = ref.probabilities[sc.id], active = info.active_model === ref.version;
+    var gl = !g ? '' : g.status === 'red' ? '🔴 停用线触发·已切随机游走' : g.status === 'yellow' ? '🟡 黄线·v4 近60日技能偏弱' : g.status === 'green' ? '🟢 v4 近60日技能正常' : g.status === 'warming_up' ? '停用线预热中' : '停用线不可用';
+    var title = (ref.formula || '') + '｜' + (ref.walkforward || '') + (g && g.reason ? '｜' + g.reason : '') + (g && Number.isFinite(g.roll60) ? '｜60日技能 ' + g.roll60 + '（红线 ' + g.thresholds.red_roll60 + '）' : '');
+    return '<div class="sc-weight-note sc-rw-note" title="' + escapeHtml(title) + '">' + (active ? '' : '随机游走对照 ' + (Number.isFinite(p) ? Math.round(p * 100) + '%' : '—') + ' · ') + escapeHtml(gl) + '</div>';
   }
 
   function participationEvaluation(a) {
@@ -2420,7 +2431,7 @@
       var weightTitle = context.status === 'available' ? ('宽度/权重/贡献之后，再由夜盘方向有限校正；流动性和VHSI只控制可靠度。基础权重 '+Math.round((sc.probability||0)*100)+'%，不是历史胜率') : (participation.status === 'available' ? ('参与度校正权重；基础权重 ' + Math.round((sc.probability || 0) * 100) + '%，不是历史胜率') : '盘前基础权重；市场参与度数据未通过门禁，不是历史胜率');
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
-          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + (Number.isFinite(sc.probability) ? Math.round(effectiveWeight * 100) + '% 权重' : '权重未校准') + (isTopWeight?'<i class="sc-weight-badge">'+(ruleWeightModel(a)?'主情景 · ':'')+'最高权重</i>':'') + '</span>' + probabilityDefinitionHtml(sc) + '</div>' + (Number.isFinite(sc.probability) && ruleWeightModel(a) ? ruleWeightNoteHtml(a, sc) : '') +
+          '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + (Number.isFinite(sc.probability) ? Math.round(effectiveWeight * 100) + '% 权重' : '权重未校准') + (isTopWeight?'<i class="sc-weight-badge">'+(ruleWeightModel(a)?'主情景 · ':'')+'最高权重</i>':'') + '</span>' + probabilityDefinitionHtml(sc) + '</div>' + (Number.isFinite(sc.probability) && ruleWeightModel(a) ? ruleWeightNoteHtml(a, sc) + rwGuardNoteHtml(a, sc) : '') +
         '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 距离最近·非入场信号</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发前提：</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         numsHtml +

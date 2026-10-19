@@ -127,6 +127,25 @@ function productionWeights(args) {
     calibration:'回测保留集验证（n≈100），未经实盘校准；本次为 v4 数据缺失时的回退',
     model:V3.WEIGHT_MODEL_V3};
 }
+// Round1 B1: RW reference is always published next to the production model, and the Pardo stop line
+// (scripts/rw-guard.cjs) swaps the published probabilities to the zero-parameter random walk when v4's rolling
+// 60-session Brier skill vs RW breaks the walk-forward red line. v4/v3/v1 stay recorded as shadows in every case.
+function applyRwGuard(w,{bars,lower,upper,session,guardHistory}){
+  const G=require('./rw-guard.cjs');
+  const rw=G.rwGauss({bars,lower,upper,round:boundedRound});
+  const guard=guardHistory?G.evaluateGuard(guardHistory,session):{status:'unavailable',use:'v4',reason:'停用线历史未提供（研究重放/补录）'};
+  const reference={version:G.RW_VERSION,probabilities:rw.probabilities,sigma60:Math.round(rw.sigma60*1e6)/1e6,
+    formula:'σ=基准日前60日对数收益标准差；P(A)=1−Φ(ln(上边界/收盘)/σ)，P(C)=Φ(ln(下边界/收盘)/σ)，P(B)=其余；同生产取整',
+    walkforward:'2016–2025（n=2434）：RW-高斯 Brier 0.2675；v4 0.2585，BSS +0.034 [+0.004,+0.064]（年块），7/10 年胜'};
+  const guardInfo={...guard,model_compared:'rule-weights-v4'};
+  const shadowAll={...(w.shadow||{}),[G.RW_VERSION]:rw.probabilities};
+  if(w.version!=='rule-weights-v4'||guard.use!=='rw') return {...w,shadow:shadowAll,rw_reference:reference,rw_guard:guardInfo,active_model:w.version};
+  const common='随机游走基准（停用线触发：'+guard.reason+'）。v4 本应发布 A '+Math.round(w.probabilities.A*100)+'% / B '+Math.round(w.probabilities.B*100)+'% / C '+Math.round(w.probabilities.C*100)+'%，已降为影子；σ60 '+(rw.sigma60*100).toFixed(2)+'%';
+  return {...w,version:G.RW_VERSION,probabilities:rw.probabilities,raw:{A:r2(rw.raw[0]),B:r2(rw.raw[1]),C:r2(rw.raw[2])},basis:{A:common+'。',B:common+'。',C:common+'。'},
+    shadow:{...shadowAll,'rule-weights-v4':w.probabilities},fallback:{intended:'rule-weights-v4',used:G.RW_VERSION,reason:'停用线：'+guard.reason,kind:'rw_guard'},
+    rw_reference:reference,rw_guard:guardInfo,active_model:G.RW_VERSION,calibration:'零参数随机游走；2016–2025 walk-forward Brier 0.2675',
+    weight_factors:[{name:'random_walk_gauss',raw:{sigma60:rw.sigma60,base_close:rw.base_close},contribution:null,citation:'gap-list-fpp P0-1 / gap-list-pardo PD-P0-3'}],model:null};
+}
 const fmt = n => n.toLocaleString('en-US', {maximumFractionDigits:2});
 // Disaster stop — SHADOW MODE (round1 A4, 2026-10-19; replaces the published version of 98868fb). Both candidate rules are
 // computed and written to risk.disaster_stop_shadow, but risk.disaster_stop stays {price:null,status:'not_configured'} so the
@@ -163,7 +182,7 @@ const DISPLAY_ONLY=Object.freeze(['A','C']);
 const PROBABILITY_DEFINITION='次日收盘落在哪个区间（T+1 收盘落区：A ≥ 上边界 / B 区间内 / C < 下边界）；不是 5 日内先到目标的概率，也不是胜率。';
 const EXECUTION_NOTE={A:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），A 扣 0.15R 成本后 E[R] −0.23R [−0.46,+0.02]；触发后 63% 次日开盘已越过目标。',
   C:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），C 扣 0.15R 成本后 E[R] −0.07R [−0.33,+0.21]；卡片赔率≥2 的 C 为 −0.39R [−0.68,−0.08]。赔率≥2:1 不等于可执行。'};
-function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, riskShadow=!backfill, scoredReviews=0}) {
+function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, riskShadow=!backfill, rwGuard=!backfill, guardHistory=null, scoredReviews=0}) {
   if (MR.tradingDay(date)!==true) throw Error('Unsupported/non-trading analysis date');
   const cutoff = backfill ? date+'T08:45:00+08:00' : (generatedAt || new Date().toISOString());
   if (!backfill && (MR.hk(MR.timestamp(cutoff)).date!==date || MR.timestamp(cutoff)>=MR.timestamp(date+'T09:30:00+08:00'))) throw Error('Preopen publication missed; use explicit backfill');
@@ -189,7 +208,9 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
   const id='HSI-'+date.replaceAll('-','')+'-structure-v1';
   // Retrospective reconstructions keep probability null unless explicitly requested,
   // so frozen supplements remain byte-for-byte reproducible.
-  const weights=ruleWeights?productionWeights({bars,lower,upper,participation,overnight,cutoff,dataUpdatedAt:feed.updated_at}):null;
+  const weights0=ruleWeights?productionWeights({bars,lower,upper,participation,overnight,cutoff,dataUpdatedAt:feed.updated_at}):null;
+  const weights=weights0&&rwGuard?applyRwGuard(weights0,{bars,lower,upper,session:date,guardHistory}):weights0;
+  const rwActive=!!(weights&&weights.fallback&&weights.fallback.kind==='rw_guard');
   // Frozen backfills carry no shadow block (byte-for-byte reproducible supplements).
   const atr14=summary.atr,ewma=riskShadow?ewmaSigma(bars):null,n20=riskShadow?turtleN(bars):null;
   const priceRules={A:{operator:'gte',value:upper},B:{operator:'range',lower,upper},C:{operator:'lt',value:lower}};
@@ -205,7 +226,7 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
       rr:{entry,stop,target,direction:dir,entryHint:'条件确认之后再观察结构位回测；价格满足赔率不等于触发。'},
       risk:{structural_invalidation:{price:stop,confirmation:'completed_daily_close'},disaster_stop:{price:null,status:'not_configured'},...(riskShadow?{disaster_stop_shadow:disasterStopShadow({direction:dir,structural:stop,entry,atr14,ewma,n20,close:last.close})}:{})},
       target:target==null?'缺少已观察到的目标结构，赔率不可用':fmt(target)+'（已观察到的结构位）',
-      holding_period:'每日重新核验，不承诺固定持仓天数',note:weights?(weights.fallback?'规则生成的条件情景；v4 盘前数据不可用，权重回退为 '+weights.version+' 模型输出（两年回测、约100天保留集验证），不是历史胜率。':'规则生成的条件情景；权重为 '+weights.version+' 模型输出，经 2016–2025 逐年滚动回测（n=2434）验证，未经实盘校准，不是历史胜率。'):'规则生成的条件情景；未校准历史发生率，不提供概率百分比。',
+      holding_period:'每日重新核验，不承诺固定持仓天数',note:weights?(rwActive?'规则生成的条件情景；v4 触发停用线，本次权重为零参数随机游走（次日收盘落区），不是历史胜率。':weights.fallback?'规则生成的条件情景；v4 盘前数据不可用，权重回退为 '+weights.version+' 模型输出（两年回测、约100天保留集验证），不是历史胜率。':'规则生成的条件情景；权重为 '+weights.version+' 模型输出，经 2016–2025 逐年滚动回测（n=2434）验证，未经实盘校准，不是历史胜率。'):'规则生成的条件情景；未校准历史发生率，不提供概率百分比。',
       zone:target==null?{}:{upperBound:[{offset:0,price:last.close},{offset:5,price:Math.max(entry,target)}],lowerBound:[{offset:0,price:last.close},{offset:5,price:Math.min(entry,target)}]}};
   });
   const participantOK=participation?.metrics && [participation.metrics.equal_name_breadth,participation.metrics.weighted_breadth,participation.metrics.net_point_contribution].every(Number.isFinite) && participation?.status==='available' && participation.as_of===last.date && MR.timestamp(participation.updated_at)<=MR.timestamp(cutoff);
@@ -216,16 +237,16 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
   return {$schema_note:'每日规则分析：confirmed pivots(width=2) + 既有可追溯结构目标。价格结构决定核心触发，环境只提供证据。',
     meta:{symbol:'^HSI',updatedAt:time,analysis_id:id,latestClose:last.close,latestCloseDate:last.date,note:backfill?'事后补录，不是当时发布的预测':'自动生成的每日价格结构分析',dataSources:feed.source},
     publication:{kind:backfill?'retrospective_backfill':'daily_rule_analysis',session_date:date,generated_at:time,information_cutoff:cutoff,baseline_date:last.date,source_sha256:sourceHash,source_snapshot:provenance,eligible_as_new_prediction:!backfill,method:'confirmed-swing-structure-v1',probability_status:weights?'rule_based_uncalibrated':'uncalibrated'},
-    disclaimer:'条件式价格结构分析；'+(weights?(weights.fallback?'权重为 '+weights.version+'（v4 盘前隔夜数据不可用，已回退；逻辑回归，回测保留集优于v1，样本有限）。':'权重为 '+weights.version+'（逻辑回归+盘前隔夜特征，2016–2025 逐年滚动回测优于v3，未经实盘校准）。'):'权重尚未校准。')+'补录不参与预测命中率、Brier或实时入场判断。',
+    disclaimer:'条件式价格结构分析；'+(weights?(rwActive?'权重为随机游走基准 '+weights.version+'（v4 触发停用线，已降为影子）。':weights.fallback?'权重为 '+weights.version+'（v4 盘前隔夜数据不可用，已回退；逻辑回归，回测保留集优于v1，样本有限）。':'权重为 '+weights.version+'（逻辑回归+盘前隔夜特征，2016–2025 逐年滚动回测优于v3，未经实盘校准）。'):'权重尚未校准。')+'补录不参与预测命中率、Brier或实时入场判断。',
     forecast:{applicable_date:date,updatedAt:time,baseDate:last.date,basePrice:last.close,bias:summary.structure.direction<0?'bearish':summary.structure.direction>0?'bullish':'neutral',biasLabel:summary.structure.label,
       summary:narrative,horizon:'未来5个交易日，每日重新核验',horizonEndDate:MR.horizon(date,5).end,horizonDesc:MR.horizon(date,5).description,
-      reasoning:[narrative,'A/B/C 分别覆盖 ≥上边界、两边界之间、<下边界；盘中穿越不算正式触发。','夜期、IV、南向资金无截止前可信快照时不可用，不用于推断。',...(weights?[weights.fallback?'权重模型：v4 盘前隔夜数据不可用（'+weights.fallback.reason+'），本次回退 v3，不用空值或插值。':'权重模型：v4，使用截至美股 '+weights.overnight.us_close_date+' 收盘的隔夜数据（Yahoo），v3/v1 作为影子同时记录。']:[]),participantOK?'环境证据：'+participation.as_of+' 官方成分报告上涨家数占比 '+(participation.metrics.equal_name_breadth*100).toFixed(1)+'%、上涨权重占比 '+(participation.metrics.weighted_breadth*100).toFixed(1)+'%、净点数贡献 '+fmt(participation.metrics.net_point_contribution)+'；只描述环境，不改变价格触发。':'环境证据：无符合截止时间的官方成分报告，标记不可用。'],
+      reasoning:[narrative,'A/B/C 分别覆盖 ≥上边界、两边界之间、<下边界；盘中穿越不算正式触发。','夜期、IV、南向资金无截止前可信快照时不可用，不用于推断。',...(weights?[rwActive?'权重模型：v4 触发停用线（'+weights.rw_guard.reason+'），本次发布随机游走概率；v4/v3/v1 影子记录。':weights.fallback?'权重模型：v4 盘前隔夜数据不可用（'+weights.fallback.reason+'），本次回退 v3，不用空值或插值。':'权重模型：v4，使用截至美股 '+weights.overnight.us_close_date+' 收盘的隔夜数据（Yahoo），v3/v1 作为影子同时记录。']:[]),participantOK?'环境证据：'+participation.as_of+' 官方成分报告上涨家数占比 '+(participation.metrics.equal_name_breadth*100).toFixed(1)+'%、上涨权重占比 '+(participation.metrics.weighted_breadth*100).toFixed(1)+'%、净点数贡献 '+fmt(participation.metrics.net_point_contribution)+'；只描述环境，不改变价格触发。':'环境证据：无符合截止时间的官方成分报告，标记不可用。'],
       targetUpper:upTarget,targetLower:downTarget,confidence:'未校准',...(executionPolicy?{probability_definition:PROBABILITY_DEFINITION,execution_policy:{display_only:[...DISPLAY_ONLY],source:'tb-backtest-abc（三重屏障，真实卡片价位，2016–2025）',decided:'2026-10-19'}}:{}),scenarios,
-      ...(weights?{weight_model:weights.version,weight_model_info:{version:weights.version,calibration:weights.calibration,scored_reviews:scoredReviews,shadow:weights.shadow,fallback:weights.fallback,coefficients:weights.model?{W:weights.model.W,features:weights.model.features,...(weights.model.standardize?{standardize:weights.model.standardize,source:weights.model.source}:{})}:WEIGHT_MODEL.coefficients,factors:weights.factors,raw_probabilities:weights.raw},weight_factors:weights.weight_factors}: {}),
+      ...(weights?{weight_model:weights.version,weight_model_info:{version:weights.version,calibration:weights.calibration,scored_reviews:scoredReviews,shadow:weights.shadow,fallback:weights.fallback,...(weights.rw_reference?{active_model:weights.active_model,rw_reference:weights.rw_reference,rw_guard:weights.rw_guard}:{}),coefficients:rwActive?null:weights.model?{W:weights.model.W,features:weights.model.features,...(weights.model.standardize?{standardize:weights.model.standardize,source:weights.model.source}:{})}:WEIGHT_MODEL.coefficients,factors:weights.factors,raw_probabilities:weights.raw},weight_factors:weights.weight_factors}: {}),
       card:{stateEmoji:'📋',stateLabel:backfill?date+' 事后补录分析':date+' 每日结构分析',structureLine:narrative,stateTone:'neutral',keyLines:[{price:lower,tag:'最近确认摆动低点',tf:'日线'},{price:upper,tag:'最近确认摆动高点',tf:'日线'}]},
       scenario_evidence:{analysis_id:id,last_bar:{...last,completed:true},timeframe:'1d',source:feed.source,scenarios:{}}},
     environment_evidence:{volume_ratio:{status:ratio==null?'unavailable':'available',value:ratio,basis:'previous_20_completed_sessions'},participation:{status:participantOK?'available':'unavailable',as_of:participantOK?participation.as_of:null,metrics:participantOK?participation.metrics:null,source:participantOK?participation.source:null},...(weights?{overnight:weights.overnight}:{}),night_futures:{status:'unavailable'},options_risk:{status:'unavailable'},southbound:{status:'unavailable'}},
     intraday_playbook:{updatedAt:time,note:'仅用于区间定位，不是即时操作指令',zones:[{range:[upper,null],stance:'修复观察',action:'等待A收盘确认'},{range:[lower,upper],stance:'区间观察',action:'等待B收盘确认'},{range:[null,lower],stance:'破位观察',action:'等待C收盘确认'}]},
     levels:[{price:lower,type:'support',label:'最近确认摆动低点',reason:pivots.lows.at(-1).time+'，确认于 '+pivots.lows.at(-1).confirmedAt},{price:upper,type:'resistance',label:'最近确认摆动高点',reason:pivots.highs.at(-1).time+'，确认于 '+pivots.highs.at(-1).confirmedAt},...(downTarget==null?[]:[{price:downTarget,type:'support',label:'下方结构目标',reason:'截止日前的确认摆动低点或既有支撑'}]),...(upTarget==null?[]:[{price:upTarget,type:'resistance',label:'上方结构目标',reason:'截止日前的确认摆动高点或既有阻力'}])],markers:[],playbook:[],pathTree:null};
 }
-module.exports={RISK_CONFIG,ewmaSigma,turtleN,disasterStopShadow,DISPLAY_ONLY,PROBABILITY_DEFINITION,build,prepareOvernight,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};
+module.exports={applyRwGuard,RISK_CONFIG,ewmaSigma,turtleN,disasterStopShadow,DISPLAY_ONLY,PROBABILITY_DEFINITION,build,prepareOvernight,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};

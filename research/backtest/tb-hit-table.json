@@ -1,0 +1,132 @@
+{
+ "source": "data/books/tb_backtest_v2.cjs TARGET_RULE=v1 (= production target rule), 2016–2025, 2456 cards, D+1 open entry, 5-session triple barrier, same-bar double touch = stop",
+ "metric": "target-first hit rate by scenario × card RR bucket",
+ "buckets": {
+  "A": [
+   {
+    "rr_min": 0,
+    "rr_max": 1,
+    "n": 47,
+    "hit": 0.617,
+    "wilson95": [
+     0.4743,
+     0.7421
+    ]
+   },
+   {
+    "rr_min": 1,
+    "rr_max": 2,
+    "n": 19,
+    "hit": 0.4737,
+    "wilson95": [
+     0.2733,
+     0.6829
+    ]
+   },
+   {
+    "rr_min": 2,
+    "rr_max": 3,
+    "n": 11,
+    "hit": 0.5455,
+    "wilson95": [
+     0.2801,
+     0.7873
+    ]
+   },
+   {
+    "rr_min": 3,
+    "rr_max": null,
+    "n": 16,
+    "hit": 0.3125,
+    "wilson95": [
+     0.1416,
+     0.556
+    ]
+   }
+  ],
+  "B": [
+   {
+    "rr_min": 0,
+    "rr_max": 1,
+    "n": 16,
+    "hit": 0.1875,
+    "wilson95": [
+     0.0659,
+     0.4301
+    ]
+   },
+   {
+    "rr_min": 1,
+    "rr_max": 2,
+    "n": 65,
+    "hit": 0.1846,
+    "wilson95": [
+     0.1089,
+     0.2955
+    ]
+   },
+   {
+    "rr_min": 2,
+    "rr_max": 3,
+    "n": 78,
+    "hit": 0.2692,
+    "wilson95": [
+     0.1834,
+     0.3768
+    ]
+   },
+   {
+    "rr_min": 3,
+    "rr_max": null,
+    "n": 909,
+    "hit": 0.2739,
+    "wilson95": [
+     0.2459,
+     0.3038
+    ]
+   }
+  ],
+  "C": [
+   {
+    "rr_min": 0,
+    "rr_max": 1,
+    "n": 52,
+    "hit": 0.6154,
+    "wilson95": [
+     0.4796,
+     0.7353
+    ]
+   },
+   {
+    "rr_min": 1,
+    "rr_max": 2,
+    "n": 29,
+    "hit": 0.3793,
+    "wilson95": [
+     0.2269,
+     0.56
+    ]
+   },
+   {
+    "rr_min": 2,
+    "rr_max": 3,
+    "n": 16,
+    "hit": 0.375,
+    "wilson95": [
+     0.1848,
+     0.6136
+    ]
+   },
+   {
+    "rr_min": 3,
+    "rr_max": null,
+    "n": 47,
+    "hit": 0.3404,
+    "wilson95": [
+     0.2217,
+     0.4833
+    ]
+   }
+  ]
+ }
+}

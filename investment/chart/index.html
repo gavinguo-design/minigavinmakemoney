@@ -1371,7 +1371,19 @@
 
   function scenarioRREligible(sc) {
     var stat = computeRR(sc && sc.rr);
+    // Round1 C2: when the generator attached a cost gate, recommendation needs RR after 0.15R cost ≥ 2 and
+    // historical hit rate ≥ required hit rate. Cards without the field (history) keep the original 2:1 rule.
+    var gate = sc && sc.rr && sc.rr.cost_gate;
+    if (gate && gate.status === 'available' && !gate.passes) return false;
     return !!stat && stat.ratio >= 2;
+  }
+
+  function costGateHtml(sc) {
+    var g = sc && sc.rr && sc.rr.cost_gate;
+    if (!g || g.status !== 'available') return '';
+    var w = g.historical_wilson95, pct = function (x) { return Number.isFinite(x) ? Math.round(x * 100) + '%' : '--'; };
+    return '<div class="sc-row sc-cost-gate' + (g.passes ? '' : ' invalid') + '" title="' + escapeHtml('赔率扣 ' + g.cost_r + 'R 成本：' + g.rr_net + ':1；所需命中率 =(1+成本)/(卡片赔率+1)；历史=2016–2025 三重屏障回测同剧本同赔率档目标先到比例（n=' + g.historical_n + (Array.isArray(w) ? '，Wilson95% ' + pct(w[0]) + '–' + pct(w[1]) : '') + '）') + '">' +
+      '扣成本赔率 <b>' + g.rr_net + ':1</b> · 需要命中率 <b>' + pct(g.required_hit) + '</b> / 历史实际 <b>' + pct(g.historical_hit) + '</b>（n=' + g.historical_n + '）' + (g.passes ? '' : ' · 不达标，不上推荐') + '</div>';
   }
 
   // Round1 A1: generator marks A/C as display-only (三重屏障回测无正期望). Legacy cards without the field are unchanged.
@@ -2392,7 +2404,7 @@
         observation.className = 'sc-card-settled';
         observation.style.setProperty('--sc-color', scenarioColor(sc));
         observation.setAttribute('data-idx', idx);
-        observation.innerHTML = (Number.isFinite(sc.probability) ? '<div class="sc-topline"><span class="sc-prob" title="' + (displayOnly ? '盘前基础权重，不是历史胜率；该剧本仅展示、不推荐执行' : '盘前基础权重，不是历史胜率；赔率未达2:1不提供入场') + '">' + Math.round((effectiveById[sc.id] || 0) * 100) + '% 权重</span>' + probabilityDefinitionHtml(sc) + '</div>' : '') + '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span>' + scenarioBadgeHtml(sc, refPx) + '<div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div>' + (displayOnly ? '<div class="sc-row sc-display-only"><b>仅展示·不推荐执行</b> · 不提供入场标尺' + (sc.execution_note ? '<br><span>' + escapeHtml(sc.execution_note) + '</span>' : '') + '</div>' : '<div class="sc-row">赔率不可执行 · 仅显示条件观察，不提供入场标尺</div>') + '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>';
+        observation.innerHTML = (Number.isFinite(sc.probability) ? '<div class="sc-topline"><span class="sc-prob" title="' + (displayOnly ? '盘前基础权重，不是历史胜率；该剧本仅展示、不推荐执行' : '盘前基础权重，不是历史胜率；赔率未达2:1不提供入场') + '">' + Math.round((effectiveById[sc.id] || 0) * 100) + '% 权重</span>' + probabilityDefinitionHtml(sc) + '</div>' : '') + '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span>' + scenarioBadgeHtml(sc, refPx) + '<div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div>' + costGateHtml(sc) + (displayOnly ? '<div class="sc-row sc-display-only"><b>仅展示·不推荐执行</b> · 不提供入场标尺' + (sc.execution_note ? '<br><span>' + escapeHtml(sc.execution_note) + '</span>' : '') + '</div>' : (sc.rr && sc.rr.cost_gate && sc.rr.cost_gate.status === 'available' && !sc.rr.cost_gate.passes ? '<div class="sc-row">上卡门槛未通过 · 仅显示条件观察，不提供入场标尺</div>' : '<div class="sc-row">赔率不可执行 · 仅显示条件观察，不提供入场标尺</div>')) + '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>';
         wrap.appendChild(observation);
         return;
       }
@@ -2436,7 +2448,7 @@
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发前提：</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         numsHtml +
         scenarioParticipationHtml(sc, participation) +
-        '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' +
+        '<div class="sc-ruler-holder">' + scenarioRulerHtml(sc, refPx) + '</div>' + costGateHtml(sc) +
         '<div class="sc-live-rr-holder">' + scenarioLiveRRHtml(sc) + '</div>' +
         '<div class="sc-evidence-holder">' + scenarioEvidenceHtml(sc) + '</div>' +
         '<details class="sc-condition-details"><summary>触发条件与判断依据</summary>' +

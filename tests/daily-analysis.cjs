@@ -404,3 +404,21 @@ test('round1 B2: target rule v2 (>=1R, beyond last close) is available but produ
  for(const s of v2.forecast.scenarios){const r=s.rr;assert.equal(r.target_rule.version,'target-v2');if(r.target==null)continue;
   const risk=Math.abs(r.entry-r.stop);if(r.direction==='long'){assert.ok(r.target-r.entry>=risk);assert.ok(r.target>last);}else{assert.ok(r.entry-r.target>=risk);assert.ok(r.target<last);}}
 });
+
+test('round1 C2: cost-adjusted card gate (0.15R) with required vs historical hit rate; failing cards are not recommended',()=>{
+ const DA=require('../scripts/daily-analysis.cjs');
+ const g=DA.costGate('B',{entry:100,stop:110,target:70,direction:'short'});
+ assert.equal(g.rr_card,3);assert.equal(g.rr_net,Math.round((3-.15)/1.15*100)/100);assert.equal(g.required_hit,Math.round(1.15/4*1000)/1000);
+ assert.equal(g.historical_bucket[0],3);assert.ok(g.historical_n>100);assert.equal(g.passes,g.rr_net>=2&&g.historical_hit>=g.required_hit);
+ const low=DA.costGate('C',{entry:100,stop:110,target:79,direction:'short'});assert.ok(low.rr_net<2);assert.equal(low.passes,false);assert.match(low.reason,/成本后赔率/);
+ assert.equal(DA.costGate('A',{entry:100,stop:110,target:120,direction:'long'}).status,'unavailable');
+ const close=require('./fixtures/hsi-close-2026-10-09.json'),a=build({date:'2026-10-12',feed:close,seed,participation:null,generatedAt:'2026-10-12T08:45:30+08:00'});
+ for(const s of a.forecast.scenarios)if(s.rr.target!=null)assert.equal(s.rr.cost_gate.cost_r,.15);
+ for(const s of build(args).forecast.scenarios)assert.equal(s.rr.cost_gate,undefined);
+ const html=fs.readFileSync(require.resolve('../investment/chart/index.html'),'utf8'),vm=require('node:vm');
+ const src=html.slice(html.indexOf('  function scenarioRREligible('),html.indexOf('  // Round1 A1: generator marks'));
+ const ctx={escapeHtml:s=>String(s),Number,Math,Array,computeRR:rr=>MR.rr(rr.entry,rr.target,rr.stop,rr.direction)};vm.createContext(ctx);vm.runInContext(src,ctx);
+ const sc={rr:{entry:100,target:70,stop:110,direction:'short',cost_gate:{status:'available',passes:false,rr_net:2.5,cost_r:.15,required_hit:.29,historical_hit:.27,historical_n:909,historical_wilson95:[.25,.3]}}};
+ assert.equal(ctx.scenarioRREligible(sc),false);sc.rr.cost_gate.passes=true;assert.equal(ctx.scenarioRREligible(sc),true);
+ assert.match(ctx.costGateHtml(sc),/需要命中率 <b>29%<\/b> \/ 历史实际 <b>27%<\/b>/);delete sc.rr.cost_gate;assert.equal(ctx.scenarioRREligible(sc),true);assert.equal(ctx.costGateHtml(sc),'');
+});

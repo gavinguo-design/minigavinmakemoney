@@ -146,6 +146,22 @@ function applyRwGuard(w,{bars,lower,upper,session,guardHistory}){
     rw_reference:reference,rw_guard:guardInfo,active_model:G.RW_VERSION,calibration:'零参数随机游走；2016–2025 walk-forward Brier 0.2675',
     weight_factors:[{name:'random_walk_gauss',raw:{sigma60:rw.sigma60,base_close:rw.base_close},contribution:null,citation:'gap-list-fpp P0-1 / gap-list-pardo PD-P0-3'}],model:null};
 }
+// Round1 C2 card admission gate (live builds only): RR after cost, required vs historical target-first hit rate.
+//   rr_net = (reward − c·R)/(R + c·R), c = 0.15R by default; required_hit = (1 + c)/(RR_card + 1) (binary win/loss break-even).
+//   historical_hit = target-first rate of the same scenario × card-RR bucket in the 2016–2025 triple-barrier backtest
+//   (research/backtest/tb-hit-table.json). Recommendation requires rr_net ≥ 2 AND historical_hit ≥ required_hit.
+const COST_R=0.15;
+let TB_HIT=null;
+function tbHitTable(){if(TB_HIT===null){try{TB_HIT=JSON.parse(require('node:fs').readFileSync(require('node:path').join(__dirname,'..','research/backtest/tb-hit-table.json'),'utf8'));}catch(e){TB_HIT=false;}}return TB_HIT||null;}
+function costGate(id,rr,cost=COST_R){
+  const s=rr.direction==='short',reward=s?rr.entry-rr.target:rr.target-rr.entry,risk=s?rr.stop-rr.entry:rr.entry-rr.stop;
+  if(!(Number.isFinite(reward)&&Number.isFinite(risk)&&reward>0&&risk>0))return {status:'unavailable',cost_r:cost,passes:false,reason:'赔率数据不足'};
+  const card=reward/risk,net=(card-cost)/(1+cost),req=(1+cost)/(card+1),t=tbHitTable(),b=t?.buckets?.[id]?.find(x=>card>=x.rr_min&&(x.rr_max==null||card<x.rr_max));
+  const hist=b?b.hit:null,pass=net>=2&&hist!=null&&hist>=req;
+  return {status:'available',cost_r:cost,rr_card:r2(card),rr_net:r2(net),required_hit:Math.round(req*1000)/1000,historical_hit:hist,historical_n:b?.n??null,historical_wilson95:b?.wilson95??null,
+    historical_bucket:b?[b.rr_min,b.rr_max]:null,passes:pass,source:t?.source||null,
+    reason:pass?'扣成本后赔率≥2 且历史命中率≥所需命中率':net<2?'扣 '+cost+'R 成本后赔率 '+r2(net)+' < 2':hist==null?'无历史命中率':'历史命中率 '+Math.round(hist*100)+'% < 所需 '+Math.round(req*100)+'%'};
+}
 const fmt = n => n.toLocaleString('en-US', {maximumFractionDigits:2});
 // Disaster stop — SHADOW MODE (round1 A4, 2026-10-19; replaces the published version of 98868fb). Both candidate rules are
 // computed and written to risk.disaster_stop_shadow, but risk.disaster_stop stays {price:null,status:'not_configured'} so the
@@ -182,7 +198,7 @@ const DISPLAY_ONLY=Object.freeze(['A','C']);
 const PROBABILITY_DEFINITION='次日收盘落在哪个区间（T+1 收盘落区：A ≥ 上边界 / B 区间内 / C < 下边界）；不是 5 日内先到目标的概率，也不是胜率。';
 const EXECUTION_NOTE={A:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），A 扣 0.15R 成本后 E[R] −0.23R [−0.46,+0.02]；触发后 63% 次日开盘已越过目标。',
   C:'仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），C 扣 0.15R 成本后 E[R] −0.07R [−0.33,+0.21]；卡片赔率≥2 的 C 为 −0.39R [−0.68,−0.08]。赔率≥2:1 不等于可执行。'};
-function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, riskShadow=!backfill, rwGuard=!backfill, guardHistory=null, targetRule='v1', scoredReviews=0}) {
+function build({date, feed, seed, participation, overnight=null, generatedAt, backfill=false, provenance={}, ruleWeights=!backfill, executionPolicy=!backfill, riskShadow=!backfill, rwGuard=!backfill, guardHistory=null, targetRule='v1', cardGate=!backfill, scoredReviews=0}) {
   if (MR.tradingDay(date)!==true) throw Error('Unsupported/non-trading analysis date');
   const cutoff = backfill ? date+'T08:45:00+08:00' : (generatedAt || new Date().toISOString());
   if (!backfill && (MR.hk(MR.timestamp(cutoff)).date!==date || MR.timestamp(cutoff)>=MR.timestamp(date+'T09:30:00+08:00'))) throw Error('Preopen publication missed; use explicit backfill');
@@ -235,7 +251,7 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
       ...(executionPolicy?{execution_status:DISPLAY_ONLY.includes(key)?'display_only':'plan_candidate',...(DISPLAY_ONLY.includes(key)?{execution_note:EXECUTION_NOTE[key]}:{}),...(weights?{probability_definition:PROBABILITY_DEFINITION}:{})}:{}),
       color:['#00d87f','#a78bfa','#ff8c42'][i],trigger:trigger+'；只看完整日K价格结构',price_rule:priceRules[key],
       invalidation:(dir==='long'?'收盘 < ':'收盘 ≥ ')+fmt(stop),
-      rr:{entry,stop,target,direction:dir,entryHint:'条件确认之后再观察结构位回测；价格满足赔率不等于触发。',...(targetRule==='v2'?{target_rule:{version:'target-v2',min_distance_r:1,beyond_last_close:last.close,void_if_trigger_close_beyond:target,structural_target:dir==='long'?upTarget:downTarget,note:'目标取距入场 ≥1R 且尚未被价格越过的最近结构位；触发收盘已越过目标则该卡作废'}}:{})},
+      rr:{entry,stop,target,direction:dir,entryHint:'条件确认之后再观察结构位回测；价格满足赔率不等于触发。',...(cardGate&&target!=null?{cost_gate:costGate(key,{entry,stop,target,direction:dir})}:{}),...(targetRule==='v2'?{target_rule:{version:'target-v2',min_distance_r:1,beyond_last_close:last.close,void_if_trigger_close_beyond:target,structural_target:dir==='long'?upTarget:downTarget,note:'目标取距入场 ≥1R 且尚未被价格越过的最近结构位；触发收盘已越过目标则该卡作废'}}:{})},
       risk:{structural_invalidation:{price:stop,confirmation:'completed_daily_close'},disaster_stop:{price:null,status:'not_configured'},...(riskShadow?{disaster_stop_shadow:disasterStopShadow({direction:dir,structural:stop,entry,atr14,ewma,n20,close:last.close})}:{})},
       target:target==null?'缺少已观察到的目标结构，赔率不可用':fmt(target)+'（已观察到的结构位）',
       holding_period:'每日重新核验，不承诺固定持仓天数',note:weights?(rwActive?'规则生成的条件情景；v4 触发停用线，本次权重为零参数随机游走（次日收盘落区），不是历史胜率。':weights.fallback?'规则生成的条件情景；v4 盘前数据不可用，权重回退为 '+weights.version+' 模型输出（两年回测、约100天保留集验证），不是历史胜率。':'规则生成的条件情景；权重为 '+weights.version+' 模型输出，经 2016–2025 逐年滚动回测（n=2434）验证，未经实盘校准，不是历史胜率。'):'规则生成的条件情景；未校准历史发生率，不提供概率百分比。',
@@ -261,4 +277,4 @@ function build({date, feed, seed, participation, overnight=null, generatedAt, ba
     intraday_playbook:{updatedAt:time,note:'仅用于区间定位，不是即时操作指令',zones:[{range:[upper,null],stance:'修复观察',action:'等待A收盘确认'},{range:[lower,upper],stance:'区间观察',action:'等待B收盘确认'},{range:[null,lower],stance:'破位观察',action:'等待C收盘确认'}]},
     levels:[{price:lower,type:'support',label:'最近确认摆动低点',reason:pivots.lows.at(-1).time+'，确认于 '+pivots.lows.at(-1).confirmedAt},{price:upper,type:'resistance',label:'最近确认摆动高点',reason:pivots.highs.at(-1).time+'，确认于 '+pivots.highs.at(-1).confirmedAt},...(downTarget==null?[]:[{price:downTarget,type:'support',label:'下方结构目标',reason:'截止日前的确认摆动低点或既有支撑'}]),...(upTarget==null?[]:[{price:upTarget,type:'resistance',label:'上方结构目标',reason:'截止日前的确认摆动高点或既有阻力'}])],markers:[],playbook:[],pathTree:null};
 }
-module.exports={applyRwGuard,RISK_CONFIG,ewmaSigma,turtleN,disasterStopShadow,DISPLAY_ONLY,PROBABILITY_DEFINITION,build,prepareOvernight,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};
+module.exports={costGate,COST_R,applyRwGuard,RISK_CONFIG,ewmaSigma,turtleN,disasterStopShadow,DISPLAY_ONLY,PROBABILITY_DEFINITION,build,prepareOvernight,judge:MR.priceCondition,scoreScenarioWeights,boundedRound,candlePattern,pivotState,sakataNewValues,WEIGHT_MODEL,WEIGHT_MODEL_V1,WEIGHT_MODEL_V2};

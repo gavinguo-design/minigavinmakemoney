@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-22T12:30:11+08:00",
+  "updated_at": "2026-10-22T13:00:05+08:00",
   "judgment_mode": "intraday_preview",
   "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；最终打勾以收盘定案为准，不构成操作信号",
   "analysis_id": "HSI-20261022-structure-v1",
@@ -8,12 +8,12 @@
   "stale_reason": null,
   "conditions_stale": false,
   "metrics": {
-    "price": 22971.93,
+    "price": 22970.28,
     "open": 23513.79,
     "high": 23513.79,
     "low": 22952.81,
     "prev_close": 23651.87,
-    "update_time": "2026-10-22 12:00:00",
+    "update_time": "2026-10-22 13:00:04",
     "volume_ratio": 1.31,
     "today_turnover_yi": 1274.5,
     "ref_turnover_yi": 971.7
@@ -34,7 +34,7 @@
           "role": "core",
           "label": "收盘 ≥ 24,524.63；只看完整日K价格结构",
           "met": false,
-          "value_text": "现价 22,971.93 vs ≥ 24,524.63"
+          "value_text": "现价 22,970.28 vs ≥ 24,524.63"
         },
         {
           "id": "volume_ratio",
@@ -60,7 +60,7 @@
           "role": "core",
           "label": "收盘 ≥ 23,737.14 且 < 24,524.63；只看完整日K价格结构",
           "met": false,
-          "value_text": "现价 22,971.93 vs [23,737.14, 24,524.63)"
+          "value_text": "现价 22,970.28 vs [23,737.14, 24,524.63)"
         },
         {
           "id": "volume_ratio",
@@ -86,7 +86,7 @@
           "role": "core",
           "label": "收盘 < 23,737.14；只看完整日K价格结构",
           "met": true,
-          "value_text": "现价 22,971.93 vs < 23,737.14"
+          "value_text": "现价 22,970.28 vs < 23,737.14"
         },
         {
           "id": "volume_ratio",

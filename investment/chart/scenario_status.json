@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-22T12:00:15+08:00",
+  "updated_at": "2026-10-22T12:30:11+08:00",
   "judgment_mode": "intraday_preview",
   "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；最终打勾以收盘定案为准，不构成操作信号",
   "analysis_id": "HSI-20261022-structure-v1",
@@ -16,8 +16,7 @@
     "update_time": "2026-10-22 12:00:00",
     "volume_ratio": 1.31,
     "today_turnover_yi": 1274.5,
-    "ref_turnover_yi": 971.7,
-    "southbound_net_yi": -31.1
+    "ref_turnover_yi": 971.7
   },
   "scenarios": [
     {
@@ -27,7 +26,7 @@
       "core_met": 0,
       "core_total": 1,
       "confirm_met": 1,
-      "confirm_total": 2,
+      "confirm_total": 1,
       "strength": null,
       "conditions": [
         {
@@ -43,13 +42,6 @@
           "label": "放量确认（量比 ≥ 1.1）",
           "met": true,
           "value_text": "量比 1.31"
-        },
-        {
-          "id": "southbound",
-          "role": "confirm",
-          "label": "南向净买 ≥ 30 亿",
-          "met": false,
-          "value_text": "南向净买 -31.1 亿"
         }
       ]
     },
@@ -60,7 +52,7 @@
       "core_met": 0,
       "core_total": 1,
       "confirm_met": 1,
-      "confirm_total": 2,
+      "confirm_total": 1,
       "strength": null,
       "conditions": [
         {
@@ -76,13 +68,6 @@
           "label": "放量确认（量比 ≥ 1.1）",
           "met": true,
           "value_text": "量比 1.31"
-        },
-        {
-          "id": "southbound",
-          "role": "confirm",
-          "label": "南向净买 ≥ 30 亿",
-          "met": false,
-          "value_text": "南向净买 -31.1 亿"
         }
       ]
     },
@@ -93,8 +78,8 @@
       "core_met": 1,
       "core_total": 1,
       "confirm_met": 1,
-      "confirm_total": 2,
-      "strength": "中",
+      "confirm_total": 1,
+      "strength": "强",
       "conditions": [
         {
           "id": "daily_price_structure",
@@ -109,13 +94,6 @@
           "label": "放量确认（量比 ≥ 1.1）",
           "met": true,
           "value_text": "量比 1.31"
-        },
-        {
-          "id": "southbound",
-          "role": "confirm",
-          "label": "南向净买 ≥ 30 亿",
-          "met": false,
-          "value_text": "南向净买 -31.1 亿"
         }
       ]
     }

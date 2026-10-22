@@ -269,6 +269,34 @@
       executable:ratio>=2,status:ratio>=2?'executable':'insufficient_rr',
       emoji:grade==='good'?'🟢':grade==='mid'?'🟡':'🔴',verdict:ratio>=2?'赔率≥2:1（仅价格条件，不代表可执行）':'赔率<2:1'};
   }
+  // Stale-fan guard (display only). bands=[{id,lo,hi}] are the scenario envelopes'
+  // end ranges, base=the analysis baseline close, price=the newer observed price.
+  // 1) Price outside every band -> no fan at all, show a plain status line.
+  // 2) Otherwise, once price moved >= deadZone (0.3%) from base, a band that lies
+  //    wholly on the far side of price from the move (fall: band.lo>price;
+  //    rise: band.hi<price) is hidden: drawing it would show a reversal path
+  //    into a range the market has already moved away from.
+  function fanPlan(bands,price,base,opts) {
+    opts=opts||{};
+    var valid=(Array.isArray(bands)?bands:[]).filter(function(b){return b&&Number.isFinite(b.lo)&&Number.isFinite(b.hi)&&b.lo<=b.hi;});
+    var all=valid.map(function(b){return b.id;});
+    if(!valid.length||!Number.isFinite(price)) return {mode:'normal',draw:all,hidden:[],message:null};
+    // Ties: the lowest band listed last (bearish C) and the highest listed first (bullish A) name the target.
+    var lowBand=valid.reduce(function(m,b){return b.lo<=m.lo?b:m;}),highBand=valid.reduce(function(m,b){return b.hi>m.hi?b:m;});
+    var basis=opts.baseDate?'（基于 '+String(opts.baseDate).slice(5)+' 收盘）':'';
+    var tail=opts.live?'等收盘后新剧本':'等下一交易日盘前新剧本';
+    var when=opts.priceLabel||'今日';
+    var f=function(n){return Math.round(n).toLocaleString('en-US');};
+    if(price<lowBand.lo) return {mode:'below_all',draw:[],hidden:all,message:when+'已跌破 '+lowBand.id+' 目标 '+f(lowBand.lo)+'（现价 '+f(price)+'），原剧本'+basis+'已走完，'+tail};
+    if(price>highBand.hi) return {mode:'above_all',draw:[],hidden:all,message:when+'已升破 '+highBand.id+' 目标 '+f(highBand.hi)+'（现价 '+f(price)+'），原剧本'+basis+'已走完，'+tail};
+    var dead=Number.isFinite(opts.deadZone)?opts.deadZone:0.003;
+    var move=Number.isFinite(base)&&base>0?(price-base)/base:0;
+    if(Math.abs(move)<dead) return {mode:'normal',draw:all,hidden:[],message:null};
+    var hidden=valid.filter(function(b){return move<0?b.lo>price:b.hi<price;}).map(function(b){return b.id;});
+    if(!hidden.length) return {mode:'normal',draw:all,hidden:[],message:null};
+    return {mode:'partial',draw:all.filter(function(id){return hidden.indexOf(id)<0;}),hidden:hidden,
+      message:'现价 '+f(price)+' 已'+(move<0?'跌离':'升离')+' '+hidden.join('/')+' 价格带，'+hidden.join('/')+' 路径不再画'+basis};
+  }
   function chaseBoundary(direction,stop,target,minRR) {
     minRR=Number.isFinite(minRR)?minRR:2;
     if(!Number.isFinite(stop)||!Number.isFinite(target)||!(minRR>0)) return null;
@@ -283,5 +311,5 @@
   return {hk:hk,dayString:dayString,shift:shift,known:known,tradingDay:tradingDay,
     closeMinute:closeMinute,lastTradeMinute:lastTradeMinute,session:session,latestDay:latestDay,nextDays:nextDays,horizon:horizon,auditHorizon:auditHorizon,priceCondition:priceCondition,replaySession:replaySession,analysisAvailability:analysisAvailability,archiveCoverage:archiveCoverage,timestamp:timestamp,
     quoteState:quoteState,validQuote:validQuote,markBars:markBars,statusIssue:statusIssue,
-    sanitizeStatus:sanitizeStatus,resolveScenarioStatus:resolveScenarioStatus,rr:rr,chaseBoundary:chaseBoundary};
+    sanitizeStatus:sanitizeStatus,resolveScenarioStatus:resolveScenarioStatus,rr:rr,fanPlan:fanPlan,chaseBoundary:chaseBoundary};
 });

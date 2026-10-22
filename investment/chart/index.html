@@ -11,7 +11,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
   <script src="vendor/lightweight-charts-4.2.0.min.js"></script>
   <script src="patterns.js?v=1"></script>
-  <script src="market-rules.js?v=5"></script>
+  <script src="market-rules.js?v=6"></script>
   <script src="market-participation.js?v=2"></script>
   <script src="market-context.js?v=1"></script>
   <script src="trading-operation.js?v=4"></script>
@@ -293,6 +293,16 @@
       background: rgba(13,13,15,0.72); border: 1px solid rgba(245,200,66,0.4);
       padding: 4px 10px; border-radius: 999px; pointer-events: none;
     }
+
+    /* 现价已穿出旧情景带：用一句人话替代扇形 */
+    .fc-stale-note {
+      position: absolute; top: 40px; right: 12px; z-index: 5; max-width: min(78%, 460px);
+      font-size: 12px; font-weight: 700; line-height: 1.45; color: #ffd8a8;
+      background: rgba(13,13,15,0.84); border: 1px solid rgba(255,140,66,0.55);
+      padding: 6px 11px; border-radius: 10px; pointer-events: none;
+    }
+    .sc-basis { display: inline-block; font-size: 10.5px; font-weight: 700; color: rgba(235,235,245,0.62); border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; padding: 1px 7px; margin-left: 6px; white-space: nowrap; }
+    .fc-endpoint-label em { font-style: normal; font-size: 9.5px; font-weight: 700; color: rgba(235,235,245,0.7); }
 
     /* 详细分析折叠区 */
     details.more { margin-top: 16px; }
@@ -695,6 +705,7 @@
       .struct-banner { font-size: 11px; max-width: 82%; }
       .struct-banner.expanded { max-width: 92%; font-size: 11.5px; }
       .sim-badge { top: 56px; }
+      .fc-stale-note { top: 86px; font-size: 11px; }
     }
 
     /* forecast hint on non-daily intervals（下移避开结构横幅） */
@@ -972,6 +983,7 @@
         <div class="struct-banner hidden" id="structBanner"></div>
         <div class="fc-hint hidden" id="fcHint">情景区域请切换到日线查看</div>
         <div class="sim-badge hidden" id="simBadge">A/B/C 情景带 · 从最新确认K线出发</div>
+        <div class="fc-stale-note hidden" id="fcStaleNote" role="status"></div>
         <div class="vol-hint hidden" id="volHint">⚠️ 最新交易日量能暂缺（数据源尚未回填）</div>
         <div class="vol-legend hidden" id="volLegend"></div>
         <div class="ma-legend" id="maLegend"><span class="ma5">MA5</span><span class="ma10">MA10</span><span class="ma20">MA20</span><span class="ma60">MA60</span></div>
@@ -1525,8 +1537,51 @@
       });
   }
 
+  // 情景带的基准收盘日（MM-DD）。旧剧本一眼可辨；缺字段时返回空串。
+  function scenarioBasisDate(a) {
+    var f = a && a.forecast || {};
+    var d = String(f.baseDate || a && a.publication && a.publication.baseline_date || '');
+    return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d.slice(5) : '';
+  }
+  function scenarioBasisHtml(a) {
+    var d = scenarioBasisDate(a);
+    return d ? '<span class="sc-basis">基于 ' + escapeHtml(d) + ' 收盘</span>' : '';
+  }
+
+  // 现价已脱离旧情景带时的扇形规则（最新模式；历史回看保持原样以便复盘）。
+  // 观察价 = 晚于基准日的最新K线（含盘中实时合并的临时K线）。规则见 MarketRules.fanPlan。
+  function forecastFanPlan(a, bars, scenarios) {
+    var none = { mode: 'normal', draw: null, hidden: [], message: null };
+    if (viewingDate || !a || !a.forecast || !bars || !bars.length) return none;
+    var f = a.forecast, baseDate = String(f.baseDate || '');
+    var last = bars[bars.length - 1], lastDate = last && last.time ? MarketRules.dayString(last.time) : '';
+    if (!baseDate || !lastDate || lastDate <= baseDate || typeof last.close !== 'number') return none;
+    var bands = scenarios.map(function (sc) {
+      var p = zonePoints(sc), u = p.upper[p.upper.length - 1], l = p.lower[p.lower.length - 1];
+      if (!u || !l || !Number.isFinite(u.price) || !Number.isFinite(l.price)) return null;
+      return { id: sc.id || shortName(sc.name), lo: Math.min(u.price, l.price), hi: Math.max(u.price, l.price) };
+    }).filter(Boolean);
+    var live = !!last.partial;
+    return MarketRules.fanPlan(bands, last.close, f.basePrice, { baseDate: baseDate, live: live, priceLabel: live ? '今日' : lastDate.slice(5) + ' 收盘' });
+  }
+  var lastFanPlanKey = '';
+  function fanPlanKey(plan) { return plan ? plan.mode + ':' + (plan.hidden || []).join(',') : ''; }
+  function setFanNote(plan) {
+    var note = el('fcStaleNote');
+    if (!note) return;
+    if (plan && plan.message) { note.textContent = plan.message; note.classList.remove('hidden'); }
+    else { note.textContent = ''; note.classList.add('hidden'); }
+  }
+  // 盘中报价合并后若扇形规则状态变化，才重绘（避免每 30 秒重建全部序列）。
+  function refreshForecastFanIfChanged() {
+    if (!annotations || currentIv !== '1d' || !currentBars.length || viewingDate) return;
+    var f = annotations.forecast, scenarios = f && Array.isArray(f.scenarios) ? f.scenarios : [];
+    if (fanPlanKey(forecastFanPlan(annotations, currentBars, scenarios)) !== lastFanPlanKey) renderForecastZones(annotations, currentIv, currentBars);
+  }
+
   function renderForecastZones(a, iv, bars) {
     clearForecastSeries();
+    setFanNote(null); lastFanPlanKey = '';
     var f = a && a.forecast;
     var scenarios = (f && Array.isArray(f.scenarios)) ? f.scenarios : [];
     var hint = el('fcHint'), simBadge = el('simBadge');
@@ -1535,7 +1590,8 @@
       hint.classList.remove('hidden'); simBadge.classList.add('hidden'); scheduleGutterRefresh(); return;
     }
     hint.classList.add('hidden'); simBadge.classList.remove('hidden');
-    simBadge.textContent = viewingDate ? 'A/B/C 情景范围 · 非逐日预测' : 'A/B/C 情景范围 · 非逐日预测';
+    var basisDate = scenarioBasisDate(a);
+    simBadge.textContent = 'A/B/C 情景范围' + (basisDate ? ' · 基于 ' + basisDate + ' 收盘' : '') + ' · 非逐日预测';
 
     // 结算后：当日正式情景已失效/过期，清空图上情景区域（不画旧的、不乱画草稿价位，避免误导）
     if (isScenarioSettled(a)) {
@@ -1545,6 +1601,12 @@
     }
 
     // 最新地图从最后一根已确认K线展开；历史回看则从冻结分析基准日展开。
+    // 现价已穿出全部情景带：不再从现价往旧带画扇形，只给一句人话状态。
+    // 部分穿出：与已发生方向相反、整段落在现价另一侧的带不画。
+    var fanPlan = forecastFanPlan(a, bars, scenarios);
+    lastFanPlanKey = fanPlanKey(fanPlan);
+    setFanNote(fanPlan);
+    if (fanPlan.mode === 'below_all' || fanPlan.mode === 'above_all') { scheduleGutterRefresh(); return; }
     var fcAnchorIdx = anchorIndex(a, bars);
     var lastBar = bars[fcAnchorIdx], maxOffset = 0;
     scenarios.forEach(function (sc) {
@@ -1565,6 +1627,7 @@
     fcBgSeries.setData(tintData);
 
     scenarios.forEach(function (sc, idx) {
+      if (fanPlan.draw && fanPlan.draw.indexOf(sc.id || shortName(sc.name)) < 0) return;
       var points = zonePoints(sc), base = lastBar.close;
       var lineType = sc.zone && sc.zone.upperBound && sc.zone.upperBound.length === 2 ? LightweightCharts.LineType.Curved : LightweightCharts.LineType.Simple;
       var scColor = scenarioColor(sc);
@@ -1626,7 +1689,7 @@
           centerLine.applyOptions({ color:shown ? hexToRgba(color, 0.48) : TRANS });
         };
       })(upperFill, lowerFill, upperLine, lowerLine, centerLine, scColor, bandAlpha);
-      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine, centerLine], scenario: sc, index: idx, endTime: end.time, endPrice: end.value, endRange:[Math.min(lowerEnd.value,upperEnd.value),Math.max(lowerEnd.value,upperEnd.value)], color: scColor, shown: true, setShown: setShown });
+      fcSeriesList.push({ series: [upperFill, lowerFill, upperLine, lowerLine, centerLine], scenario: sc, index: idx, endTime: end.time, endPrice: end.value, endRange:[Math.min(lowerEnd.value,upperEnd.value),Math.max(lowerEnd.value,upperEnd.value)], basis: basisDate, color: scColor, shown: true, setShown: setShown });
     });
     applyScenarioVisibility();
   }
@@ -2428,7 +2491,7 @@
         observation.className = 'sc-card-settled';
         observation.style.setProperty('--sc-color', scenarioColor(sc));
         observation.setAttribute('data-idx', idx);
-        observation.innerHTML = (Number.isFinite(sc.probability) ? '<div class="sc-topline"><span class="sc-prob" title="' + (displayOnly ? '盘前基础权重，不是历史胜率；该剧本仅展示、不推荐执行' : '盘前基础权重，不是历史胜率；赔率未达2:1不提供入场') + '">' + Math.round((effectiveById[sc.id] || 0) * 100) + '% 权重</span>' + probabilityDefinitionHtml(sc) + '</div>' + (ruleWeightModel(a) ? ruleWeightNoteHtml(a, sc) + rwGuardNoteHtml(a, sc) : '') : '') + '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span>' + scenarioBadgeHtml(sc, refPx) + '<div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div>' + costGateHtml(sc) + (displayOnly ? '<div class="sc-row sc-display-only" title="' + escapeHtml(sc.execution_note || '') + '"><b>仅供观察，不建议操作</b></div>' : (sc.rr && sc.rr.cost_gate && sc.rr.cost_gate.status === 'available' && !sc.rr.cost_gate.passes ? '<div class="sc-row">仅供观察，不建议操作</div>' : '<div class="sc-row">赔率不够，仅供观察</div>')) + '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>';
+        observation.innerHTML = (Number.isFinite(sc.probability) ? '<div class="sc-topline"><span class="sc-prob" title="' + (displayOnly ? '盘前基础权重，不是历史胜率；该剧本仅展示、不推荐执行' : '盘前基础权重，不是历史胜率；赔率未达2:1不提供入场') + '">' + Math.round((effectiveById[sc.id] || 0) * 100) + '% 权重</span>' + probabilityDefinitionHtml(sc) + '</div>' + (ruleWeightModel(a) ? ruleWeightNoteHtml(a, sc) + rwGuardNoteHtml(a, sc) : '') : '') + '<span class="sc-name">' + escapeHtml(sc.name || sc.id) + '</span>' + scenarioBasisHtml(a) + scenarioBadgeHtml(sc, refPx) + '<div class="sc-trig">' + escapeHtml(sc.trigger || '') + '</div>' + costGateHtml(sc) + (displayOnly ? '<div class="sc-row sc-display-only" title="' + escapeHtml(sc.execution_note || '') + '"><b>仅供观察，不建议操作</b></div>' : (sc.rr && sc.rr.cost_gate && sc.rr.cost_gate.status === 'available' && !sc.rr.cost_gate.passes ? '<div class="sc-row">仅供观察，不建议操作</div>' : '<div class="sc-row">赔率不够，仅供观察</div>')) + '<div class="sc-checklist-holder">' + scenarioChecklistHtml(sc) + '</div>';
         wrap.appendChild(observation);
         return;
       }
@@ -2468,7 +2531,7 @@
       card.innerHTML =
         '<div class="sc-topline">' + badgeHtml +
           '<span class="sc-prob" title="' + escapeHtml(weightTitle) + '">' + (Number.isFinite(sc.probability) ? Math.round(effectiveWeight * 100) + '% 权重' : '权重未校准') + (isTopWeight?'<i class="sc-weight-badge">'+(ruleWeightModel(a)?'主情景 · ':'')+'最高权重</i>':'') + '</span>' + probabilityDefinitionHtml(sc) + '</div>' + (Number.isFinite(sc.probability) && ruleWeightModel(a) ? ruleWeightNoteHtml(a, sc) + rwGuardNoteHtml(a, sc) : '') +
-        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 距离最近·非入场信号</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' +
+        '<span class="sc-name">' + escapeHtml(sc.name || ('情景' + (idx + 1))) + (isNearest?'<i class="sc-link-badge">● 距离最近·非入场信号</i>':'') + (isConfirmed?'<i class="sc-link-badge">已确认</i>':'') + holdingHtml + '</span>' + scenarioBasisHtml(a) +
         (sc.trigger ? '<div class="sc-trig"><span class="k">触发前提：</span>' + escapeHtml(sc.trigger) + '</div>' : '') +
         numsHtml +
         scenarioParticipationHtml(sc, participation) +
@@ -2727,6 +2790,7 @@
     realtimeAt = rt.ts * 1000;
     updateHeaderFromRealtime(rt);
     mergeRealtimeIntoChart(rt);
+    refreshForecastFanIfChanged();
     refreshScenarioLive();
     refreshScenarioChecklists();
     updateTechnical();
@@ -3107,7 +3171,7 @@
       var y = series.priceToCoordinate(fs.endPrice);
       if (x == null || y == null || x < -20 || y < -20 || x > chartEl.clientWidth + 20 || y > chartEl.clientHeight + 20) return;
       var rangeText = fs.endRange ? fmt(Math.round(fs.endRange[0])) + '–' + fmt(Math.round(fs.endRange[1])) : '';
-      html.push('<div class="fc-endpoint-label" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px"><b style="background:' + fs.color + '">' + escapeHtml(shortName(fs.scenario.name)) + '</b><span>' + escapeHtml(rangeText) + '</span></div>');
+      html.push('<div class="fc-endpoint-label" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px"><b style="background:' + fs.color + '">' + escapeHtml(shortName(fs.scenario.name)) + '</b><span>' + escapeHtml(rangeText) + (fs.basis ? ' <em>基于' + escapeHtml(fs.basis) + '收盘</em>' : '') + '</span></div>');
     });
     layer.innerHTML = html.join('');
   }

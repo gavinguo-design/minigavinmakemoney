@@ -482,7 +482,7 @@ test('two-point scenario envelopes curve across sessions without changing frozen
  }
  const original={zone:{upperBound:[{offset:0,price:10},{offset:1,price:13},{offset:2,price:11}],lowerBound:[{offset:0,price:10},{offset:1,price:8},{offset:2,price:9}]}};
  assert.equal(c.zonePoints(original).upper,original.zone.upperBound);
- assert.match(html,/情景范围 · 非逐日预测/);
+ assert.match(html,/' · 非逐日预测'/);assert.match(html,/'A\/B\/C 情景范围'/);
 });
 
 test('round1 C4: mirror v2 card shows k/n + Wilson + base rate and degrades when insufficient; v1 files unchanged',()=>{

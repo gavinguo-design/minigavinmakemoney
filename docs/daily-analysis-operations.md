@@ -87,3 +87,22 @@ Regression coverage: `tests/intraday-refresh.cjs` verifies source timestamp
 expiry, exact A/B/C boundaries, map identity, non-trading periods, rejected
 requests, continued polling, checklist rendering and refresh completion.
 Local tests and CI are separate from a real trading-session acceptance run.
+
+## Stale scenario fan guard (October 22)
+
+On October 22 the HSI closed at 22,934.68, below every band of the 08:40
+preopen map (based on the October 21 close). The chart still drew three fans
+from the latest candle back up into the old bands, which read as "all three
+cases rebound". Display rule (`MarketRules.fanPlan`, latest mode only; history
+replay is unchanged so prediction-vs-outcome review still works):
+
+- Price below the lowest band edge or above the highest: no fan is drawn. A
+  plain status line says the old map (with its basis close date) is finished
+  and a new one is pending.
+- Otherwise, if price moved at least 0.3% from the baseline close, any band
+  lying wholly on the opposite side of price from that move is not drawn
+  (fall: band low above price; rise: band high below price). Bands still
+  containing or ahead of price keep the original geometry.
+- Every scenario card, the range badge and fan endpoints show "基于 MM-DD 收盘".
+
+Tests: `tests/scenario-fan.cjs`.

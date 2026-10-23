@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23T12:30:09+08:00",
+  "updated_at": "2026-10-23T13:00:05+08:00",
   "judgment_mode": "intraday_preview",
   "judgment_mode_note": "盘中预览：现价近似收盘价，若此刻收盘则如下状态；最终打勾以收盘定案为准，不构成操作信号",
   "analysis_id": "HSI-20261023-structure-v1",
@@ -8,16 +8,16 @@
   "stale_reason": null,
   "conditions_stale": false,
   "metrics": {
-    "price": 23066.79,
+    "price": 23062.17,
     "open": 23027.98,
     "high": 23083.15,
     "low": 22803.77,
     "prev_close": 22934.68,
-    "update_time": "2026-10-23 12:00:00",
+    "update_time": "2026-10-23 13:00:06",
     "volume_ratio": 1.19,
     "today_turnover_yi": 1256.5,
     "ref_turnover_yi": 1053.2,
-    "southbound_net_yi": -71.2
+    "southbound_net_yi": -71.1
   },
   "scenarios": [
     {
@@ -35,7 +35,7 @@
           "role": "core",
           "label": "收盘 ≥ 24,524.63；只看完整日K价格结构",
           "met": false,
-          "value_text": "现价 23,066.79 vs ≥ 24,524.63"
+          "value_text": "现价 23,062.17 vs ≥ 24,524.63"
         },
         {
           "id": "volume_ratio",
@@ -49,7 +49,7 @@
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": false,
-          "value_text": "南向净买 -71.2 亿"
+          "value_text": "南向净买 -71.1 亿"
         }
       ]
     },
@@ -68,7 +68,7 @@
           "role": "core",
           "label": "收盘 ≥ 23,737.14 且 < 24,524.63；只看完整日K价格结构",
           "met": false,
-          "value_text": "现价 23,066.79 vs [23,737.14, 24,524.63)"
+          "value_text": "现价 23,062.17 vs [23,737.14, 24,524.63)"
         },
         {
           "id": "volume_ratio",
@@ -82,7 +82,7 @@
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": false,
-          "value_text": "南向净买 -71.2 亿"
+          "value_text": "南向净买 -71.1 亿"
         }
       ]
     },
@@ -101,7 +101,7 @@
           "role": "core",
           "label": "收盘 < 23,737.14；只看完整日K价格结构",
           "met": true,
-          "value_text": "现价 23,066.79 vs < 23,737.14"
+          "value_text": "现价 23,062.17 vs < 23,737.14"
         },
         {
           "id": "volume_ratio",
@@ -115,7 +115,7 @@
           "role": "confirm",
           "label": "南向净买 ≥ 30 亿",
           "met": false,
-          "value_text": "南向净买 -71.2 亿"
+          "value_text": "南向净买 -71.1 亿"
         }
       ]
     }

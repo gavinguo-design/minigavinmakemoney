@@ -22,3 +22,13 @@ test('missing source time remains missing instead of using local download time',
 test('upstream failure yields an explicit error rather than an empty successful quote',async()=>{
  const r=await run('60m',{},true);assert.equal(r.status,502);assert.equal((await r.json()).status,403);
 });
+test('signals case symbol 9992.HK is allowed; default stays ^HSI; unknown symbols rejected',async()=>{
+ const previousFetch=global.fetch,previousCaches=global.caches;const seen=[];
+ global.caches={default:{match:async()=>null,put:async()=>{}}};
+ global.fetch=async(u)=>{seen.push(String(u));return Response.json({chart:{result:[{meta:{regularMarketTime:ts('2026-10-23T16:00:00')},timestamp:[ts('2026-10-23T09:30:00')],indicators:{quote:[{open:[129.1],high:[132.9],low:[126.9],close:[131.7],volume:[1]}]}}]}});};
+ try{const mod=await loaded,call=q=>mod.onRequest({request:new Request('https://example.invalid/api/kline'+q),waitUntil:p=>p});
+  const ok=await call('?symbol=9992.HK&interval=1d&range=6mo');assert.equal(ok.status,200);assert.match(seen[0],/chart\/9992\.HK\?/);
+  await call('?interval=1d');assert.match(seen[1],/chart\/%5EHSI\?/);
+  assert.equal((await call('?symbol=0700.HK&interval=1d')).status,400);assert.equal(seen.length,2);
+ }finally{global.fetch=previousFetch;global.caches=previousCaches;}
+});

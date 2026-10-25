@@ -1,8 +1,0 @@
-{
-  "schema_version": 1,
-  "strategy": "消息 + 价格确认",
-  "state": "validating",
-  "badge": "回测验证中",
-  "message": "规则未经验证，不构成投资建议",
-  "updated_at": "2026-10-25T23:30:00+08:00"
-}

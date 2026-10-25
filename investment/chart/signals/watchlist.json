@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "updated_at": null,
+  "note": "关注名单待潮伟哥提供",
+  "fields": ["code", "name", "weekly_trend", "range_20d_low", "range_20d_high", "distance_to_break_pct", "next_event_date", "latest_news"],
+  "items": []
+}

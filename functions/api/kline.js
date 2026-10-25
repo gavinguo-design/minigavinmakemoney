@@ -17,6 +17,7 @@ const ALLOWED_SYMBOLS = new Set([
   '399001.SZ', // 深证成指
   'QQQ',       // 纳指100 ETF
   'BTC-USD',   // 比特币
+  '^VIX',      // 波动率指数（趋势看板情绪条）
 ]);
 const DEFAULT_SYMBOL = '^HSI';
 

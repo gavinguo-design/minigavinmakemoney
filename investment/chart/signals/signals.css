@@ -121,10 +121,12 @@ h1 { font-size: 20px; font-weight: 800; margin: 20px 4px 6px; letter-spacing: -0
 .sig-table { width: 100%; border-collapse: collapse; font-size: 12.5px; white-space: nowrap; }
 .sig-table th { color: var(--muted); font-weight: 500; text-align: left; }
 .sig-table td, .sig-table th { padding: 9px 10px; border-bottom: 1px solid var(--border); }
-.sig-table td.news { white-space: normal; min-width: 180px; }
+.sig-table td.news { white-space: normal; min-width: 150px; }
+.sig-table .muted { font-size: inherit; }
 .sig-table tbody tr:last-child td { border-bottom: 0; }
 .empty { text-align: center; color: var(--muted); padding: 26px 10px !important; white-space: normal; }
 .hit { color: var(--gold); font-weight: 800; }
+.sig-table tr.sig-group td { color: var(--text, #fff); font-weight: 700; background: rgba(255,255,255,0.04); padding: 7px 10px; }
 
 footer { margin-top: 30px; text-align: center; font-size: 11px; color: rgba(235,235,245,0.4); line-height: 1.8; }
 footer p { margin: 4px 0; }

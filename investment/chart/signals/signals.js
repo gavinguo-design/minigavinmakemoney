@@ -72,28 +72,48 @@
   });
 
   // ---------- 5. 信号区 ----------
-  var TREND = { up: '<span class="up">向上</span>', down: '<span class="down">向下</span>', flat: '<span class="gold">横盘</span>' };
+  var TREND = { up: '<span class="up">向上</span>', down: '<span class="down">向下</span>', range: '<span class="gold">震荡</span>', flat: '<span class="gold">震荡</span>' };
+  var COLS = 10, PENDING = '<span class="muted">待更新</span>';
+  var GROUPS = [{ market: 'US', title: '美股' }, { market: 'HK', title: '港股' }];
+  function distCell(dist, side) {
+    if (!Number.isFinite(dist)) return '—';
+    var broke = /^已破/.test(side || '');
+    return (broke ? '<span class="hit">' + esc(side) + '</span> ' + num(dist, 2) + '%' : num(dist, 2) + '% <span class="muted">' + esc(side || '') + '</span>');
+  }
+  function rowHtml(x, d) {
+    if (x.data_error) return '<tr><td class="mono">' + esc(x.code) + '</td><td>' + esc(x.name) + '</td><td colspan="' + (COLS - 2) + '" class="muted">数据缺失：' + esc(x.data_error) + '</td></tr>';
+    var trig = d.triggered === true ? '<span class="hit">触发 ' + esc(d.direction === 'up' ? '↑' : d.direction === 'down' ? '↓' : '') + '</span>' : d.triggered === false ? '否' : '—';
+    var range = Number.isFinite(x.range_20d_low) ? num(x.range_20d_low) + ' ~ ' + num(x.range_20d_high) : '—';
+    var useToday = Number.isFinite(d.distance_to_break_pct);
+    var dist = distCell(useToday ? d.distance_to_break_pct : x.distance_to_break_pct, useToday ? d.distance_side : x.distance_side);
+    var vol = x.volume_surge === true ? '<span class="hit">放量</span> ' + num(x.volume_ratio, 2) + '×' : x.volume_surge === false ? '否 <span class="muted">' + num(x.volume_ratio, 2) + '×</span>' : '—';
+    var news = d.latest_news || x.latest_news;
+    return '<tr><td class="mono">' + esc(x.code) + '</td><td>' + esc(x.name) + '</td><td>' + (TREND[x.weekly_trend] || '—') + '</td><td class="mono">' + range + '</td><td class="mono">' + dist + '</td><td class="mono">' + vol + '</td><td>' + esc(x.option_liquidity || '—') + '</td><td class="mono">' + (x.next_event_date ? esc(x.next_event_date) : PENDING) + '</td><td class="news">' + (news ? esc(news) : PENDING) + '</td><td>' + trig + '</td></tr>';
+  }
   Promise.all([get('watchlist.json'), get('today.json').catch(function () { return { items: [] }; })]).then(function (res) {
     var w = res[0], t = res[1];
     var today = {};
     (t.items || []).forEach(function (x) { today[x.code] = x; });
     var items = w.items || [];
     if (!items.length) {
-      el('sigBody').innerHTML = '<tr><td colspan="7" class="empty">' + esc(w.note || '关注名单待潮伟哥提供') + '<br><span class="muted">名单就绪后，这里每天显示每只票离破位还有多远、有没有新消息、今天是否触发。</span></td></tr>';
+      el('sigBody').innerHTML = '<tr><td colspan="' + COLS + '" class="empty">' + esc(w.note || '关注名单待潮伟哥提供') + '<br><span class="muted">名单就绪后，这里每天显示每只票离破位还有多远、有没有新消息、今天是否触发。</span></td></tr>';
     } else {
-      el('sigBody').innerHTML = items.map(function (x) {
-        var d = today[x.code] || {};
-        var trig = d.triggered === true ? '<span class="hit">触发 ' + esc(d.direction === 'up' ? '↑' : d.direction === 'down' ? '↓' : '') + '</span>' : d.triggered === false ? '否' : '—';
-        var range = Number.isFinite(x.range_20d_low) ? num(x.range_20d_low) + ' ~ ' + num(x.range_20d_high) : '—';
-        var dist = Number.isFinite(d.distance_to_break_pct) ? d.distance_to_break_pct : x.distance_to_break_pct;
-        return '<tr><td class="mono">' + esc(x.code) + '</td><td>' + esc(x.name) + '</td><td>' + (TREND[x.weekly_trend] || '—') + '</td><td class="mono">' + range + '</td><td class="mono">' + (Number.isFinite(dist) ? num(dist, 1) + '%' : '—') + '</td><td class="news">' + esc(d.latest_news || x.latest_news || '—') + '</td><td>' + trig + '</td></tr>';
-      }).join('');
+      var html = '';
+      GROUPS.forEach(function (g) {
+        var rows = items.filter(function (x) { return x.market === g.market; });
+        if (!rows.length) return;
+        html += '<tr class="sig-group"><td colspan="' + COLS + '">' + g.title + ' · ' + rows.length + ' 只</td></tr>';
+        html += rows.map(function (x) { return rowHtml(x, today[x.code] || {}); }).join('');
+      });
+      var rest = items.filter(function (x) { return !GROUPS.some(function (g) { return g.market === x.market; }); });
+      if (rest.length) html += '<tr class="sig-group"><td colspan="' + COLS + '">其他</td></tr>' + rest.map(function (x) { return rowHtml(x, today[x.code] || {}); }).join('');
+      el('sigBody').innerHTML = html;
     }
-    el('sigTime').textContent = '名单更新 ' + fmtTime(w.updated_at) + ' · 今日信号 ' + (t.date ? esc(t.date) : '—');
-    el('sigNote').textContent = t.note || '';
+    el('sigTime').textContent = '名单更新 ' + fmtTime(w.updated_at) + (w.data_through ? ' · 数据截至 ' + w.data_through + ' 收盘' : '') + ' · 今日信号 ' + (t.date ? t.date : '—');
+    el('sigNote').textContent = [items.length ? w.note : '', t.note].filter(Boolean).join(' ');
     noteTime('名单', w.updated_at);
   }).catch(function (e) {
-    el('sigBody').innerHTML = '<tr><td colspan="7" class="empty">名单读取失败：' + esc(e.message) + '</td></tr>';
+    el('sigBody').innerHTML = '<tr><td colspan="' + COLS + '" class="empty">名单读取失败：' + esc(e.message) + '</td></tr>';
   });
 
   // ---------- 3. 案例 K 线 ----------

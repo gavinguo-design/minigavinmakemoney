@@ -1,54 +1,134 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh" class="dark">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>趋势看板 · miniGG</title>
-<link rel="icon" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
 <script src="../vendor/lightweight-charts-4.2.0.min.js"></script>
-<script src="trend-rules.js?v=1"></script>
+<script src="trend-rules.js?v=2"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#080c10;color:#e2e8f0;font:14px/1.55 system-ui,-apple-system,"PingFang SC",sans-serif}
-a{color:#a5c8ff;text-decoration:none}a:hover{text-decoration:underline}
-header{border-bottom:1px solid #263141;padding:12px 20px;display:flex;gap:16px;align-items:center}header nav{margin-left:auto;display:flex;gap:14px;font-size:13px}
-.wrap{max-width:1280px;margin:auto;padding:16px 16px 30px}
-.verdict{background:linear-gradient(90deg,#14202e,#0e151e);border:1px solid #2c3c52;border-radius:12px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
-.verdict b{font-size:19px;letter-spacing:.3px}.verdict .meta{margin-left:auto;color:#9aaabc;font-size:12px;text-align:right}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-.card{background:#0e151e;border:1px solid #263141;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.card h3{margin:0;font-size:15px;display:flex;align-items:center;gap:8px}.card h3 small{color:#9aaabc;font-weight:400;font-size:12px}
-.badge{font-size:12px;padding:2px 9px;border-radius:999px;font-weight:600;cursor:help}
-.b-up{background:#ff4d6a22;color:#ff7d93;border:1px solid #ff4d6a66}.b-down{background:#1fc77e22;color:#4fe0a0;border:1px solid #1fc77e66}
-.b-pullback{background:#eabd5522;color:#f0cc72;border:1px solid #eabd5566}.b-range{background:#6b7c9322;color:#b7c4d6;border:1px solid #6b7c9366}.b-unknown{background:#333;color:#aaa}
-.price{font:700 24px/1.2 ui-monospace,SFMono-Regular,monospace;display:flex;align-items:baseline;gap:10px}.price span{font-size:13px;font-weight:500}
-.r{color:#ff6b81}.g{color:#3ddc97}.mut{color:#9aaabc;font-size:12px}
-.mas{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.mas div{background:#080c10;border-radius:7px;padding:5px 8px;font-size:12px}.mas b{display:block;font:600 13px ui-monospace,monospace}
-.lv{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px}.lv div{background:#080c10;border-radius:7px;padding:6px 8px}.lv .t{color:#9aaabc}
-.lv .item{font-family:ui-monospace,monospace}
-.todo{border-left:3px solid #6aa7ff;background:#6aa7ff10;padding:8px 10px;border-radius:0 8px 8px 0}
-.todo .now{font-weight:600;font-size:14px}.todo p{margin:4px 0 0;font-size:12.5px}.todo p em{font-style:normal;color:#9aaabc;margin-right:4px}
-.mini{height:170px;border-radius:8px;overflow:hidden}
-.legend{font-size:11px;color:#9aaabc;display:flex;gap:10px}.legend i{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:3px}
-.vix{margin-top:12px;background:#0e151e;border:1px solid #263141;border-radius:12px;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
-.vbar{flex:1;min-width:260px;display:grid;grid-template-columns:15fr 5fr 10fr 10fr;height:10px;border-radius:6px;overflow:visible;position:relative}
-.vbar span{height:10px}.vbar span:nth-child(1){background:#2e7d5b;border-radius:6px 0 0 6px}.vbar span:nth-child(2){background:#5f7f3a}.vbar span:nth-child(3){background:#b98a2e}.vbar span:nth-child(4){background:#b23b4f;border-radius:0 6px 6px 0}
-.vmark{position:absolute;top:-5px;width:3px;height:20px;background:#fff;border-radius:2px;box-shadow:0 0 6px #fff}
-.vlabels{display:grid;grid-template-columns:15fr 5fr 10fr 10fr;font-size:11px;color:#9aaabc;margin-top:4px}
-.note{margin-top:10px;font-size:12px;color:#9aaabc}
-footer{margin-top:14px;color:#7d8da1;font-size:12px;border-top:1px solid #263141;padding-top:10px}
-.err{color:#ff879d;font-size:12px}
-[data-tip]{position:relative}[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:0;top:120%;z-index:5;background:#1b2735;border:1px solid #3a4d66;color:#e2e8f0;padding:7px 9px;border-radius:7px;font-size:12px;font-weight:400;width:max-content;max-width:280px;white-space:normal;line-height:1.5}
-@media(max-width:980px){.grid{grid-template-columns:1fr}.verdict .meta{margin-left:0;text-align:left}}
+/* 视觉 token 与主页面 chart/index.html 完全一致（--bg/--card/--border/--up/--down/--gold/--accent/--text/--muted） */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #0D0D0F;
+  --card: #1C1C1E;
+  --border: rgba(255,255,255,0.08);
+  --up: #FF453A;      /* 红涨（A股习惯） */
+  --down: #32D74B;    /* 绿跌 */
+  --good: #32D74B;
+  --bad: #FF453A;
+  --gold: #f5c842;
+  --accent: #0A84FF;
+  --text: #F5F5F7;
+  --muted: rgba(235,235,245,0.5);
+}
+html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", 'Inter', system-ui, sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 12px 40px; }
+header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(13,13,15,0.72); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.02em; }
+.brand .logo { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; }
+.brand a { color: var(--muted); font-size: 12px; font-weight: 500; }
+.brand a:hover { color: var(--text); }
+h1 { font-size: 20px; font-weight: 800; margin: 20px 4px 6px; letter-spacing: -0.01em; }
+.sub { font-size: 12px; color: var(--muted); margin: 0 4px 16px; }
+.track-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none;
+  background: rgba(10,132,255,0.1); border: 1px solid rgba(10,132,255,0.3);
+  padding: 6px 14px; border-radius: 999px; margin: 2px 4px 14px;
+  min-height: 32px;
+}
+.track-link:hover { background: rgba(10,132,255,0.18); text-decoration: none; }
+
+.verdict { background: linear-gradient(180deg, rgba(28,28,30,0.96), rgba(28,28,30,0.9)); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; }
+.verdict b { font-size: 15px; font-weight: 800; }
+.verdict .meta { margin-left: auto; color: var(--muted); font-size: 11px; text-align: right; }
+
+.grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 12px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.card h3 { margin: 0; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.card h3 small { color: var(--muted); font-weight: 400; font-size: 11px; }
+.badge { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; border: 1px solid transparent; cursor: help; }
+.badge.bull { color: var(--up); background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.3); }
+.badge.bear { color: var(--down); background: rgba(50,215,75,0.1); border-color: rgba(50,215,75,0.3); }
+.badge.weak { color: var(--gold); background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.35); }
+.badge.unknown { color: var(--muted); background: rgba(255,255,255,0.05); }
+
+.price { font: 700 23px/1.2 'JetBrains Mono', monospace; display: flex; align-items: baseline; gap: 10px; }
+.price span { font: 500 12px -apple-system, sans-serif; color: var(--muted); }
+.r { color: var(--up); } .g { color: var(--down); }
+.mas { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+.mas div { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 5px 8px; font-size: 11px; color: var(--muted); }
+.mas b { display: block; font: 700 13px 'JetBrains Mono', monospace; color: var(--text); }
+.lv { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11.5px; }
+.lv div { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; }
+.lv .t { color: var(--muted); margin-bottom: 2px; }
+.lv .item { font-family: 'JetBrains Mono', monospace; }
+.todo { border-left: 3px solid var(--accent); background: rgba(10,132,255,0.07); padding: 8px 10px; border-radius: 0 10px 10px 0; }
+.todo .now { font-weight: 700; font-size: 13.5px; color: var(--text); }
+.todo p { margin: 4px 0 0; font-size: 12px; color: rgba(235,235,245,0.75); }
+.todo p em { font-style: normal; color: var(--muted); margin-right: 4px; }
+.mini { height: 170px; border-radius: 10px; overflow: hidden; }
+.legend { font-size: 10.5px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 2px; vertical-align: middle; margin-right: 3px; }
+
+.vix { margin-bottom: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 13px 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.vix > b { font-size: 14px; font-weight: 800; }
+.vbar { flex: 1; min-width: 260px; display: grid; grid-template-columns: 15fr 5fr 10fr 10fr; height: 10px; border-radius: 6px; overflow: visible; position: relative; }
+.vbar span { height: 10px; }
+.vbar span:nth-child(1) { background: #1f6b4a; border-radius: 6px 0 0 6px; }
+.vbar span:nth-child(2) { background: #4f6b2e; }
+.vbar span:nth-child(3) { background: #9a7224; }
+.vbar span:nth-child(4) { background: #8a2b3d; border-radius: 0 6px 6px 0; }
+.vmark { position: absolute; top: -5px; width: 3px; height: 20px; background: #fff; border-radius: 2px; box-shadow: 0 0 6px #fff; }
+.vlabels { display: grid; grid-template-columns: 15fr 5fr 10fr 10fr; font-size: 10.5px; color: var(--muted); margin-top: 4px; }
+
+.note { margin: 8px 4px; font-size: 11.5px; color: var(--muted); line-height: 1.6; }
+footer { margin-top: 20px; text-align: center; font-size: 11px; color: rgba(235,235,245,0.3); line-height: 1.8; }
+footer a { color: var(--muted); }
+.err { color: #ff879d; font-size: 12px; }
+[data-tip] { position: relative; }
+[data-tip]:hover::after { content: attr(data-tip); position: absolute; left: 0; top: 130%; z-index: 5; background: #1C1C1E; border: 1px solid var(--border); color: var(--text); padding: 7px 9px; border-radius: 8px; font-size: 11.5px; font-weight: 400; width: max-content; max-width: 280px; white-space: normal; line-height: 1.5; }
+@media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .verdict .meta { margin-left: 0; text-align: left; } .price-line { display: none; } }
 </style>
 </head>
 <body>
-<header><b>miniGG · 趋势看板</b><nav><a href="../">恒指走势分析</a><a href="../track/">预测成绩</a></nav></header>
-<main class="wrap">
+
+<header>
+  <div class="brand">
+    <img class="logo" src="/icon-192.png" alt="minigavin">
+    <span>miniGG</span>
+    <a href="../">← 恒指走势</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1>趋势看板 · miniGG</h1>
+  <p class="sub">港股 ^HSI（引用恒指页同一套关键位与剧本）· 美股 ^GSPC / QQQ · VIX 情绪 · 交易时段每5分钟自动刷新</p>
+  <a class="track-link" href="../">← 返回恒指走势分析</a>
+  <a class="track-link" href="../track/">📊 预测战绩 →</a>
+
   <section class="verdict"><b id="verdict">正在读取行情…</b><div class="meta"><div id="updated">—</div><div id="asof">—</div></div></section>
   <section class="grid" id="cards"></section>
-  <section class="vix" id="vix"><b>VIX 情绪</b><span class="mut">读取中…</span></section>
+  <section class="vix" id="vix"><b>VIX 情绪</b><span class="sub" style="margin:0">读取中…</span></section>
   <p class="note" id="cbbc"></p>
   <footer>基于均线与关键位的规则判断，未经回测验证，不构成投资建议。<span id="src"></span></footer>
-</main>
+</div>
+
 <script>
 (function(){
 'use strict';
@@ -58,7 +138,7 @@ var MARKETS = [
   { sym: '^GSPC', name: '标普500',  mk: 'us', dp: 2, tz: 'America/New_York' },
   { sym: 'QQQ',   name: '纳指100 (QQQ)', mk: 'us', dp: 2, tz: 'America/New_York' }
 ];
-var UP = '#ff4d6a', DOWN = '#1fc77e'; // 红涨绿跌
+var UP = '#FF453A', DOWN = '#32D74B'; // 红涨绿跌（与主页面一致）
 var charts = {};
 
 function $(id){ return document.getElementById(id); }
@@ -69,10 +149,8 @@ function fmtTime(sec, tz){
   if(!sec) return '—';
   return new Intl.DateTimeFormat('zh-CN',{timeZone:tz,month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(sec*1000));
 }
-function fetchK(sym){
-  return fetch('/api/kline?symbol='+encodeURIComponent(sym)+'&interval=1d&range=2y',{credentials:'same-origin'})
-    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); });
-}
+function fetchJSON(url){ return fetch(url,{credentials:'same-origin'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }); }
+function fetchK(sym){ return fetchJSON('/api/kline?symbol='+encodeURIComponent(sym)+'&interval=1d&range=2y'); }
 
 var TIPS = {
   up: '价格在20/50/200日均线上方，长期趋势向上',
@@ -80,16 +158,18 @@ var TIPS = {
   range: '价格与均线方向不一致，或空头趋势中反弹到50日线上方',
   down: '价格在50日与200日线下方，均线向下排列'
 };
+var BADGE_CLASS = { up: 'bull', pullback: 'weak', range: 'weak', down: 'bear', unknown: 'unknown' };
+var LABEL = { up: '上涨', pullback: '回调', range: '震荡', down: '下跌', unknown: '待定' };
 
 function cardHtml(cfg, m, d){
   var t = m.trend, a = m.advice, dp = cfg.dp;
   function lvList(arr){ return arr.length ? arr.map(function(x){ return '<div class="item">'+esc(x.name)+' '+num(x.v,dp)+'</div>'; }).join('') : '<div class="item">—</div>'; }
-  return '<h3>'+esc(cfg.name)+' <span class="badge b-'+t.state+'" data-tip="'+esc(t.why+'。'+(TIPS[t.state]||''))+'">'+esc(t.label)+'</span><small>'+esc(cfg.sym)+'</small></h3>'+
-    '<div class="price">'+num(m.price,dp)+' <span class="mut">5日</span>'+sgn(m.chg5)+'</div>'+
+  return '<h3>'+esc(cfg.name)+' <span class="badge '+(BADGE_CLASS[t.state]||'unknown')+'" data-tip="'+esc((t.why||'')+'。'+(TIPS[t.state]||''))+'">'+esc(LABEL[t.state]||t.label)+'</span><small>'+esc(cfg.sym)+'</small></h3>'+
+    '<div class="price">'+num(m.price,dp)+' <span>5日 '+sgn(m.chg5)+'</span></div>'+
     '<div class="mas"><div data-tip="20日均线 '+num(m.ma20,dp)+'">距MA20<b>'+sgn(m.d20)+'</b></div><div data-tip="50日均线 '+num(m.ma50,dp)+'">距MA50<b>'+sgn(m.d50)+'</b></div><div data-tip="200日均线 '+num(m.ma200,dp)+'">距MA200<b>'+sgn(m.d200)+'</b></div></div>'+
     '<div class="lv"><div><div class="t">上方阻力</div>'+lvList(m.levels.resistance)+'</div><div><div class="t">下方支撑</div>'+lvList(m.levels.support)+'</div></div>'+
     '<div class="todo"><div class="now">现在怎么做：'+esc(a.now)+'</div><p><em>触发</em>'+esc(a.trigger)+'</p><p><em>失效</em>'+esc(a.invalid)+'</p></div>'+
-    '<div class="legend"><span><i style="background:#f0cc72"></i>MA20</span><span><i style="background:#6aa7ff"></i>MA50</span><span><i style="background:#c58cff"></i>MA200</span><span class="mut">近120日 · 数据截至 '+esc(fmtTime(d.regularMarketTime,cfg.tz))+'</span></div>'+
+    '<div class="legend"><span><i style="background:#f0cc72"></i>MA20</span><span><i style="background:#6aa7ff"></i>MA50</span><span><i style="background:#c58cff"></i>MA200</span><span style="color:var(--muted)">近120日 · 数据截至 '+esc(fmtTime(d.regularMarketTime,cfg.tz))+'</span></div>'+
     '<div class="mini" id="mini-'+cfg.mk+'-'+cfg.sym.replace(/\W/g,'')+'"></div>';
 }
 
@@ -97,8 +177,8 @@ function drawMini(el, bars, m){
   if(!window.LightweightCharts) return;
   var key = el.id; if(charts[key]){ try{charts[key].remove();}catch(e){} }
   var chart = LightweightCharts.createChart(el,{
-    height:170, layout:{background:{color:'#080c10'},textColor:'#7d8da1',fontSize:10},
-    grid:{vertLines:{visible:false},horzLines:{color:'#151d28'}},
+    height:170, layout:{background:{color:'#1C1C1E'},textColor:'#8a8a8e',fontSize:10},
+    grid:{vertLines:{visible:false},horzLines:{color:'rgba(255,255,255,0.06)'}},
     rightPriceScale:{borderVisible:false}, timeScale:{borderVisible:false,timeVisible:false},
     handleScroll:false, handleScale:false, crosshair:{mode:0}
   });
@@ -111,7 +191,7 @@ function drawMini(el, bars, m){
     var arr=[]; for(var i=start;i<bars.length;i++){ var v=m.series[p[0]][i]; if(v!=null) arr.push({time:bars[i].t,value:v}); }
     s.setData(arr);
   });
-  if(m.priorLow){ cs.createPriceLine({price:m.priorLow,color:'#9aaabc',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'月线前低'}); }
+  if(m.priorLow){ cs.createPriceLine({price:m.priorLow,color:'#8a8a8e',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'月线前低'}); }
   chart.timeScale().fitContent();
   new ResizeObserver(function(){ chart.applyOptions({width:el.clientWidth}); }).observe(el);
 }
@@ -121,35 +201,48 @@ function renderVix(d){
   if(!d){ box.innerHTML='<b>VIX 情绪</b><span class="err">暂未取到 VIX 数据</span>'; return null; }
   var bars = R.cleanBars(d), v = bars.length ? bars[bars.length-1].c : d.regularMarketPrice;
   var lv = R.vixLevel(v), pos = Math.max(0, Math.min(40, v)) / 40 * 100;
-  box.innerHTML = '<b>VIX 情绪</b><span class="price" style="font-size:20px">'+num(v,2)+'</span>'+
-    '<span class="badge b-'+({low:'down',normal:'range',tense:'pullback',panic:'up'}[lv.state]||'unknown')+'" data-tip="VIX 低于15为低，15-20正常，20-30紧张，30以上恐慌">'+esc(lv.label)+'</span><span class="mut">'+esc(lv.desc||'')+'</span>'+
-    '<div style="flex:1;min-width:260px"><div class="vbar"><span></span><span></span><span></span><span></span><i class="vmark" style="left:calc('+pos.toFixed(1)+'% - 1px)"></i></div><div class="vlabels"><span>低 &lt;15</span><span>正常</span><span>紧张 20-30</span><span>恐慌 &gt;30</span></div></div>';
+  box.innerHTML = '<b>VIX 情绪</b><span class="price" style="font-size:19px">'+num(v,2)+'</span>'+
+    '<span class="badge '+({low:'bear',normal:'weak',tense:'weak',panic:'bull'}[lv.state]||'unknown')+'" data-tip="VIX 低于15为低，15-20正常，20-30紧张，30以上恐慌">'+esc(lv.label)+'</span><span style="color:var(--muted);font-size:12px">'+esc(lv.desc||'')+'</span>'+
+    '<div style="flex:1;min-width:260px"><div class="vbar"><span></span><span></span><span></span><span></span><i class="vmark" style="left:calc('+pos.toFixed(1)+'% - 1px)"></i></div><div class="vlabels"><span>低 &lt;15</span><span>正常 15-20</span><span>紧张 20-30</span><span>恐慌 &gt;30</span></div></div>';
   return d;
+}
+
+// 恒指：优先复用主页面 annotations.json 的关键位与当日 A/B/C 剧本（只读）
+function loadHkAnnotations(){
+  return fetchJSON('../annotations.json?t='+Date.now()).then(function(a){
+    var scenario = a && a.forecast && R.leadingScenario(a.forecast.scenarios);
+    return { levels: (a && a.levels) || [], scenario: scenario, applicable_date: a && a.forecast && a.forecast.applicable_date };
+  }).catch(function(){ return { levels: [], scenario: null }; });
 }
 
 function load(){
   var jobs = MARKETS.map(function(c){ return fetchK(c.sym).then(function(d){return {c:c,d:d};},function(e){return {c:c,err:e};}); });
   jobs.push(fetchK('^VIX').then(function(d){return d;},function(){return null;}));
+  jobs.push(loadHkAnnotations());
   Promise.all(jobs).then(function(res){
+    var hkCtx = res.pop();
     var vixD = res.pop();
     var cardsEl = $('cards'); cardsEl.innerHTML='';
     var states = {}, asof = [];
     res.forEach(function(r){
       var card = document.createElement('article'); card.className='card'; cardsEl.appendChild(card);
       if(r.err){ card.innerHTML='<h3>'+esc(r.c.name)+'</h3><div class="err">行情读取失败（'+esc(r.err.message)+'），稍后自动重试</div>'; states[r.c.sym]='unknown'; return; }
-      var bars = R.cleanBars(r.d), m = R.analyze(bars,{market:r.c.mk});
+      var bars = R.cleanBars(r.d);
+      var opts = { market: r.c.mk };
+      if (r.c.mk === 'hk') { opts.annotationLevels = hkCtx.levels; opts.scenario = hkCtx.scenario; }
+      var m = R.analyze(bars, opts);
       if(!m){ card.innerHTML='<h3>'+esc(r.c.name)+'</h3><div class="err">数据不足</div>'; states[r.c.sym]='unknown'; return; }
       states[r.c.sym]=m.trend.state;
       card.innerHTML = cardHtml(r.c,m,r.d);
       drawMini(card.querySelector('.mini'), bars, m);
-      asof.push((r.c.mk==='hk'?'港股 ':'美股 ')+fmtTime(r.d.regularMarketTime, r.c.tz)+(r.c.mk==='hk'?' (香港时间)':' (美东时间)'));
+      asof.push(r.c.name+' '+fmtTime(r.d.regularMarketTime, r.c.tz)+(r.c.mk==='hk'?'（港）':'（美东）'));
     });
     renderVix(vixD);
     $('verdict').textContent = R.summarize(states['^HSI'], R.combineUS(states['^GSPC'], states['QQQ']));
     var now = new Date();
     $('updated').textContent = '页面更新 '+now.toLocaleString('zh-CN',{hour12:false,timeZone:'Asia/Shanghai'});
-    $('asof').textContent = '数据截至：'+ (asof.filter(function(x,i,a){return a.indexOf(x)===i;}).join(' · ')||'—');
-    $('src').textContent = ' 数据来源：Yahoo Finance 日线（经本站 /api/kline 代理，约5分钟缓存）· 抓取时间 '+now.toLocaleString('zh-CN',{hour12:false,timeZone:'Asia/Shanghai'})+'。';
+    $('asof').textContent = '数据截至：'+ (asof.join(' · ')||'—');
+    $('src').textContent = ' 数据来源：Yahoo Finance 日线（经本站 /api/kline 代理，约5分钟缓存）；恒指关键位与剧本引用同站 annotations.json · 抓取时间 '+now.toLocaleString('zh-CN',{hour12:false,timeZone:'Asia/Shanghai'})+'。';
   });
 }
 
@@ -164,7 +257,7 @@ function inSession(){
   var wk = function(w){ return w!=='Sat'&&w!=='Sun'; };
   return (wk(hk.wd) && hk.m>=570 && hk.m<=970) || (wk(us.wd) && us.m>=570 && us.m<=965);
 }
-$('cbbc').textContent = '工具提示：' + R.CBBC_NOTE;
+$('cbbc').textContent = '提示：' + R.CBBC_NOTE;
 load();
 setInterval(function(){ if(inSession() && !document.hidden) load(); }, 5*60*1000);
 })();

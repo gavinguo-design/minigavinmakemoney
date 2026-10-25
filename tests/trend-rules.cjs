@@ -64,6 +64,42 @@ test('analyze 端到端', () => {
   assert.equal(hk.priorLow, 22518);
 });
 
+test('annotationLevels: 复用 annotations.json 的关键位', () => {
+  const levels = [
+    { price: 23737.14, type: 'support', label: '最近确认摆动低点' },
+    { price: 24524.63, type: 'resistance', label: '最近确认摆动高点' },
+    { price: 22518, type: 'support', label: '下方结构目标' },
+    { price: 24934.06, type: 'resistance', label: '上方结构目标' }
+  ];
+  const lv = R.annotationLevels(23093.37, levels);
+  assert.equal(lv.resistance[0].v, 23737.14);
+  assert.equal(lv.support[0].v, 22518);
+});
+
+test('leadingScenario: 挑概率最高的情景', () => {
+  const s = R.leadingScenario([{ id: 'A', probability: 0.1 }, { id: 'B', probability: 0.1 }, { id: 'C', probability: 0.8 }]);
+  assert.equal(s.id, 'C');
+  assert.equal(R.leadingScenario([]), null);
+});
+
+test('adviceHKFromAnnotations: 原文搬运触发/失效，不自己重新推导', () => {
+  const a = R.adviceHKFromAnnotations({ name: 'C · 跌破最近摆动低点', direction: 'short', trigger: '收盘 < 23,737.14', invalidation: '收盘 ≥ 23,513.79' });
+  assert.match(a.now, /偏空/);
+  assert.equal(a.trigger, '收盘 < 23,737.14');
+  assert.equal(a.invalid, '收盘 ≥ 23,513.79');
+  assert.equal(R.adviceHKFromAnnotations(null), null);
+});
+
+test('analyze: 恒指传 annotationLevels+scenario 时优先复用，不自计关键位', () => {
+  const bars = [];
+  for (let i = 0; i < 260; i++) { const c = 30000 - i * 5; bars.push({ t: i, o: c, h: c + 5, l: c - 5, c }); }
+  const levels = [{ price: bars[bars.length - 1].c - 500, type: 'support', label: '测试支撑' }, { price: bars[bars.length - 1].c + 500, type: 'resistance', label: '测试阻力' }];
+  const scenario = { name: 'C · 测试', direction: 'short', trigger: 'T', invalidation: 'I' };
+  const m = R.analyze(bars, { market: 'hk', annotationLevels: levels, scenario: scenario });
+  assert.equal(m.levels.support[0].name, '测试支撑');
+  assert.equal(m.advice.trigger, 'T');
+});
+
 test('cleanBars 剔除空值', () => {
   const b = R.cleanBars({ timestamp: [1, 2], open: [1, null], high: [2, 2], low: [0, 0], close: [1, 1] });
   assert.equal(b.length, 1);

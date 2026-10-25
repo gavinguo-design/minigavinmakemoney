@@ -56,7 +56,15 @@
     return { state: 'range', label: '震荡', why: '价格与均线方向不一致，方向未定' };
   }
 
-  // 关键位：上方阻力 / 下方支撑（取最近两档）
+  // 按价格把候选关键位拆成「上方阻力 / 下方支撑」，各取最近两档
+  function sortLevels(price, cands) {
+    cands = cands.filter(function (x) { return isNum(x.v); });
+    var above = cands.filter(function (x) { return x.v > price; }).sort(function (a, b) { return a.v - b.v; }).slice(0, 2);
+    var below = cands.filter(function (x) { return x.v <= price; }).sort(function (a, b) { return b.v - a.v; }).slice(0, 2);
+    return { resistance: above, support: below };
+  }
+
+  // 关键位：上方阻力 / 下方支撑（取最近两档，均线+20日高低点）
   function keyLevels(price, ctx) {
     var cands = [
       { name: '20日高点', v: ctx.high20 },
@@ -66,16 +74,44 @@
       { name: 'MA200', v: ctx.ma200 }
     ];
     if (ctx.priorLow) cands.push({ name: '月线前低', v: ctx.priorLow });
-    cands = cands.filter(function (x) { return isNum(x.v); });
-    var above = cands.filter(function (x) { return x.v > price; }).sort(function (a, b) { return a.v - b.v; }).slice(0, 2);
-    var below = cands.filter(function (x) { return x.v <= price; }).sort(function (a, b) { return b.v - a.v; }).slice(0, 2);
-    return { resistance: above, support: below };
+    return sortLevels(price, cands);
+  }
+
+  // 关键位（恒指专用）：直接复用 annotations.json 里的 levels 数组，不另起一套
+  // levels: [{price, type:'support'|'resistance', label, reason}, ...]
+  function annotationLevels(price, levels) {
+    var cands = (levels || []).map(function (x) { return { name: x.label, v: x.price }; });
+    return sortLevels(price, cands);
+  }
+
+  // 从 annotations.json 的 forecast.scenarios 里挑当前主导情景（概率最高，并列取第一个）
+  function leadingScenario(scenarios) {
+    if (!scenarios || !scenarios.length) return null;
+    var best = scenarios[0];
+    for (var i = 1; i < scenarios.length; i++) {
+      if ((scenarios[i].probability || 0) > (best.probability || 0)) best = scenarios[i];
+    }
+    return best;
   }
 
   function fmt(v, dp) { return isNum(v) ? v.toFixed(dp == null ? 0 : dp) : '—'; }
   function near(price, level, tolPct) { return isNum(level) && Math.abs(pct(price, level)) <= tolPct; }
 
-  // 港股（恒指）建议：空头里不抄底，只做反弹滞涨空；跌破月线前低可顺势轻仓空
+  // 港股（恒指）建议：复用主页面 annotations.json 当日 A/B/C 剧本（只读、不改该文件）
+  // scenario: forecast.scenarios 中概率最高的一项（leadingScenario 挑出）
+  function adviceHKFromAnnotations(scenario, ma20) {
+    if (!scenario) return null;
+    var dirWord = scenario.direction === 'long' ? '偏多' : '偏空';
+    var name = String(scenario.name || '').replace(/^[A-Z]\s*[·.]\s*/, '');
+    return {
+      now: '当前主导剧本（' + dirWord + '）：' + name,
+      trigger: scenario.trigger || '—',
+      invalid: scenario.invalidation || '—',
+      refLabel: scenario.name
+    };
+  }
+
+  // 港股（恒指）建议：空头里不抄底，只做反弹滞涨空；跌破月线前低可顺势轻仓空（无剧本数据时的兜底规则）
   function adviceHK(t, m) {
     var p = m.price, low = HSI_MONTHLY_PRIOR_LOW, stop20 = m.ma20 + HSI_STOP_POINTS;
     if (t.state === 'down') {
@@ -180,8 +216,15 @@
     };
     m.d20 = pct(price, m.ma20); m.d50 = pct(price, m.ma50); m.d200 = pct(price, m.ma200);
     m.trend = classifyTrend(price, m.ma20, m.ma50, m.ma200);
-    m.levels = keyLevels(price, m);
-    m.advice = opts.market === 'hk' ? adviceHK(m.trend, m) : adviceUS(m.trend, m);
+    // 恒指优先复用主页面 annotations.json 的关键位；没有数据时回退到自计 MA/20日高低点
+    m.levels = (opts.market === 'hk' && opts.annotationLevels && opts.annotationLevels.length)
+      ? annotationLevels(price, opts.annotationLevels)
+      : keyLevels(price, m);
+    if (opts.market === 'hk') {
+      m.advice = (opts.scenario && adviceHKFromAnnotations(opts.scenario, m.ma20)) || adviceHK(m.trend, m);
+    } else {
+      m.advice = adviceUS(m.trend, m);
+    }
     return m;
   }
 
@@ -210,6 +253,7 @@
   return {
     HSI_MONTHLY_PRIOR_LOW: HSI_MONTHLY_PRIOR_LOW, CBBC_NOTE: CBBC_NOTE,
     cleanBars: cleanBars, sma: sma, pct: pct, classifyTrend: classifyTrend, keyLevels: keyLevels,
+    annotationLevels: annotationLevels, leadingScenario: leadingScenario, adviceHKFromAnnotations: adviceHKFromAnnotations,
     adviceHK: adviceHK, adviceUS: adviceUS, vixLevel: vixLevel, analyze: analyze,
     summarize: summarize, combineUS: combineUS
   };

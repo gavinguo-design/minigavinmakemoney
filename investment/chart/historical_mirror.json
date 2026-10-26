@@ -1,24 +1,19 @@
 {
-  "updated_at": "2026-10-23 09:02:03",
-  "basis_date": "2026-10-23",
+  "updated_at": "2026-10-26 09:01:43",
+  "basis_date": "2026-10-26",
   "source": "futu(HK.800000)",
   "today_features": {
-    "label": "前日收跌3.03%续弱后 + 平开 + 缩量 + 十字星 + 5日累跌4.7% + RSI 27",
-    "bucket": "前日收跌 + 5日累跌 + RSI <30",
+    "label": "前日收涨0.69%修复后 + 平开 + 缩量 + 十字星 + 5日累跌4.5% + RSI 31",
+    "bucket": "前日收涨 + 5日累跌 + RSI 30-50",
     "gap_pct": 0.0,
-    "prev_day_chg_pct": -3.03,
+    "prev_day_chg_pct": 0.69,
     "day_chg_pct": 0.0,
     "volume_ratio": 0.0,
-    "dist_ma20_pct": -4.84,
-    "rsi14": 27.2,
+    "dist_ma20_pct": -3.88,
+    "rsi14": 30.9,
     "close_pos": null,
-    "trend_5d": -4.69,
+    "trend_5d": -4.52,
     "seq_5d": [
-      {
-        "date": "2026-10-16",
-        "day_chg_pct": 0.52,
-        "volume_ratio": 0.91
-      },
       {
         "date": "2026-10-20",
         "day_chg_pct": -1.32,
@@ -36,6 +31,11 @@
       },
       {
         "date": "2026-10-23",
+        "day_chg_pct": 0.69,
+        "volume_ratio": 1.22
+      },
+      {
+        "date": "2026-10-26",
         "day_chg_pct": 0.0,
         "volume_ratio": 0.0
       }
@@ -65,11 +65,11 @@
       "w_day": 0.4,
       "seq_len": 5
     },
-    "excluded_after_index_date": "2026-09-22",
+    "excluded_after_index_date": "2026-09-23",
     "status": "backtest_pending"
   },
   "data_range": "2006-2026",
-  "total_bars": 4935,
+  "total_bars": 4933,
   "matches": [],
   "stats": {
     "next_1d_up_prob": null,
@@ -83,20 +83,20 @@
     "up_ratio_text": "无足够相似样本",
     "next_1d_up_wilson95": null,
     "next_1d_up_uniqueness_weighted": null,
-    "unconditional_up_rate": 0.5139,
-    "unconditional_n": 4913,
+    "unconditional_up_rate": 0.5135,
+    "unconditional_n": 4911,
     "bucket_up_rate": null,
     "bucket_n": 0,
     "edge_vs_unconditional": null,
     "detrended": {
-      "mu_daily_log_return": 6.8e-05,
+      "mu_daily_log_return": 6.5e-05,
       "up_count": 0,
       "n": 0,
       "up_wilson95": null,
-      "unconditional_up_rate": 0.5113,
+      "unconditional_up_rate": 0.5111,
       "edge_vs_unconditional": null,
       "note": "次日对数收益减去样本池平均日对数收益 μ 后再判断涨跌（去趋势基准）"
     }
   },
-  "honesty_note": "匹配方法 v2：前5日逐日序列（20维）+ 当日特征（6维），权重60%/40%，5日涨跌形状相关 r≥0（固定，不放宽）；标准化只用样本日之前数据；样本间隔≥10日、排除最近20个交易日；无足够相似样本；n<20 样本不足，仅作叙事参考；未经样本外检验，不是概率信号；基于 2006-10-09~2026-10-23 共4935个交易日"
+  "honesty_note": "匹配方法 v2：前5日逐日序列（20维）+ 当日特征（6维），权重60%/40%，5日涨跌形状相关 r≥0（固定，不放宽）；标准化只用样本日之前数据；样本间隔≥10日、排除最近20个交易日；无足够相似样本；n<20 样本不足，仅作叙事参考；未经样本外检验，不是概率信号；基于 2006-10-12~2026-10-26 共4933个交易日"
 }

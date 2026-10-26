@@ -1,43 +1,43 @@
 {
-  "updated_at": "2026-10-26 12:30:33",
-  "basis_date": "2014-11-20",
+  "updated_at": "2026-10-26 13:00:15",
+  "basis_date": "2026-10-26",
   "source": "futu(HK.800000)",
   "today_features": {
-    "label": "前日收跌0.66%续弱后 + 平开 + 平量 + 十字星 + 5日累跌2.8% + RSI 42",
-    "bucket": "前日收跌 + 5日累跌 + RSI 30-50",
-    "gap_pct": 0.12,
-    "prev_day_chg_pct": -0.66,
-    "day_chg_pct": -0.1,
-    "volume_ratio": 0.86,
-    "dist_ma20_pct": -1.46,
-    "rsi14": 42.0,
-    "close_pos": 0.47,
-    "trend_5d": -2.79,
+    "label": "前日收涨0.69%修复后 + 平开 + 缩量 + 收阳收在高位 + 5日累跌4.1% + RSI 33",
+    "bucket": "前日收涨 + 5日累跌 + RSI 30-50",
+    "gap_pct": 0.28,
+    "prev_day_chg_pct": 0.69,
+    "day_chg_pct": 0.42,
+    "volume_ratio": 0.45,
+    "dist_ma20_pct": -3.5,
+    "rsi14": 33.1,
+    "close_pos": 0.87,
+    "trend_5d": -4.12,
     "seq_5d": [
       {
-        "date": "2014-11-14",
-        "day_chg_pct": 0.28,
-        "volume_ratio": 0.87
+        "date": "2026-10-20",
+        "day_chg_pct": -1.32,
+        "volume_ratio": 1.01
       },
       {
-        "date": "2014-11-17",
-        "day_chg_pct": -0.64,
-        "volume_ratio": 0.7
+        "date": "2026-10-21",
+        "day_chg_pct": -0.9,
+        "volume_ratio": 0.91
       },
       {
-        "date": "2014-11-18",
-        "day_chg_pct": -1.69,
-        "volume_ratio": 0.97
+        "date": "2026-10-22",
+        "day_chg_pct": -3.03,
+        "volume_ratio": 1.33
       },
       {
-        "date": "2014-11-19",
-        "day_chg_pct": -0.66,
-        "volume_ratio": 0.89
+        "date": "2026-10-23",
+        "day_chg_pct": 0.69,
+        "volume_ratio": 1.22
       },
       {
-        "date": "2014-11-20",
-        "day_chg_pct": -0.1,
-        "volume_ratio": 0.86
+        "date": "2026-10-26",
+        "day_chg_pct": 0.42,
+        "volume_ratio": 0.45
       }
     ]
   },
@@ -48,7 +48,7 @@
     "version": "mirror-v2",
     "n": 15,
     "effective_n": 15.0,
-    "candidates_after_filters": 152,
+    "candidates_after_filters": 268,
     "insufficient_sample": true,
     "no_match": false,
     "message": "样本不足（n=15<20），仅作叙事参考",
@@ -65,195 +65,195 @@
       "w_day": 0.4,
       "seq_len": 5
     },
-    "excluded_after_index_date": "2014-10-22",
+    "excluded_after_index_date": "2026-09-23",
     "status": "backtest_pending"
   },
-  "data_range": "2006-2014",
-  "total_bars": 2000,
+  "data_range": "2006-2026",
+  "total_bars": 4933,
   "matches": [
     {
-      "date": "2012-03-21",
-      "similarity": 76.3,
-      "seq_corr": 0.78,
-      "next_1d": 0.22,
-      "next_3d": -0.9,
-      "next_5d": 0.14,
-      "max_rebound": 0.58,
+      "date": "2007-12-19",
+      "similarity": 59.3,
+      "seq_corr": 0.94,
+      "next_1d": -0.05,
+      "next_3d": 4.07,
+      "next_5d": 1.26,
+      "max_rebound": 0.65,
       "max_drawdown": -0.26
     },
     {
-      "date": "2014-09-12",
-      "similarity": 71.5,
-      "seq_corr": 0.83,
-      "next_1d": -0.97,
-      "next_3d": -0.89,
-      "next_5d": -1.18,
-      "max_rebound": -0.5,
-      "max_drawdown": -1.2
+      "date": "2018-12-24",
+      "similarity": 59.2,
+      "seq_corr": 0.69,
+      "next_1d": -0.67,
+      "next_3d": 0.76,
+      "next_5d": -2.29,
+      "max_rebound": 1.05,
+      "max_drawdown": -0.8
     },
     {
-      "date": "2013-04-09",
-      "similarity": 68.3,
-      "seq_corr": 0.91,
-      "next_1d": 0.75,
-      "next_3d": 1.0,
-      "next_5d": -0.91,
-      "max_rebound": 0.77,
+      "date": "2019-09-27",
+      "similarity": 58.4,
+      "seq_corr": 0.81,
+      "next_1d": 0.53,
+      "next_3d": 0.6,
+      "next_5d": -0.24,
+      "max_rebound": 0.8,
+      "max_drawdown": -0.65
+    },
+    {
+      "date": "2023-12-07",
+      "similarity": 57.5,
+      "seq_corr": 0.86,
+      "next_1d": -0.07,
+      "next_3d": 0.18,
+      "next_5d": 0.34,
+      "max_rebound": 0.72,
+      "max_drawdown": -0.59
+    },
+    {
+      "date": "2017-09-27",
+      "similarity": 54.6,
+      "seq_corr": 0.85,
+      "next_1d": -0.8,
+      "next_3d": 1.92,
+      "next_5d": 2.95,
+      "max_rebound": 0.08,
+      "max_drawdown": -0.8
+    },
+    {
+      "date": "2015-07-29",
+      "similarity": 54.4,
+      "seq_corr": 0.86,
+      "next_1d": -0.49,
+      "next_3d": -0.84,
+      "next_5d": -0.43,
+      "max_rebound": 1.03,
+      "max_drawdown": -0.57
+    },
+    {
+      "date": "2011-08-23",
+      "similarity": 54.3,
+      "seq_corr": 0.85,
+      "next_1d": -2.06,
+      "next_3d": -1.47,
+      "next_5d": 1.65,
+      "max_rebound": 0.01,
+      "max_drawdown": -2.13
+    },
+    {
+      "date": "2008-08-15",
+      "similarity": 54.1,
+      "seq_corr": 0.61,
+      "next_1d": -1.09,
+      "next_3d": -1.08,
+      "next_5d": -0.26,
+      "max_rebound": 0.22,
+      "max_drawdown": -1.93
+    },
+    {
+      "date": "2021-11-25",
+      "similarity": 53.6,
+      "seq_corr": 0.93,
+      "next_1d": -2.67,
+      "next_3d": -5.11,
+      "next_5d": -3.84,
+      "max_rebound": -0.96,
+      "max_drawdown": -2.74
+    },
+    {
+      "date": "2021-03-10",
+      "similarity": 53.5,
+      "seq_corr": 0.88,
+      "next_1d": 1.65,
+      "next_3d": -0.26,
+      "next_5d": 0.44,
+      "max_rebound": 1.75,
       "max_drawdown": -0.05
     },
     {
-      "date": "2009-12-18",
-      "similarity": 67.9,
-      "seq_corr": 0.62,
-      "next_1d": -1.08,
-      "next_3d": 0.72,
-      "next_5d": 1.44,
-      "max_rebound": 0.01,
-      "max_drawdown": -1.15
+      "date": "2009-01-19",
+      "similarity": 53.3,
+      "seq_corr": 0.89,
+      "next_1d": -2.85,
+      "next_3d": -5.11,
+      "next_5d": -1.39,
+      "max_rebound": -1.34,
+      "max_drawdown": -3.93
     },
     {
-      "date": "2010-08-26",
-      "similarity": 67.5,
-      "seq_corr": 0.73,
-      "next_1d": -0.07,
-      "next_3d": -0.37,
-      "next_5d": 1.25,
-      "max_rebound": 0.28,
-      "max_drawdown": -0.29
+      "date": "2024-07-29",
+      "similarity": 53.1,
+      "seq_corr": 0.88,
+      "next_1d": -1.37,
+      "next_3d": 0.39,
+      "next_5d": -3.13,
+      "max_rebound": -0.26,
+      "max_drawdown": -1.55
     },
     {
-      "date": "2012-06-25",
-      "similarity": 66.9,
-      "seq_corr": 0.52,
-      "next_1d": 0.45,
-      "next_3d": 0.68,
-      "next_5d": 4.43,
-      "max_rebound": 0.53,
-      "max_drawdown": -0.25
+      "date": "2023-04-27",
+      "similarity": 53.1,
+      "seq_corr": 0.93,
+      "next_1d": 0.27,
+      "next_3d": -0.71,
+      "next_5d": 1.05,
+      "max_rebound": 1.65,
+      "max_drawdown": 0.2
     },
     {
-      "date": "2011-04-19",
-      "similarity": 66.8,
-      "seq_corr": 0.05,
-      "next_1d": 1.6,
-      "next_3d": 2.07,
-      "next_5d": 1.21,
-      "max_rebound": 1.63,
-      "max_drawdown": 0.69
+      "date": "2014-10-06",
+      "similarity": 53.1,
+      "seq_corr": 0.72,
+      "next_1d": 0.46,
+      "next_3d": 0.94,
+      "next_5d": -0.74,
+      "max_rebound": 0.87,
+      "max_drawdown": -0.45
     },
     {
-      "date": "2013-06-10",
-      "similarity": 66.8,
-      "seq_corr": 0.76,
-      "next_1d": -1.2,
-      "next_3d": -2.99,
-      "next_5d": -1.8,
-      "max_rebound": 0.08,
-      "max_drawdown": -1.42
-    },
-    {
-      "date": "2013-10-25",
-      "similarity": 64.6,
-      "seq_corr": 0.91,
-      "next_1d": 0.48,
-      "next_3d": 2.67,
-      "next_5d": 2.43,
-      "max_rebound": 0.67,
-      "max_drawdown": 0.24
-    },
-    {
-      "date": "2011-02-24",
-      "similarity": 63.8,
-      "seq_corr": 0.77,
-      "next_1d": 1.82,
-      "next_3d": 3.52,
-      "next_5d": 2.31,
-      "max_rebound": 2.17,
-      "max_drawdown": 0.5
-    },
-    {
-      "date": "2014-03-11",
-      "similarity": 63.0,
-      "seq_corr": 0.02,
-      "next_1d": -1.65,
-      "next_3d": -3.28,
-      "next_5d": -3.08,
-      "max_rebound": -1.13,
-      "max_drawdown": -1.78
-    },
-    {
-      "date": "2010-11-16",
-      "similarity": 62.9,
-      "seq_corr": 0.27,
-      "next_1d": -2.02,
-      "next_3d": -0.37,
-      "next_5d": -3.36,
-      "max_rebound": -0.32,
-      "max_drawdown": -2.11
-    },
-    {
-      "date": "2011-06-08",
-      "similarity": 62.9,
-      "seq_corr": 0.58,
-      "next_1d": -0.23,
-      "next_3d": -0.68,
-      "next_5d": -1.4,
-      "max_rebound": -0.06,
-      "max_drawdown": -1.27
-    },
-    {
-      "date": "2008-03-05",
-      "similarity": 62.1,
-      "seq_corr": 0.96,
-      "next_1d": 0.99,
-      "next_3d": -1.77,
-      "next_5d": 1.33,
-      "max_rebound": 2.17,
-      "max_drawdown": 0.61
-    },
-    {
-      "date": "2009-09-01",
-      "similarity": 62.0,
-      "seq_corr": 0.5,
-      "next_1d": -1.76,
-      "next_3d": 2.25,
-      "next_5d": 6.03,
-      "max_rebound": -1.31,
-      "max_drawdown": -2.25
+      "date": "2013-06-17",
+      "similarity": 53.0,
+      "seq_corr": 0.83,
+      "next_1d": -0.0,
+      "next_3d": -3.97,
+      "next_5d": -6.65,
+      "max_rebound": 0.07,
+      "max_drawdown": -1.09
     }
   ],
   "stats": {
-    "next_1d_up_prob": 0.47,
-    "next_1d_median": -0.07,
-    "next_3d_median": -0.37,
-    "next_5d_median": 1.21,
-    "max_rebound_median": 0.28,
-    "max_drawdown_median": -0.29,
-    "up_count": 7,
+    "next_1d_up_prob": 0.27,
+    "next_1d_median": -0.49,
+    "next_3d_median": -0.26,
+    "next_5d_median": -0.26,
+    "max_rebound_median": 0.65,
+    "max_drawdown_median": -0.8,
+    "up_count": 4,
     "n": 15,
-    "up_ratio_text": "7/15 上涨",
+    "up_ratio_text": "4/15 上涨",
     "next_1d_up_wilson95": [
-      0.2481,
-      0.6988
+      0.109,
+      0.5195
     ],
-    "next_1d_up_uniqueness_weighted": 0.4667,
-    "unconditional_up_rate": 0.5177,
-    "unconditional_n": 1978,
-    "bucket_up_rate": 0.5253,
-    "bucket_n": 316,
-    "edge_vs_unconditional": -0.051,
+    "next_1d_up_uniqueness_weighted": 0.2667,
+    "unconditional_up_rate": 0.5135,
+    "unconditional_n": 4911,
+    "bucket_up_rate": 0.5135,
+    "bucket_n": 370,
+    "edge_vs_unconditional": -0.2469,
     "detrended": {
-      "mu_daily_log_return": 0.000132,
-      "up_count": 7,
+      "mu_daily_log_return": 6.5e-05,
+      "up_count": 4,
       "n": 15,
       "up_wilson95": [
-        0.2481,
-        0.6988
+        0.109,
+        0.5195
       ],
-      "unconditional_up_rate": 0.5121,
-      "edge_vs_unconditional": -0.0455,
+      "unconditional_up_rate": 0.5111,
+      "edge_vs_unconditional": -0.2444,
       "note": "次日对数收益减去样本池平均日对数收益 μ 后再判断涨跌（去趋势基准）"
     }
   },
-  "honesty_note": "匹配方法 v2：前5日逐日序列（20维）+ 当日特征（6维），权重60%/40%，5日涨跌形状相关 r≥0（固定，不放宽）；标准化只用样本日之前数据；样本间隔≥10日、排除最近20个交易日；同类样本 7/15 次日上涨（Wilson95% 25%–70%），同期无条件上涨率 52%；n<20 样本不足，仅作叙事参考；未经样本外检验，不是概率信号；基于 2006-10-12~2014-11-20 共2000个交易日"
+  "honesty_note": "匹配方法 v2：前5日逐日序列（20维）+ 当日特征（6维），权重60%/40%，5日涨跌形状相关 r≥0（固定，不放宽）；标准化只用样本日之前数据；样本间隔≥10日、排除最近20个交易日；同类样本 4/15 次日上涨（Wilson95% 11%–52%），同期无条件上涨率 51%；n<20 样本不足，仅作叙事参考；未经样本外检验，不是概率信号；基于 2006-10-12~2026-10-26 共4933个交易日"
 }

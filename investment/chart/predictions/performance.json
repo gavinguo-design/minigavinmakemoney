@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "policy": "forward-scorecard-v1",
-  "generated_at": "2026-10-26T05:00:22.061Z",
+  "generated_at": "2026-10-26T05:30:27.135Z",
   "through_session": "2026-10-23",
-  "market_data_updated_at": "2026-10-26T13:00:08+08:00",
+  "market_data_updated_at": "2026-10-26T13:30:16+08:00",
   "notes": {
     "outcome": "仅核算发布当日收盘落点：A 上边界及以上，B 区间内，C 下边界以下；不代表当日涨跌方向或逐日曲线。",
     "baselines": "同一批样本；固定 B 和前收盘所在区均为 100% 单类基准，均分基准为各 1/3。并列最高按 1/并列数计命中分。",
@@ -1052,7 +1052,7 @@
     "reason": "尚无统一核验的开平仓成交、产品乘数、费用及预测关联；不以指数涨跌或 MFE/MAE 代替净收益。"
   },
   "input_sha256": {
-    "kline_futu.json": "a83119b8aa6dbd5b3931faa5cc339fa6ca016ffdaa70714fa90ab8b6a7a5efbf",
+    "kline_futu.json": "ee774a591943f96c6be13d3a1f5b3bfe89ab7f4d6359b9be569cef0534a44a69",
     "predictions/log.json": "923f0fd07e75973b4a8d36eda7425c16469cf6db04d4070f391c6b74b3193837",
     "trades.json": "b2c3d997f111c0d815c9e2a2fea38863548a7926c11dfc4e72c91f245ba99e85"
   }

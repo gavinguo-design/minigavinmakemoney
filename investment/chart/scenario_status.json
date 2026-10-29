@@ -1,13 +1,10 @@
 {
-  "updated_at": "2026-10-23T13:29:19.237Z",
-  "judgment_mode": "close_final",
-  "analysis_id": "HSI-20261023-structure-v1",
-  "conditions_date": "2026-10-23",
+  "updated_at": "2026-10-29T00:40:33.741Z",
+  "judgment_mode": "intraday_preview",
+  "conditions_date": "2026-10-29",
+  "analysis_id": "HSI-20261029-structure-v1",
   "data_stale": false,
   "conditions_stale": false,
-  "metrics": {
-    "price": 23093.37
-  },
   "scenarios": [
     {
       "id": "A",
@@ -17,13 +14,12 @@
       "core_total": 1,
       "confirm_met": 0,
       "confirm_total": 0,
-      "strength": "价格确认·环境未定",
       "conditions": [
         {
           "id": "daily_price_structure",
           "role": "core",
           "label": "收盘 ≥ 24,524.63；只看完整日K价格结构",
-          "met": false
+          "met": null
         }
       ]
     },
@@ -35,31 +31,29 @@
       "core_total": 1,
       "confirm_met": 0,
       "confirm_total": 0,
-      "strength": "价格确认·环境未定",
       "conditions": [
         {
           "id": "daily_price_structure",
           "role": "core",
-          "label": "收盘 ≥ 23,737.14 且 < 24,524.63；只看完整日K价格结构",
-          "met": false
+          "label": "收盘 ≥ 22,803.77 且 < 24,524.63；只看完整日K价格结构",
+          "met": null
         }
       ]
     },
     {
       "id": "C",
       "name_prefix": "C",
-      "triggered": true,
-      "core_met": 1,
+      "triggered": false,
+      "core_met": 0,
       "core_total": 1,
       "confirm_met": 0,
       "confirm_total": 0,
-      "strength": "价格确认·环境未定",
       "conditions": [
         {
           "id": "daily_price_structure",
           "role": "core",
-          "label": "收盘 < 23,737.14；只看完整日K价格结构",
-          "met": true
+          "label": "收盘 < 22,803.77；只看完整日K价格结构",
+          "met": null
         }
       ]
     }

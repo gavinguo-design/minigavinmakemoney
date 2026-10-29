@@ -2,20 +2,20 @@
   "$schema_note": "每日规则分析：confirmed pivots(width=2) + 既有可追溯结构目标。价格结构决定核心触发，环境只提供证据。",
   "meta": {
     "symbol": "^HSI",
-    "updatedAt": "2026-10-23T00:40:32.570Z",
-    "analysis_id": "HSI-20261023-structure-v1",
-    "latestClose": 22934.68,
-    "latestCloseDate": "2026-10-22",
+    "updatedAt": "2026-10-29T00:40:33.741Z",
+    "analysis_id": "HSI-20261029-structure-v1",
+    "latestClose": 23094.83,
+    "latestCloseDate": "2026-10-28",
     "note": "自动生成的每日价格结构分析",
     "dataSources": "futu-opend"
   },
   "publication": {
     "kind": "daily_rule_analysis",
-    "session_date": "2026-10-23",
-    "generated_at": "2026-10-23T00:40:32.570Z",
-    "information_cutoff": "2026-10-23T00:40:32.570Z",
-    "baseline_date": "2026-10-22",
-    "source_sha256": "0f98f2f3d8d5d236caa82b6e352bfbad0524ae788b2671548dc8a3b0d8df3a10",
+    "session_date": "2026-10-29",
+    "generated_at": "2026-10-29T00:40:33.741Z",
+    "information_cutoff": "2026-10-29T00:40:33.741Z",
+    "baseline_date": "2026-10-28",
+    "source_sha256": "119607b4f4e1d56c104520e82cf019a093533d54dd0bb1ba76375e9c4a7c886b",
     "source_snapshot": {},
     "eligible_as_new_prediction": true,
     "method": "confirmed-swing-structure-v1",
@@ -23,22 +23,22 @@
   },
   "disclaimer": "条件式价格结构分析；权重为 rule-weights-v3（v4 盘前隔夜数据不可用，已回退；逻辑回归，回测保留集优于v1，样本有限）。补录不参与预测命中率、Brier或实时入场判断。",
   "forecast": {
-    "applicable_date": "2026-10-23",
-    "updatedAt": "2026-10-23T00:40:32.570Z",
-    "baseDate": "2026-10-22",
-    "basePrice": 22934.68,
+    "applicable_date": "2026-10-29",
+    "updatedAt": "2026-10-29T00:40:33.741Z",
+    "baseDate": "2026-10-28",
+    "basePrice": 23094.83,
     "bias": "neutral",
     "biasLabel": "结构分歧 / 区间",
-    "summary": "2026-10-22 收盘 22,934.68；结构分歧 / 区间；收盘跌破前摆动低点。最近确认摆动边界 23,737.14–24,524.63。RSI14 27.2、ATR14 379.63、MA20 24,197。",
+    "summary": "2026-10-28 收盘 23,094.83；结构分歧 / 区间；未突破最近摆动边界。最近确认摆动边界 22,803.77–24,524.63。RSI14 32.9、ATR14 353.55、MA20 23,881.67。",
     "horizon": "未来5个交易日，每日重新核验",
-    "horizonEndDate": "2026-10-30",
-    "horizonDesc": "未来5个交易日（按港股日历至 2026-10-30，不含发布当日）",
+    "horizonEndDate": "2026-11-05",
+    "horizonDesc": "未来5个交易日（按港股日历至 2026-11-05，不含发布当日）",
     "reasoning": [
-      "2026-10-22 收盘 22,934.68；结构分歧 / 区间；收盘跌破前摆动低点。最近确认摆动边界 23,737.14–24,524.63。RSI14 27.2、ATR14 379.63、MA20 24,197。",
+      "2026-10-28 收盘 23,094.83；结构分歧 / 区间；未突破最近摆动边界。最近确认摆动边界 22,803.77–24,524.63。RSI14 32.9、ATR14 353.55、MA20 23,881.67。",
       "A/B/C 分别覆盖 ≥上边界、两边界之间、<下边界；盘中穿越不算正式触发。",
       "夜期、IV、南向资金无截止前可信快照时不可用，不用于推断。",
-      "权重模型：v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-21，GSPC 2026-10-22，IXIC 2026-10-22，FXI 2026-10-21，KWEB 2026-10-21）），本次回退 v3，不用空值或插值。",
-      "环境证据：2026-10-22 官方成分报告上涨家数占比 1.1%、上涨权重占比 0.4%、净点数贡献 -717.25；只描述环境，不改变价格触发。"
+      "权重模型：v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-27，GSPC 2026-10-28，IXIC 2026-10-28，FXI 2026-10-27，KWEB 2026-10-27）），本次回退 v3，不用空值或插值。",
+      "环境证据：无符合截止时间的官方成分报告，标记不可用。"
     ],
     "targetUpper": 24934.06,
     "targetLower": 22518,
@@ -58,7 +58,7 @@
         "name": "A · 收复最近摆动高点",
         "direction": "long",
         "probability": 0.1,
-        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-21，GSPC 2026-10-22，IXIC 2026-10-22，FXI 2026-10-21，KWEB 2026-10-21）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于C区、区间位置 -102%、ADX14 22.6、震荡结构；不含宽度/南向（回测无增量）。",
+        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-27，GSPC 2026-10-28，IXIC 2026-10-28，FXI 2026-10-27，KWEB 2026-10-27）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 17%、ADX14 27.3、震荡结构；不含宽度/南向（回测无增量）。",
         "probability_locked": true,
         "probability_model": "rule-weights-v3",
         "execution_status": "display_only",
@@ -70,19 +70,19 @@
           "operator": "gte",
           "value": 24524.63
         },
-        "invalidation": "收盘 < 22,879.11",
+        "invalidation": "收盘 < 23,023.04",
         "rr": {
           "entry": 24524.63,
-          "stop": 22879.11,
+          "stop": 23023.04,
           "target": 24934.06,
           "direction": "long",
           "entryHint": "条件确认之后再观察结构位回测；价格满足赔率不等于触发。",
           "cost_gate": {
             "status": "available",
             "cost_r": 0.15,
-            "rr_card": 0.25,
-            "rr_net": 0.09,
-            "required_hit": 0.921,
+            "rr_card": 0.27,
+            "rr_net": 0.11,
+            "required_hit": 0.904,
             "historical_hit": 0.617,
             "historical_n": 47,
             "historical_wilson95": [
@@ -95,12 +95,12 @@
             ],
             "passes": false,
             "source": "data/books/tb_backtest_v2.cjs TARGET_RULE=v1 (= production target rule), 2016–2025, 2456 cards, D+1 open entry, 5-session triple barrier, same-bar double touch = stop",
-            "reason": "扣 0.15R 成本后赔率 0.09 < 2"
+            "reason": "扣 0.15R 成本后赔率 0.11 < 2"
           }
         },
         "risk": {
           "structural_invalidation": {
-            "price": 22879.11,
+            "price": 23023.04,
             "confirmation": "completed_daily_close"
           },
           "disaster_stop": {
@@ -114,44 +114,44 @@
             "note": "影子模式：两种灾难止损只记录、不发布；risk.disaster_stop 仍为 not_configured，决策码与页面文案不变。待样本外验证后再选定。",
             "versions": {
               "sigma_2_5": {
-                "price": 21930.02,
+                "price": 22139.16,
                 "method": "structural_invalidation − 2.5σ",
-                "sigma_points": 379.63,
+                "sigma_points": 353.55,
                 "sigma_source": "ATR14",
-                "atr14": 379.63,
-                "ewma_sigma_points": 277.33,
+                "atr14": 353.55,
+                "ewma_sigma_points": 254.36,
                 "ewma_lambda": 0.94,
-                "basis": "多头：结构失效位 22,879.11 − 2.5σ；σ = max(ATR14 379.63, EWMA 日波动×收盘 277.33) = 379.63 点（取 ATR14）",
+                "basis": "多头：结构失效位 23,023.04 − 2.5σ；σ = max(ATR14 353.55, EWMA 日波动×收盘 254.36) = 353.55 点（取 ATR14）",
                 "position_sizing": {
-                  "units_per_10k_risk": 38541,
+                  "units_per_10k_risk": 41920,
                   "risk_unit_hkd": 10000,
                   "point_value_hkd": 0.0001,
                   "entitlement_ratio": 10000,
                   "instrument": "CBBC 牛熊证（恒指）",
-                  "entry_to_stop_points": 2594.61,
+                  "entry_to_stop_points": 2385.47,
                   "formula": "10000 ÷ |entry − stop| ÷ 每单位每点港元（牛熊证 = 1/换股比率）",
                   "futures_note": "恒指期货（大期）每点 50 港元、小型恒指（小期）每点 10 港元；改 point_value_hkd 即可换算。",
-                  "futures_contracts_per_10k_risk": 0.077,
+                  "futures_contracts_per_10k_risk": 0.084,
                   "note": "每 1 万港元风险预算可持有的牛熊证单位数（按换股比率 10000，未取整到每手、未含成本/滑点/收回价距离），不是仓位建议。"
                 }
               },
               "turtle_2n": {
-                "price": 23789.31,
+                "price": 23821.7,
                 "method": "entry − 2N",
-                "n_points": 367.66,
+                "n_points": 351.46,
                 "n_window": 20,
-                "basis": "多头：计划入场 24,524.63 − 2×N（N = ATR20 海龟平滑 = 367.66 点）",
+                "basis": "多头：计划入场 24,524.63 − 2×N（N = ATR20 海龟平滑 = 351.46 点）",
                 "structural_inside": false,
                 "position_sizing": {
-                  "units_per_10k_risk": 135995,
+                  "units_per_10k_risk": 142262,
                   "risk_unit_hkd": 10000,
                   "point_value_hkd": 0.0001,
                   "entitlement_ratio": 10000,
                   "instrument": "CBBC 牛熊证（恒指）",
-                  "entry_to_stop_points": 735.32,
+                  "entry_to_stop_points": 702.93,
                   "formula": "10000 ÷ |entry − stop| ÷ 每单位每点港元（牛熊证 = 1/换股比率）",
                   "futures_note": "恒指期货（大期）每点 50 港元、小型恒指（小期）每点 10 港元；改 point_value_hkd 即可换算。",
-                  "futures_contracts_per_10k_risk": 0.272,
+                  "futures_contracts_per_10k_risk": 0.285,
                   "note": "每 1 万港元风险预算可持有的牛熊证单位数（按换股比率 10000，未取整到每手、未含成本/滑点/收回价距离），不是仓位建议。"
                 }
               }
@@ -165,7 +165,7 @@
           "upperBound": [
             {
               "offset": 0,
-              "price": 22934.68
+              "price": 23094.83
             },
             {
               "offset": 5,
@@ -175,7 +175,7 @@
           "lowerBound": [
             {
               "offset": 0,
-              "price": 22934.68
+              "price": 23094.83
             },
             {
               "offset": 5,
@@ -188,17 +188,17 @@
         "id": "B",
         "name": "B · 摆动区间内整理",
         "direction": "short",
-        "probability": 0.1,
-        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-21，GSPC 2026-10-22，IXIC 2026-10-22，FXI 2026-10-21，KWEB 2026-10-21）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于C区、区间位置 -102%、ADX14 22.6、震荡结构；不含宽度/南向（回测无增量）。",
+        "probability": 0.7,
+        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-27，GSPC 2026-10-28，IXIC 2026-10-28，FXI 2026-10-27，KWEB 2026-10-27）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 17%、ADX14 27.3、震荡结构；不含宽度/南向（回测无增量）。",
         "probability_locked": true,
         "probability_model": "rule-weights-v3",
         "execution_status": "plan_candidate",
         "probability_definition": "次日收盘落在哪个区间（T+1 收盘落区：A ≥ 上边界 / B 区间内 / C < 下边界）；不是 5 日内先到目标的概率，也不是胜率。",
         "color": "#a78bfa",
-        "trigger": "收盘 ≥ 23,737.14 且 < 24,524.63；只看完整日K价格结构",
+        "trigger": "收盘 ≥ 22,803.77 且 < 24,524.63；只看完整日K价格结构",
         "price_rule": {
           "operator": "range",
-          "lower": 23737.14,
+          "lower": 22803.77,
           "upper": 24524.63
         },
         "invalidation": "收盘 ≥ 24,934.06",
@@ -245,44 +245,44 @@
             "note": "影子模式：两种灾难止损只记录、不发布；risk.disaster_stop 仍为 not_configured，决策码与页面文案不变。待样本外验证后再选定。",
             "versions": {
               "sigma_2_5": {
-                "price": 25883.15,
+                "price": 25817.94,
                 "method": "structural_invalidation + 2.5σ",
-                "sigma_points": 379.63,
+                "sigma_points": 353.55,
                 "sigma_source": "ATR14",
-                "atr14": 379.63,
-                "ewma_sigma_points": 277.33,
+                "atr14": 353.55,
+                "ewma_sigma_points": 254.36,
                 "ewma_lambda": 0.94,
-                "basis": "空头：结构失效位 24,934.06 + 2.5σ；σ = max(ATR14 379.63, EWMA 日波动×收盘 277.33) = 379.63 点（取 ATR14）",
+                "basis": "空头：结构失效位 24,934.06 + 2.5σ；σ = max(ATR14 353.55, EWMA 日波动×收盘 254.36) = 353.55 点（取 ATR14）",
                 "position_sizing": {
-                  "units_per_10k_risk": 73610,
+                  "units_per_10k_risk": 77321,
                   "risk_unit_hkd": 10000,
                   "point_value_hkd": 0.0001,
                   "entitlement_ratio": 10000,
                   "instrument": "CBBC 牛熊证（恒指）",
-                  "entry_to_stop_points": 1358.52,
+                  "entry_to_stop_points": 1293.31,
                   "formula": "10000 ÷ |entry − stop| ÷ 每单位每点港元（牛熊证 = 1/换股比率）",
                   "futures_note": "恒指期货（大期）每点 50 港元、小型恒指（小期）每点 10 港元；改 point_value_hkd 即可换算。",
-                  "futures_contracts_per_10k_risk": 0.147,
+                  "futures_contracts_per_10k_risk": 0.155,
                   "note": "每 1 万港元风险预算可持有的牛熊证单位数（按换股比率 10000，未取整到每手、未含成本/滑点/收回价距离），不是仓位建议。"
                 }
               },
               "turtle_2n": {
-                "price": 25259.95,
+                "price": 25227.56,
                 "method": "entry + 2N",
-                "n_points": 367.66,
+                "n_points": 351.46,
                 "n_window": 20,
-                "basis": "空头：计划入场 24,524.63 + 2×N（N = ATR20 海龟平滑 = 367.66 点）",
+                "basis": "空头：计划入场 24,524.63 + 2×N（N = ATR20 海龟平滑 = 351.46 点）",
                 "structural_inside": true,
                 "position_sizing": {
-                  "units_per_10k_risk": 135995,
+                  "units_per_10k_risk": 142262,
                   "risk_unit_hkd": 10000,
                   "point_value_hkd": 0.0001,
                   "entitlement_ratio": 10000,
                   "instrument": "CBBC 牛熊证（恒指）",
-                  "entry_to_stop_points": 735.32,
+                  "entry_to_stop_points": 702.93,
                   "formula": "10000 ÷ |entry − stop| ÷ 每单位每点港元（牛熊证 = 1/换股比率）",
                   "futures_note": "恒指期货（大期）每点 50 港元、小型恒指（小期）每点 10 港元；改 point_value_hkd 即可换算。",
-                  "futures_contracts_per_10k_risk": 0.272,
+                  "futures_contracts_per_10k_risk": 0.285,
                   "note": "每 1 万港元风险预算可持有的牛熊证单位数（按换股比率 10000，未取整到每手、未含成本/滑点/收回价距离），不是仓位建议。"
                 }
               }
@@ -296,7 +296,7 @@
           "upperBound": [
             {
               "offset": 0,
-              "price": 22934.68
+              "price": 23094.83
             },
             {
               "offset": 5,
@@ -306,7 +306,7 @@
           "lowerBound": [
             {
               "offset": 0,
-              "price": 22934.68
+              "price": 23094.83
             },
             {
               "offset": 5,
@@ -319,36 +319,50 @@
         "id": "C",
         "name": "C · 跌破最近摆动低点",
         "direction": "short",
-        "probability": 0.8,
-        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-21，GSPC 2026-10-22，IXIC 2026-10-22，FXI 2026-10-21，KWEB 2026-10-21）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于C区、区间位置 -102%、ADX14 22.6、震荡结构；不含宽度/南向（回测无增量）。",
+        "probability": 0.2,
+        "probability_basis": "v4 盘前隔夜数据不可用（美股/ETF 最新收盘日期不一致（EWH 2026-10-27，GSPC 2026-10-28，IXIC 2026-10-28，FXI 2026-10-27，KWEB 2026-10-27）），已回退 v3。逻辑回归 v3（2024-10~2025-12 训练、2026-05~10 保留集 Brier 0.344 vs v1 0.406）；输入：v1 打分、前一日收于B区、区间位置 17%、ADX14 27.3、震荡结构；不含宽度/南向（回测无增量）。",
         "probability_locked": true,
         "probability_model": "rule-weights-v3",
         "execution_status": "display_only",
         "execution_note": "仅展示·不推荐执行：按真实卡片价位做三重屏障回测（2016–2025，次日开盘入场，5 日），C 扣 0.15R 成本后 E[R] −0.07R [−0.33,+0.21]；卡片赔率≥2 的 C 为 −0.39R [−0.68,−0.08]。赔率≥2:1 不等于可执行。",
         "probability_definition": "次日收盘落在哪个区间（T+1 收盘落区：A ≥ 上边界 / B 区间内 / C < 下边界）；不是 5 日内先到目标的概率，也不是胜率。",
         "color": "#ff8c42",
-        "trigger": "收盘 < 23,737.14；只看完整日K价格结构",
+        "trigger": "收盘 < 22,803.77；只看完整日K价格结构",
         "price_rule": {
           "operator": "lt",
-          "value": 23737.14
+          "value": 22803.77
         },
-        "invalidation": "收盘 ≥ 23,513.79",
+        "invalidation": "收盘 ≥ 23,157.4",
         "rr": {
-          "entry": 23737.14,
-          "stop": 23513.79,
+          "entry": 22803.77,
+          "stop": 23157.4,
           "target": 22518,
           "direction": "short",
           "entryHint": "条件确认之后再观察结构位回测；价格满足赔率不等于触发。",
           "cost_gate": {
-            "status": "unavailable",
+            "status": "available",
             "cost_r": 0.15,
+            "rr_card": 0.81,
+            "rr_net": 0.57,
+            "required_hit": 0.636,
+            "historical_hit": 0.6154,
+            "historical_n": 52,
+            "historical_wilson95": [
+              0.4796,
+              0.7353
+            ],
+            "historical_bucket": [
+              0,
+              1
+            ],
             "passes": false,
-            "reason": "赔率数据不足"
+            "source": "data/books/tb_backtest_v2.cjs TARGET_RULE=v1 (= production target rule), 2016–2025, 2456 cards, D+1 open entry, 5-session triple barrier, same-bar double touch = stop",
+            "reason": "扣 0.15R 成本后赔率 0.57 < 2"
           }
         },
         "risk": {
           "structural_invalidation": {
-            "price": 23513.79,
+            "price": 23157.4,
             "confirmation": "completed_daily_close"
           },
           "disaster_stop": {
@@ -362,44 +376,44 @@
             "note": "影子模式：两种灾难止损只记录、不发布；risk.disaster_stop 仍为 not_configured，决策码与页面文案不变。待样本外验证后再选定。",
             "versions": {
               "sigma_2_5": {
-                "price": 24462.88,
+                "price": 24041.28,
                 "method": "structural_invalidation + 2.5σ",
-                "sigma_points": 379.63,
+                "sigma_points": 353.55,
                 "sigma_source": "ATR14",
-                "atr14": 379.63,
-                "ewma_sigma_points": 277.33,
+                "atr14": 353.55,
+                "ewma_sigma_points": 254.36,
                 "ewma_lambda": 0.94,
-                "basis": "空头：结构失效位 23,513.79 + 2.5σ；σ = max(ATR14 379.63, EWMA 日波动×收盘 277.33) = 379.63 点（取 ATR14）",
+                "basis": "空头：结构失效位 23,157.4 + 2.5σ；σ = max(ATR14 353.55, EWMA 日波动×收盘 254.36) = 353.55 点（取 ATR14）",
                 "position_sizing": {
-                  "units_per_10k_risk": 137790,
+                  "units_per_10k_risk": 80807,
                   "risk_unit_hkd": 10000,
                   "point_value_hkd": 0.0001,
                   "entitlement_ratio": 10000,
                   "instrument": "CBBC 牛熊证（恒指）",
-                  "entry_to_stop_points": 725.74,
+                  "entry_to_stop_points": 1237.51,
                   "formula": "10000 ÷ |entry − stop| ÷ 每单位每点港元（牛熊证 = 1/换股比率）",
                   "futures_note": "恒指期货（大期）每点 50 港元、小型恒指（小期）每点 10 港元；改 point_value_hkd 即可换算。",
-                  "futures_contracts_per_10k_risk": 0.276,
+                  "futures_contracts_per_10k_risk": 0.162,
                   "note": "每 1 万港元风险预算可持有的牛熊证单位数（按换股比率 10000，未取整到每手、未含成本/滑点/收回价距离），不是仓位建议。"
                 }
               },
               "turtle_2n": {
-                "price": 24472.46,
+                "price": 23506.7,
                 "method": "entry + 2N",
-                "n_points": 367.66,
+                "n_points": 351.46,
                 "n_window": 20,
-                "basis": "空头：计划入场 23,737.14 + 2×N（N = ATR20 海龟平滑 = 367.66 点）",
+                "basis": "空头：计划入场 22,803.77 + 2×N（N = ATR20 海龟平滑 = 351.46 点）",
                 "structural_inside": true,
                 "position_sizing": {
-                  "units_per_10k_risk": 135995,
+                  "units_per_10k_risk": 142262,
                   "risk_unit_hkd": 10000,
                   "point_value_hkd": 0.0001,
                   "entitlement_ratio": 10000,
                   "instrument": "CBBC 牛熊证（恒指）",
-                  "entry_to_stop_points": 735.32,
+                  "entry_to_stop_points": 702.93,
                   "formula": "10000 ÷ |entry − stop| ÷ 每单位每点港元（牛熊证 = 1/换股比率）",
                   "futures_note": "恒指期货（大期）每点 50 港元、小型恒指（小期）每点 10 港元；改 point_value_hkd 即可换算。",
-                  "futures_contracts_per_10k_risk": 0.272,
+                  "futures_contracts_per_10k_risk": 0.285,
                   "note": "每 1 万港元风险预算可持有的牛熊证单位数（按换股比率 10000，未取整到每手、未含成本/滑点/收回价距离），不是仓位建议。"
                 }
               }
@@ -413,17 +427,17 @@
           "upperBound": [
             {
               "offset": 0,
-              "price": 22934.68
+              "price": 23094.83
             },
             {
               "offset": 5,
-              "price": 23737.14
+              "price": 22803.77
             }
           ],
           "lowerBound": [
             {
               "offset": 0,
-              "price": 22934.68
+              "price": 23094.83
             },
             {
               "offset": 5,
@@ -437,33 +451,33 @@
     "weight_model_info": {
       "version": "rule-weights-v3",
       "calibration": "回测保留集验证（n≈100），未经实盘校准；本次为 v4 数据缺失时的回退",
-      "scored_reviews": 7,
+      "scored_reviews": 8,
       "shadow": {
         "rule-weights-v1": {
           "A": 0.1,
-          "B": 0.2,
-          "C": 0.7
+          "B": 0.4,
+          "C": 0.5
         },
         "rw-gauss-v1": {
           "A": 0.03,
-          "B": 0.03,
-          "C": 0.94
+          "B": 0.88,
+          "C": 0.09
         }
       },
       "fallback": {
         "intended": "rule-weights-v4",
         "used": "rule-weights-v3",
-        "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-21，GSPC 2026-10-22，IXIC 2026-10-22，FXI 2026-10-21，KWEB 2026-10-21）"
+        "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-27，GSPC 2026-10-28，IXIC 2026-10-28，FXI 2026-10-27，KWEB 2026-10-27）"
       },
       "active_model": "rule-weights-v3",
       "rw_reference": {
         "version": "rw-gauss-v1",
         "probabilities": {
           "A": 0.03,
-          "B": 0.03,
-          "C": 0.94
+          "B": 0.88,
+          "C": 0.09
         },
-        "sigma60": 0.009903,
+        "sigma60": 0.009602,
         "formula": "σ=基准日前60日对数收益标准差；P(A)=1−Φ(ln(上边界/收盘)/σ)，P(C)=Φ(ln(下边界/收盘)/σ)，P(B)=其余；同生产取整",
         "walkforward": "2016–2025（n=2434，生产展示格式 0.03–0.95/0.01）：RW-高斯 Brier 0.2435；v4 0.2314，BSS +0.050 [+0.017,+0.084]（年块），9/10 年胜"
       },
@@ -548,47 +562,47 @@
         ]
       },
       "factors": {
-        "baseline_date": "2026-10-22",
-        "close": 22934.68,
-        "lower": 23737.14,
+        "baseline_date": "2026-10-28",
+        "close": 23094.83,
+        "lower": 22803.77,
         "upper": 24524.63,
-        "atr14": 379.63,
-        "position": -1.02,
+        "atr14": 353.55,
+        "position": 0.17,
         "breadth_status": "not_used",
         "logits": {
-          "A": -3.43,
+          "A": -2.43,
           "B": 0.5,
-          "C": 2.03
+          "C": 0.74
         },
         "v1": {
           "A": 0.1,
-          "B": 0.2,
-          "C": 0.7
+          "B": 0.4,
+          "C": 0.5
         },
-        "prev_zone": "C",
-        "adx14": 22.6,
+        "prev_zone": "B",
+        "adx14": 27.3,
         "regime": "range",
         "features": {
           "bias": 1,
-          "v1_logodds_A_vs_B": -0.6931,
-          "v1_logodds_C_vs_B": 1.2528,
-          "position_z": -3.038,
-          "adx14_norm": 0.13,
+          "v1_logodds_A_vs_B": -1.3863,
+          "v1_logodds_C_vs_B": 0.2231,
+          "position_z": -0.6617,
+          "adx14_norm": 0.365,
           "prev_zone_A": 0,
-          "prev_zone_C": 1,
+          "prev_zone_C": 0,
           "v2_regime_range": 1
         },
         "breadth": null,
         "shadow_v1": {
           "A": 0.1,
-          "B": 0.2,
-          "C": 0.7
+          "B": 0.4,
+          "C": 0.5
         }
       },
       "raw_probabilities": {
-        "A": 0,
-        "B": 0.07,
-        "C": 0.93
+        "A": 0.05,
+        "B": 0.73,
+        "C": 0.23
       }
     },
     "weight_factors": [
@@ -596,12 +610,12 @@
         "name": "logistic_v3",
         "raw": {
           "bias": 1,
-          "v1_logodds_A_vs_B": -0.6931,
-          "v1_logodds_C_vs_B": 1.2528,
-          "position_z": -3.038,
-          "adx14_norm": 0.13,
+          "v1_logodds_A_vs_B": -1.3863,
+          "v1_logodds_C_vs_B": 0.2231,
+          "position_z": -0.6617,
+          "adx14_norm": 0.365,
           "prev_zone_A": 0,
-          "prev_zone_C": 1,
+          "prev_zone_C": 0,
           "v2_regime_range": 1
         },
         "contribution": null,
@@ -610,12 +624,12 @@
     ],
     "card": {
       "stateEmoji": "📋",
-      "stateLabel": "2026-10-23 每日结构分析",
-      "structureLine": "2026-10-22 收盘 22,934.68；结构分歧 / 区间；收盘跌破前摆动低点。最近确认摆动边界 23,737.14–24,524.63。RSI14 27.2、ATR14 379.63、MA20 24,197。",
+      "stateLabel": "2026-10-29 每日结构分析",
+      "structureLine": "2026-10-28 收盘 23,094.83；结构分歧 / 区间；未突破最近摆动边界。最近确认摆动边界 22,803.77–24,524.63。RSI14 32.9、ATR14 353.55、MA20 23,881.67。",
       "stateTone": "neutral",
       "keyLines": [
         {
-          "price": 23737.14,
+          "price": 22803.77,
           "tag": "最近确认摆动低点",
           "tf": "日线"
         },
@@ -627,15 +641,15 @@
       ]
     },
     "scenario_evidence": {
-      "analysis_id": "HSI-20261023-structure-v1",
+      "analysis_id": "HSI-20261029-structure-v1",
       "last_bar": {
-        "date": "2026-10-22",
-        "open": 23513.79,
-        "high": 23513.79,
-        "low": 22879.11,
-        "close": 22934.68,
-        "turnover_yi": 2560.5,
-        "time": "2026-10-22",
+        "date": "2026-10-28",
+        "open": 23083.99,
+        "high": 23157.4,
+        "low": 23023.04,
+        "close": 23094.83,
+        "turnover_yi": 1814.3,
+        "time": "2026-10-28",
         "completed": true
       },
       "timeframe": "1d",
@@ -646,38 +660,20 @@
   "environment_evidence": {
     "volume_ratio": {
       "status": "available",
-      "value": 1.5013368670403644,
+      "value": 1.0148141726073447,
       "basis": "previous_20_completed_sessions"
     },
     "participation": {
-      "status": "available",
-      "as_of": "2026-10-22",
-      "metrics": {
-        "advances": 1,
-        "declines": 94,
-        "unchanged": 0,
-        "equal_name_breadth": 0.01052632,
-        "weighted_breadth": 0.00380152,
-        "declining_weight_share": 0.99619848,
-        "net_point_contribution": -717.25,
-        "gross_absolute_point_contribution": 718.17,
-        "contribution_direction": -0.99871897,
-        "top_five_absolute_contribution_share": 0.36501107,
-        "concentration_hhi": 0.04799802
-      },
-      "source": {
-        "name": "Hang Seng Indexes Constituent Daily Performance",
-        "kind": "official_daily_constituent_report",
-        "url": "https://www.hsi.com.hk/api/wsit-hsi-ddoc-ea-public-website-proxy/v1/content/gcs/download?resource=/public-website/webapp/contents/en/indexes/report/hsi/con_22Oct26.pdf",
-        "file": "hsi-constituents.pdf",
-        "sha256": "9052129f5145e5209a318b8fdb117656ed088d257c72c534d71f2a42d8d208af"
-      }
+      "status": "unavailable",
+      "as_of": null,
+      "metrics": null,
+      "source": null
     },
     "overnight": {
       "status": "unavailable",
-      "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-21，GSPC 2026-10-22，IXIC 2026-10-22，FXI 2026-10-21，KWEB 2026-10-21）",
+      "reason": "美股/ETF 最新收盘日期不一致（EWH 2026-10-27，GSPC 2026-10-28，IXIC 2026-10-28，FXI 2026-10-27，KWEB 2026-10-27）",
       "source": "yahoo-finance-v8-chart",
-      "fetched_at": "2026-10-23T00:40:32.570Z"
+      "fetched_at": "2026-10-29T00:40:33.741Z"
     },
     "night_futures": {
       "status": "unavailable"
@@ -690,7 +686,7 @@
     }
   },
   "intraday_playbook": {
-    "updatedAt": "2026-10-23T00:40:32.570Z",
+    "updatedAt": "2026-10-29T00:40:33.741Z",
     "note": "仅用于区间定位，不是即时操作指令",
     "zones": [
       {
@@ -703,7 +699,7 @@
       },
       {
         "range": [
-          23737.14,
+          22803.77,
           24524.63
         ],
         "stance": "区间观察",
@@ -712,7 +708,7 @@
       {
         "range": [
           null,
-          23737.14
+          22803.77
         ],
         "stance": "破位观察",
         "action": "等待C收盘确认"
@@ -721,10 +717,10 @@
   },
   "levels": [
     {
-      "price": 23737.14,
+      "price": 22803.77,
       "type": "support",
       "label": "最近确认摆动低点",
-      "reason": "2026-10-08，确认于 2026-10-12"
+      "reason": "2026-10-23，确认于 2026-10-27"
     },
     {
       "price": 24524.63,

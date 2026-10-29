@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "policy": "forward-scorecard-v1",
-  "generated_at": "2026-10-29T08:30:22.940Z",
+  "generated_at": "2026-10-29T09:13:56.406Z",
   "through_session": "2026-10-29",
   "market_data_updated_at": "2026-10-29T16:30:09+08:00",
   "notes": {
@@ -22,12 +22,7 @@
     ],
     "excluded": [],
     "missing_market_data": [],
-    "review_issues": [
-      {
-        "date": "2026-10-29",
-        "status": "missing"
-      }
-    ]
+    "review_issues": []
   },
   "summary": {
     "model": {
@@ -905,7 +900,7 @@
           "top_hit_credit": 0.3333333333333333
         }
       },
-      "review_status": "missing",
+      "review_status": "verified",
       "price_observations": [
         {
           "id": "A",

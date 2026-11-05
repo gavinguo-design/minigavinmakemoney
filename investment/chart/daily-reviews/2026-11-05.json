@@ -1,0 +1,55 @@
+{
+  "session_date": "2026-11-05",
+  "analysis_id": "HSI-20261105-structure-v1",
+  "kind": "price_structure_close_review",
+  "generated_at": "2026-11-05T09:13:18.088Z",
+  "bar": {
+    "date": "2026-11-05",
+    "open": 24316.94,
+    "high": 24871.92,
+    "low": 24281.77,
+    "close": 24796.98,
+    "turnover_yi": 3566.7
+  },
+  "verdicts": [
+    {
+      "id": "A",
+      "met": true
+    },
+    {
+      "id": "B",
+      "met": false
+    },
+    {
+      "id": "C",
+      "met": false
+    }
+  ],
+  "probability_status": "rule_based_uncalibrated",
+  "weight_model": "rule-weights-v3",
+  "probabilities": {
+    "A": 0.8,
+    "B": 0.1,
+    "C": 0.1
+  },
+  "model_probabilities": {
+    "rule-weights-v1": {
+      "A": 0.7,
+      "B": 0.2,
+      "C": 0.1
+    },
+    "rw-gauss-v1": {
+      "A": 0.94,
+      "B": 0.03,
+      "C": 0.03
+    },
+    "rule-weights-v3": {
+      "A": 0.8,
+      "B": 0.1,
+      "C": 0.1
+    }
+  },
+  "brier": 0.06,
+  "brier_status": "scored",
+  "brier_rule": "多类Brier Σ(p_i-o_i)^2，成立情景 o=1"
+}

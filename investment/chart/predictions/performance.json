@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "policy": "forward-scorecard-v1",
-  "generated_at": "2026-11-20T09:13:12.143Z",
+  "generated_at": "2026-11-20T16:59:03.074Z",
   "through_session": "2026-11-20",
   "market_data_updated_at": "2026-11-20T16:30:08+08:00",
   "notes": {

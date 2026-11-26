@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "policy": "forward-scorecard-v1",
-  "generated_at": "2026-11-26T08:00:32.825Z",
-  "through_session": "2026-11-25",
-  "market_data_updated_at": "2026-11-26T16:00:11+08:00",
+  "generated_at": "2026-11-26T08:30:21.460Z",
+  "through_session": "2026-11-26",
+  "market_data_updated_at": "2026-11-26T16:30:11+08:00",
   "notes": {
     "outcome": "仅核算发布当日收盘落点：A 上边界及以上，B 区间内，C 下边界以下；不代表当日涨跌方向或逐日曲线。",
     "baselines": "同一批样本；固定 B 和前收盘所在区均为 100% 单类基准，均分基准为各 1/3。并列最高按 1/并列数计命中分。",
@@ -12,8 +12,8 @@
   },
   "coverage": {
     "start": "2026-10-12",
-    "expected": 32,
-    "scored": 28,
+    "expected": 33,
+    "scored": 29,
     "missing_forecasts": [
       "2026-10-16",
       "2026-10-26",
@@ -22,41 +22,46 @@
     ],
     "excluded": [],
     "missing_market_data": [],
-    "review_issues": []
+    "review_issues": [
+      {
+        "date": "2026-11-26",
+        "status": "missing"
+      }
+    ]
   },
   "summary": {
     "model": {
-      "n": 28,
-      "hit_credit": 24.5,
-      "hit_rate": 0.875,
-      "mean_brier": 0.211786
+      "n": 29,
+      "hit_credit": 25.5,
+      "hit_rate": 0.87931,
+      "mean_brier": 0.206552
     },
     "baselines": {
       "always_b": {
-        "n": 28,
+        "n": 29,
         "hit_credit": 14,
-        "hit_rate": 0.5,
-        "mean_brier": 1
+        "hit_rate": 0.482759,
+        "mean_brier": 1.034483
       },
       "previous_close_zone": {
-        "n": 28,
-        "hit_credit": 25,
-        "hit_rate": 0.892857,
-        "mean_brier": 0.214286
+        "n": 29,
+        "hit_credit": 26,
+        "hit_rate": 0.896552,
+        "mean_brier": 0.206897
       },
       "uniform": {
-        "n": 28,
-        "hit_credit": 9.333333,
+        "n": 29,
+        "hit_credit": 9.666667,
         "hit_rate": 0.333333,
         "mean_brier": 0.666667
       }
     },
     "by_version": {
       "rule-weights-v3": {
-        "n": 24,
-        "hit_credit": 21.5,
-        "hit_rate": 0.895833,
-        "mean_brier": 0.2225
+        "n": 25,
+        "hit_credit": 22.5,
+        "hit_rate": 0.9,
+        "mean_brier": 0.216
       },
       "rule-weights-v4": {
         "n": 4,
@@ -2699,6 +2704,100 @@
         }
       ],
       "trade_result": "unverified"
+    },
+    {
+      "date": "2026-11-26",
+      "analysis_id": "HSI-20261126-structure-v1",
+      "forecast_file": "investment/chart/daily-generated/2026-11-26.json",
+      "forecast_sha256": "9350316d174b2d1e68a56a654893cf50b88685daed6ad5ae0e5132d5ef807f12",
+      "publication_proof": {
+        "commit": "89b15d2864a989ac6495f964d0161bb75c7efa53",
+        "committed_at": "2026-11-26T00:40:31Z",
+        "sha256": "9350316d174b2d1e68a56a654893cf50b88685daed6ad5ae0e5132d5ef807f12"
+      },
+      "model": "rule-weights-v3",
+      "fallback": {
+        "intended": "rule-weights-v4",
+        "used": "rule-weights-v3",
+        "reason": "Yahoo 恒指缺少基准日 2026-11-25"
+      },
+      "probabilities": {
+        "A": 0.1,
+        "B": 0.1,
+        "C": 0.8
+      },
+      "rules": {
+        "A": {
+          "operator": "gte",
+          "value": 24871.92
+        },
+        "B": {
+          "operator": "range",
+          "lower": 22928.27,
+          "upper": 24871.92
+        },
+        "C": {
+          "operator": "lt",
+          "value": 22928.27
+        }
+      },
+      "status": "scored",
+      "close": 22226.88,
+      "actual": "C",
+      "result": {
+        "brier": 0.06,
+        "top": [
+          "C"
+        ],
+        "top_hit_credit": 1
+      },
+      "baselines": {
+        "always_b": {
+          "brier": 2,
+          "top": [
+            "B"
+          ],
+          "top_hit_credit": 0
+        },
+        "previous_close_zone": {
+          "brier": 0,
+          "top": [
+            "C"
+          ],
+          "top_hit_credit": 1
+        },
+        "uniform": {
+          "brier": 0.666667,
+          "top": [
+            "A",
+            "B",
+            "C"
+          ],
+          "top_hit_credit": 0.3333333333333333
+        }
+      },
+      "review_status": "missing",
+      "price_observations": [
+        {
+          "id": "A",
+          "target": 24934.06,
+          "target_touched_same_session": false,
+          "close_condition_met": false
+        },
+        {
+          "id": "B",
+          "target": null,
+          "target_touched_same_session": null,
+          "close_condition_met": false
+        },
+        {
+          "id": "C",
+          "target": null,
+          "target_touched_same_session": null,
+          "close_condition_met": true
+        }
+      ],
+      "trade_result": "unverified"
     }
   ],
   "legacy": [
@@ -2941,7 +3040,7 @@
     "reason": "尚无统一核验的开平仓成交、产品乘数、费用及预测关联；不以指数涨跌或 MFE/MAE 代替净收益。"
   },
   "input_sha256": {
-    "kline_futu.json": "ea6d770b25aa6723272e3deb07d5e6db0b774a7afc874ddf33aba8f347818944",
+    "kline_futu.json": "9fefbbbc1d4d057ab0a4999a210a0687a84a6d468cad23d582708bb16e79da88",
     "predictions/log.json": "923f0fd07e75973b4a8d36eda7425c16469cf6db04d4070f391c6b74b3193837",
     "trades.json": "b2c3d997f111c0d815c9e2a2fea38863548a7926c11dfc4e72c91f245ba99e85"
   }
